@@ -1,0 +1,1580 @@
+﻿.xl-rich-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  width: 100%;
+}
+
+.xl-rich-editor--toolbar-hidden {
+  gap: 0;
+}
+
+.xl-rich-editor__surface {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.xl-rich-editor--editable .xl-rich-editor__surface {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.xl-rich-editor--readonly .xl-rich-editor__surface {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.xl-rich-editor__surface--with-outline .xl-editor__viewport {
+  padding-right: 314px;
+}
+
+.xl-rich-editor__outline-divider {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  right: 315px;
+  width: 1px;
+  background: rgba(64, 158, 255, 0.28);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.xl-rich-editor__outline {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 4;
+  width: 300px;
+  height: auto;
+  overflow: hidden;
+  padding: 12px 10px 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.xl-rich-editor__outline::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.xl-toolbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  gap: 6px 8px;
+  min-height: 44px;
+  height: auto;
+  flex: 0 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 18px 9px;
+  overflow: visible;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.xl-toolbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgba(15, 23, 42, 0.08);
+  pointer-events: none;
+}
+
+.xl-toolbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.xl-toolbar__group {
+  display: contents;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.xl-toolbar__group--action {
+  margin-left: auto;
+}
+
+.xl-toolbar > .xl-toolbar__group--action:last-of-type {
+  display: none;
+}
+
+.xl-toolbar__group--save {
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.xl-toolbar__dropdown-trigger {
+  display: inline-flex;
+}
+
+.xl-toolbar__menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.xl-toolbar__menu-trigger {
+  position: relative;
+}
+
+.xl-toolbar__menu:has(.xl-toolbar__menu-dropdown) .xl-toolbar__menu-trigger {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.xl-toolbar__menu:has(.xl-toolbar__menu-dropdown) .xl-toolbar__menu-caret {
+  opacity: 0.95;
+  transform: rotate(180deg);
+}
+
+.xl-toolbar__menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 12;
+  min-width: 156px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+}
+
+.xl-toolbar__menu-dropdown button {
+  width: 100%;
+  height: auto;
+  min-height: 28px;
+  justify-content: flex-start;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.xl-toolbar button,
+.xl-bubble-menu button,
+.xl-floating-menu button,
+.xl-table-menu button,
+.xl-slash-menu__item {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #374151;
+  width: 25px;
+  height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+
+.xl-toolbar button i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  width: 1em;
+  height: 1em;
+}
+
+.xl-toolbar button .xl-toolbar__menu-caret {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  font-size: 10px;
+  opacity: 0.62;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.xl-toolbar button:hover,
+.xl-bubble-menu button:hover,
+.xl-floating-menu button:hover,
+.xl-table-menu button:hover,
+.xl-slash-menu__item:hover {
+  transform: none;
+  background: rgba(37, 99, 235, 0.08);
+  box-shadow: none;
+}
+
+.xl-toolbar button.active {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.xl-toolbar__save-button i,
+.xl-toolbar__import-md-button i {
+  font-size: 18px;
+}
+
+.xl-toolbar__outline-button {
+  background: transparent;
+  color: #374151;
+}
+
+.xl-toolbar__outline-button i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* width: 20px; */
+  /* height: 20px; */
+  border-radius: 7px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.xl-toolbar__outline-button i.active {
+  background-color: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.xl-toolbar__divider {
+  width: 1px;
+  height: 24px;
+  min-height: 24px;
+  align-self: center;
+  background: rgba(148, 163, 184, 0.52);
+  flex: 0 0 1px;
+  margin: 0 4px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
+}
+
+.xl-toolbar__divider--inline {
+  margin: 0 6px;
+}
+
+.xl-toolbar__color-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.xl-rich-editor__image-resizer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  padding: 8px 18px;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.12);
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.08), rgba(14, 116, 144, 0.05));
+  color: #1e3a8a;
+  font-size: 12px;
+}
+
+.xl-rich-editor__image-resizer input[type="range"] {
+  width: min(260px, 42vw);
+  accent-color: #2563eb;
+}
+
+.xl-rich-editor__image-resizer strong {
+  min-width: 42px;
+  color: #1d4ed8;
+}
+
+.xl-editor__viewport {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+  scrollbar-gutter: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.xl-editor__viewport::-webkit-scrollbar,
+.xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar,
+.xl-code-node__pre::-webkit-scrollbar,
+.xl-editor__content .ProseMirror pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.xl-editor__viewport::-webkit-scrollbar-track,
+.xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-track,
+.xl-code-node__pre::-webkit-scrollbar-track,
+.xl-editor__content .ProseMirror pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.xl-editor__viewport::-webkit-scrollbar-thumb,
+.xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-thumb,
+.xl-code-node__pre::-webkit-scrollbar-thumb,
+.xl-editor__content .ProseMirror pre::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.xl-editor__viewport::-webkit-scrollbar-thumb:hover,
+.xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-thumb:hover,
+.xl-code-node__pre::-webkit-scrollbar-thumb:hover,
+.xl-editor__content .ProseMirror pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.62);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.xl-editor__content {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: var(--xl-editor-min-height, 520px);
+  padding: 12px 22px 20px 60px;
+  overflow: visible;
+}
+
+.xl-editor__content .ProseMirror {
+  box-sizing: border-box;
+  min-height: inherit;
+  min-width: 0;
+  max-width: 100%;
+  outline: none;
+  line-height: 1.8;
+  font-size: 15px;
+  color: #111827;
+  background: transparent;
+}
+
+.xl-editor__content .ProseMirror p.is-editor-empty:first-child::before,
+.xl-editor__content .ProseMirror p.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: rgba(148, 163, 184, 0.78);
+  pointer-events: none;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.xl-editor__content .ProseMirror p {
+  margin: 0 0 0.9em;
+}
+
+.xl-editor__content .ProseMirror blockquote {
+  position: relative;
+  margin: 1em 0 1.15em;
+  padding: 14px 18px 14px 24px;
+  border-left: 5px solid #2563eb;
+  border-radius: 0 12px 12px 0;
+  background:
+    linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.035)),
+    #f8fbff;
+  color: #1e3a8a;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.1);
+}
+
+.xl-editor__content .ProseMirror blockquote::before {
+  content: "“";
+  position: absolute;
+  top: -4px;
+  left: 9px;
+  color: rgba(37, 99, 235, 0.24);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 46px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.xl-editor__content .ProseMirror blockquote p {
+  margin: 0.25em 0;
+}
+
+.xl-editor__content .ProseMirror code {
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.92em;
+  padding: 0.12em 0.38em;
+  border-radius: 6px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+.xl-code-node {
+  margin: 0.9em 0 1em;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: #0f172a;
+  color: #e2e8f0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.xl-code-node__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(15, 23, 42, 0.92);
+}
+
+.xl-code-node__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.xl-code-node__language-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.xl-code-node__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  color: #f8fafc;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.xl-code-node__badge i {
+  font-size: 14px;
+}
+
+.xl-code-node__lines {
+  color: #94a3b8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.xl-code-node__language {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.xl-code-node__language i {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.xl-code-node__language.is-open {
+  color: #2563eb;
+}
+
+.xl-code-node__language-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 8;
+  display: grid;
+  gap: 2px;
+  min-width: 160px;
+  max-height: 240px;
+  padding: 6px;
+  overflow: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.xl-code-node__language-option {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #334155;
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+}
+
+.xl-code-node__language-option:hover,
+.xl-code-node__language-option.active {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.xl-code-node__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xl-code-node__action,
+.xl-code-node__summary-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.xl-code-node__action:hover,
+.xl-code-node__summary-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+.xl-code-node__action i,
+.xl-code-node__summary-toggle i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.xl-code-node__summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-top: 0;
+  background: rgba(15, 23, 42, 0.86);
+  cursor: pointer;
+}
+
+.xl-code-node__summary-label {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  color: #cbd5e1;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.xl-code-node__summary-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: #e2e8f0;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xl-code-node__body {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.xl-code-node__gutter {
+  padding: 14px 0;
+  border-right: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(15, 23, 42, 0.7);
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: right;
+  user-select: none;
+}
+
+.xl-code-node__gutter span {
+  display: block;
+  padding: 0 10px 0 0;
+}
+
+.xl-code-node__pre {
+  margin: 0;
+  padding: 14px 16px;
+  background: transparent;
+  overflow-x: auto;
+}
+
+.xl-code-node__content {
+  display: block;
+  min-height: 1.7em;
+  color: inherit;
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.95em;
+  line-height: 1.7;
+  white-space: pre;
+  outline: none;
+}
+
+.xl-editor__content .ProseMirror pre {
+  margin: 0.9em 0 1em;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #e2e8f0;
+  overflow-x: auto;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.xl-editor__content .ProseMirror pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.95em;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.xl-editor__content .ProseMirror pre::before {
+  content: "代码块";
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  color: #cbd5e1;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.xl-editor__content .ProseMirror pre[data-language]:not([data-language=""])::after {
+  content: attr(data-language);
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.xl-editor__content .ProseMirror h1,
+.xl-editor__content .ProseMirror h2,
+.xl-editor__content .ProseMirror h3 {
+  line-height: 1.2;
+  margin: 1.1em 0 0.55em;
+}
+
+.xl-editor__content .ProseMirror img {
+  max-width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+.xl-editor__content .ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid #2563eb;
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 7px rgba(37, 99, 235, 0.16),
+    0 16px 34px rgba(15, 23, 42, 0.18);
+}
+
+.xl-editor__content .ProseMirror table {
+  width: 100%;
+  min-width: max(100%, 480px);
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0.9em 0 1em;
+  background: transparent;
+}
+
+.xl-editor__content .ProseMirror .tableWrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0.9em 0 1em;
+}
+
+.xl-editor__content .ProseMirror th,
+.xl-editor__content .ProseMirror td {
+  position: relative;
+  min-width: 80px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  padding: 8px 10px;
+  vertical-align: top;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.xl-editor__content .ProseMirror th {
+  background: rgba(241, 245, 249, 0.98);
+  font-weight: 600;
+}
+
+.xl-editor__content .ProseMirror td p,
+.xl-editor__content .ProseMirror th p {
+  margin: 0;
+}
+
+.xl-editor__content .ProseMirror .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 119, 255, 0.12);
+  pointer-events: none;
+}
+
+.xl-editor__content .ProseMirror .column-resize-handle {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  width: 12px;
+  height: 100%;
+  background: transparent;
+  pointer-events: auto;
+  z-index: 20;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231677ff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6 L5 12 L9 18'/%3E%3Cpath d='M15 6 L19 12 L15 18'/%3E%3Cpath d='M12 5 L12 19'/%3E%3C/svg%3E")
+      12 12,
+    col-resize;
+}
+
+.xl-editor__content .ProseMirror .resize-cursor {
+  cursor: col-resize;
+}
+
+.xl-codebar {
+  position: absolute;
+  right: 18px;
+  top: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.2);
+}
+
+.xl-codebar__button {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
+.xl-codebar__button:hover {
+  border-color: rgba(255, 255, 255, 0.26);
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+.xl-bubble-menu,
+.xl-floating-menu {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.12);
+}
+
+.xl-slash-menu {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: grid;
+  gap: 8px;
+  width: min(320px, calc(100% - 48px));
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+}
+
+.xl-slash-menu__item {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+}
+
+.xl-slash-menu__item span {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.xl-image-block {
+  margin: 12px 0;
+}
+
+.xl-image-block img {
+  display: block;
+}
+
+.xl-attachment {
+  display: grid;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  background: linear-gradient(180deg, rgba(239, 246, 255, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.xl-attachment__link {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.xl-attachment__meta {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* Code block light theme override */
+.xl-code-node {
+  margin: 0.9em 0 1em;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  overflow: hidden;
+}
+
+.xl-code-node__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.xl-code-node__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.xl-code-node__fold {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.xl-code-node__fold-icon {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 1;
+  color: #64748b;
+  transform-origin: center;
+  transition: transform 0.16s ease;
+}
+
+.xl-code-node__fold-icon.is-expanded {
+  transform: rotate(90deg);
+}
+
+.xl-code-node__language {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.xl-code-node__lines {
+  color: #94a3b8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.xl-code-node__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xl-code-node__action,
+.xl-code-node__summary-toggle {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.xl-code-node__action:hover,
+.xl-code-node__summary-toggle:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  box-shadow: none;
+  transform: none;
+}
+
+.xl-code-node__action i,
+.xl-code-node__summary-toggle i {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.xl-code-node__action--text {
+  font-size: 12px;
+  color: #475569;
+}
+
+.xl-code-node__summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-top: 0;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.xl-code-node__summary-label {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.xl-code-node__summary-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xl-code-node__body {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.xl-code-node__gutter {
+  padding: 12px 0;
+  border-right: 1px solid #eef2f7;
+  background: #ffffff;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.75;
+  text-align: right;
+  user-select: none;
+}
+
+.xl-code-node__gutter span {
+  display: block;
+  padding: 0 8px 0 0;
+}
+
+.xl-code-node__pre {
+  margin: 0;
+  padding: 12px 14px;
+  background: transparent;
+  overflow-x: auto;
+}
+
+.xl-code-node__content {
+  display: block;
+  min-height: 1.7em;
+  color: #1f2937;
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  outline: none;
+}
+
+.xl-editor__content .ProseMirror pre {
+  margin: 0.9em 0 1em;
+  position: relative;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.xl-editor__content .ProseMirror pre code {
+  display: block;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.xl-editor__content .ProseMirror pre::before {
+  content: none;
+  display: none;
+}
+
+.xl-editor__content .ProseMirror pre[data-language]:not([data-language=""])::after {
+  content: attr(data-language);
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+/* Code block square outer frame override */
+.xl-code-node,
+.xl-editor__content .ProseMirror pre {
+  border-radius: 0 !important;
+}
+
+/* Code block frameless override */
+.xl-code-node {
+  margin: 0.85em 0 1em !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #111827 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.xl-code-node__header {
+  min-height: 32px !important;
+  padding: 0 10px 8px !important;
+  border-bottom: 1px solid #eef2f7 !important;
+  background: transparent !important;
+}
+
+.xl-code-node__summary {
+  padding: 8px 10px !important;
+  background: transparent !important;
+}
+
+.xl-code-node__body {
+  background: transparent !important;
+}
+
+.xl-code-node__gutter {
+  padding: 12px 0 10px !important;
+  background: transparent !important;
+}
+
+.xl-code-node__pre {
+  padding: 12px 14px !important;
+  background: transparent !important;
+}
+
+.xl-code-node__content {
+  color: #111827 !important;
+}
+
+.xl-editor__content .ProseMirror pre {
+  margin: 0.85em 0 1em !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.xl-editor__content .ProseMirror pre code {
+  padding: 0 !important;
+}
+
+.xl-editor__content .ProseMirror pre[data-language]:not([data-language=""])::after {
+  top: 8px !important;
+  right: 0 !important;
+}
+
+/* Code block light gray surface override */
+.xl-code-node {
+  margin: 0.85em 0 1em !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0 !important;
+  background: #fafafa !important;
+  color: #111827 !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.xl-code-node__header {
+  min-height: 32px !important;
+  padding: 0 10px 8px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  background: #f5f5f5 !important;
+}
+
+.xl-code-node__summary {
+  padding: 8px 10px !important;
+  background: #fafafa !important;
+}
+
+.xl-code-node__body {
+  background: #fafafa !important;
+}
+
+.xl-code-node__gutter {
+  padding: 12px 0 10px !important;
+  background: #fafafa !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+.xl-code-node__pre {
+  padding: 12px 14px !important;
+  background: #fafafa !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+.xl-code-node__content {
+  color: #111827 !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+.xl-editor__content .ProseMirror pre {
+  margin: 0.85em 0 1em !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding-top: 0 !important;
+  background: #fafafa !important;
+  color: #111827 !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+}
+
+.xl-editor__content .ProseMirror pre code {
+  padding: 0 !important;
+}
+
+.xl-editor__content .ProseMirror pre[data-language]:not([data-language=""])::after {
+  top: 8px !important;
+  right: 10px !important;
+}
+
+/* Lowlight syntax colors */
+.xl-editor__content .ProseMirror pre code,
+.xl-editor__content .ProseMirror pre code.hljs {
+  color: #334155;
+  -webkit-font-smoothing: antialiased;
+  font-variant-ligatures: none;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-comment,
+.xl-editor__content .ProseMirror pre code .hljs-quote {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-keyword,
+.xl-editor__content .ProseMirror pre code .hljs-selector-tag,
+.xl-editor__content .ProseMirror pre code .hljs-literal,
+.xl-editor__content .ProseMirror pre code .hljs-section,
+.xl-editor__content .ProseMirror pre code .hljs-title,
+.xl-editor__content .ProseMirror pre code .hljs-name {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-string,
+.xl-editor__content .ProseMirror pre code .hljs-doctag,
+.xl-editor__content .ProseMirror pre code .hljs-meta .hljs-string,
+.xl-editor__content .ProseMirror pre code .hljs-attr {
+  color: #0f766e;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-number,
+.xl-editor__content .ProseMirror pre code .hljs-built_in,
+.xl-editor__content .ProseMirror pre code .hljs-builtin-name,
+.xl-editor__content .ProseMirror pre code .hljs-symbol,
+.xl-editor__content .ProseMirror pre code .hljs-variable {
+  color: #d97706;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-type,
+.xl-editor__content .ProseMirror pre code .hljs-class .hljs-title {
+  color: #7c3aed;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-meta,
+.xl-editor__content .ProseMirror pre code .hljs-regexp,
+.xl-editor__content .ProseMirror pre code .hljs-template-tag,
+.xl-editor__content .ProseMirror pre code .hljs-template-variable {
+  color: #db2777;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-emphasis {
+  font-style: italic;
+}
+
+.xl-editor__content .ProseMirror pre code .hljs-strong {
+  font-weight: 700;
+}
+
+[data-doc-theme-scheme='dark'] .xl-rich-editor__surface {
+  background: var(--xl-editor-content-bg, var(--doc-content-bg, #111827));
+}
+
+[data-doc-theme-scheme='dark'] .xl-toolbar::after {
+  background: rgba(148, 163, 184, 0.16);
+}
+
+[data-doc-theme-scheme='dark'] .xl-toolbar button,
+[data-doc-theme-scheme='dark'] .xl-bubble-menu button,
+[data-doc-theme-scheme='dark'] .xl-floating-menu button,
+[data-doc-theme-scheme='dark'] .xl-table-menu button,
+[data-doc-theme-scheme='dark'] .xl-slash-menu__item,
+[data-doc-theme-scheme='dark'] .xl-toolbar__outline-button {
+  color: #cbd5e1;
+}
+
+[data-doc-theme-scheme='dark'] .xl-toolbar button:hover,
+[data-doc-theme-scheme='dark'] .xl-bubble-menu button:hover,
+[data-doc-theme-scheme='dark'] .xl-floating-menu button:hover,
+[data-doc-theme-scheme='dark'] .xl-table-menu button:hover,
+[data-doc-theme-scheme='dark'] .xl-slash-menu__item:hover {
+  background: rgba(96, 165, 250, 0.14);
+  color: #eff6ff;
+}
+
+[data-doc-theme-scheme='dark'] .xl-toolbar button.active,
+[data-doc-theme-scheme='dark'] .xl-toolbar__outline-button i.active {
+  background: rgba(96, 165, 250, 0.2);
+  color: #93c5fd;
+}
+
+[data-doc-theme-scheme='dark'] .xl-toolbar__menu-dropdown {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: #0f172a;
+  box-shadow: 0 14px 36px rgba(2, 6, 23, 0.48);
+}
+
+[data-doc-theme-scheme='dark'] .xl-toolbar__divider {
+  background: rgba(148, 163, 184, 0.28);
+  box-shadow: none;
+}
+
+[data-doc-theme-scheme='dark'] .xl-rich-editor__image-resizer {
+  border-bottom-color: rgba(96, 165, 250, 0.18);
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.16), rgba(20, 184, 166, 0.08));
+  color: #dbeafe;
+}
+
+[data-doc-theme-scheme='dark'] .xl-rich-editor__image-resizer strong {
+  color: #93c5fd;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror {
+  color: #e5e7eb;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror p.is-editor-empty:first-child::before,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror p.is-empty::before {
+  color: rgba(148, 163, 184, 0.74);
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror code {
+  background: rgba(96, 165, 250, 0.14);
+  color: #bfdbfe;
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror img.ProseMirror-selectednode {
+  outline-color: #93c5fd;
+  box-shadow:
+    0 0 0 7px rgba(96, 165, 250, 0.18),
+    0 16px 34px rgba(2, 6, 23, 0.42);
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror blockquote {
+  border-left-color: #60a5fa;
+  background:
+    linear-gradient(90deg, rgba(96, 165, 250, 0.2), rgba(96, 165, 250, 0.08)),
+    #162033;
+  color: #dbeafe;
+  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.18);
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror blockquote::before {
+  color: rgba(147, 197, 253, 0.24);
+}
+
+[data-doc-theme-scheme='dark'] .xl-bubble-menu,
+[data-doc-theme-scheme='dark'] .xl-floating-menu,
+[data-doc-theme-scheme='dark'] .xl-slash-menu {
+  border-color: rgba(96, 165, 250, 0.18);
+  background: rgba(15, 23, 42, 0.96);
+  box-shadow: 0 18px 50px rgba(2, 6, 23, 0.45);
+}
+
+[data-doc-theme-scheme='dark'] .xl-slash-menu__item span,
+[data-doc-theme-scheme='dark'] .xl-attachment__meta {
+  color: #94a3b8;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__language-dropdown {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: #0f172a;
+  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.48);
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__language-option {
+  color: #cbd5e1;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__language-option:hover,
+[data-doc-theme-scheme='dark'] .xl-code-node__language-option.active {
+  background: rgba(96, 165, 250, 0.16);
+  color: #bfdbfe;
+}
+
+[data-doc-theme-scheme='dark'] .xl-attachment {
+  border-color: rgba(96, 165, 250, 0.18);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.96) 0%, rgba(15, 23, 42, 0.96) 100%);
+}
+
+[data-doc-theme-scheme='dark'] .xl-attachment__link {
+  color: #93c5fd;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror table {
+  background: transparent;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror th,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror td {
+  border-color: #243041 !important;
+  background: #182235 !important;
+  color: #e5e7eb !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror th {
+  background: #1f2a3d !important;
+  color: #f3f4f6 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror .selectedCell::after {
+  background: rgba(96, 165, 250, 0.16);
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror .column-resize-handle {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6 L5 12 L9 18'/%3E%3Cpath d='M15 6 L19 12 L15 18'/%3E%3Cpath d='M12 5 L12 19'/%3E%3C/svg%3E")
+      12 12,
+    col-resize;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node {
+  border: 1px solid #243041 !important;
+  background: #182235 !important;
+  color: #e5e7eb !important;
+  box-shadow: none !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__header {
+  border-bottom: 1px solid #243041 !important;
+  background: #1f2a3d !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__summary,
+[data-doc-theme-scheme='dark'] .xl-code-node__body,
+[data-doc-theme-scheme='dark'] .xl-code-node__gutter,
+[data-doc-theme-scheme='dark'] .xl-code-node__pre {
+  background: #182235 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__pre,
+[data-doc-theme-scheme='dark'] .xl-code-node__content,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code {
+  background: transparent !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__gutter {
+  border-right: 1px solid #243041 !important;
+  color: #6b7280 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__content,
+[data-doc-theme-scheme='dark'] .xl-code-node__summary-text,
+[data-doc-theme-scheme='dark'] .xl-code-node__action--text {
+  color: #e5e7eb !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__summary-label,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre[data-language]:not([data-language=""])::after {
+  background: rgba(96, 165, 250, 0.16) !important;
+  color: #bfdbfe !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__action,
+[data-doc-theme-scheme='dark'] .xl-code-node__summary-toggle {
+  border-color: #243041 !important;
+  background: #1f2a3d !important;
+  color: #cbd5e1 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-code-node__action:hover,
+[data-doc-theme-scheme='dark'] .xl-code-node__summary-toggle:hover {
+  border-color: #31425a !important;
+  background: #243041 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre {
+  border: 1px solid #243041 !important;
+  background: #182235 !important;
+  color: #e5e7eb !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code.hljs {
+  color: #d1d5db !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-comment,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-quote {
+  color: #6b7280 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-keyword,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-selector-tag,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-literal,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-section,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-title,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-name {
+  color: #93c5fd !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-string,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-doctag,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-meta .hljs-string,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-attr {
+  color: #86efac !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-number,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-built_in,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-builtin-name,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-symbol,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-variable {
+  color: #fbbf24 !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-type,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-class .hljs-title {
+  color: #c4b5fd !important;
+}
+
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-meta,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-regexp,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-template-tag,
+[data-doc-theme-scheme='dark'] .xl-editor__content .ProseMirror pre code .hljs-template-variable {
+  color: #f9a8d4 !important;
+}
+
+/* Keep wide editor nodes inside the writing column when the outline panel is visible. */
+.xl-editor__content .ProseMirror > *,
+.xl-code-node,
+.xl-code-node__body,
+.xl-code-node__pre,
+.xl-attachment,
+.xl-editor__content .ProseMirror .tableWrapper,
+.xl-editor__content .ProseMirror pre {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.xl-code-node__body,
+.xl-code-node__pre,
+.xl-editor__content .ProseMirror pre {
+  min-width: 0;
+  overflow-x: auto !important;
+}
+
+.xl-editor__content .ProseMirror img {
+  height: auto;
+  max-width: 100%;
+}
+
+

@@ -1,0 +1,25 @@
+# JSON编辑器 JsonEditor
+
+`XJsonEditor` 支持行号、高亮、错误定位和一键格式化。
+
+## 用法
+
+```vue
+<XJsonEditor v-model="jsonText" />
+```
+
+## Props
+
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| modelValue | JSON 文本 | `string` | - |
+| title | 标题 | `string` | `JSON 数据对象` |
+| externalError | 外部错误提示 | `string` | `''` |
+| resizable | 编辑区是否可拖拽高度 | `boolean` | `true` |
+
+## 事件
+
+| 事件 | 说明 |
+| --- | --- |
+| `update:modelValue` | 内容变化 |
+| `blur` | 失焦触发 |

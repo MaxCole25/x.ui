@@ -1,0 +1,427 @@
+﻿<template>
+  <aside class="xl-outline-panel">
+    <div class="xl-outline-panel__header">
+      <div class="xl-outline-panel__titles">
+        <h3 class="xl-outline-panel__title">{{ title }}</h3>
+      </div>
+    </div>
+
+    <span class="xl-outline-panel__separator" aria-hidden="true"></span>
+
+    <div class="xl-outline-panel__body">
+      <div class="xl-outline-panel__content">
+        <div v-if="visibleNodes.length" class="xl-outline-panel__list">
+          <div
+            v-for="item in visibleNodes"
+            :key="item.key"
+            class="xl-outline-panel__row"
+            :class="{ 'is-active': item.activePath }"
+            :style="{ paddingLeft: `${item.depth * indentStep}px` }"
+          >
+            <button
+              v-if="item.hasChildren"
+              type="button"
+              class="xl-outline-panel__toggle"
+              :aria-expanded="!item.collapsed"
+              :title="item.collapsed ? '展开' : '折叠'"
+              @click.stop="toggleCollapse(item.key)"
+            >
+              <i :class="item.collapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+            <span v-else class="xl-outline-panel__toggle xl-outline-panel__toggle--spacer"></span>
+
+            <button type="button" class="xl-outline-panel__item" @click="jumpToHeading(item.pos)">
+              <span v-if="item.activePath" class="xl-outline-panel__active-bar"></span>
+              <span class="xl-outline-panel__text">{{ item.text }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div v-else class="xl-outline-panel__empty">
+          {{ emptyText }}
+        </div>
+      </div>
+    </div>
+  </aside>
+</template>
+
+<script setup lang="ts">
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import type { Editor } from '@tiptap/vue-3'
+
+type OutlineHeading = {
+  key: string
+  pos: number
+  level: number
+  text: string
+  active: boolean
+}
+
+type OutlineNode = OutlineHeading & {
+  depth: number
+  children: OutlineNode[]
+  collapsed: boolean
+  hasChildren: boolean
+  activePath: boolean
+}
+
+const props = withDefaults(
+  defineProps<{
+    editor?: Editor
+    title?: string
+    emptyText?: string
+    minLevel?: number
+    maxLevel?: number
+    indentStep?: number
+  }>(),
+  {
+    title: '大纲',
+    emptyText: '当前文档没有标题',
+    minLevel: 1,
+    maxLevel: 3,
+    indentStep: 18
+  }
+)
+
+const revision = ref(0)
+const collapsedMap = ref<Record<string, boolean>>({})
+
+const headings = computed<OutlineHeading[]>(() => {
+  revision.value
+
+  const editor = props.editor
+  if (!editor) {
+    return []
+  }
+
+  const items: OutlineHeading[] = []
+  const selectionFrom = editor.state.selection.from
+  const selectionTo = editor.state.selection.to
+
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name !== 'heading') {
+      return
+    }
+
+    const level = Number(node.attrs.level ?? 1)
+    if (level < props.minLevel || level > props.maxLevel) {
+      return
+    }
+
+    const end = pos + node.nodeSize
+    const text = node.textContent.trim() || '未命名标题'
+    const active = selectionFrom >= pos && selectionTo <= end
+
+    items.push({
+      key: `${pos}-${level}-${text}`,
+      pos,
+      level,
+      text,
+      active
+    })
+  })
+
+  return items
+})
+
+const tree = computed<OutlineNode[]>(() => {
+  const roots: OutlineNode[] = []
+  const stack: OutlineNode[] = []
+
+  for (const item of headings.value) {
+    const node: OutlineNode = {
+      ...item,
+      depth: 0,
+      children: [],
+      collapsed: collapsedMap.value[item.key] ?? false,
+      hasChildren: false,
+      activePath: false
+    }
+
+    while (stack.length > 0 && stack[stack.length - 1].level >= item.level) {
+      stack.pop()
+    }
+
+    const parent = stack[stack.length - 1]
+    node.depth = parent ? parent.depth + 1 : 0
+
+    if (parent) {
+      parent.children.push(node)
+      parent.hasChildren = true
+    } else {
+      roots.push(node)
+    }
+
+    stack.push(node)
+  }
+
+  markActivePath(roots)
+  return roots
+})
+
+const visibleNodes = computed(() => flattenTree(tree.value))
+
+let detach: (() => void) | null = null
+
+function refresh() {
+  revision.value += 1
+}
+
+function bindEditor(editor?: Editor) {
+  detach?.()
+  detach = null
+
+  if (!editor) {
+    refresh()
+    return
+  }
+
+  const update = () => refresh()
+  editor.on('update', update)
+  editor.on('selectionUpdate', update)
+  editor.on('transaction', update)
+
+  detach = () => {
+    editor.off('update', update)
+    editor.off('selectionUpdate', update)
+    editor.off('transaction', update)
+  }
+
+  refresh()
+}
+
+watch(
+  () => props.editor,
+  (editor) => {
+    bindEditor(editor)
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => {
+  detach?.()
+  detach = null
+})
+
+function toggleCollapse(key: string) {
+  collapsedMap.value = {
+    ...collapsedMap.value,
+    [key]: !(collapsedMap.value[key] ?? false)
+  }
+}
+
+function jumpToHeading(pos: number) {
+  props.editor?.chain().focus().setTextSelection(pos).scrollIntoView().run()
+}
+
+function flattenTree(nodes: OutlineNode[]): OutlineNode[] {
+  const result: OutlineNode[] = []
+
+  for (const node of nodes) {
+    result.push(node)
+    if (!node.collapsed) {
+      result.push(...flattenTree(node.children))
+    }
+  }
+
+  return result
+}
+
+function markActivePath(nodes: OutlineNode[]): boolean {
+  let found = false
+
+  for (const node of nodes) {
+    const childFound = markActivePath(node.children)
+    node.activePath = node.active || childFound
+    if (node.activePath) {
+      found = true
+    }
+  }
+
+  return found
+}
+</script>
+
+<style scoped>
+.xl-outline-panel {
+  --xl-outline-panel-title: var(--xl-outline-title, #111827);
+  --xl-outline-panel-toggle: var(--xl-outline-toggle, #6b7280);
+  --xl-outline-panel-text: var(--xl-outline-text, #374151);
+  --xl-outline-panel-hover: var(--xl-outline-hover, #111827);
+  --xl-outline-panel-empty: var(--xl-outline-empty, #64748b);
+  --xl-outline-panel-separator: var(--xl-outline-separator, rgba(64, 158, 255, 0.18));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.xl-outline-panel__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+}
+
+.xl-outline-panel__titles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.xl-outline-panel__title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--xl-outline-panel-title);
+  font-weight: 700;
+}
+
+.xl-outline-panel__separator {
+  height: 1px;
+  margin-top: 6px;
+  margin-left: 10px;
+  background: var(--xl-outline-panel-separator);
+}
+
+.xl-outline-panel__body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.xl-outline-panel__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  scrollbar-gutter: auto;
+  padding-left: 10px;
+  padding-bottom: 50px;
+  box-sizing: border-box;
+}
+
+.xl-outline-panel__content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.xl-outline-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xl-outline-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.xl-outline-panel__toggle {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--xl-outline-panel-toggle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.xl-outline-panel__toggle i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.xl-outline-panel__toggle--spacer {
+  visibility: hidden;
+  width: 16px;
+  height: 16px;
+}
+
+.xl-outline-panel__item {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--xl-outline-panel-text);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.16s ease;
+}
+
+.xl-outline-panel__item:hover {
+  color: var(--xl-outline-panel-hover);
+}
+
+.xl-outline-panel__active-bar {
+  flex: 0 0 auto;
+  width: 4px;
+  height: auto;
+  align-self: stretch;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: #409EFF;
+}
+
+.xl-outline-panel__text {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 1.45;
+  color: inherit;
+}
+
+.xl-outline-panel__empty {
+  padding: 12px 0;
+  color: var(--xl-outline-panel-empty);
+  font-size: 13px;
+}
+
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__title {
+  color: #f8fafc !important;
+}
+
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__toggle {
+  color: #cbd5e1 !important;
+}
+
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__item,
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__text {
+  color: #f1f5f9 !important;
+}
+
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__item:hover,
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__item:hover .xl-outline-panel__text {
+  color: #ffffff !important;
+}
+
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__empty {
+  color: #cbd5e1 !important;
+}
+
+:global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__separator {
+  background: var(--doc-divider-color, rgba(148, 163, 184, 0.18)) !important;
+}
+</style>
