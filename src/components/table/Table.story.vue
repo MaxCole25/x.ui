@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { XDialog } from '../dialog'
+import { XInputNumber } from '../input-number'
 import { XRadio } from '../radio'
 import { XSwitch } from '../switch'
 import { XTable } from './index'
-import type { TableColumn, TableColumnSetting, TableReorderPosition, TableRowReorderPayload, TableSelectionMode } from './src/types'
+import type {
+  TableColumn,
+  TableColumnResizePayload,
+  TableColumnSetting,
+  TableReorderPosition,
+  TableRowClickPayload,
+  TableRowReorderPayload,
+  TableSelectionMode
+} from './src/types'
 import '../../styles/index.css'
 
 type DemoRow = Record<string, unknown> & {
@@ -42,12 +51,14 @@ const parentState = reactive({
   selectable: true,
   showSelectionColumn: true,
   editable: false,
+  columnResizable: true,
   selectionMode: 'row' as TableSelectionMode,
   rowDraggable: true
 })
 const settingsDialogVisible = ref(false)
 const selectedRowKeys = ref<string[]>([])
 const selectedCellKeys = ref<string[]>([])
+const rowEventText = ref('尚未触发行事件')
 const draggingColumnSettingKey = ref<string | null>(null)
 const dragOverColumnSettingKey = ref<string | null>(null)
 const columnSettingDragOverPosition = ref<TableReorderPosition>('after')
@@ -153,6 +164,27 @@ function handleRowReorder(payload: TableRowReorderPayload) {
   rows.value = payload.rows as DemoRow[]
 }
 
+function handleRowClick(payload: TableRowClickPayload) {
+  rowEventText.value = `单击第 ${payload.rowIndex + 1} 行：${payload.row.component}`
+}
+
+function handleRowDoubleClick(payload: TableRowClickPayload) {
+  rowEventText.value = `双击第 ${payload.rowIndex + 1} 行：${payload.row.component}`
+}
+
+function handleColumnResize(payload: TableColumnResizePayload) {
+  rowEventText.value = `调整列宽：${payload.column.label} ${Math.round(payload.width)}px`
+}
+
+function getEditorNumberValue(value: string | number | undefined) {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  const next = Number(value)
+  return Number.isNaN(next) ? undefined : next
+}
+
 function updateSelectionMode(value: string | number | boolean) {
   parentState.selectionMode = value as TableSelectionMode
 }
@@ -238,6 +270,10 @@ function updateSelectionMode(value: string | number | boolean) {
             <span>可编辑</span>
             <XSwitch v-model="parentState.editable" size="sm" />
           </div>
+          <div class="table-story__control-item">
+            <span>列宽拖拽</span>
+            <XSwitch v-model="parentState.columnResizable" size="sm" />
+          </div>
           <label>
             <input v-model="parentState.rowDraggable" type="checkbox" />
             <span>行拖拽排序</span>
@@ -255,8 +291,12 @@ function updateSelectionMode(value: string | number | boolean) {
             :show-selection="parentState.selectable"
             :show-selection-column="parentState.showSelectionColumn"
             :editable="parentState.editable"
+            :column-resizable="parentState.columnResizable"
             :selection-mode="parentState.selectionMode"
             :row-draggable="parentState.rowDraggable"
+            @row-click="handleRowClick"
+            @row-dblclick="handleRowDoubleClick"
+            @column-resize="handleColumnResize"
             @row-reorder="handleRowReorder"
           >
             <template #top="{ columnSettings, updateColumnSetting, reorderColumnSetting, resetColumnSettings }">
@@ -396,10 +436,24 @@ function updateSelectionMode(value: string | number | boolean) {
               </XDialog>
             </template>
 
+            <template #editor-count="{ modelValue, updateModelValue, commitValue }">
+              <XInputNumber
+                class="table-story__count-editor"
+                :model-value="getEditorNumberValue(modelValue)"
+                :min="0"
+                :border-radius="0"
+               
+                :show-active-border="false"
+                @update:model-value="updateModelValue"
+                @change="commitValue"
+              />
+            </template>
+
             <template #bottom="{ data }">
               <div class="table-story__footer">
                 <span class="table-story__total">共 {{ data.length }} 条记录</span>
                 <span class="table-story__selected">{{ selectedText }}</span>
+                <span class="table-story__event">{{ rowEventText }}</span>
               </div>
             </template>
           </XTable>
@@ -489,9 +543,15 @@ function updateSelectionMode(value: string | number | boolean) {
   font-weight: 600;
 }
 
-.table-story__selected {
+.table-story__selected,
+.table-story__event {
   color: #64748b;
   font-size: 13px;
+}
+
+.table-story__count-editor {
+  height: 100%;
+  width: 100%;
 }
 
 .table-story__topbar button,

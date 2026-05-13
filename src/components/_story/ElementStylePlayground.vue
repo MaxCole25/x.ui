@@ -25,26 +25,28 @@ const styleProps = computed(() => ({
     </div>
 
     <div class="element-style-playground__controls">
-      <label>
-        <span>边框粗细</span>
-        <input v-model.number="state.borderWidth" type="number" min="0" max="12" step="1" />
-      </label>
-      <label>
-        <span>边框颜色</span>
-        <input v-model="state.borderColor" type="color" />
-      </label>
-      <label>
-        <span>背景色</span>
-        <input v-model="state.backgroundColor" type="color" />
-      </label>
-      <label>
-        <span>文字颜色</span>
-        <input v-model="state.textColor" type="color" />
-      </label>
-      <label class="element-style-playground__check">
-        <input v-model="state.showActiveBorder" type="checkbox" />
-        <span>显示激活边框</span>
-      </label>
+      <slot name="controls" :state="state">
+        <label>
+          <span>边框粗细</span>
+          <input v-model.number="state.borderWidth" type="number" min="0" max="12" step="1" />
+        </label>
+        <label>
+          <span>边框颜色</span>
+          <input v-model="state.borderColor" type="color" />
+        </label>
+        <label>
+          <span>背景色</span>
+          <input v-model="state.backgroundColor" type="color" />
+        </label>
+        <label>
+          <span>文字颜色</span>
+          <input v-model="state.textColor" type="color" />
+        </label>
+        <label class="element-style-playground__check">
+          <input v-model="state.showActiveBorder" type="checkbox" />
+          <span>显示激活边框</span>
+        </label>
+      </slot>
     </div>
   </div>
 </template>
@@ -86,7 +88,8 @@ const styleProps = computed(() => ({
   justify-content: flex-start;
 }
 
-.element-style-playground__controls input {
+.element-style-playground__controls input,
+.element-style-playground__controls select {
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   min-height: 32px;

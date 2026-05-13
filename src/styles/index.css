@@ -2554,8 +2554,19 @@
 }
 
 .x-input-number {
+  border-radius: var(--x-input-number-radius, 8px);
+  font-family: var(--x-input-number-font-family, var(--x-font-family));
+  font-size: var(--x-input-number-font-size, 14px);
   overflow: hidden;
   width: 180px;
+}
+
+.x-input-number.is-full-width {
+  width: 100%;
+}
+
+.x-input-number.is-full-height {
+  height: 100%;
 }
 
 .x-input-number.is-disabled,
@@ -2580,7 +2591,7 @@
 }
 
 .x-input-number button {
-  background: #f1f5f9;
+  background: var(--x-input-number-decrease-bg, #f1f5f9);
   border: 0;
   color: var(--x-color-muted);
   cursor: pointer;
@@ -2595,11 +2606,16 @@
 }
 
 .x-input-number button:last-child {
-  background: var(--x-color-primary);
+  background: var(--x-input-number-increase-bg, var(--x-color-primary));
   color: #fff;
 }
 
+.x-input-number.is-full-height button {
+  height: 100%;
+}
+
 .x-input-number input {
+  appearance: textfield;
   background: transparent;
   border: 0;
   color: inherit;
@@ -2608,6 +2624,12 @@
   min-width: 0;
   outline: none;
   text-align: center;
+}
+
+.x-input-number input::-webkit-inner-spin-button,
+.x-input-number input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
 }
 
 .x-input-number--sm {

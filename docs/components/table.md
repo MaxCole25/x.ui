@@ -87,7 +87,7 @@ const rows = [
 
 ## 选择列和行拖拽排序
 
-开启 `show-selection` 后，表格进入可选择状态。`selection-mode="row"` 时点击当前行任意位置会选中或取消选中该行，通过 `v-model:selected-row-keys` 维护当前选中的行键；同时可以用 `show-selection-column` 控制是否显示左侧选择行列，显示时选中行会自动打勾。开启 `editable` 后，普通单元格点击需要留给编辑交互，整行点击选中会失效，用户只能通过左侧选择列勾选行；双击数据单元格会进入内联编辑，内部使用 `XBaseInput`，失焦、回车或 change 后通过 `update:data` 和 `cell-change` 抛出结果。`selection-mode="cell"` 时普通点击数据单元格只会在当前单元格上显示激活框，通过 `v-model:selected-cell-keys` 维护当前激活的单元格 key；选中一个单元格后按 Tab 会让选区右移一列，当前行最后一列会跳到下一行第一列，按 Shift+Tab 会左移一列，当前行第一列会跳到上一行最后一列；按 Enter 会让选区移动到当前列下一行，当前列最后一行会跳到下一列第一行；选中一个单元格后直接输入普通字符，也会进入编辑态并用输入的字符作为新内容；按住 Ctrl 或 Command 点击时可以保留多个单元格激活态；按下并拖过其它单元格时会形成矩形框选区域，选区右下角的方形手柄可以再次拖拽调整选区大小。选择行列和单元格选择互不冲突，单元格选择模式下仍可通过左侧选择列勾选行。
+开启 `show-selection` 后，表格进入可选择状态。`selection-mode="row"` 时点击当前行任意位置会选中或取消选中该行，通过 `v-model:selected-row-keys` 维护当前选中的行键；同时可以用 `show-selection-column` 控制是否显示左侧选择行列，显示时选中行会自动打勾。开启 `editable` 后，普通单元格点击需要留给编辑交互，整行点击选中会失效，用户只能通过左侧选择列勾选行；双击数据单元格会进入内联编辑，默认使用 `XBaseInput`，也可以用 `editor-[key]` 插槽替换指定列的编辑器，提交后通过 `update:data` 和 `cell-change` 抛出结果。`selection-mode="cell"` 时普通点击数据单元格只会在当前单元格上显示激活框，通过 `v-model:selected-cell-keys` 维护当前激活的单元格 key；选中一个单元格后按 Tab 会让选区右移一列，当前行最后一列会跳到下一行第一列，按 Shift+Tab 会左移一列，当前行第一列会跳到上一行最后一列；按 Enter 会让选区移动到当前列下一行，当前列最后一行会跳到下一列第一行；选中一个单元格后直接输入普通字符，也会进入编辑态并用输入的字符作为新内容；按住 Ctrl 或 Command 点击时可以保留多个单元格激活态；按下并拖过其它单元格时会形成矩形框选区域，选区右下角的方形手柄可以再次拖拽调整选区大小。选择行列和单元格选择互不冲突，单元格选择模式下仍可通过左侧选择列勾选行。
 
 开启 `row-draggable` 后，数据行左侧会显示拖拽手柄。只有从拖拽列开始拖动时才会触发行排序，避免影响后续单元格框选能力。拖拽完成时组件触发 `row-reorder`，业务侧需要用事件中的 `rows` 更新数据源顺序。
 
@@ -148,6 +148,7 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | showSelectionColumn | 是否显示左侧选择行列，可和单元格选择同时使用 | `boolean` | `true` |
 | editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |
 | rowDraggable | 是否开启行拖拽排序 | `boolean` | `false` |
+| columnResizable | 是否允许通过表头拖拽调整列宽 | `boolean` | `true` |
 | actionsWidth | 操作列宽度 | `number \| string` | `160` |
 | fillHeight | 是否撑满父元素高度 | `boolean` | `false` |
 
@@ -158,7 +159,7 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | key | 数据字段名 | `string` | 必填 |
 | label | 表头文本 | `string` | 必填 |
 | width | 固定列宽，数字会转为 px | `number \| string` | - |
-| minWidth | 最小列宽，未设置 `width` 时参与自适应分配 | `number \| string` | - |
+| minWidth | 最小列宽，未设置 `width` 时参与自适应分配；未配置时默认为 `40px` | `number \| string` | `40` |
 | align | 内容对齐方式 | `'left' \| 'center' \| 'right'` | `'left'` |
 | formatter | 单元格格式化函数 | `(value, row) => string` | - |
 
@@ -185,6 +186,9 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | cell-selection-change | 选中单元格变化时触发，包含选中 key 和单元格数据 | `{ keys, cells }` |
 | update:data | 单元格编辑提交后触发，支持 `v-model:data` | `Record<string, unknown>[]` |
 | cell-change | 单元格编辑提交后触发，包含当前行、全量行、列和值变化 | `TableCellChangePayload` |
+| row-click | 单击数据行时触发，包含当前行、行索引、行 key 和原始鼠标事件 | `TableRowClickPayload` |
+| row-dblclick | 双击数据行时触发，包含当前行、行索引、行 key 和原始鼠标事件 | `TableRowClickPayload` |
+| column-resize | 表头拖拽调整列宽时触发，包含列、列 key、新旧宽度和最新列设置 | `TableColumnResizePayload` |
 | row-reorder | 行拖拽排序完成时触发，业务侧应使用 `rows` 更新数据源 | `TableRowReorderPayload` |
 
 ## Slots
@@ -194,6 +198,7 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | top | 自定义表顶区域，可用于列设置 | `{ columns, data, columnSettings, selectedRowKeys, selectedCellKeys, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings }` |
 | bottom | 自定义表底区域 | `{ columns, data, columnSettings, selectedRowKeys, selectedCellKeys, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings }` |
 | cell-[key] | 自定义指定列单元格 | `{ row, value, column, rowIndex }` |
+| editor-[key] | 自定义指定列编辑器 | `{ row, value, modelValue, column, rowIndex, updateModelValue, commit, commitValue, cancel }` |
 | row-actions | 自定义操作列内容，需要 `showActions` | `{ row, rowIndex }` |
 
 ## 手动验收建议

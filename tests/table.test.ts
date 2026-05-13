@@ -53,7 +53,7 @@ describe('XTable', () => {
     expect(wrapper.text()).toContain('5 个')
   })
 
-  it('maps align width and minWidth to grid and cell styles', () => {
+  it('maps align width and minWidth to resolved grid and cell styles', () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
@@ -62,7 +62,7 @@ describe('XTable', () => {
     })
 
     const firstRow = wrapper.find('.x-table__row--body')
-    expect(firstRow.attributes('style')).toContain('minmax(160px, 1fr) 120px 96px')
+    expect(firstRow.attributes('style')).toContain('160px 120px 96px')
 
     const countCell = firstRow.findAll('.x-table__cell')[2]
     expect(countCell.attributes('style')).toContain('justify-content: flex-end')
@@ -131,7 +131,7 @@ describe('XTable', () => {
     })
 
     expect(wrapper.findAll('.x-table__cell--header').map((cell) => cell.text())).toEqual(['状态', '名称', '数量'])
-    expect(wrapper.find('.x-table__row--body').attributes('style')).toContain('25% 220px 96px')
+    expect(wrapper.find('.x-table__row--body').attributes('style')).toContain('40px 220px 96px')
 
     const cells = wrapper.find('.x-table__row--body').findAll('.x-table__cell')
     expect(cells[0].attributes('style')).toContain('justify-content: center')
@@ -140,6 +140,158 @@ describe('XTable', () => {
     expect(cells[0].attributes('style')).toContain('box-shadow: inset -1px 0 0')
     expect(cells[2].attributes('style')).toContain('right: 0px')
     expect(cells[2].attributes('style')).toContain('box-shadow: inset 1px 0 0')
+  })
+
+  it('keeps header and body rows on one resolved grid when long text is mixed with short text', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'code', label: '合同编号', width: 110 },
+          { key: 'fileName', label: '文件名', minWidth: 180 },
+          { key: 'amount', label: '金额', width: 130 }
+        ],
+        data: [
+          { id: 1, code: 'HT-001', fileName: '短文件名.pdf', amount: '1000' },
+          {
+            id: 2,
+            code: 'HT-002',
+            fileName: '这是一个很长很长的合同附件文件名-用于验证单行内容不会撑开独立 grid 列宽.pdf',
+            amount: '2000'
+          },
+          { id: 3, code: 'HT-003', fileName: '中等长度合同.pdf', amount: '3000' }
+        ]
+      }
+    })
+
+    const headerGrid = wrapper.find('.x-table__row--header').attributes('style')
+    const rowGrids = wrapper.findAll('.x-table__row--body').map((row) => row.attributes('style'))
+
+    expect(new Set([headerGrid, ...rowGrids]).size).toBe(1)
+    expect(headerGrid).toContain('110px 180px 130px')
+  })
+
+  it('distributes remaining container width to minWidth columns', async () => {
+    const clientWidthSpy = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(600)
+    try {
+      const wrapper = mount(XTable, {
+        props: {
+          columns,
+          data
+        }
+      })
+
+      await nextTick()
+      await nextTick()
+
+      expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('384px 120px 96px')
+    } finally {
+      clientWidthSpy.mockRestore()
+    }
+  })
+
+  it('uses minimum total width when the container is narrower than minWidth columns', async () => {
+    const clientWidthSpy = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(260)
+    try {
+      const wrapper = mount(XTable, {
+        props: {
+          columns,
+          data
+        }
+      })
+
+      await nextTick()
+      await nextTick()
+
+      expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('160px 120px 96px')
+    } finally {
+      clientWidthSpy.mockRestore()
+    }
+  })
+
+  it('resolves mixed width minWidth and widthRatio columns before calculating fixed offsets', async () => {
+    const clientWidthSpy = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(800)
+    try {
+      const wrapper = mount(XTable, {
+        props: {
+          columns: [
+            { key: 'status', label: '状态', minWidth: 96 },
+            { key: 'name', label: '名称', minWidth: 160 },
+            { key: 'count', label: '数量', width: 96, align: 'right' },
+            { key: 'owner', label: '负责人', minWidth: 120 }
+          ],
+          data: [{ id: 1, status: '启用', name: '长名称', count: 12, owner: '小明' }],
+          columnSettings: [
+            { key: 'status', order: 0, fixed: 'left', align: 'center', widthRatio: 25 },
+            { key: 'name', order: 1, fixed: 'left', align: 'left' },
+            { key: 'count', order: 2, fixed: 'right', align: 'right', width: 96 },
+            { key: 'owner', order: 3, fixed: 'right', align: 'left' }
+          ]
+        }
+      })
+
+      await nextTick()
+      await nextTick()
+
+      expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('200px 272px 96px 232px')
+
+      const cells = wrapper.find('.x-table__row--body').findAll('.x-table__cell')
+      expect(cells[0].attributes('style')).toContain('left: 0px')
+      expect(cells[1].attributes('style')).toContain('left: 200px')
+      expect(cells[2].attributes('style')).toContain('right: 232px')
+      expect(cells[3].attributes('style')).toContain('right: 0px')
+    } finally {
+      clientWidthSpy.mockRestore()
+    }
+  })
+
+  it('resizes columns from header handles and writes pixel width to column settings', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    expect(wrapper.findAll('.x-table__column-resize-handle')).toHaveLength(columns.length)
+
+    await wrapper.findAll('.x-table__column-resize-handle')[0].trigger('pointerdown', { clientX: 100 })
+    window.dispatchEvent(new MouseEvent('pointermove', { clientX: 160 }))
+    await nextTick()
+
+    const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
+    expect(settings.find((setting) => setting.key === 'name')?.width).toBe(220)
+    expect(wrapper.emitted('column-resize')?.[0]?.[0]).toMatchObject({
+      key: 'name',
+      width: 220,
+      oldWidth: 160
+    })
+    expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('220px 120px 96px')
+
+    window.dispatchEvent(new MouseEvent('pointerup'))
+  })
+
+  it('uses 40px as the default minimum column width while resizing', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'title', label: '标题' },
+          { key: 'status', label: '状态', width: 80 }
+        ],
+        data: [{ id: 1, title: '长标题', status: '启用' }]
+      }
+    })
+
+    expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('40px 80px')
+
+    await wrapper.findAll('.x-table__column-resize-handle')[0].trigger('pointerdown', { clientX: 100 })
+    window.dispatchEvent(new MouseEvent('pointermove', { clientX: -100 }))
+    await nextTick()
+
+    const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
+    expect(settings.find((setting) => setting.key === 'title')?.width).toBe(40)
+    expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('40px 80px')
+
+    window.dispatchEvent(new MouseEvent('pointerup'))
   })
 
   it('exposes column setting controls through top slot', async () => {
@@ -234,6 +386,51 @@ describe('XTable', () => {
     expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual(['1'])
   })
 
+  it('emits row click payload when a body row is clicked', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    await wrapper.findAll('.x-table__row--body')[1].trigger('click')
+
+    expect(wrapper.emitted('row-click')?.[0]?.[0]).toMatchObject({
+      row: data[1],
+      rowIndex: 1,
+      rowKey: '2'
+    })
+    expect(wrapper.emitted('row-click')?.[0]?.[0]).toHaveProperty('event')
+  })
+
+  it('emits row double click payload from non-editable and editable rows', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('dblclick')
+
+    expect(wrapper.emitted('row-dblclick')?.[0]?.[0]).toMatchObject({
+      row: data[0],
+      rowIndex: 0,
+      rowKey: '1'
+    })
+
+    await wrapper.setProps({ editable: true })
+    await wrapper.findAll('.x-table__row--body')[1].findAll('.x-table__cell')[0].trigger('dblclick')
+
+    expect(wrapper.emitted('row-dblclick')?.[1]?.[0]).toMatchObject({
+      row: data[1],
+      rowIndex: 1,
+      rowKey: '2'
+    })
+    expect(wrapper.find('.x-table__cell-editor').exists()).toBe(true)
+  })
+
   it('keeps row click selection disabled while editable but still allows selection column', async () => {
     const wrapper = mount(XTable, {
       props: {
@@ -279,6 +476,39 @@ describe('XTable', () => {
       rowIndex: 0,
       value: '控制台',
       oldValue: '工作台'
+    })
+  })
+
+  it('supports custom column editor slots while committing edited values', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true
+      },
+      slots: {
+        'editor-count': `
+          <template #default="{ modelValue, commitValue }">
+            <button class="custom-count-editor" @click="commitValue(30)">当前 {{ modelValue }}</button>
+          </template>
+        `
+      }
+    })
+
+    const countCell = wrapper.find('.x-table__row--body').findAll('.x-table__cell')[2]
+    await countCell.trigger('dblclick')
+
+    expect(wrapper.find('.custom-count-editor').text()).toBe('当前 12')
+
+    await wrapper.find('.custom-count-editor').trigger('click')
+    await nextTick()
+
+    const updatedRows = wrapper.emitted('update:data')?.[0]?.[0] as typeof data
+    expect(updatedRows[0]).toMatchObject({ id: 1, count: 30 })
+    expect(wrapper.emitted('cell-change')?.[0]?.[0]).toMatchObject({
+      column: expect.objectContaining({ key: 'count' }),
+      value: 30,
+      oldValue: 12
     })
   })
 

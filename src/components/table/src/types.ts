@@ -43,6 +43,21 @@ export interface TableRowReorderPayload<Row extends Record<string, unknown> = Re
   position: TableReorderPosition
 }
 
+export interface TableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  row: Row
+  rowIndex: number
+  rowKey: string
+  event: MouseEvent
+}
+
+export interface TableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  column: TableColumn<Row>
+  key: string
+  width: number
+  oldWidth: number
+  columnSettings: TableColumnSetting[]
+}
+
 export interface TableCellChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> {
   row: Row
   rows: Row[]
@@ -68,10 +83,13 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   showSelectionColumn?: boolean
   editable?: boolean
   rowDraggable?: boolean
+  columnResizable?: boolean
   actionsWidth?: number | string
   fillHeight?: boolean
 }
 
 export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>
 export type XlTableColumnSetting = TableColumnSetting
+export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
+export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>
 export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>

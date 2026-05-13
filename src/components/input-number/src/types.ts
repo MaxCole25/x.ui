@@ -10,4 +10,11 @@ export interface InputNumberProps extends ElementStyleProps {
   readonly?: boolean
   size?: InputSize
   placeholder?: string
+  fullWidth?: boolean
+  fullHeight?: boolean
+  borderRadius?: number | string
+  fontFamily?: string
+  fontSize?: number | string
+  decreaseButtonBackgroundColor?: string
+  increaseButtonBackgroundColor?: string
 }

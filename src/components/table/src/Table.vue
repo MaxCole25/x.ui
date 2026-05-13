@@ -6,9 +6,11 @@ import type {
   TableAlign,
   TableCellChangePayload,
   TableColumn,
+  TableColumnResizePayload,
   TableColumnSetting,
   TableFixed,
   TableProps,
+  TableRowClickPayload,
   TableReorderPosition,
   TableRowReorderPayload,
   TableSelectionMode,
@@ -26,6 +28,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   showSelectionColumn: true,
   editable: false,
   rowDraggable: false,
+  columnResizable: true,
   selectionMode: 'row',
   actionsWidth: 160,
   fillHeight: false
@@ -47,6 +50,9 @@ const emit = defineEmits<{
   ): void
   (e: 'cell-change', value: TableCellChangePayload): void
   (e: 'row-reorder', value: TableRowReorderPayload): void
+  (e: 'row-click', value: TableRowClickPayload): void
+  (e: 'row-dblclick', value: TableRowClickPayload): void
+  (e: 'column-resize', value: TableColumnResizePayload): void
 }>()
 
 interface ResolvedColumn {
@@ -59,7 +65,9 @@ interface ResolvedColumn {
   right: string
 }
 
+const defaultColumnMinWidth = 40
 const internalColumnSettings = ref<TableColumnSetting[]>([])
+const tableWidth = ref(0)
 
 const resolvedColumns = computed<ResolvedColumn[]>(() => {
   const columns = getOrderedSettings()
@@ -69,6 +77,7 @@ const resolvedColumns = computed<ResolvedColumn[]>(() => {
     })
     .filter((item): item is ResolvedColumn => item !== null)
 
+  resolveColumnTracks(columns)
   applyFixedOffsets(columns)
   return columns
 })
@@ -137,7 +146,7 @@ const selectedCellKeySet = computed(() => new Set(activeSelectedCellKeys.value))
 const rowIndexByKey = computed(() => new Map(props.data.map((row, index) => [getRowKey(row, index), index])))
 const columnIndexByKey = computed(() => new Map(resolvedColumns.value.map((column, index) => [column.column.key, index])))
 const editingCellKey = ref<string | null>(null)
-const editingCellValue = ref<string | number>('')
+const editingCellValue = ref<string | number | undefined>('')
 const isAllSelected = computed(() => selectableRowKeys.value.length > 0 && selectableRowKeys.value.every((key) => selectedRowKeySet.value.has(key)))
 const isSelectionIndeterminate = computed(() => {
   const selectedCount = selectableRowKeys.value.filter((key) => selectedRowKeySet.value.has(key)).length
@@ -246,6 +255,14 @@ let activeScrollbarDrag:
       startScrollPosition: number
     }
   | null = null
+let activeColumnResize:
+  | {
+      key: string
+      startClientX: number
+      startWidth: number
+      oldWidth: number
+    }
+  | null = null
 
 function handleBodyScroll(event: Event) {
   const target = event.currentTarget as HTMLElement | null
@@ -261,6 +278,7 @@ function syncScrollState() {
     return
   }
 
+  tableWidth.value = target.clientWidth
   scrollState.value = {
     scrollLeft: target.scrollLeft,
     scrollTop: target.scrollTop,
@@ -670,12 +688,31 @@ function handleRowSelectionChange(row: Record<string, unknown>, rowIndex: number
   toggleRowSelection(row, rowIndex, (event.target as HTMLInputElement).checked)
 }
 
-function handleRowClick(row: Record<string, unknown>, rowIndex: number) {
+function handleRowClick(row: Record<string, unknown>, rowIndex: number, event: MouseEvent) {
+  emit('row-click', createRowClickPayload(row, rowIndex, event))
+
   if (!isRowSelectionEnabled.value) {
     return
   }
 
   toggleRowSelection(row, rowIndex, !isRowSelected(row, rowIndex))
+}
+
+function handleRowDoubleClick(row: Record<string, unknown>, rowIndex: number, event: MouseEvent) {
+  emit('row-dblclick', createRowClickPayload(row, rowIndex, event))
+}
+
+function createRowClickPayload(
+  row: Record<string, unknown>,
+  rowIndex: number,
+  event: MouseEvent
+): TableRowClickPayload {
+  return {
+    row,
+    rowIndex,
+    rowKey: getRowKey(row, rowIndex),
+    event
+  }
 }
 
 function focusTableRoot() {
@@ -714,13 +751,23 @@ function beginCellEdit(
 }
 
 function startCellEdit(row: Record<string, unknown>, rowIndex: number, column: TableColumn, event: MouseEvent) {
+  if (!props.editable) {
+    return
+  }
+
+  emit('row-dblclick', createRowClickPayload(row, rowIndex, event))
   event.preventDefault()
   event.stopPropagation()
   beginCellEdit(row, rowIndex, column, undefined, event.currentTarget as HTMLElement | null)
 }
 
-function updateEditingCellValue(value: string | number) {
+function updateEditingCellValue(value: string | number | undefined) {
   editingCellValue.value = value
+}
+
+function commitCellEditValue(value: string | number | undefined) {
+  editingCellValue.value = value
+  commitCellEdit()
 }
 
 function commitCellEdit() {
@@ -1022,6 +1069,46 @@ function stopScrollbarDrag() {
   activeScrollbarDrag = null
 }
 
+function startColumnResize(column: ResolvedColumn, event: PointerEvent) {
+  if (!props.columnResizable) {
+    return
+  }
+
+  event.preventDefault()
+  event.stopPropagation()
+  activeColumnResize = {
+    key: column.column.key,
+    startClientX: event.clientX,
+    startWidth: getResolvedColumnWidth(column),
+    oldWidth: getResolvedColumnWidth(column)
+  }
+}
+
+function handleColumnResize(event: PointerEvent) {
+  if (!activeColumnResize) {
+    return
+  }
+
+  const column = resolvedColumns.value.find((item) => item.column.key === activeColumnResize?.key)
+  if (!column) {
+    return
+  }
+
+  const nextWidth = Math.max(getColumnMinWidth(column.column), activeColumnResize.startWidth + event.clientX - activeColumnResize.startClientX)
+  updateColumnSetting(column.column.key, { width: nextWidth })
+  emit('column-resize', {
+    column: column.column,
+    key: column.column.key,
+    width: nextWidth,
+    oldWidth: activeColumnResize.oldWidth,
+    columnSettings: internalColumnSettings.value.map((setting) => ({ ...setting }))
+  })
+}
+
+function stopColumnResize() {
+  activeColumnResize = null
+}
+
 function getHorizontalTrackSize() {
   return Math.max(scrollbarThumbMinSize, scrollState.value.clientWidth - scrollbarTrackInset * 2)
 }
@@ -1072,12 +1159,30 @@ function createResolvedColumn(column: TableColumn, setting: TableColumnSetting):
   return {
     column,
     setting,
-    track: getColumnTrack(column, setting),
+    track: '',
     align: setting.align ?? column.align ?? 'left',
     fixed: setting.fixed ?? 'none',
     left: 'auto',
     right: 'auto'
   }
+}
+
+function resolveColumnTracks(columns: ResolvedColumn[]) {
+  const columnTrackSizes = columns.map((column) => getColumnTrackSize(column.column, column.setting))
+  const fixedTotal = columnTrackSizes.reduce(
+    (sum, track) => (track.kind === 'flexible' ? sum : sum + (track.pixelSize ?? 0)),
+    0
+  )
+  const flexibleColumns = columnTrackSizes.filter((track) => track.kind === 'flexible')
+  const flexibleMinTotal = flexibleColumns.reduce((sum, track) => sum + track.minWidth, 0)
+  const remaining = Math.max(tableWidth.value - getUtilityColumnsWidth() - fixedTotal - flexibleMinTotal, 0)
+  const extraPerFlexibleColumn = flexibleColumns.length > 0 ? remaining / flexibleColumns.length : 0
+
+  columns.forEach((column, index) => {
+    const track = columnTrackSizes[index]
+    column.track =
+      track.kind === 'flexible' ? formatResolvedPixelSize(track.minWidth + extraPerFlexibleColumn) : track.track
+  })
 }
 
 function applyFixedOffsets(columns: ResolvedColumn[]) {
@@ -1113,24 +1218,86 @@ function applyFixedOffsets(columns: ResolvedColumn[]) {
   }
 }
 
-function getColumnTrack(column: TableColumn, setting: TableColumnSetting) {
+function getColumnTrackSize(column: TableColumn, setting: TableColumnSetting) {
   if (setting.width !== undefined) {
-    return `${setting.width}px`
+    const pixelSize = Math.max(getColumnMinWidth(column), setting.width)
+
+    return {
+      kind: 'fixed' as const,
+      pixelSize,
+      track: formatResolvedPixelSize(pixelSize)
+    }
   }
 
   if (setting.widthRatio !== undefined) {
-    return `${setting.widthRatio}%`
+    const minWidth = getColumnMinWidth(column)
+    const ratioWidth = tableWidth.value > 0 ? (tableWidth.value * setting.widthRatio) / 100 : 0
+    const pixelSize = Math.max(minWidth, ratioWidth)
+
+    return {
+      kind: 'ratio' as const,
+      pixelSize,
+      track: formatResolvedPixelSize(pixelSize)
+    }
   }
 
   if (column.width !== undefined) {
-    return formatCssSize(column.width)
+    const rawTrack = formatCssSize(column.width)
+    const pixelSize = parseCssPixelSize(rawTrack)
+    const track = pixelSize === undefined ? rawTrack : formatResolvedPixelSize(Math.max(getColumnMinWidth(column), pixelSize))
+
+    return {
+      kind: 'fixed' as const,
+      pixelSize: parseCssPixelSize(track),
+      track
+    }
   }
 
-  if (column.minWidth !== undefined) {
-    return `minmax(${formatCssSize(column.minWidth)}, 1fr)`
+  return {
+    kind: 'flexible' as const,
+    minWidth: getColumnMinWidth(column)
+  }
+}
+
+function getUtilityColumnsWidth() {
+  let width = 0
+  if (props.rowDraggable) {
+    width += 44
+  }
+  if (isRowSelectionColumnVisible.value) {
+    width += 44
+  }
+  if (props.showActions) {
+    width += parseCssPixelSize(formatCssSize(props.actionsWidth)) ?? 0
   }
 
-  return 'minmax(120px, 1fr)'
+  return width
+}
+
+function getColumnMinWidth(column: TableColumn) {
+  if (column.minWidth === undefined) {
+    return defaultColumnMinWidth
+  }
+
+  return parseCssPixelSize(formatCssSize(column.minWidth)) ?? defaultColumnMinWidth
+}
+
+function getResolvedColumnWidth(column: ResolvedColumn) {
+  return parseCssPixelSize(column.track) ?? getColumnMinWidth(column.column)
+}
+
+function parseCssPixelSize(value: string) {
+  const trimmed = value.trim()
+  if (!trimmed.endsWith('px')) {
+    return undefined
+  }
+
+  const size = Number(trimmed.slice(0, -2))
+  return Number.isFinite(size) ? size : undefined
+}
+
+function formatResolvedPixelSize(value: number) {
+  return `${Number(value.toFixed(3))}px`
 }
 
 function sumCssSizes(values: string[]) {
@@ -1246,7 +1413,7 @@ function normalizeInputValue(value: unknown) {
   return typeof value === 'number' ? value : String(value ?? '')
 }
 
-function normalizeEditedCellValue(value: string | number, oldValue: unknown) {
+function normalizeEditedCellValue(value: string | number | undefined, oldValue: unknown) {
   if (typeof oldValue === 'number') {
     const next = Number(value)
     return Number.isNaN(next) ? value : next
@@ -1308,8 +1475,11 @@ onMounted(() => {
 
   window.addEventListener('resize', syncScrollState, { passive: true })
   window.addEventListener('pointermove', handleScrollbarDrag)
+  window.addEventListener('pointermove', handleColumnResize)
   window.addEventListener('pointerup', stopScrollbarDrag)
+  window.addEventListener('pointerup', stopColumnResize)
   window.addEventListener('pointercancel', stopScrollbarDrag)
+  window.addEventListener('pointercancel', stopColumnResize)
   window.addEventListener('mousemove', handleCellSelectionPointerMove)
   window.addEventListener('mouseup', stopCellSelectionDrag)
   document.addEventListener('pointerdown', handleCellEditOutsidePointerDown, true)
@@ -1331,10 +1501,14 @@ onBeforeUnmount(() => {
   }
   bodyResizeObserver?.disconnect()
   bodyResizeObserver = null
+  activeColumnResize = null
   window.removeEventListener('resize', syncScrollState)
   window.removeEventListener('pointermove', handleScrollbarDrag)
+  window.removeEventListener('pointermove', handleColumnResize)
   window.removeEventListener('pointerup', stopScrollbarDrag)
+  window.removeEventListener('pointerup', stopColumnResize)
   window.removeEventListener('pointercancel', stopScrollbarDrag)
+  window.removeEventListener('pointercancel', stopColumnResize)
   window.removeEventListener('mousemove', handleCellSelectionPointerMove)
   window.removeEventListener('mouseup', stopCellSelectionDrag)
   document.removeEventListener('pointerdown', handleCellEditOutsidePointerDown, true)
@@ -1440,7 +1614,16 @@ defineExpose({
             role="columnheader"
             :style="getCellStyle(column, 'header')"
           >
-            {{ column.column.label }}
+            <span class="x-table__header-label">{{ column.column.label }}</span>
+            <span
+              v-if="columnResizable"
+              class="x-table__column-resize-handle"
+              role="separator"
+              aria-orientation="vertical"
+              :aria-label="`调整 ${column.column.label} 列宽`"
+              @pointerdown="startColumnResize(column, $event)"
+              @dblclick.stop
+            />
           </div>
           <div
             v-if="showActions"
@@ -1465,7 +1648,8 @@ defineExpose({
               @dragover="handleRowDragOver(row, rowIndex, $event)"
               @drop="handleRowDrop(row, rowIndex, $event)"
               @dragend="resetDragState"
-              @click="handleRowClick(row, rowIndex)"
+              @click="handleRowClick(row, rowIndex, $event)"
+              @dblclick="handleRowDoubleClick(row, rowIndex, $event)"
             >
               <div
                 v-if="rowDraggable"
@@ -1508,19 +1692,32 @@ defineExpose({
                   @click.stop
                   @mousedown.stop
                 >
-                  <XBaseInput
+                  <slot
+                    :name="`editor-${column.column.key}`"
+                    :row="row"
+                    :value="getCellValue(row, column.column)"
                     :model-value="editingCellValue"
-                    :text-align="column.align"
-                    auto-height
-                    padding="0 12px"
-                    radius="0"
-                    size="sm"
-                    @update:model-value="updateEditingCellValue"
-                    @change="commitCellEdit"
-                    @blur="commitCellEdit"
-                    @keydown.enter.prevent.stop="commitCellEditAndFocusTable"
-                    @keydown.esc.prevent.stop="cancelCellEditAndFocusTable"
-                  />
+                    :column="column.column"
+                    :row-index="rowIndex"
+                    :update-model-value="updateEditingCellValue"
+                    :commit="commitCellEdit"
+                    :commit-value="commitCellEditValue"
+                    :cancel="cancelCellEditAndFocusTable"
+                  >
+                    <XBaseInput
+                      :model-value="editingCellValue"
+                      :text-align="column.align"
+                      auto-height
+                      padding="0 12px"
+                      radius="0"
+                      size="sm"
+                      @update:model-value="updateEditingCellValue"
+                      @change="commitCellEdit"
+                      @blur="commitCellEdit"
+                      @keydown.enter.prevent.stop="commitCellEditAndFocusTable"
+                      @keydown.esc.prevent.stop="cancelCellEditAndFocusTable"
+                    />
+                  </slot>
                 </div>
                 <template v-else>
                   <slot
@@ -1873,6 +2070,37 @@ defineExpose({
 
 .x-table__cell--header {
   min-height: 46px;
+  position: relative;
+}
+
+.x-table__header-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.x-table__column-resize-handle {
+  bottom: 0;
+  cursor: col-resize;
+  position: absolute;
+  right: -4px;
+  top: 0;
+  width: 8px;
+  z-index: 5;
+}
+
+.x-table__column-resize-handle::after {
+  background: transparent;
+  bottom: 8px;
+  content: "";
+  left: 2px;
+  position: absolute;
+  top: 8px;
+  width: 4px;
+}
+
+.x-table__column-resize-handle:hover::after {
+  background: var(--x-color-primary, #155e75);
 }
 
 .x-table__cell--selection,

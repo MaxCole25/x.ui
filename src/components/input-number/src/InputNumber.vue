@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { createElementStyleVars } from '../../_utils/elementStyle'
+import { createElementStyleVars, toCssSize } from '../../_utils/elementStyle'
 import type { InputNumberProps } from './types'
 
 defineOptions({
@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<InputNumberProps>(), {
   readonly: false,
   size: 'md',
   placeholder: '请输入数字',
+  fullWidth: false,
+  fullHeight: false,
   showActiveBorder: true
 })
 
@@ -23,7 +25,14 @@ const emit = defineEmits<{
 }>()
 
 const value = computed(() => props.modelValue ?? '')
-const inputNumberStyle = computed(() => createElementStyleVars(props))
+const inputNumberStyle = computed(() => ({
+  ...createElementStyleVars(props),
+  '--x-input-number-radius': toCssSize(props.borderRadius),
+  '--x-input-number-font-family': props.fontFamily,
+  '--x-input-number-font-size': toCssSize(props.fontSize),
+  '--x-input-number-decrease-bg': props.decreaseButtonBackgroundColor,
+  '--x-input-number-increase-bg': props.increaseButtonBackgroundColor
+}))
 
 const normalize = (value: number | undefined) => {
   if (value == null || Number.isNaN(value)) return undefined
@@ -45,7 +54,7 @@ const stepBy = (direction: 1 | -1) => {
 </script>
 
 <template>
-  <div class="x-input-number" :class="[`x-input-number--${props.size}`, { 'is-disabled': props.disabled, 'is-active-border-hidden': !props.showActiveBorder }]" :style="inputNumberStyle">
+  <div class="x-input-number" :class="[`x-input-number--${props.size}`, { 'is-disabled': props.disabled, 'is-full-width': props.fullWidth, 'is-full-height': props.fullHeight, 'is-active-border-hidden': !props.showActiveBorder }]" :style="inputNumberStyle">
     <button type="button" :disabled="props.disabled || props.readonly" aria-label="减少" @click="stepBy(-1)">-</button>
     <input
       :value="value"

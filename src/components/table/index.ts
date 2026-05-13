@@ -8,13 +8,17 @@ export type {
   TableAlign,
   TableCellChangePayload,
   TableColumn,
+  TableColumnResizePayload,
   TableColumnSetting,
   TableReorderPosition,
   TableRowKey,
+  TableRowClickPayload,
   TableRowReorderPayload,
   TableSelectionMode,
   TableProps,
   XlTableColumn,
+  XlTableColumnResizePayload,
+  XlTableRowClickPayload,
   XlTableProps
 } from './src/types'
 

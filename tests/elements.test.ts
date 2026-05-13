@@ -143,6 +143,30 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([3])
   })
 
+  it('exposes input number appearance variables', () => {
+    const wrapper = mount(XInputNumber, {
+      props: {
+        modelValue: 1,
+        fullWidth: true,
+        fullHeight: true,
+        borderRadius: 10,
+        fontFamily: 'Georgia',
+        fontSize: 18,
+        decreaseButtonBackgroundColor: '#e2e8f0',
+        increaseButtonBackgroundColor: '#0f766e'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-full-width')
+    expect(wrapper.classes()).toContain('is-full-height')
+    const style = wrapper.attributes('style')
+    expect(style).toContain('--x-input-number-radius: 10px')
+    expect(style).toContain('--x-input-number-font-family: Georgia')
+    expect(style).toContain('--x-input-number-font-size: 18px')
+    expect(style).toContain('--x-input-number-decrease-bg: #e2e8f0')
+    expect(style).toContain('--x-input-number-increase-bg: #0f766e')
+  })
+
   it('selects autocomplete option', async () => {
     const wrapper = mount(XAutocomplete, {
       props: {
