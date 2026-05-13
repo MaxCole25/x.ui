@@ -10,6 +10,9 @@ export type {
   TableColumn,
   TableColumnResizePayload,
   TableColumnSetting,
+  TablePaginationChangePayload,
+  TablePaginationMode,
+  TablePaginationState,
   TableReorderPosition,
   TableRowKey,
   TableRowClickPayload,
@@ -18,6 +21,8 @@ export type {
   TableProps,
   XlTableColumn,
   XlTableColumnResizePayload,
+  XlTablePaginationChangePayload,
+  XlTablePaginationMode,
   XlTableRowClickPayload,
   XlTableProps
 } from './src/types'

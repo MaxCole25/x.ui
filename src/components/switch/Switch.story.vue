@@ -3,6 +3,7 @@ import '../../styles/index.css'
 import { ref, reactive } from 'vue'
 import XInputNumber from '../input-number/src/InputNumber.vue'
 import XSwitch from './src/Switch.vue'
+import type { SwitchLabelPosition } from './src/types'
 
 const enabled = ref(true)
 const off = ref(false)
@@ -14,6 +15,7 @@ const sample = reactive({
 const switchAppearance = reactive({
   activeText: '开',
   inactiveText: '关',
+  labelPosition: 'outside' as SwitchLabelPosition,
   color: '#409eff',
   inactiveColor: '#dcdfe6',
   thumbColor: '#ffffff',
@@ -50,6 +52,7 @@ const switchAppearance = reactive({
           v-model="sample.checked"
           :active-text="switchAppearance.activeText"
           :inactive-text="switchAppearance.inactiveText"
+          :label-position="switchAppearance.labelPosition"
           :color="switchAppearance.color"
           :inactive-color="switchAppearance.inactiveColor"
           :thumb-color="switchAppearance.thumbColor"
@@ -67,6 +70,13 @@ const switchAppearance = reactive({
           <label>
             <span>关闭文案</span>
             <input v-model="switchAppearance.inactiveText" type="text" />
+          </label>
+          <label>
+            <span>文案位置</span>
+            <select v-model="switchAppearance.labelPosition">
+              <option value="outside">左右标签</option>
+              <option value="inside">圆形按钮中间</option>
+            </select>
           </label>
           <label>
             <span>开启背景色</span>

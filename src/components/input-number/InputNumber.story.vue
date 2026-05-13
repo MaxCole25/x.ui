@@ -8,8 +8,13 @@ const value = ref(12)
 const empty = ref()
 
 const inputNumberAppearance = reactive({
+  min: 0,
+  max: 100,
+  step: 1,
   fullWidth: false,
   fullHeight: false,
+  color: '#1264f4',
+  activeBorderColor: '#1264f4',
   borderRadius: 8,
   fontFamily: 'Arial',
   fontSize: 16,
@@ -96,6 +101,28 @@ const autocompleteOptions = [
                 <input v-model.number="parentBox.height" type="number" min="48" max="240" step="10" />
               </label>
               <label>
+                <span>最小值</span>
+                <input
+                  v-model.number="inputNumberAppearance.min"
+                  type="number"
+                  :max="inputNumberAppearance.max"
+                  :step="inputNumberAppearance.step"
+                />
+              </label>
+              <label>
+                <span>最大值</span>
+                <input
+                  v-model.number="inputNumberAppearance.max"
+                  type="number"
+                  :min="inputNumberAppearance.min"
+                  :step="inputNumberAppearance.step"
+                />
+              </label>
+              <label>
+                <span>步进</span>
+                <input v-model.number="inputNumberAppearance.step" type="number" min="0.1" max="20" step="0.1" />
+              </label>
+              <label>
                 <span>边框粗细</span>
                 <input v-model.number="state.borderWidth" type="number" min="0" max="12" step="1" />
               </label>
@@ -141,6 +168,14 @@ const autocompleteOptions = [
               <label>
                 <span>边框颜色</span>
                 <input v-model="state.borderColor" type="color" />
+              </label>
+              <label>
+                <span>主题色</span>
+                <input v-model="inputNumberAppearance.color" type="color" />
+              </label>
+              <label>
+                <span>激活边框色</span>
+                <input v-model="inputNumberAppearance.activeBorderColor" type="color" />
               </label>
               <label>
                 <span>背景色</span>

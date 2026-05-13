@@ -12,6 +12,8 @@ export interface InputNumberProps extends ElementStyleProps {
   placeholder?: string
   fullWidth?: boolean
   fullHeight?: boolean
+  color?: string
+  activeBorderColor?: string
   borderRadius?: number | string
   fontFamily?: string
   fontSize?: number | string

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { XBaseInput } from '../../base-input'
+import 'remixicon/fonts/remixicon.css'
 import type {
   TableAlign,
   TableCellChangePayload,
@@ -9,6 +10,9 @@ import type {
   TableColumnResizePayload,
   TableColumnSetting,
   TableFixed,
+  TablePaginationChangePayload,
+  TablePaginationMode,
+  TablePaginationState,
   TableProps,
   TableRowClickPayload,
   TableReorderPosition,
@@ -29,6 +33,12 @@ const props = withDefaults(defineProps<TableProps>(), {
   editable: false,
   rowDraggable: false,
   columnResizable: true,
+  showColumnSettings: false,
+  bodyStripeBackgroundColor: 'transparent',
+  showPagination: false,
+  paginationMode: 'client',
+  currentPage: 1,
+  pageSize: 10,
   selectionMode: 'row',
   actionsWidth: 160,
   fillHeight: false
@@ -38,6 +48,7 @@ const emit = defineEmits<{
   (e: 'update:data', value: Record<string, unknown>[]): void
   (e: 'update:columnSettings', value: TableColumnSetting[]): void
   (e: 'column-settings-change', value: TableColumnSetting[]): void
+  (e: 'column-settings-click', value: TableColumnSetting[]): void
   (e: 'update:selectedRowKeys', value: string[]): void
   (e: 'selection-change', value: { keys: string[]; rows: Record<string, unknown>[] }): void
   (
@@ -53,6 +64,11 @@ const emit = defineEmits<{
   (e: 'row-click', value: TableRowClickPayload): void
   (e: 'row-dblclick', value: TableRowClickPayload): void
   (e: 'column-resize', value: TableColumnResizePayload): void
+  (e: 'update:currentPage', value: number): void
+  (e: 'update:pageSize', value: number): void
+  (e: 'page-change', value: TablePaginationChangePayload): void
+  (e: 'page-size-change', value: TablePaginationChangePayload): void
+  (e: 'pagination-change', value: TablePaginationChangePayload): void
 }>()
 
 interface ResolvedColumn {
@@ -68,6 +84,55 @@ interface ResolvedColumn {
 const defaultColumnMinWidth = 40
 const internalColumnSettings = ref<TableColumnSetting[]>([])
 const tableWidth = ref(0)
+const internalCurrentPage = ref(1)
+const internalPageSize = ref(10)
+
+const normalizedPaginationMode = computed<TablePaginationMode>(() => props.paginationMode ?? 'client')
+const normalizedPageSizes = computed(() => normalizePageSizes(props.pageSizes))
+const normalizedPageSize = computed(() => Math.max(1, normalizeInteger(internalPageSize.value, 10)))
+const paginationTotal = computed(() => {
+  const total = props.total === undefined ? props.data.length : normalizeInteger(props.total, 0)
+  return Math.max(0, total)
+})
+const paginationPageCount = computed(() => Math.max(1, Math.ceil(paginationTotal.value / normalizedPageSize.value)))
+const normalizedCurrentPage = computed(() => clampPage(internalCurrentPage.value))
+const clientPageStartIndex = computed(() => (normalizedCurrentPage.value - 1) * normalizedPageSize.value)
+const visibleData = computed(() => {
+  if (!props.showPagination || normalizedPaginationMode.value === 'server') {
+    return props.data
+  }
+
+  return props.data.slice(clientPageStartIndex.value, clientPageStartIndex.value + normalizedPageSize.value)
+})
+const visibleRows = computed(() =>
+  visibleData.value.map((row, index) => ({
+    row,
+    rowIndex: props.showPagination && normalizedPaginationMode.value === 'client' ? clientPageStartIndex.value + index : index
+  }))
+)
+const paginationState = computed<TablePaginationState>(() => ({
+  currentPage: normalizedCurrentPage.value,
+  pageSize: normalizedPageSize.value,
+  total: paginationTotal.value,
+  pageCount: paginationPageCount.value,
+  mode: normalizedPaginationMode.value
+}))
+const isPaginationVisible = computed(() => props.showPagination)
+const tableStyle = computed<CSSProperties>(() => {
+  const style: Record<string, string> = {}
+  setCssVariable(style, '--x-table-header-background', props.headerBackgroundColor)
+  setCssVariable(style, '--x-table-header-text-color', props.headerTextColor)
+  setCssVariable(style, '--x-table-body-background', props.bodyBackgroundColor)
+  setCssVariable(style, '--x-table-body-stripe-background', props.bodyStripeBackgroundColor)
+  setCssVariable(style, '--x-table-body-text-color', props.bodyTextColor)
+  setCssVariable(style, '--x-table-horizontal-border-color', props.horizontalBorderColor)
+  setCssVariable(style, '--x-table-horizontal-border-width', props.horizontalBorderWidth === undefined ? undefined : formatCssSize(props.horizontalBorderWidth))
+  setCssVariable(style, '--x-table-vertical-border-color', props.verticalBorderColor)
+  setCssVariable(style, '--x-table-vertical-border-width', props.verticalBorderWidth === undefined ? undefined : formatCssSize(props.verticalBorderWidth))
+  return style as CSSProperties
+})
+const topPanelStyle = computed<CSSProperties>(() => (props.topBackgroundColor ? { background: props.topBackgroundColor } : {}))
+const bottomPanelStyle = computed<CSSProperties>(() => (props.bottomBackgroundColor ? { background: props.bottomBackgroundColor } : {}))
 
 const resolvedColumns = computed<ResolvedColumn[]>(() => {
   const columns = getOrderedSettings()
@@ -102,13 +167,17 @@ const gridTemplateColumns = computed(() => {
 const slotScope = computed<TableTopSlotScope>(() => ({
   columns: props.columns,
   data: props.data,
+  visibleData: visibleData.value,
   columnSettings: getOrderedSettings().map((setting) => ({ ...setting })),
   selectedRowKeys: normalizedSelectedRowKeys.value,
   selectedCellKeys: normalizedSelectedCellKeys.value,
+  pagination: paginationState.value,
   updateColumnSetting,
   moveColumnSetting,
   reorderColumnSetting,
-  resetColumnSettings
+  resetColumnSettings,
+  setPage,
+  setPageSize
 }))
 
 const tableRootRef = ref<HTMLElement | null>(null)
@@ -140,7 +209,7 @@ let latestLocalSelectedCellSignature = ''
 const pendingLocalSelectedCellSignatures = new Set<string>()
 let isIgnoringStaleExternalCellSelection = false
 let staleExternalCellSelectionTimer: number | null = null
-const selectableRowKeys = computed(() => props.data.map((row, index) => getRowKey(row, index)))
+const selectableRowKeys = computed(() => visibleRows.value.map(({ row, rowIndex }) => getRowKey(row, rowIndex)))
 const selectedRowKeySet = computed(() => new Set(normalizedSelectedRowKeys.value))
 const selectedCellKeySet = computed(() => new Set(activeSelectedCellKeys.value))
 const rowIndexByKey = computed(() => new Map(props.data.map((row, index) => [getRowKey(row, index), index])))
@@ -160,8 +229,8 @@ const firstRightFixedColumnKey = computed(() => {
   const rightFixedColumns = resolvedColumns.value.filter((column) => column.fixed === 'right')
   return rightFixedColumns[0]?.column.key ?? null
 })
-const leftFrozenBoundaryShadow = 'inset -1px 0 0 var(--x-table-border-color, #e5eaf1), 6px 0 12px -8px rgb(15 23 42 / 38%)'
-const rightFrozenBoundaryShadow = 'inset 1px 0 0 var(--x-table-border-color, #e5eaf1), -6px 0 12px -8px rgb(15 23 42 / 38%)'
+const leftFrozenBoundaryShadow = 'inset -1px 0 0 var(--x-table-vertical-border-color, var(--x-table-border-color, #e5eaf1)), 6px 0 12px -8px rgb(15 23 42 / 38%)'
+const rightFrozenBoundaryShadow = 'inset 1px 0 0 var(--x-table-vertical-border-color, var(--x-table-border-color, #e5eaf1)), -6px 0 12px -8px rgb(15 23 42 / 38%)'
 const selectedCellRange = computed(() => {
   const coordinates: Array<{ rowIndex: number; columnIndex: number }> = []
   activeSelectedCellKeys.value.forEach((key) => {
@@ -1117,6 +1186,62 @@ function getVerticalTrackSize() {
   return Math.max(scrollbarThumbMinSize, scrollState.value.clientHeight - scrollbarTrackInset * 2)
 }
 
+function normalizeInteger(value: number | undefined, fallback: number) {
+  const next = Number(value)
+  return Number.isFinite(next) ? Math.floor(next) : fallback
+}
+
+function normalizePageSizes(pageSizes: number[] | undefined) {
+  const sizes = (pageSizes && pageSizes.length > 0 ? pageSizes : [10, 20, 50, 100])
+    .map((size) => normalizeInteger(size, 0))
+    .filter((size) => size > 0)
+  return sizes.length > 0 ? [...new Set(sizes)] : [10]
+}
+
+function clampPage(page: number) {
+  const next = Math.max(1, normalizeInteger(page, 1))
+  return Math.min(next, paginationPageCount.value)
+}
+
+function emitPaginationChange(page: number, pageSize: number, pageSizeChanged = false) {
+  const payload: TablePaginationChangePayload = {
+    currentPage: page,
+    pageSize,
+    total: paginationTotal.value,
+    pageCount: paginationPageCount.value,
+    mode: normalizedPaginationMode.value,
+    pageSizeChanged
+  }
+
+  emit('pagination-change', payload)
+  emit('page-change', payload)
+  if (pageSizeChanged) {
+    emit('page-size-change', payload)
+  }
+}
+
+function setPage(page: number) {
+  const nextPage = clampPage(page)
+  internalCurrentPage.value = nextPage
+  emit('update:currentPage', nextPage)
+  emitPaginationChange(nextPage, normalizedPageSize.value)
+  nextTick(syncScrollState)
+}
+
+function setPageSize(pageSize: number) {
+  const nextPageSize = Math.max(1, normalizeInteger(pageSize, normalizedPageSize.value))
+  internalPageSize.value = nextPageSize
+  internalCurrentPage.value = 1
+  emit('update:pageSize', nextPageSize)
+  emit('update:currentPage', 1)
+  emitPaginationChange(1, nextPageSize, true)
+  nextTick(syncScrollState)
+}
+
+function handlePageSizeChange(event: Event) {
+  setPageSize(Number((event.target as HTMLSelectElement).value))
+}
+
 function createDefaultColumnSettings() {
   return props.columns.map((column, index) => ({
     key: column.key,
@@ -1392,6 +1517,10 @@ function resetColumnSettings() {
   setColumnSettings(createDefaultColumnSettings())
 }
 
+function handleColumnSettingsClick() {
+  emit('column-settings-click', getOrderedSettings().map((setting) => ({ ...setting })))
+}
+
 function setColumnSettings(settings: TableColumnSetting[]) {
   const next = normalizeColumnSettings(settings)
   internalColumnSettings.value = next
@@ -1431,7 +1560,13 @@ function formatCssSize(value: number | string) {
   return typeof value === 'number' ? `${value}px` : value
 }
 
-function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body'): CSSProperties {
+function setCssVariable(style: Record<string, string>, key: string, value: string | undefined) {
+  if (value) {
+    style[key] = value
+  }
+}
+
+function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body', rowIndex = 0): CSSProperties {
   const style: CSSProperties = {
     justifyContent: alignToJustify(column.align),
     textAlign: column.align
@@ -1441,7 +1576,7 @@ function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body'):
     style.position = 'sticky'
     style[column.fixed] = column.fixed === 'left' ? column.left : column.right
     style.zIndex = type === 'header' ? 3 : 2
-    style.background = type === 'header' ? 'var(--x-table-header-background, #f3f6fa)' : '#fff'
+    style.background = type === 'header' ? 'var(--x-table-header-background, #f3f6fa)' : getBodyRowLayeredBackground(rowIndex)
     if (column.fixed === 'left' && column.column.key === lastLeftFixedColumnKey.value) {
       style.boxShadow = leftFrozenBoundaryShadow
     }
@@ -1451,6 +1586,16 @@ function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body'):
   }
 
   return style
+}
+
+function getBodyRowBackground(rowIndex: number) {
+  return rowIndex % 2 === 1
+    ? 'var(--x-table-body-stripe-background, transparent)'
+    : 'var(--x-table-body-background, #fff)'
+}
+
+function getBodyRowLayeredBackground(rowIndex: number) {
+  return `linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent)), ${getBodyRowBackground(rowIndex)}`
 }
 
 function alignToJustify(align: TableColumn['align']) {
@@ -1524,6 +1669,35 @@ watch(
 )
 
 watch(
+  () => props.currentPage,
+  (page) => {
+    internalCurrentPage.value = Math.max(1, normalizeInteger(page, 1))
+  },
+  { immediate: true }
+)
+
+watch(
+  () => props.pageSize,
+  (pageSize) => {
+    internalPageSize.value = Math.max(1, normalizeInteger(pageSize, 10))
+  },
+  { immediate: true }
+)
+
+watch(
+  () => [paginationTotal.value, normalizedPageSize.value],
+  () => {
+    const nextPage = clampPage(internalCurrentPage.value)
+    if (nextPage !== internalCurrentPage.value) {
+      internalCurrentPage.value = nextPage
+      emit('update:currentPage', nextPage)
+    }
+    nextTick(syncScrollState)
+  },
+  { immediate: true }
+)
+
+watch(
   normalizedSelectedCellKeys,
   (keys) => {
     const signature = getSelectedCellKeySignature(keys)
@@ -1554,7 +1728,7 @@ watch(
 )
 
 watch(
-  () => [props.data, props.columns, props.showActions, props.actionsWidth, internalColumnSettings.value],
+  () => [props.data, props.columns, props.showActions, props.actionsWidth, props.showPagination, normalizedCurrentPage.value, normalizedPageSize.value, internalColumnSettings.value],
   () => {
     nextTick(syncScrollState)
   },
@@ -1564,7 +1738,10 @@ watch(
 defineExpose({
   getColumnSettings: () => internalColumnSettings.value.map((setting) => ({ ...setting })),
   setColumnSettings,
-  resetColumnSettings
+  resetColumnSettings,
+  getPagination: () => ({ ...paginationState.value }),
+  setPage,
+  setPageSize
 })
 </script>
 
@@ -1573,11 +1750,22 @@ defineExpose({
     ref="tableRootRef"
     class="x-table"
     :class="{ 'is-fill-height': fillHeight }"
+    :style="tableStyle"
     tabindex="0"
     @keydown.capture="handleTableKeydown"
   >
-    <div v-if="$slots.top" class="x-table__top">
+    <div v-if="$slots.top || showColumnSettings" class="x-table__top" :style="topPanelStyle">
       <slot name="top" v-bind="slotScope" />
+      <button
+        v-if="showColumnSettings"
+        class="x-table__column-settings-button"
+        type="button"
+        aria-label="列设置"
+        title="列设置"
+        @click="handleColumnSettingsClick"
+      >
+        <i class="ri-settings-3-line" aria-hidden="true"></i>
+      </button>
     </div>
 
     <div class="x-table__viewport">
@@ -1637,9 +1825,9 @@ defineExpose({
 
       <div class="x-table__body-shell">
         <div ref="bodyViewportRef" class="x-table__body-viewport" @scroll="handleBodyScroll">
-          <div v-if="data.length > 0" class="x-table__body" role="rowgroup">
+          <div v-if="visibleRows.length > 0" class="x-table__body" role="rowgroup">
             <div
-              v-for="(row, rowIndex) in data"
+              v-for="{ row, rowIndex } in visibleRows"
               :key="getRowKey(row, rowIndex)"
               class="x-table__row x-table__row--body"
               :class="getRowClasses(row, rowIndex)"
@@ -1681,7 +1869,7 @@ defineExpose({
                 :data-x-table-cell-row-index="rowIndex"
                 :data-x-table-cell-column-index="columnIndex"
                 role="cell"
-                :style="getCellStyle(column)"
+                :style="getCellStyle(column, 'body', rowIndex)"
                 @mousedown="startCellSelection(rowIndex, columnIndex, $event)"
                 @click="toggleCellSelection(row, rowIndex, column.column, $event)"
                 @dblclick="startCellEdit(row, rowIndex, column.column, $event)"
@@ -1774,8 +1962,45 @@ defineExpose({
       </div>
     </div>
 
-    <div v-if="$slots.bottom" class="x-table__bottom">
+    <div v-if="$slots.bottom || isPaginationVisible" class="x-table__bottom" :style="bottomPanelStyle">
       <slot name="bottom" v-bind="slotScope" />
+      <div v-if="isPaginationVisible" class="x-table__pagination" role="navigation" aria-label="表格分页">
+        <span class="x-table__pagination-total">共 {{ paginationState.total }} 条</span>
+        <label class="x-table__page-size">
+          <span>每页</span>
+          <select
+            class="x-table__page-size-select"
+            :value="paginationState.pageSize"
+            aria-label="每页条数"
+            @change="handlePageSizeChange"
+          >
+            <option v-for="size in normalizedPageSizes" :key="size" :value="size">
+              {{ size }} 条
+            </option>
+          </select>
+        </label>
+        <button
+          class="x-table__page-button"
+          type="button"
+          aria-label="上一页"
+          :disabled="paginationState.currentPage <= 1"
+          @click="setPage(paginationState.currentPage - 1)"
+        >
+          上一页
+        </button>
+        <span class="x-table__page-current">
+          {{ paginationState.currentPage }} / {{ paginationState.pageCount }}
+        </span>
+        <button
+          class="x-table__page-button"
+          type="button"
+          aria-label="下一页"
+          :disabled="paginationState.currentPage >= paginationState.pageCount"
+          @click="setPage(paginationState.currentPage + 1)"
+        >
+          下一页
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -1794,21 +2019,133 @@ defineExpose({
 }
 
 .x-table.is-fill-height {
+  align-content: stretch;
   grid-template-rows: auto minmax(0, 1fr) auto;
   height: 100%;
 }
 
+.x-table.is-fill-height > .x-table__top {
+  grid-row: 1;
+}
+
+.x-table.is-fill-height > .x-table__viewport {
+  grid-row: 2;
+}
+
+.x-table.is-fill-height > .x-table__bottom {
+  grid-row: 3;
+}
+
 .x-table__top,
 .x-table__bottom {
-  background: var(--x-table-panel-background, #f8fafc);
   min-width: 0;
   padding: 12px 14px;
   position: relative;
   z-index: 3;
 }
 
+.x-table__top {
+  align-items: center;
+  background: var(--x-table-top-background, var(--x-table-panel-background, #f8fafc));
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.x-table__column-settings-button {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 18px;
+  height: 30px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: auto;
+  padding: 0;
+  width: 30px;
+}
+
+.x-table__column-settings-button:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: var(--x-color-primary, #155e75);
+}
+
+.x-table__column-settings-button:focus-visible {
+  box-shadow: var(--x-shadow-focus, 0 0 0 3px rgb(14 116 144 / 20%));
+  outline: none;
+}
+
+.x-table__bottom {
+  align-items: center;
+  background: var(--x-table-bottom-background, var(--x-table-panel-background, #f8fafc));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.x-table__pagination {
+  align-items: center;
+  color: #475569;
+  display: inline-flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.x-table__pagination-total {
+  font-weight: 600;
+}
+
+.x-table__page-size {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.x-table__page-size-select,
+.x-table__page-button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #334155;
+  min-height: 30px;
+}
+
+.x-table__page-size-select {
+  padding: 0 8px;
+}
+
+.x-table__page-button {
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.x-table__page-button:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.x-table__page-current {
+  color: #334155;
+  min-width: 52px;
+  text-align: center;
+}
+
 .x-table__viewport {
-  border: 1px solid var(--x-table-border-color, #d8e0ea);
+  border-bottom: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-horizontal-border-color, var(--x-table-border-color, #d8e0ea));
+  border-left: var(--x-table-vertical-border-width, 1px) solid var(--x-table-vertical-border-color, var(--x-table-border-color, #d8e0ea));
+  border-right: var(--x-table-vertical-border-width, 1px) solid var(--x-table-vertical-border-color, var(--x-table-border-color, #d8e0ea));
+  border-top: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-horizontal-border-color, var(--x-table-border-color, #d8e0ea));
   box-sizing: border-box;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -1817,7 +2154,7 @@ defineExpose({
 }
 
 .x-table__header-viewport {
-  border-bottom: 1px solid var(--x-table-border-color, #d8e0ea);
+  border-bottom: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-horizontal-border-color, var(--x-table-border-color, #d8e0ea));
   min-width: 0;
   overflow: hidden;
   position: relative;
@@ -1833,6 +2170,7 @@ defineExpose({
 }
 
 .x-table__body-viewport {
+  background: var(--x-table-body-background, #fff);
   height: 100%;
   min-height: 0;
   min-width: 0;
@@ -1894,7 +2232,10 @@ defineExpose({
 }
 
 .x-table__row--body {
-  background: #fff;
+  background:
+    linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent)),
+    var(--x-table-body-background, #fff);
+  color: var(--x-table-body-text-color, var(--x-table-text-color, #1f2937));
   position: relative;
   transition:
     background-color 140ms ease,
@@ -1904,16 +2245,22 @@ defineExpose({
     transform 140ms ease;
 }
 
+.x-table__row--body:nth-child(even) {
+  background:
+    linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent)),
+    var(--x-table-body-stripe-background, transparent);
+}
+
 .x-table__row--body + .x-table__row--body {
-  border-top: 1px solid var(--x-table-border-color, #e5eaf1);
+  border-top: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-horizontal-border-color, var(--x-table-border-color, #e5eaf1));
 }
 
 .x-table__row--body:last-child {
-  border-bottom: 1px solid var(--x-table-border-color, #e5eaf1);
+  border-bottom: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-horizontal-border-color, var(--x-table-border-color, #e5eaf1));
 }
 
 .x-table__row--body:hover {
-  background: var(--x-table-row-hover-background, #f8fbff);
+  --x-table-row-hover-overlay-current: var(--x-table-row-hover-overlay, rgb(14 116 144 / 6%));
 }
 
 .x-table__row--body.is-selected {
@@ -1973,7 +2320,7 @@ defineExpose({
 }
 
 .x-table__cell + .x-table__cell {
-  border-left: 1px solid var(--x-table-border-color, #e5eaf1);
+  border-left: var(--x-table-vertical-border-width, 1px) solid var(--x-table-vertical-border-color, var(--x-table-border-color, #e5eaf1));
 }
 
 .x-table__cell.is-cell-selectable {
@@ -2137,7 +2484,8 @@ defineExpose({
 
 .x-table__empty {
   align-items: center;
-  color: #64748b;
+  background: var(--x-table-body-background, #fff);
+  color: var(--x-table-body-text-color, #64748b);
   display: flex;
   justify-content: center;
   min-height: 160px;

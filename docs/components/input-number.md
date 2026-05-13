@@ -11,7 +11,7 @@ const count = ref(12)
 </script>
 
 <template>
-  <XInputNumber v-model="count" :min="0" :max="99" />
+  <XInputNumber v-model="count" :min="0" :max="99" :step="3" />
 </template>
 ```
 
@@ -29,6 +29,8 @@ const count = ref(12)
 | placeholder | 占位文本 | `string` | `'请输入数字'` |
 | fullWidth | 是否撑满父元素宽度 | `boolean` | `false` |
 | fullHeight | 是否撑满父元素高度 | `boolean` | `false` |
+| color | 激活边框颜色 | `string` | - |
+| activeBorderColor | 激活边框颜色，优先级高于 `color` | `string` | - |
 | fontFamily | 字体 | `string` | - |
 | fontSize | 字体大小，同时影响输入值和加减按钮文字 | `number \| string` | - |
 | borderRadius | 圆角 | `number \| string` | - |

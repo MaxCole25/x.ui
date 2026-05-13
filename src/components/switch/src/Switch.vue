@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<SwitchProps>(), {
   size: undefined,
   activeText: '开',
   inactiveText: '关',
+  labelPosition: 'outside',
   activeValue: true,
   inactiveValue: false
 })
@@ -50,7 +51,7 @@ const toggle = () => {
 <template>
   <button
     class="x-switch"
-    :class="[`x-switch--${mergedSize}`, { 'is-checked': checked, 'is-disabled': mergedDisabled }]"
+    :class="[`x-switch--${mergedSize}`, `x-switch--label-${props.labelPosition}`, { 'is-checked': checked, 'is-disabled': mergedDisabled }]"
     :style="switchStyle"
     type="button"
     role="switch"
@@ -59,10 +60,12 @@ const toggle = () => {
     :disabled="mergedDisabled"
     @click="toggle"
   >
-    <span v-if="props.inactiveText" class="x-switch__text x-switch__text--inactive">{{ props.inactiveText }}</span>
+    <span v-if="props.labelPosition === 'outside' && props.inactiveText" class="x-switch__text x-switch__text--inactive">{{ props.inactiveText }}</span>
     <span class="x-switch__track" aria-hidden="true">
-      <span class="x-switch__thumb" />
+      <span class="x-switch__thumb">
+        <span v-if="props.labelPosition === 'inside'" class="x-switch__thumb-text">{{ checked ? props.activeText : props.inactiveText }}</span>
+      </span>
     </span>
-    <span v-if="props.activeText" class="x-switch__text x-switch__text--active">{{ props.activeText }}</span>
+    <span v-if="props.labelPosition === 'outside' && props.activeText" class="x-switch__text x-switch__text--active">{{ props.activeText }}</span>
   </button>
 </template>

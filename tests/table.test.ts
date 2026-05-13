@@ -1,4 +1,6 @@
 import { mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { XTable } from '../src'
@@ -85,6 +87,151 @@ describe('XTable', () => {
     expect(wrapper.find('.custom-bottom').text()).toBe('共 2 条')
   })
 
+  it('applies public background colors to top and bottom slot panels', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        topBackgroundColor: '#f0f9ff',
+        bottomBackgroundColor: 'rgb(240, 253, 244)'
+      },
+      slots: {
+        top: '<div class="custom-top">表顶</div>',
+        bottom: '<div class="custom-bottom">表底</div>'
+      }
+    })
+
+    expect(wrapper.find('.x-table__top').attributes('style')).toContain('background: rgb(240, 249, 255)')
+    expect(wrapper.find('.x-table__bottom').attributes('style')).toContain('background: rgb(240, 253, 244)')
+  })
+
+  it('exposes table area colors and border styles through public props', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        headerBackgroundColor: '#e0f2fe',
+        headerTextColor: '#0f172a',
+        bodyBackgroundColor: '#ffffff',
+        bodyStripeBackgroundColor: '#f8fafc',
+        bodyTextColor: '#1f2937',
+        horizontalBorderColor: '#bfdbfe',
+        horizontalBorderWidth: 2,
+        verticalBorderColor: '#cbd5e1',
+        verticalBorderWidth: '3px'
+      }
+    })
+
+    const style = wrapper.find('.x-table').attributes('style')
+    expect(style).toContain('--x-table-header-background: #e0f2fe')
+    expect(style).toContain('--x-table-header-text-color: #0f172a')
+    expect(style).toContain('--x-table-body-background: #ffffff')
+    expect(style).toContain('--x-table-body-stripe-background: #f8fafc')
+    expect(style).toContain('--x-table-body-text-color: #1f2937')
+    expect(style).toContain('--x-table-horizontal-border-color: #bfdbfe')
+    expect(style).toContain('--x-table-horizontal-border-width: 2px')
+    expect(style).toContain('--x-table-vertical-border-color: #cbd5e1')
+    expect(style).toContain('--x-table-vertical-border-width: 3px')
+  })
+
+  it('keeps row backgrounds under a translucent hover overlay', () => {
+    const source = readFileSync(resolve(__dirname, '../src/components/table/src/Table.vue'), 'utf8')
+
+    expect(source).toContain('linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent))')
+    expect(source).toContain('.x-table__row--body:hover {\n  --x-table-row-hover-overlay-current: var(--x-table-row-hover-overlay, rgb(14 116 144 / 6%));')
+  })
+
+  it('keeps pagination hidden by default', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    expect(wrapper.find('.x-table__pagination').exists()).toBe(false)
+    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
+  })
+
+  it('renders client-side paginated rows and exposes pagination controls', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data: [
+          ...data,
+          { id: 3, name: '权限中心', status: '启用', count: 9 }
+        ],
+        showPagination: true,
+        pageSize: 2,
+        pageSizes: [2, 5]
+      },
+      slots: {
+        bottom: '<template #default="{ pagination, visibleData }"><span class="page-scope">{{ pagination.currentPage }}-{{ visibleData.length }}</span></template>'
+      }
+    })
+
+    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
+    expect(wrapper.text()).toContain('工作台')
+    expect(wrapper.text()).not.toContain('权限中心')
+    expect(wrapper.find('.page-scope').text()).toBe('1-2')
+
+    await wrapper.find('[aria-label="下一页"]').trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:currentPage')?.[0]?.[0]).toBe(2)
+    expect(wrapper.emitted('pagination-change')?.[0]?.[0]).toMatchObject({
+      currentPage: 2,
+      pageSize: 2,
+      total: 3,
+      pageCount: 2,
+      mode: 'client'
+    })
+    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(1)
+    expect(wrapper.text()).toContain('权限中心')
+  })
+
+  it('supports server pagination without slicing the provided page data', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showPagination: true,
+        paginationMode: 'server',
+        currentPage: 2,
+        pageSize: 2,
+        total: 5
+      }
+    })
+
+    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
+    expect(wrapper.find('.x-table__page-current').text()).toBe('2 / 3')
+
+    await wrapper.find('[aria-label="下一页"]').trigger('click')
+
+    expect(wrapper.emitted('update:currentPage')?.[0]?.[0]).toBe(3)
+    expect(wrapper.emitted('page-change')?.[0]?.[0]).toMatchObject({
+      currentPage: 3,
+      pageSize: 2,
+      total: 5,
+      pageCount: 3,
+      mode: 'server'
+    })
+  })
+
+  it('hides pagination when showPagination is disabled even with pagination props', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showPagination: false,
+        pageSize: 1
+      }
+    })
+
+    expect(wrapper.find('.x-table__pagination').exists()).toBe(false)
+    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
+  })
+
   it('renders custom cell and row actions slots', () => {
     const wrapper = mount(XTable, {
       props: {
@@ -115,6 +262,35 @@ describe('XTable', () => {
     })
 
     expect(wrapper.classes()).toContain('is-fill-height')
+  })
+
+  it('renders built-in column settings as an icon button', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showColumnSettings: true
+      }
+    })
+
+    const button = wrapper.find('.x-table__column-settings-button')
+    expect(button.exists()).toBe(true)
+    expect(button.text()).toBe('')
+    expect(button.attributes('aria-label')).toBe('列设置')
+    expect(button.find('.ri-settings-3-line').exists()).toBe(true)
+
+    await button.trigger('click')
+
+    expect(wrapper.emitted('column-settings-click')?.[0]?.[0]).toHaveLength(3)
+  })
+
+  it('pins fill height regions to stable grid rows', () => {
+    const source = readFileSync(resolve(__dirname, '../src/components/table/src/Table.vue'), 'utf8')
+
+    expect(source).toContain('.x-table.is-fill-height {\n  align-content: stretch;')
+    expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')
+    expect(source).toContain('.x-table.is-fill-height > .x-table__viewport {\n  grid-row: 2;')
+    expect(source).toContain('.x-table.is-fill-height > .x-table__bottom {\n  grid-row: 3;')
   })
 
   it('applies column settings for order fixed align ratio and pixel width', () => {

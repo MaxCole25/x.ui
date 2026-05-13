@@ -143,12 +143,39 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([3])
   })
 
+  it('keeps decimal input number steps readable', async () => {
+    const wrapper = mount(XInputNumber, {
+      props: { modelValue: 0.5, step: 0.1 }
+    })
+
+    await wrapper.find('button[aria-label="增加"]').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([0.6])
+  })
+
+  it('exposes input number range and step props', async () => {
+    const wrapper = mount(XInputNumber, {
+      props: { modelValue: 9, min: 0, max: 10, step: 2 }
+    })
+    const input = wrapper.find('input')
+
+    expect(input.attributes('min')).toBe('0')
+    expect(input.attributes('max')).toBe('10')
+    expect(input.attributes('step')).toBe('2')
+
+    await wrapper.find('button[aria-label="增加"]').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([10])
+  })
+
   it('exposes input number appearance variables', () => {
     const wrapper = mount(XInputNumber, {
       props: {
         modelValue: 1,
         fullWidth: true,
         fullHeight: true,
+        color: '#2563eb',
+        activeBorderColor: '#1d4ed8',
+        borderWidth: 2,
+        borderColor: '#94a3b8',
         borderRadius: 10,
         fontFamily: 'Georgia',
         fontSize: 18,
@@ -160,6 +187,10 @@ describe('元素组件', () => {
     expect(wrapper.classes()).toContain('is-full-width')
     expect(wrapper.classes()).toContain('is-full-height')
     const style = wrapper.attributes('style')
+    expect(style).toContain('--x-input-number-color: #2563eb')
+    expect(style).toContain('--x-input-number-active-border-color: #1d4ed8')
+    expect(style).toContain('--x-input-number-border-color: #94a3b8')
+    expect(style).toContain('--x-input-number-border-width: 2px')
     expect(style).toContain('--x-input-number-radius: 10px')
     expect(style).toContain('--x-input-number-font-family: Georgia')
     expect(style).toContain('--x-input-number-font-size: 18px')

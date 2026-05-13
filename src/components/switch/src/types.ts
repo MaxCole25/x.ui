@@ -2,6 +2,7 @@ import type { ElementStyleProps } from '../../_utils/elementStyle'
 
 export type SwitchSize = 'sm' | 'md' | 'lg'
 export type SwitchValue = boolean
+export type SwitchLabelPosition = 'outside' | 'inside'
 
 export interface SwitchProps extends ElementStyleProps {
   modelValue?: boolean
@@ -9,6 +10,7 @@ export interface SwitchProps extends ElementStyleProps {
   size?: SwitchSize
   activeText?: string
   inactiveText?: string
+  labelPosition?: SwitchLabelPosition
   activeValue?: SwitchValue
   inactiveValue?: SwitchValue
   color?: string

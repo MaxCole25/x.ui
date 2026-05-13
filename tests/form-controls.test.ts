@@ -98,6 +98,7 @@ describe('form controls', () => {
 
     expect(defaults.find('.x-switch__text--inactive').text()).toBe('关')
     expect(defaults.find('.x-switch__text--active').text()).toBe('开')
+    expect(defaults.classes()).toContain('x-switch--label-outside')
 
     const custom = mount(XSwitch, {
       props: {
@@ -108,6 +109,26 @@ describe('form controls', () => {
 
     expect(custom.find('.x-switch__text--inactive').text()).toBe('关闭通知')
     expect(custom.find('.x-switch__text--active').text()).toBe('开启通知')
+  })
+
+  it('renders switch labels inside the thumb when configured', async () => {
+    const wrapper = mount(XSwitch, {
+      props: {
+        modelValue: false,
+        activeText: '开',
+        inactiveText: '关',
+        labelPosition: 'inside' as const,
+        'onUpdate:modelValue': (value) => wrapper.setProps({ modelValue: value })
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-switch--label-inside')
+    expect(wrapper.find('.x-switch__text--inactive').exists()).toBe(false)
+    expect(wrapper.find('.x-switch__text--active').exists()).toBe(false)
+    expect(wrapper.find('.x-switch__thumb-text').text()).toBe('关')
+
+    await wrapper.find('button').trigger('click')
+    expect(wrapper.find('.x-switch__thumb-text').text()).toBe('开')
   })
 
   it('exposes switch appearance variables', () => {

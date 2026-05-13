@@ -3,7 +3,7 @@ import Switch from './src/Switch.vue'
 
 export const XSwitch = Switch
 
-export type { SwitchEmits, SwitchProps, SwitchSize, SwitchValue } from './src/types'
+export type { SwitchEmits, SwitchLabelPosition, SwitchProps, SwitchSize, SwitchValue } from './src/types'
 
 XSwitch.install = (app: App) => {
   app.component(XSwitch.name!, XSwitch)

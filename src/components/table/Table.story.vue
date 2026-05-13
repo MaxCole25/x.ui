@@ -9,6 +9,8 @@ import type {
   TableColumn,
   TableColumnResizePayload,
   TableColumnSetting,
+  TablePaginationChangePayload,
+  TablePaginationMode,
   TableReorderPosition,
   TableRowClickPayload,
   TableRowReorderPayload,
@@ -31,7 +33,9 @@ const rows = ref<DemoRow[]>([
   { id: 3, component: 'XTabs', category: 'Display', owner: 'Platform Team', count: 10, updatedAt: '2026-04-08' },
   { id: 4, component: 'XInput', category: 'Input', owner: 'UI Team', count: 15, updatedAt: '2026-04-03' },
   { id: 5, component: 'XSelect', category: 'Input', owner: 'UI Team', count: 12, updatedAt: '2026-04-02' },
-  { id: 6, component: 'XSwitch', category: 'Input', owner: 'Platform Team', count: 11, updatedAt: '2026-04-01' }
+  { id: 6, component: 'XSwitch', category: 'Input', owner: 'Platform Team', count: 11, updatedAt: '2026-04-01' },
+  { id: 7, component: 'XTree', category: 'Data', owner: 'Platform Team', count: 8, updatedAt: '2026-03-29' },
+  { id: 8, component: 'XUpload', category: 'Form', owner: 'UI Team', count: 6, updatedAt: '2026-03-26' }
 ])
 
 const columns: TableColumn[] = [
@@ -53,7 +57,22 @@ const parentState = reactive({
   editable: false,
   columnResizable: true,
   selectionMode: 'row' as TableSelectionMode,
-  rowDraggable: true
+  rowDraggable: true,
+  showPagination: true,
+  paginationMode: 'client' as TablePaginationMode,
+  currentPage: 1,
+  pageSize: 4,
+  topBackgroundColor: '#f0f9ff',
+  bottomBackgroundColor: '#f8fafc',
+  headerBackgroundColor: '#e0f2fe',
+  headerTextColor: '#0f172a',
+  bodyBackgroundColor: '#ffffff',
+  bodyStripeBackgroundColor: 'transparent',
+  bodyTextColor: '#1f2937',
+  horizontalBorderColor: '#bfdbfe',
+  horizontalBorderWidth: 1,
+  verticalBorderColor: '#cbd5e1',
+  verticalBorderWidth: 1
 })
 const settingsDialogVisible = ref(false)
 const selectedRowKeys = ref<string[]>([])
@@ -176,6 +195,12 @@ function handleColumnResize(payload: TableColumnResizePayload) {
   rowEventText.value = `调整列宽：${payload.column.label} ${Math.round(payload.width)}px`
 }
 
+function handlePaginationChange(payload: TablePaginationChangePayload) {
+  parentState.currentPage = payload.currentPage
+  parentState.pageSize = payload.pageSize
+  rowEventText.value = `${payload.mode === 'server' ? '服务器' : '客户端'}分页：第 ${payload.currentPage} 页，每页 ${payload.pageSize} 条`
+}
+
 function getEditorNumberValue(value: string | number | undefined) {
   if (typeof value === 'number') {
     return value
@@ -187,6 +212,10 @@ function getEditorNumberValue(value: string | number | undefined) {
 
 function updateSelectionMode(value: string | number | boolean) {
   parentState.selectionMode = value as TableSelectionMode
+}
+
+function updatePaginationMode(value: string | number | boolean) {
+  parentState.paginationMode = value as TablePaginationMode
 }
 
 </script>
@@ -278,6 +307,75 @@ function updateSelectionMode(value: string | number | boolean) {
             <input v-model="parentState.rowDraggable" type="checkbox" />
             <span>行拖拽排序</span>
           </label>
+          <div class="table-story__control-item">
+            <span>分页</span>
+            <XSwitch v-model="parentState.showPagination" size="sm" />
+          </div>
+          <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.showPagination }">
+            <span>分页模式</span>
+            <XRadio
+              :model-value="parentState.paginationMode"
+              value="client"
+              label="客户端"
+              name="table-pagination-mode"
+              size="sm"
+              :disabled="!parentState.showPagination"
+              @update:model-value="updatePaginationMode"
+            />
+            <XRadio
+              :model-value="parentState.paginationMode"
+              value="server"
+              label="服务器"
+              name="table-pagination-mode"
+              size="sm"
+              :disabled="!parentState.showPagination"
+              @update:model-value="updatePaginationMode"
+            />
+          </div>
+          <label class="table-story__style-control">
+            <span>表顶背景</span>
+            <input v-model="parentState.topBackgroundColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>表底背景</span>
+            <input v-model="parentState.bottomBackgroundColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>表头背景</span>
+            <input v-model="parentState.headerBackgroundColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>表头文字</span>
+            <input v-model="parentState.headerTextColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>内容背景</span>
+            <input v-model="parentState.bodyBackgroundColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>斑马纹背景</span>
+            <input v-model="parentState.bodyStripeBackgroundColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>内容文字</span>
+            <input v-model="parentState.bodyTextColor" type="text" />
+          </label>
+          <label class="table-story__style-control">
+            <span>横线颜色</span>
+            <input v-model="parentState.horizontalBorderColor" type="text" />
+          </label>
+          <label>
+            <span>横线宽度</span>
+            <input v-model.number="parentState.horizontalBorderWidth" type="number" min="0" max="8" step="1" />
+          </label>
+          <label class="table-story__style-control">
+            <span>竖线颜色</span>
+            <input v-model="parentState.verticalBorderColor" type="text" />
+          </label>
+          <label>
+            <span>竖线宽度</span>
+            <input v-model.number="parentState.verticalBorderWidth" type="number" min="0" max="8" step="1" />
+          </label>
         </div>
 
         <div class="table-story__parent" :style="parentStyle">
@@ -292,18 +390,34 @@ function updateSelectionMode(value: string | number | boolean) {
             :show-selection-column="parentState.showSelectionColumn"
             :editable="parentState.editable"
             :column-resizable="parentState.columnResizable"
+            show-column-settings
             :selection-mode="parentState.selectionMode"
             :row-draggable="parentState.rowDraggable"
+            :show-pagination="parentState.showPagination"
+            :pagination-mode="parentState.paginationMode"
+            :current-page="parentState.currentPage"
+            :page-size="parentState.pageSize"
+            :total="parentState.paginationMode === 'server' ? 23 : rows.length"
+            :page-sizes="[4, 8, 12]"
+            :top-background-color="parentState.topBackgroundColor"
+            :bottom-background-color="parentState.bottomBackgroundColor"
+            :header-background-color="parentState.headerBackgroundColor"
+            :header-text-color="parentState.headerTextColor"
+            :body-background-color="parentState.bodyBackgroundColor"
+            :body-stripe-background-color="parentState.bodyStripeBackgroundColor"
+            :body-text-color="parentState.bodyTextColor"
+            :horizontal-border-color="parentState.horizontalBorderColor"
+            :horizontal-border-width="parentState.horizontalBorderWidth"
+            :vertical-border-color="parentState.verticalBorderColor"
+            :vertical-border-width="parentState.verticalBorderWidth"
             @row-click="handleRowClick"
             @row-dblclick="handleRowDoubleClick"
             @column-resize="handleColumnResize"
             @row-reorder="handleRowReorder"
+            @pagination-change="handlePaginationChange"
+            @column-settings-click="settingsDialogVisible = true"
           >
             <template #top="{ columnSettings, updateColumnSetting, reorderColumnSetting, resetColumnSettings }">
-              <div class="table-story__topbar">
-                <button type="button" @click="settingsDialogVisible = true">列设置</button>
-              </div>
-
               <XDialog
                 v-model="settingsDialogVisible"
                 title="列设置"
@@ -449,9 +563,10 @@ function updateSelectionMode(value: string | number | boolean) {
               />
             </template>
 
-            <template #bottom="{ data }">
+            <template #bottom="{ data, visibleData, pagination }">
               <div class="table-story__footer">
-                <span class="table-story__total">共 {{ data.length }} 条记录</span>
+                <span class="table-story__total">共 {{ data.length }} 条记录 / 当前 {{ visibleData.length }} 条</span>
+                <span class="table-story__selected">第 {{ pagination.currentPage }} / {{ pagination.pageCount }} 页</span>
                 <span class="table-story__selected">{{ selectedText }}</span>
                 <span class="table-story__event">{{ rowEventText }}</span>
               </div>
@@ -504,6 +619,16 @@ function updateSelectionMode(value: string | number | boolean) {
   width: 96px;
 }
 
+.table-story__style-control input[type='text'] {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #0f172a;
+  min-height: 32px;
+  padding: 0 8px;
+  width: 118px;
+}
+
 .table-story__controls input[type='number']:disabled {
   background: #f1f5f9;
   color: #94a3b8;
@@ -522,12 +647,6 @@ function updateSelectionMode(value: string | number | boolean) {
   max-width: 100%;
   overflow: hidden;
   padding: 12px;
-}
-
-.table-story__topbar {
-  align-items: center;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .table-story__footer {
@@ -554,7 +673,6 @@ function updateSelectionMode(value: string | number | boolean) {
   width: 100%;
 }
 
-.table-story__topbar button,
 .table-story__dialog-footer button {
   background: #fff;
   border: 1px solid #cbd5e1;

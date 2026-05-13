@@ -27,6 +27,10 @@ const emit = defineEmits<{
 const value = computed(() => props.modelValue ?? '')
 const inputNumberStyle = computed(() => ({
   ...createElementStyleVars(props),
+  '--x-input-number-color': props.color,
+  '--x-input-number-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-input-number-border-color': props.borderColor,
+  '--x-input-number-border-width': toCssSize(props.borderWidth),
   '--x-input-number-radius': toCssSize(props.borderRadius),
   '--x-input-number-font-family': props.fontFamily,
   '--x-input-number-font-size': toCssSize(props.fontSize),
@@ -41,6 +45,21 @@ const normalize = (value: number | undefined) => {
   return value
 }
 
+const getDecimalLength = (value: number | undefined) => {
+  if (value == null || Number.isNaN(value)) return 0
+  const [, decimal = ''] = String(value).split('.')
+  return decimal.length
+}
+
+const getStepPrecision = () => Math.max(getDecimalLength(props.step), getDecimalLength(props.min), getDecimalLength(props.max))
+
+const fixStepPrecision = (value: number) => {
+  const precision = getStepPrecision()
+  if (precision === 0) return value
+  const base = 10 ** precision
+  return Math.round(value * base) / base
+}
+
 const commit = (value: number | undefined) => {
   const next = normalize(value)
   emit('update:modelValue', next)
@@ -49,7 +68,7 @@ const commit = (value: number | undefined) => {
 
 const stepBy = (direction: 1 | -1) => {
   if (props.disabled || props.readonly) return
-  commit((props.modelValue ?? 0) + props.step * direction)
+  commit(fixStepPrecision((props.modelValue ?? 0) + props.step * direction))
 }
 </script>
 

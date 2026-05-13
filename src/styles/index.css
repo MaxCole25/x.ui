@@ -312,8 +312,18 @@
   height: 20px;
   line-height: 1;
   margin-right: 0;
+  opacity: 0;
   padding: 0;
+  pointer-events: none;
+  transition:
+    color 160ms cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
   width: 20px;
+}
+
+.x-base-input:hover:not(.is-disabled) .x-base-input__clear {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .x-base-input__clear i {
@@ -752,10 +762,14 @@
 }
 
 .x-switch__thumb {
+  align-items: center;
   background: var(--x-switch-thumb-color, #fff);
   border-radius: 999px;
   box-shadow: none;
+  display: inline-flex;
+  justify-content: center;
   height: calc(var(--x-switch-button-size, var(--x-switch-default-size)) - 4px);
+  overflow: hidden;
   transition: transform 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
   width: calc(var(--x-switch-button-size, var(--x-switch-default-size)) - 4px);
 }
@@ -777,6 +791,18 @@
   color: var(--x-switch-text-color, #606266);
   font-family: var(--x-switch-font-family, var(--x-font-family));
   font-size: var(--x-switch-font-size, inherit);
+  white-space: nowrap;
+}
+
+.x-switch__thumb-text {
+  color: var(--x-switch-thumb-text-color, var(--x-switch-text-color, #606266));
+  font-family: var(--x-switch-font-family, var(--x-font-family));
+  font-size: calc(var(--x-switch-font-size, var(--x-switch-default-size)) * 0.55);
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -2541,7 +2567,6 @@
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.x-input-number:not(.is-active-border-hidden):focus-within,
 .x-autocomplete:not(.is-active-border-hidden) .x-autocomplete__control:focus-within,
 .x-cascader.is-open:not(.is-active-border-hidden) .x-cascader__control,
 .x-date-picker:not(.is-active-border-hidden):focus-within,
@@ -2554,11 +2579,20 @@
 }
 
 .x-input-number {
+  --x-input-number-color: var(--x-color-primary);
+  border-color: var(--x-input-number-border-color, var(--x-element-border-color, var(--x-color-border)));
+  border-width: var(--x-input-number-border-width, var(--x-element-border-width, 1px));
   border-radius: var(--x-input-number-radius, 8px);
   font-family: var(--x-input-number-font-family, var(--x-font-family));
   font-size: var(--x-input-number-font-size, 14px);
   overflow: hidden;
   width: 180px;
+}
+
+.x-input-number:not(.is-active-border-hidden):focus-within {
+  border-color: var(--x-input-number-active-border-color, var(--x-input-number-color));
+  box-shadow: none;
+  outline: none;
 }
 
 .x-input-number.is-full-width {

@@ -1,6 +1,6 @@
 # 表格 Table
 
-`XTable` 是一个从简单展示重新开始的表格组件。当前版本只负责数据渲染、基础列样式和插槽扩展；分页、搜索、列设置、编辑、拖拽、导入导出等复杂能力会在后续逐步加回。
+`XTable` 是一个从简单展示重新开始的表格组件。当前版本负责数据渲染、基础列样式、插槽扩展、分页、列设置、选择、编辑和拖拽排序；搜索、导入导出等复杂能力会在后续逐步加回。
 
 组件主体使用 `div + CSS grid` 实现，方便后续扩展固定列、虚拟滚动和单元格编辑。
 
@@ -31,15 +31,30 @@ const rows = [
 
 ## 自定义表顶和表底
 
-`top` 和 `bottom` 插槽会完整接管表格上方、下方区域。`top` 插槽参数包含当前 `columns`、`data`、`columnSettings` 和列设置更新方法，适合放置列设置按钮，并在业务侧用 `XDialog` 承载具体设置表单。
+`top` 和 `bottom` 插槽会扩展表格上方、下方区域。`top` 插槽参数包含当前 `columns`、`data`、`visibleData`、`columnSettings`、`pagination` 和列设置、分页更新方法。开启 `show-column-settings` 后，表顶会内置一个列设置图标按钮，点击时触发 `column-settings-click`，适合在业务侧用 `XDialog` 承载具体设置表单。开启内置分页后，`bottom` 插槽内容会和分页器一起显示。
 
 ```vue
-<XTable :columns="columns" :data="rows">
+<XTable
+  :columns="columns"
+  :data="rows"
+  show-column-settings
+  top-background-color="#f0f9ff"
+  bottom-background-color="#f8fafc"
+  header-background-color="#e0f2fe"
+  header-text-color="#0f172a"
+  body-background-color="#ffffff"
+  body-stripe-background-color="transparent"
+  body-text-color="#1f2937"
+  horizontal-border-color="#bfdbfe"
+  :horizontal-border-width="1"
+  vertical-border-color="#cbd5e1"
+  :vertical-border-width="1"
+  @column-settings-click="settingsVisible = true"
+>
   <template #top="{ columns, data }">
     <div class="table-header">
       <strong>模块列表</strong>
       <span>列 {{ columns.length }} / 行 {{ data.length }}</span>
-      <button @click="settingsVisible = true">列设置</button>
     </div>
   </template>
 
@@ -51,9 +66,56 @@ const rows = [
 </XTable>
 ```
 
+## 分页
+
+开启 `show-pagination` 后，表底会显示内置分页器。默认 `pagination-mode="client"`，组件会根据 `current-page` 和 `page-size` 从传入的 `data` 中切出当前页；如果表格需要全量展示，保持 `show-pagination` 为 `false` 即可隐藏分页元素并显示全部数据。
+
+```vue
+<XTable
+  :columns="columns"
+  :data="rows"
+  show-pagination
+  :page-size="10"
+  :page-sizes="[10, 20, 50]"
+/>
+```
+
+服务器分页时使用 `pagination-mode="server"`。组件不会切分 `data`，只把当前页、每页条数、总数和页数通过事件抛出，业务侧收到事件后请求服务器并替换 `data`。
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { XTable, type TablePaginationChangePayload } from 'x.ui'
+
+const page = ref(1)
+const pageSize = ref(20)
+const total = ref(0)
+const rows = ref([])
+
+function handlePaginationChange(payload: TablePaginationChangePayload) {
+  page.value = payload.currentPage
+  pageSize.value = payload.pageSize
+  loadRows()
+}
+</script>
+
+<template>
+  <XTable
+    v-model:current-page="page"
+    v-model:page-size="pageSize"
+    :columns="columns"
+    :data="rows"
+    :total="total"
+    show-pagination
+    pagination-mode="server"
+    @pagination-change="handlePaginationChange"
+  />
+</template>
+```
+
 ## 列设置
 
-通过 `column-settings` 可以控制列排序、冻结、默认对齐、比例宽度和固定像素宽度。也可以在 `top` 插槽中使用 `columnSettings`、`updateColumnSetting`、`moveColumnSetting`、`reorderColumnSetting`、`resetColumnSettings` 构建自定义列设置入口，例如表顶只放一个“列设置”按钮，点击后用 `XDialog` 打开配置弹窗；弹窗内可以参考 Histoire 示例，用列名或拖拽手柄把列拖到目标列的上方或下方完成排序。
+通过 `column-settings` 可以控制列排序、冻结、默认对齐、比例宽度和固定像素宽度。开启 `show-column-settings` 后，表格会在表顶内置列设置图标按钮；也可以在 `top` 插槽中使用 `columnSettings`、`updateColumnSetting`、`moveColumnSetting`、`reorderColumnSetting`、`resetColumnSettings` 构建具体设置面板。弹窗内可以参考 Histoire 示例，用列名或拖拽手柄把列拖到目标列的上方或下方完成排序。
 
 ```vue
 <XTable
@@ -149,6 +211,24 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |
 | rowDraggable | 是否开启行拖拽排序 | `boolean` | `false` |
 | columnResizable | 是否允许通过表头拖拽调整列宽 | `boolean` | `true` |
+| showColumnSettings | 是否显示内置列设置图标按钮 | `boolean` | `false` |
+| topBackgroundColor | 表顶插槽容器背景色，支持 CSS 颜色值 | `string` | - |
+| bottomBackgroundColor | 表底插槽容器背景色，支持 CSS 颜色值 | `string` | - |
+| headerBackgroundColor | 表头区域背景色，支持 CSS 颜色值 | `string` | - |
+| headerTextColor | 表头区域文字颜色，支持 CSS 颜色值 | `string` | - |
+| bodyBackgroundColor | 表格内容区背景色，支持 CSS 颜色值 | `string` | - |
+| bodyStripeBackgroundColor | 表格内容区斑马纹背景色，作用于偶数数据行，默认透明 | `string` | `'transparent'` |
+| bodyTextColor | 表格内容区文字颜色，支持 CSS 颜色值 | `string` | - |
+| horizontalBorderColor | 表格横向边框颜色，影响表格上下边框、表头分隔线和行分隔线 | `string` | - |
+| horizontalBorderWidth | 表格横向边框宽度，数字会转为 px | `number \| string` | - |
+| verticalBorderColor | 表格竖向边框颜色，影响表格左右边框和列分隔线 | `string` | - |
+| verticalBorderWidth | 表格竖向边框宽度，数字会转为 px | `number \| string` | - |
+| showPagination | 是否显示表底内置分页器，关闭时显示全部传入数据 | `boolean` | `false` |
+| paginationMode | 分页模式，客户端分页会切分本地数据，服务器分页只抛出翻页事件 | `'client' \| 'server'` | `'client'` |
+| currentPage | 当前页，支持 `v-model:current-page` | `number` | `1` |
+| pageSize | 每页条数，支持 `v-model:page-size` | `number` | `10` |
+| total | 总条数，服务器分页时用于计算页数；未设置时使用 `data.length` | `number` | - |
+| pageSizes | 每页条数选项 | `number[]` | `[10, 20, 50, 100]` |
 | actionsWidth | 操作列宽度 | `number \| string` | `160` |
 | fillHeight | 是否撑满父元素高度 | `boolean` | `false` |
 
@@ -174,12 +254,24 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | widthRatio | 列宽比例，按表格可视宽度百分比分配 | `number` | - |
 | width | 固定列宽 px，优先级高于 `widthRatio` | `number` | - |
 
+## TablePaginationChangePayload
+
+| 参数 | 说明 | 类型 |
+| --- | --- | --- |
+| currentPage | 当前页 | `number` |
+| pageSize | 每页条数 | `number` |
+| total | 总条数 | `number` |
+| pageCount | 总页数 | `number` |
+| mode | 分页模式 | `'client' \| 'server'` |
+| pageSizeChanged | 是否由每页条数变化触发 | `boolean` |
+
 ## Events
 
 | 名称 | 说明 | 参数 |
 | --- | --- | --- |
 | update:columnSettings | 列设置变化时触发 | `TableColumnSetting[]` |
 | column-settings-change | 列设置变化时触发 | `TableColumnSetting[]` |
+| column-settings-click | 点击内置列设置图标按钮时触发 | `TableColumnSetting[]` |
 | update:selectedRowKeys | 选中行变化时触发 | `string[]` |
 | selection-change | 选中行变化时触发，包含选中 key 和行数据 | `{ keys, rows }` |
 | update:selectedCellKeys | 选中单元格变化时触发 | `string[]` |
@@ -190,16 +282,32 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | row-dblclick | 双击数据行时触发，包含当前行、行索引、行 key 和原始鼠标事件 | `TableRowClickPayload` |
 | column-resize | 表头拖拽调整列宽时触发，包含列、列 key、新旧宽度和最新列设置 | `TableColumnResizePayload` |
 | row-reorder | 行拖拽排序完成时触发，业务侧应使用 `rows` 更新数据源 | `TableRowReorderPayload` |
+| update:currentPage | 当前页变化时触发，支持 `v-model:current-page` | `number` |
+| update:pageSize | 每页条数变化时触发，支持 `v-model:page-size` | `number` |
+| page-change | 当前页变化时触发 | `TablePaginationChangePayload` |
+| page-size-change | 每页条数变化时触发 | `TablePaginationChangePayload` |
+| pagination-change | 当前页或每页条数变化时触发，适合服务器分页统一请求数据 | `TablePaginationChangePayload` |
 
 ## Slots
 
 | 名称 | 说明 | 参数 |
 | --- | --- | --- |
-| top | 自定义表顶区域，可用于列设置 | `{ columns, data, columnSettings, selectedRowKeys, selectedCellKeys, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings }` |
-| bottom | 自定义表底区域 | `{ columns, data, columnSettings, selectedRowKeys, selectedCellKeys, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings }` |
+| top | 自定义表顶区域，可用于列设置 | `{ columns, data, visibleData, columnSettings, selectedRowKeys, selectedCellKeys, pagination, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings, setPage, setPageSize }` |
+| bottom | 自定义表底区域，可和内置分页器同时显示 | `{ columns, data, visibleData, columnSettings, selectedRowKeys, selectedCellKeys, pagination, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings, setPage, setPageSize }` |
 | cell-[key] | 自定义指定列单元格 | `{ row, value, column, rowIndex }` |
 | editor-[key] | 自定义指定列编辑器 | `{ row, value, modelValue, column, rowIndex, updateModelValue, commit, commitValue, cancel }` |
 | row-actions | 自定义操作列内容，需要 `showActions` | `{ row, rowIndex }` |
+
+## Exposes
+
+| 名称 | 说明 | 类型 |
+| --- | --- | --- |
+| getColumnSettings | 获取当前列设置 | `() => TableColumnSetting[]` |
+| setColumnSettings | 设置列配置 | `(settings: TableColumnSetting[]) => void` |
+| resetColumnSettings | 重置列配置 | `() => void` |
+| getPagination | 获取当前分页状态 | `() => TablePaginationState` |
+| setPage | 设置当前页，并触发分页事件 | `(page: number) => void` |
+| setPageSize | 设置每页条数，并触发分页事件 | `(pageSize: number) => void` |
 
 ## 手动验收建议
 
@@ -208,6 +316,6 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 - 检查 `top`、`bottom`、`cell-[key]`、`row-actions` 插槽是否能正常渲染。
 - 开启 `show-selection` 后，检查行选、单元格点击选择、Tab / Shift+Tab 横向移动选区、Ctrl/Command 多选、拖拽框选、手柄调整选区、选择行列勾选和已选数量是否正确；再开启 `editable`，确认普通单元格点击不会切换行选，只能通过选择列勾选行，双击单元格或选中单元格后直接输入字符都可以进入编辑并提交新值。
 - 开启 `row-draggable` 后，从拖拽列拖拽数据行，检查拖拽高亮和排序结果是否正确；从普通单元格开始拖动不应触发行排序。
-- 点击表顶“列设置”按钮，在 `XDialog` 弹窗中检查列名拖拽排序、左/右冻结、对齐、比例宽度和 px 宽度是否生效。
+- 开启 `show-column-settings` 后，点击表顶列设置图标按钮，在 `XDialog` 弹窗中检查列名拖拽排序、左/右冻结、对齐、比例宽度和 px 宽度是否生效。
 - 在窄容器中检查横向滚动和文本截断效果。
 - 开启 `fill-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。
