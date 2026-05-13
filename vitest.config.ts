@@ -6,6 +6,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    server: {
+      deps: {
+        inline: ['vue-grid-layout-v3']
+      }
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html']

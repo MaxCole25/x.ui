@@ -53,7 +53,6 @@
   },
   "packageManager": "pnpm@10.10.0",
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.2",
     "@tiptap/core": "^2.27.2",
     "@tiptap/extension-code-block-lowlight": "^2.27.2",
     "@tiptap/extension-color": "^2.27.2",
@@ -75,10 +74,9 @@
     "@tiptap/extension-underline": "^2.27.2",
     "@tiptap/starter-kit": "^2.27.2",
     "@tiptap/vue-3": "^2.27.2",
-    "element-plus": "^2.14.0",
     "lowlight": "^3.3.0",
-    "remixicon": "^4.9.1"
-    ,
+    "remixicon": "^4.9.1",
+    "vue-grid-layout-v3": "^3.1.2",
     "xlsx": "^0.18.5"
   }
 }

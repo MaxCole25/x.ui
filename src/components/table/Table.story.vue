@@ -1,262 +1,418 @@
-﻿<script setup lang="ts">
-import { computed, ref } from 'vue'
-import { ElButton, ElSpace, ElTag } from 'element-plus'
+<script setup lang="ts">
+import { computed, reactive, ref } from 'vue'
+import { XDialog } from '../dialog'
+import { XRadio } from '../radio'
+import { XSwitch } from '../switch'
 import { XTable } from './index'
-import type { TableColumn, TableRowKey, TableSize } from './src/types'
+import type { TableColumn, TableColumnSetting, TableReorderPosition, TableRowReorderPayload, TableSelectionMode } from './src/types'
 import '../../styles/index.css'
 
 type DemoRow = Record<string, unknown> & {
   id: number
   component: string
-  category: 'Display' | 'Input' | 'Feedback'
-  status: 'stable' | 'beta' | 'deprecated'
+  category: string
   owner: string
-  usedBy: number
+  count: number
   updatedAt: string
-  enabled: boolean
-  priority: 'P0' | 'P1' | 'P2'
-  assigneeId: number
-  note: string
 }
-
-const loading = ref(false)
-const selectedCount = ref(0)
-const latestEvent = ref('暂无事件')
-const enableSelection = ref(true)
-const enablePagination = ref(true)
-const enableActions = ref(true)
-const enableRowDrag = ref(true)
-const enableColumnDrag = ref(true)
-const compactRows = ref(false)
-const enableEditable = ref(true)
-const dirtyCount = ref(0)
-const density = ref<TableSize>('default')
-
-const assignees = [
-  { id: 1, name: '林舟', team: 'Platform Team' },
-  { id: 2, name: '周宁', team: 'UI Team' },
-  { id: 3, name: '陈墨', team: 'Ops Team' }
-]
-
-const columns: TableColumn[] = [
-  { key: 'component', label: '组件', minWidth: 180, searchable: true, fixed: 'left' },
-  {
-    key: 'category',
-    label: '分类',
-    width: 120,
-    type: 'tag',
-    options: [
-      { label: 'Display', value: 'Display', type: 'primary' },
-      { label: 'Input', value: 'Input', type: 'success' },
-      { label: 'Feedback', value: 'Feedback', type: 'warning' }
-    ]
-  },
-  {
-    key: 'status',
-    label: '状态',
-    width: 120,
-    type: 'tag',
-    options: [
-      { label: 'stable', value: 'stable', type: 'success' },
-      { label: 'beta', value: 'beta', type: 'warning' },
-      { label: 'deprecated', value: 'deprecated', type: 'danger' }
-    ]
-  },
-  { key: 'owner', label: '负责人', width: 140, searchable: true },
-  { key: 'note', label: '备注', minWidth: 180, type: 'input', editable: true, placeholder: '输入备注' },
-  {
-    key: 'priority',
-    label: '优先级',
-    width: 120,
-    type: 'select',
-    editable: true,
-    options: [
-      { label: 'P0', value: 'P0', type: 'danger' },
-      { label: 'P1', value: 'P1', type: 'warning' },
-      { label: 'P2', value: 'P2', type: 'info' }
-    ]
-  },
-  {
-    key: 'assigneeId',
-    label: '经办人',
-    width: 140,
-    type: 'dropdown',
-    editable: true,
-    valueKey: 'id',
-    labelKey: 'name',
-    dialogTitle: '选择经办人',
-    dialogColumns: [
-      { key: 'name', label: '姓名', minWidth: 120 },
-      { key: 'team', label: '团队', minWidth: 180 }
-    ],
-    dialogData: assignees
-  },
-  { key: 'usedBy', label: '使用数', width: 100, align: 'right', sortable: true },
-  { key: 'updatedAt', label: '更新时间', minWidth: 180, type: 'date', sortable: true },
-  { key: 'enabled', label: '启用', width: 100, type: 'boolean' }
-]
 
 const rows = ref<DemoRow[]>([
-  { id: 1, component: 'XTable', category: 'Display', status: 'stable', owner: 'Platform Team', usedBy: 14, updatedAt: '2026-04-10T09:30:00Z', enabled: true, priority: 'P0', assigneeId: 1, note: '核心表格' },
-  { id: 2, component: 'XDialog', category: 'Feedback', status: 'beta', owner: 'UI Team', usedBy: 7, updatedAt: '2026-04-09T13:10:00Z', enabled: true, priority: 'P1', assigneeId: 2, note: '确认交互' },
-  { id: 3, component: 'XTabs', category: 'Display', status: 'stable', owner: 'Platform Team', usedBy: 10, updatedAt: '2026-04-08T05:45:00Z', enabled: true, priority: 'P1', assigneeId: 1, note: '页签容器' },
-  { id: 4, component: 'XSearchForm', category: 'Input', status: 'beta', owner: 'Ops Team', usedBy: 5, updatedAt: '2026-04-07T11:20:00Z', enabled: true, priority: 'P2', assigneeId: 3, note: '组合查询' },
-  { id: 5, component: 'XLegacyGrid', category: 'Display', status: 'deprecated', owner: 'Legacy Team', usedBy: 2, updatedAt: '2026-03-29T02:05:00Z', enabled: false, priority: 'P2', assigneeId: 2, note: '准备下线' },
-  { id: 6, component: 'XDrawer', category: 'Display', status: 'stable', owner: 'Platform Team', usedBy: 9, updatedAt: '2026-04-06T08:00:00Z', enabled: true, priority: 'P1', assigneeId: 1, note: '侧边面板' },
-  { id: 7, component: 'XForm', category: 'Input', status: 'beta', owner: 'Ops Team', usedBy: 6, updatedAt: '2026-04-05T10:30:00Z', enabled: true, priority: 'P0', assigneeId: 3, note: '表单能力' },
-  { id: 8, component: 'XSelect', category: 'Input', status: 'stable', owner: 'UI Team', usedBy: 12, updatedAt: '2026-04-04T06:40:00Z', enabled: true, priority: 'P2', assigneeId: 2, note: '选择器' },
-  { id: 9, component: 'XInput', category: 'Input', status: 'stable', owner: 'Platform Team', usedBy: 15, updatedAt: '2026-04-03T07:15:00Z', enabled: true, priority: 'P1', assigneeId: 1, note: '输入框' },
-  { id: 10, component: 'XSwitch', category: 'Input', status: 'stable', owner: 'UI Team', usedBy: 11, updatedAt: '2026-04-02T09:55:00Z', enabled: true, priority: 'P2', assigneeId: 2, note: '开关' },
-  { id: 11, component: 'XDatePicker', category: 'Input', status: 'beta', owner: 'Ops Team', usedBy: 4, updatedAt: '2026-04-01T05:05:00Z', enabled: true, priority: 'P1', assigneeId: 3, note: '日期选择' },
-  { id: 12, component: 'XTag', category: 'Display', status: 'stable', owner: 'Platform Team', usedBy: 13, updatedAt: '2026-03-31T03:45:00Z', enabled: true, priority: 'P2', assigneeId: 1, note: '标签' }
+  { id: 1, component: 'XTable', category: 'Display', owner: 'Platform Team', count: 14, updatedAt: '2026-04-10' },
+  { id: 2, component: 'XDialog', category: 'Feedback', owner: 'UI Team', count: 7, updatedAt: '2026-04-09' },
+  { id: 3, component: 'XTabs', category: 'Display', owner: 'Platform Team', count: 10, updatedAt: '2026-04-08' },
+  { id: 4, component: 'XInput', category: 'Input', owner: 'UI Team', count: 15, updatedAt: '2026-04-03' },
+  { id: 5, component: 'XSelect', category: 'Input', owner: 'UI Team', count: 12, updatedAt: '2026-04-02' },
+  { id: 6, component: 'XSwitch', category: 'Input', owner: 'Platform Team', count: 11, updatedAt: '2026-04-01' }
 ])
 
-const pageSize = computed(() => (compactRows.value ? 5 : 8))
+const columns: TableColumn[] = [
+  { key: 'component', label: '组件', minWidth: 180 },
+  { key: 'category', label: '分类', width: 140 },
+  { key: 'owner', label: '负责人', minWidth: 160 },
+  { key: 'count', label: '使用数', width: 110, align: 'right', formatter: (value) => `${value} 次` },
+  { key: 'updatedAt', label: '更新时间', width: 140 }
+]
 
-function refreshRows() {
-  loading.value = true
-  latestEvent.value = '触发刷新'
-  window.setTimeout(() => {
-    loading.value = false
-  }, 360)
+const parentState = reactive({
+  width: 800,
+  height: 320,
+  autoWidth: false,
+  autoHeight: false,
+  fillHeight: true,
+  selectable: true,
+  showSelectionColumn: true,
+  editable: false,
+  selectionMode: 'row' as TableSelectionMode,
+  rowDraggable: true
+})
+const settingsDialogVisible = ref(false)
+const selectedRowKeys = ref<string[]>([])
+const selectedCellKeys = ref<string[]>([])
+const draggingColumnSettingKey = ref<string | null>(null)
+const dragOverColumnSettingKey = ref<string | null>(null)
+const columnSettingDragOverPosition = ref<TableReorderPosition>('after')
+
+const parentStyle = computed(() => ({
+  width: parentState.autoWidth ? '100%' : `${parentState.width}px`,
+  height: parentState.autoHeight ? 'auto' : `${parentState.height}px`
+}))
+
+const selectedText = computed(() => {
+  if (!parentState.selectable) {
+    return '未开启选择'
+  }
+
+  if (parentState.selectionMode === 'cell' && parentState.showSelectionColumn) {
+    return `已选 ${selectedRowKeys.value.length} 行 / ${selectedCellKeys.value.length} 个单元格`
+  }
+
+  return parentState.selectionMode === 'row' ? `已选 ${selectedRowKeys.value.length} 行` : `已选 ${selectedCellKeys.value.length} 个单元格`
+})
+
+function getColumnLabel(key: string) {
+  return columns.find((column) => column.key === key)?.label ?? key
 }
 
-function handleSelectionChange(selectedRows: Record<string, unknown>[]) {
-  selectedCount.value = selectedRows.length
-  latestEvent.value = `选择 ${selectedRows.length} 行`
+function updateSettingNumber(
+  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void,
+  key: string,
+  field: 'width' | 'widthRatio',
+  event: Event
+) {
+  const value = (event.target as HTMLInputElement).value
+  updateColumnSetting(key, { [field]: value === '' ? undefined : Number(value) })
 }
 
-function handleRowOrderChange(rowKeys: TableRowKey[]) {
-  latestEvent.value = `行顺序：${rowKeys.join(', ')}`
+function updateSettingAlign(
+  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void,
+  key: string,
+  value: string | number | boolean
+) {
+  updateColumnSetting(key, { align: value as TableColumnSetting['align'] })
 }
 
-function handleColumnOrderChange(columnKeys: string[]) {
-  latestEvent.value = `列顺序：${columnKeys.join(', ')}`
+function updateSettingFixed(
+  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void,
+  key: string,
+  value: string | number | boolean
+) {
+  updateColumnSetting(key, { fixed: value as TableColumnSetting['fixed'] })
 }
 
-function handleDirtyChange(changes: unknown[]) {
-  dirtyCount.value = changes.length
+function startColumnSettingDrag(key: string, event: DragEvent) {
+  draggingColumnSettingKey.value = key
+  dragOverColumnSettingKey.value = null
+  columnSettingDragOverPosition.value = 'after'
+  event.dataTransfer?.setData('text/plain', key)
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+  }
 }
 
-function handleSubmitChanges(payload: { changes: unknown[] }) {
-  latestEvent.value = `统一提交 ${payload.changes.length} 项脏数据`
-  dirtyCount.value = 0
+function updateColumnSettingDragTarget(key: string, event: DragEvent) {
+  if (!draggingColumnSettingKey.value || draggingColumnSettingKey.value === key) {
+    return
+  }
+
+  event.preventDefault()
+  const target = event.currentTarget as HTMLElement
+  const rect = target.getBoundingClientRect()
+  const midpoint = rect.top + rect.height / 2
+  dragOverColumnSettingKey.value = key
+  columnSettingDragOverPosition.value = event.clientY < midpoint ? 'before' : 'after'
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+  }
 }
 
-function handleRowDblclick(payload: { rowKey: TableRowKey }) {
-  latestEvent.value = `双击行：${payload.rowKey}`
+function dropColumnSetting(
+  reorderColumnSetting: (key: string, targetKey: string, position: TableReorderPosition) => void,
+  key: string,
+  event: DragEvent
+) {
+  if (!draggingColumnSettingKey.value) {
+    return
+  }
+
+  event.preventDefault()
+  reorderColumnSetting(draggingColumnSettingKey.value, key, columnSettingDragOverPosition.value)
+  resetColumnSettingDrag()
 }
+
+function isColumnSettingDragOver(key: string, position: TableReorderPosition) {
+  return dragOverColumnSettingKey.value === key && columnSettingDragOverPosition.value === position
+}
+
+function resetColumnSettingDrag() {
+  draggingColumnSettingKey.value = null
+  dragOverColumnSettingKey.value = null
+  columnSettingDragOverPosition.value = 'after'
+}
+
+function handleRowReorder(payload: TableRowReorderPayload) {
+  rows.value = payload.rows as DemoRow[]
+}
+
+function updateSelectionMode(value: string | number | boolean) {
+  parentState.selectionMode = value as TableSelectionMode
+}
+
 </script>
 
 <template>
   <Story title="组件/表格 Table" group="components">
-    <Variant title="完整能力">
-      <div class="table-story">
+    <Variant title="父元素尺寸交互">
+      <div class="table-story__playground">
         <div class="table-story__controls">
-          <label><input v-model="enableSelection" type="checkbox" /> 多选</label>
-          <label><input v-model="enablePagination" type="checkbox" /> 分页</label>
-          <label><input v-model="enableActions" type="checkbox" /> 操作列</label>
-          <label><input v-model="enableRowDrag" type="checkbox" /> 行拖拽</label>
-          <label><input v-model="enableColumnDrag" type="checkbox" /> 列拖拽</label>
-          <label><input v-model="enableEditable" type="checkbox" /> 可编辑</label>
-          <label><input v-model="compactRows" type="checkbox" /> 小分页</label>
           <label>
-            密度
-            <select v-model="density">
-              <option value="large">宽松</option>
-              <option value="default">标准</option>
-              <option value="small">紧凑</option>
-            </select>
+            <span>父元素宽度</span>
+            <input
+              v-model.number="parentState.width"
+              type="number"
+              min="320"
+              max="960"
+              step="20"
+              :disabled="parentState.autoWidth"
+            />
           </label>
-          <ElTag type="info" effect="plain">已选 {{ selectedCount }} 行</ElTag>
-          <ElTag type="warning" effect="plain">脏数据 {{ dirtyCount }} 项</ElTag>
-          <ElTag effect="plain">{{ latestEvent }}</ElTag>
+          <label>
+            <span>父元素高度</span>
+            <input
+              v-model.number="parentState.height"
+              type="number"
+              min="180"
+              max="520"
+              step="20"
+              :disabled="parentState.autoHeight"
+            />
+          </label>
+          <label>
+            <input v-model="parentState.autoHeight" type="checkbox" />
+            <span>父元素高度自适应</span>
+          </label>
+          <label>
+            <input v-model="parentState.autoWidth" type="checkbox" />
+            <span>父元素宽度自适应</span>
+          </label>
+          <label>
+            <input v-model="parentState.fillHeight" type="checkbox" />
+            <span>撑满父元素高度</span>
+          </label>
+          <div class="table-story__control-item">
+            <span>表格可选</span>
+            <XSwitch v-model="parentState.selectable" size="sm" />
+          </div>
+          <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.selectable }">
+            <span>选择模式</span>
+            <XRadio
+              :model-value="parentState.selectionMode"
+              value="row"
+              label="行选"
+              name="table-selection-mode"
+              size="sm"
+              :disabled="!parentState.selectable"
+              @update:model-value="updateSelectionMode"
+            />
+            <XRadio
+              :model-value="parentState.selectionMode"
+              value="cell"
+              label="单元格选择"
+              name="table-selection-mode"
+              size="sm"
+              :disabled="!parentState.selectable"
+              @update:model-value="updateSelectionMode"
+            />
+          </div>
+          <div
+            class="table-story__control-item"
+            :class="{ 'is-disabled': !parentState.selectable }"
+          >
+            <span>选择行列</span>
+            <XSwitch
+              v-model="parentState.showSelectionColumn"
+              size="sm"
+              :disabled="!parentState.selectable"
+            />
+          </div>
+          <div class="table-story__control-item">
+            <span>可编辑</span>
+            <XSwitch v-model="parentState.editable" size="sm" />
+          </div>
+          <label>
+            <input v-model="parentState.rowDraggable" type="checkbox" />
+            <span>行拖拽排序</span>
+          </label>
         </div>
 
-        <div class="table-story__fill">
+        <div class="table-story__parent" :style="parentStyle">
           <XTable
-            title="组件使用情况"
+            v-model:data="rows"
+            v-model:selected-row-keys="selectedRowKeys"
+            v-model:selected-cell-keys="selectedCellKeys"
             :columns="columns"
-            :data="rows"
             row-key="id"
-            :loading="loading"
-            searchable
-            :selectable="enableSelection"
-            show-index
-            show-metrics
-            fill-height
-            :editable="enableEditable"
-            v-model:density="density"
-            :show-pagination="enablePagination"
-            :show-actions="enableActions"
-            :draggable-rows="enableRowDrag"
-            :draggable-columns="enableColumnDrag"
-            :page-size="pageSize"
-            :page-sizes="[5, 8, 12]"
-            storage-key="story-x-table"
-            @refresh="refreshRows"
-            @selection-change="handleSelectionChange"
-            @row-order-change="handleRowOrderChange"
-            @column-order-change="handleColumnOrderChange"
-            @dirty-change="handleDirtyChange"
-            @submit-changes="handleSubmitChanges"
-            @row-dblclick="handleRowDblclick"
+            :fill-height="parentState.fillHeight"
+            :show-selection="parentState.selectable"
+            :show-selection-column="parentState.showSelectionColumn"
+            :editable="parentState.editable"
+            :selection-mode="parentState.selectionMode"
+            :row-draggable="parentState.rowDraggable"
+            @row-reorder="handleRowReorder"
           >
-            <template #toolbar-left-extra>
-              <ElTag type="success" effect="plain">撑满父元素 / 内部滚动</ElTag>
+            <template #top="{ columnSettings, updateColumnSetting, reorderColumnSetting, resetColumnSettings }">
+              <div class="table-story__topbar">
+                <button type="button" @click="settingsDialogVisible = true">列设置</button>
+              </div>
+
+              <XDialog
+                v-model="settingsDialogVisible"
+                title="列设置"
+                :width="900"
+                :height="560"
+                :min-width="680"
+                :min-height="420"
+              >
+                <div class="table-story__settings" @mouseup="resetColumnSettingDrag" @mouseleave="resetColumnSettingDrag">
+                  <div class="table-story__setting-header" aria-hidden="true">
+                    <span></span>
+                    <span>列名</span>
+                    <span>冻结</span>
+                    <span>对齐</span>
+                    <span>比例%</span>
+                    <span>宽度px</span>
+                  </div>
+                  <div
+                    v-for="setting in columnSettings"
+                    :key="setting.key"
+                    class="table-story__setting-row"
+                    :class="{
+                      'is-dragging': draggingColumnSettingKey === setting.key,
+                      'is-drag-over-before': isColumnSettingDragOver(setting.key, 'before'),
+                      'is-drag-over-after': isColumnSettingDragOver(setting.key, 'after')
+                    }"
+                    draggable="true"
+                    @dragstart="startColumnSettingDrag(setting.key, $event)"
+                    @dragover="updateColumnSettingDragTarget(setting.key, $event)"
+                    @drop="dropColumnSetting(reorderColumnSetting, setting.key, $event)"
+                    @dragend="resetColumnSettingDrag"
+                  >
+                    <div class="table-story__setting-drag-cell">
+                      <button
+                        type="button"
+                        class="table-story__drag-button"
+                        aria-label="拖拽排序"
+                        title="拖拽排序"
+                        draggable="true"
+                        @dragstart="startColumnSettingDrag(setting.key, $event)"
+                      >
+                        <svg class="table-story__drag-icon" viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M5.5 3.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm7-9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
+                        </svg>
+                      </button>
+                    </div>
+                    <span class="table-story__setting-name" title="拖拽排序">{{ getColumnLabel(setting.key) }}</span>
+                    <div class="table-story__radio-group">
+                      <XRadio
+                        :model-value="setting.fixed"
+                        value="left"
+                        :name="`table-fixed-${setting.key}`"
+                        label="左"
+                        size="sm"
+                        @update:model-value="updateSettingFixed(updateColumnSetting, setting.key, $event)"
+                      />
+                      <XRadio
+                        :model-value="setting.fixed"
+                        value="none"
+                        :name="`table-fixed-${setting.key}`"
+                        label="无"
+                        size="sm"
+                        @update:model-value="updateSettingFixed(updateColumnSetting, setting.key, $event)"
+                      />
+                      <XRadio
+                        :model-value="setting.fixed"
+                        value="right"
+                        :name="`table-fixed-${setting.key}`"
+                        label="右"
+                        size="sm"
+                        @update:model-value="updateSettingFixed(updateColumnSetting, setting.key, $event)"
+                      />
+                    </div>
+                    <div class="table-story__radio-group">
+                      <XRadio
+                        :model-value="setting.align"
+                        value="left"
+                        :name="`table-align-${setting.key}`"
+                        label="左"
+                        size="sm"
+                        @update:model-value="updateSettingAlign(updateColumnSetting, setting.key, $event)"
+                      />
+                      <XRadio
+                        :model-value="setting.align"
+                        value="center"
+                        :name="`table-align-${setting.key}`"
+                        label="中"
+                        size="sm"
+                        @update:model-value="updateSettingAlign(updateColumnSetting, setting.key, $event)"
+                      />
+                      <XRadio
+                        :model-value="setting.align"
+                        value="right"
+                        :name="`table-align-${setting.key}`"
+                        label="右"
+                        size="sm"
+                        @update:model-value="updateSettingAlign(updateColumnSetting, setting.key, $event)"
+                      />
+                    </div>
+                    <label>
+                      <input
+                        :value="setting.widthRatio ?? ''"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="5"
+                        placeholder="-"
+                        @input="updateSettingNumber(updateColumnSetting, setting.key, 'widthRatio', $event)"
+                      />
+                    </label>
+                    <label>
+                      <input
+                        :value="setting.width ?? ''"
+                        type="number"
+                        min="0"
+                        step="10"
+                        placeholder="-"
+                        @input="updateSettingNumber(updateColumnSetting, setting.key, 'width', $event)"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <template #footer>
+                  <div class="table-story__dialog-footer">
+                    <button type="button" @click="resetColumnSettings">重置</button>
+                    <button type="button" @click="settingsDialogVisible = false">关闭</button>
+                  </div>
+                </template>
+              </XDialog>
             </template>
 
-            <template #cell-component="{ row }">
-              <strong>{{ row.component }}</strong>
-            </template>
-
-            <template #row-actions="{ row }">
-              <ElSpace>
-                <ElButton size="small" link type="primary">查看 {{ row.component }}</ElButton>
-                <ElButton size="small" link type="danger">禁用</ElButton>
-              </ElSpace>
+            <template #bottom="{ data }">
+              <div class="table-story__footer">
+                <span class="table-story__total">共 {{ data.length }} 条记录</span>
+                <span class="table-story__selected">{{ selectedText }}</span>
+              </div>
             </template>
           </XTable>
         </div>
-      </div>
-    </Variant>
-
-    <Variant title="简洁表格">
-      <XTable
-        title="无工具栏操作的简洁表格"
-        :columns="columns.slice(0, 4)"
-        :data="rows.slice(0, 4)"
-        :selectable="false"
-        :draggable-rows="false"
-        :draggable-columns="false"
-        :show-pagination="false"
-        :show-actions="false"
-      />
-    </Variant>
-
-    <Variant title="空态图片">
-      <div style="height: 360px">
-        <XTable
-          title="暂无数据的表格"
-          :columns="columns.slice(0, 4)"
-          :data="[]"
-          fill-height
-          :selectable="false"
-          :draggable-rows="false"
-          :draggable-columns="false"
-          :show-pagination="false"
-          empty-text="没有匹配的数据"
-          empty-image=""
-        />
       </div>
     </Variant>
   </Story>
 </template>
 
 <style scoped>
-.table-story {
+.table-story__playground {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .table-story__controls {
@@ -264,14 +420,285 @@ function handleRowDblclick(payload: { rowKey: TableRowKey }) {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.table-story__controls label {
+  align-items: center;
+  color: #334155;
+  display: inline-flex;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.table-story__control-item {
+  align-items: center;
+  color: #334155;
+  display: inline-flex;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.table-story__control-item.is-disabled {
+  color: #94a3b8;
+}
+
+.table-story__controls input[type='number'] {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  min-height: 32px;
+  padding: 0 8px;
+  width: 96px;
+}
+
+.table-story__controls input[type='number']:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.table-story__controls input[type='checkbox'] {
+  margin: 0;
+}
+
+.table-story__parent {
+  background: #dcfce7;
+  border: 1px dashed #86efac;
+  box-sizing: border-box;
+  display: grid;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.table-story__topbar {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.table-story__footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+.table-story__total {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.table-story__selected {
+  color: #64748b;
   font-size: 13px;
 }
 
-.table-story__fill {
-  border: 1px solid #d7e3ee;
-  border-radius: 10px;
-  height: 560px;
-  padding: 12px;
+.table-story__topbar button,
+.table-story__dialog-footer button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #334155;
+  cursor: pointer;
+  min-height: 28px;
+  padding: 0 8px;
 }
-</style>
 
+.table-story__dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.table-story__settings {
+  display: grid;
+  gap: 0;
+  min-width: 680px;
+  overflow-x: auto;
+}
+
+.table-story__setting-header,
+.table-story__setting-row {
+  grid-template-columns: 36px minmax(90px, 1fr) 132px 180px 80px 80px;
+}
+
+.table-story__setting-header {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px 6px 0 0;
+  color: #475569;
+  display: grid;
+  font-size: 12px;
+  font-weight: 600;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table-story__setting-header span {
+  min-width: 0;
+  text-align: center;
+}
+
+.table-story__setting-header span:first-child {
+  text-align: center;
+}
+
+.table-story__setting-header span:nth-child(2) {
+  text-align: left;
+}
+
+.table-story__setting-row {
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  display: grid;
+  gap: 8px;
+  min-height: 52px;
+  padding: 8px 10px;
+  position: relative;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    margin 140ms ease,
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.table-story__setting-row:last-child {
+  border-radius: 0 0 6px 6px;
+}
+
+.table-story__setting-row.is-dragging {
+  opacity: 0.48;
+  transform: scale(0.998);
+}
+
+.table-story__setting-row.is-drag-over-before,
+.table-story__setting-row.is-drag-over-after {
+  background: #f0f9ff;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
+}
+
+.table-story__setting-row.is-drag-over-before {
+  margin-top: 10px;
+}
+
+.table-story__setting-row.is-drag-over-after {
+  margin-bottom: 10px;
+}
+
+.table-story__setting-row.is-drag-over-before::before,
+.table-story__setting-row.is-drag-over-after::after {
+  background: var(--x-color-primary, #155e75);
+  border-radius: 999px;
+  content: "";
+  height: 2px;
+  left: 10px;
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+}
+
+.table-story__setting-row.is-drag-over-before::before {
+  top: -6px;
+}
+
+.table-story__setting-row.is-drag-over-after::after {
+  bottom: -6px;
+}
+
+.table-story__setting-drag-cell {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.table-story__drag-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #94a3b8;
+  cursor: grab;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  padding: 0;
+  width: 28px;
+}
+
+.table-story__drag-button:active {
+  cursor: grabbing;
+}
+
+.table-story__setting-row.is-dragging .table-story__drag-button,
+.table-story__setting-row.is-dragging .table-story__setting-name {
+  cursor: grabbing;
+}
+
+.table-story__drag-button:hover {
+  background: #eef2f7;
+  color: #475569;
+}
+
+.table-story__drag-icon {
+  fill: currentColor;
+  height: 16px;
+  width: 16px;
+}
+
+.table-story__setting-name {
+  color: #0f172a;
+  cursor: grab;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-story__setting-row label {
+  align-items: center;
+  color: #334155;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 4px;
+  justify-content: center;
+}
+
+.table-story__radio-group {
+  align-items: center;
+  color: #334155;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 6px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.table-story__radio-group :deep(.x-radio) {
+  font-size: 12px;
+}
+
+.table-story__setting-row input {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: #0f172a;
+  min-height: 28px;
+  padding: 0 6px;
+}
+
+.table-story__setting-row input {
+  width: 72px;
+}
+
+</style>

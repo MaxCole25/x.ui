@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { XTabs } from './index'
-import type { TabItem, TabName, TabPosition, TabsReorderPayload, TabsSize } from './src/types'
+import type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsReorderPayload, TabsSize } from './src/types'
 import '../../styles/index.css'
 
 const active = ref<TabName>('dashboard')
 const position = ref<TabPosition>('top')
+const labelDirection = ref<TabsLabelDirection>('horizontal')
 const size = ref<TabsSize>('default')
 const events = ref<string[]>([])
 const tabs = ref<TabItem[]>([
-  { name: 'dashboard', label: '工作台', icon: 'ri-dashboard-3-line', avatarText: '工', refreshable: true },
+  { name: 'dashboard', label: '工作台', icon: 'ri-dashboard-3-line', avatarText: '工', locked: true, refreshable: true },
   { name: 'members', label: '成员管理', icon: 'ri-team-line', closable: true, refreshable: true },
   { name: 'logs', label: '操作日志', icon: 'ri-file-list-3-line', closable: true, lazy: true },
   { name: 'disabled', label: '禁用页签', icon: 'ri-forbid-2-line', disabled: true }
 ])
+const crowdedActive = ref<TabName>('crowded-1')
+const crowdedTabs = ref<TabItem[]>(
+  Array.from({ length: 14 }, (_, index) => ({
+    name: `crowded-${index + 1}`,
+    label: `较长页签 ${index + 1}`,
+    avatarText: String(index + 1),
+    closable: index > 0
+  }))
+)
 
 const config = reactive({
   closable: true,
@@ -25,8 +35,12 @@ const config = reactive({
   showRefreshIcon: true,
   borderRadius: 4,
   tabFontSize: 14,
+  tabMinWidth: 140,
   tabBorder: '1px solid #C7D7E8',
-  contentBorder: '1px solid #C7D7E8'
+  contentBorder: '1px solid #C7D7E8',
+  contentBackgroundColor: '#ffffff',
+  contextMenuBackgroundColor: '#ffffff',
+  contextMenuTextColor: '#102a43'
 })
 
 function pushEvent(message: string) {
@@ -63,6 +77,13 @@ function handleReorder(payload: TabsReorderPayload) {
   tabs.value = next
   pushEvent(`排序 ${payload.source} -> ${payload.position} ${payload.target}`)
 }
+
+function handleCrowdedAdd() {
+  const idx = crowdedTabs.value.length + 1
+  const name = `crowded-${idx}`
+  crowdedTabs.value.push({ name, label: `较长页签 ${idx}`, avatarText: String(idx), closable: true })
+  crowdedActive.value = name
+}
 </script>
 
 <template>
@@ -87,6 +108,11 @@ function handleReorder(payload: TabsReorderPayload) {
             px
           </label>
           <label>
+            最小宽度
+            <input v-model.number="config.tabMinWidth" type="number" min="72" max="240" style="width: 64px" />
+            px
+          </label>
+          <label>
             标签边框
             <input v-model="config.tabBorder" type="text" style="width: 150px" />
           </label>
@@ -94,11 +120,27 @@ function handleReorder(payload: TabsReorderPayload) {
             内容边框
             <input v-model="config.contentBorder" type="text" style="width: 150px" />
           </label>
+          <label>
+            内容背景
+            <input v-model="config.contentBackgroundColor" type="text" style="width: 120px" />
+          </label>
+          <label>
+            右键背景
+            <input v-model="config.contextMenuBackgroundColor" type="color" />
+          </label>
+          <label>
+            右键文字
+            <input v-model="config.contextMenuTextColor" type="color" />
+          </label>
           <select v-model="position">
             <option value="top">顶部</option>
             <option value="bottom">底部</option>
             <option value="left">左侧</option>
             <option value="right">右侧</option>
+          </select>
+          <select v-model="labelDirection">
+            <option value="horizontal">文字横排</option>
+            <option value="vertical">文字竖排</option>
           </select>
           <select v-model="size">
             <option value="large">大尺寸</option>
@@ -113,6 +155,7 @@ function handleReorder(payload: TabsReorderPayload) {
             :items="tabs"
             :size="size"
             :tab-position="position"
+            :label-direction="labelDirection"
             :closable="config.closable"
             :addable="config.addable"
             :draggable="config.draggable"
@@ -122,8 +165,12 @@ function handleReorder(payload: TabsReorderPayload) {
             :show-refresh-icon="config.showRefreshIcon"
             :border-radius="config.borderRadius"
             :tab-font-size="config.tabFontSize"
+            :tab-min-width="config.tabMinWidth"
             :tab-border="config.tabBorder"
             :content-border="config.contentBorder"
+            :content-background-color="config.contentBackgroundColor"
+            :context-menu-background-color="config.contextMenuBackgroundColor"
+            :context-menu-text-color="config.contextMenuTextColor"
             @tab-add="handleAdd"
             @tab-remove="handleRemove"
             @reorder="handleReorder"
@@ -156,6 +203,16 @@ function handleReorder(payload: TabsReorderPayload) {
           <div style="padding: 8px">自定义标签内容：{{ item.label }}</div>
         </template>
       </XTabs>
+    </Variant>
+
+    <Variant title="多页签滚动">
+      <div style="max-width: 520px; min-width: 0">
+        <XTabs v-model="crowdedActive" :items="crowdedTabs" closable addable @tab-add="handleCrowdedAdd">
+          <template #pane="{ item }">
+            <div style="padding: 8px">{{ item.label }}</div>
+          </template>
+        </XTabs>
+      </div>
     </Variant>
   </Story>
 </template>

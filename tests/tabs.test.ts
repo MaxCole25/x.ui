@@ -31,8 +31,12 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).toContain('--x-tabs-radius: 4px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-tab-border: 1px solid var(--x-color-border)')
     expect(wrapper.attributes('style')).toContain('--x-tabs-content-border: 1px solid var(--x-color-border)')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-content-bg: #fff')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-bg: #fff')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-text: var(--x-color-text)')
     expect(wrapper.attributes('style')).toContain('--x-tabs-item-height: 40px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 14px')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-width: 48px')
   })
 
   it('supports large and small tab sizes', () => {
@@ -69,20 +73,74 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 16px')
   })
 
-  it('applies custom border radius and region borders', () => {
+  it('exposes tab minimum width variable', () => {
+    const wrapper = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        tabMinWidth: 96
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-tabs-item-min-width: 96px')
+  })
+
+  it('supports vertical tab label direction', () => {
+    const wrapper = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        tabPosition: 'left',
+        labelDirection: 'vertical',
+        verticalWidth: 44,
+        verticalLabelMinHeight: 112
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-tabs--left')
+    expect(wrapper.classes()).toContain('is-vertical')
+    expect(wrapper.classes()).toContain('x-tabs--label-vertical')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-width: 44px')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-label-min-height: 112px')
+    expect(wrapper.find('.x-tabs__label-text').text()).toBe('A')
+  })
+
+  it('applies custom border radius and content region styles', () => {
     const wrapper = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
         borderRadius: '10px',
         tabBorder: '1px solid #7FD6F6',
-        contentBorder: '1px dashed #0B4A52'
+        contentBorder: '1px dashed #0B4A52',
+        contentBackgroundColor: '#f8fafc'
       }
     })
 
     expect(wrapper.attributes('style')).toContain('--x-tabs-radius: 10px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-tab-border: 1px solid #7FD6F6')
     expect(wrapper.attributes('style')).toContain('--x-tabs-content-border: 1px dashed #0B4A52')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-content-bg: #f8fafc')
+  })
+
+  it('exposes context menu color variables', async () => {
+    const wrapper = mount(XTabs, {
+      attachTo: document.body,
+      props: {
+        modelValue: 'a',
+        items,
+        contextMenuBackgroundColor: '#111827',
+        contextMenuTextColor: '#f8fafc'
+      }
+    })
+
+    await wrapper.find('.x-tabs__item').trigger('contextmenu', { clientX: 12, clientY: 24 })
+
+    const menu = document.body.querySelector('.x-tabs__menu') as HTMLElement | null
+    expect(menu?.getAttribute('style')).toContain('--x-tabs-context-menu-bg: #111827')
+    expect(menu?.getAttribute('style')).toContain('--x-tabs-context-menu-text: #f8fafc')
+
+    wrapper.unmount()
   })
 
   it('switches active tab', async () => {
@@ -187,6 +245,44 @@ describe('XTabs', () => {
     await tabButtons[1].trigger('drop')
 
     expect(wrapper.emitted('reorder')?.[0]).toEqual([{ source: 'a', target: 'b', position: 'after' }])
+  })
+
+  it('uses TabItem locked to block close, refresh, drag and show lock icon', async () => {
+    const wrapper = mount(XTabs, {
+      attachTo: document.body,
+      props: {
+        modelValue: 'a',
+        closable: true,
+        draggable: true,
+        showRefreshIcon: true,
+        items: [
+          { name: 'a', label: 'A', locked: true, refreshable: true },
+          { name: 'b', label: 'B', closable: true, refreshable: true }
+        ]
+      }
+    })
+    const tabButtons = wrapper.findAll('.x-tabs__item')
+    const rect = { left: 0, top: 0, width: 100, height: 40, right: 100, bottom: 40, x: 0, y: 0, toJSON: () => ({}) }
+    vi.spyOn(tabButtons[0].element, 'getBoundingClientRect').mockReturnValue(rect)
+
+    expect(wrapper.find('.x-tabs__lock').exists()).toBe(true)
+    expect(wrapper.findAll('.x-tabs__close')).toHaveLength(1)
+
+    await tabButtons[0].trigger('dragstart', { dataTransfer: { effectAllowed: '', setData: vi.fn() } })
+    await tabButtons[1].trigger('dragover', { clientX: 80, clientY: 10 })
+    await tabButtons[1].trigger('drop')
+    await tabButtons[1].trigger('dragstart', { dataTransfer: { effectAllowed: '', setData: vi.fn() } })
+    await tabButtons[0].trigger('dragover', { clientX: 20, clientY: 10 })
+    await tabButtons[0].trigger('drop')
+
+    await tabButtons[0].trigger('contextmenu')
+    document.body.querySelectorAll('.x-tabs__menu-item')[2].dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await tabButtons[1].trigger('contextmenu')
+    document.body.querySelectorAll('.x-tabs__menu-item')[5].dispatchEvent(new MouseEvent('click', { bubbles: true }))
+
+    expect(wrapper.emitted('reorder')).toBeUndefined()
+    expect(wrapper.emitted('tab-refresh')).toBeUndefined()
+    expect(wrapper.emitted('tab-remove')?.map((event) => event[0])).toEqual(['b'])
   })
 
   it('keeps locked tabs when closing all from the context menu', async () => {

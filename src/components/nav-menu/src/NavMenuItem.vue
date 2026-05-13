@@ -24,6 +24,7 @@ let closeTimer: ReturnType<typeof setTimeout> | null = null
 const hasChildren = computed(() => (props.item.children?.length ?? 0) > 0)
 const isActive = computed(() => props.item.key === props.activeKey)
 const shouldHideLabel = computed(() => props.mode === 'vertical' && props.collapsed && props.depth === 0)
+const isRemixIcon = computed(() => props.item.icon?.startsWith('ri-') ?? false)
 const iconText = computed(() => props.item.icon?.slice(0, 1).toUpperCase() ?? props.item.label.slice(0, 1).toUpperCase())
 
 function handleSelect() {
@@ -86,9 +87,14 @@ onBeforeUnmount(() => {
       :title="shouldHideLabel ? props.item.label : ''"
       @click="handleSelect"
     >
-      <span class="x-nav-menu-item__icon" aria-hidden="true">{{ iconText }}</span>
+      <span class="x-nav-menu-item__icon" aria-hidden="true">
+        <i v-if="isRemixIcon" :class="props.item.icon"></i>
+        <template v-else>{{ iconText }}</template>
+      </span>
       <span v-if="!shouldHideLabel" class="x-nav-menu-item__label">{{ props.item.label }}</span>
-      <span v-if="hasChildren && !shouldHideLabel" class="x-nav-menu-item__arrow" aria-hidden="true">▾</span>
+      <span v-if="hasChildren && !shouldHideLabel" class="x-nav-menu-item__arrow" aria-hidden="true">
+        <i :class="submenuOpen ? 'ri-arrow-drop-up-fill' : 'ri-arrow-drop-down-fill'"></i>
+      </span>
     </button>
 
     <ul

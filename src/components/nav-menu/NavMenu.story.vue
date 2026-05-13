@@ -33,7 +33,11 @@ const state = reactive({
   activeKey: 'dashboard',
   textColor: '#334e68',
   activeTextColor: '#ffffff',
-  activeBgColor: '#0e7490'
+  activeBgColor: '#0e7490',
+  fontSize: 14,
+  fontWeight: 400,
+  activeFontWeight: 600,
+  fontFamily: 'var(--x-font-family)'
 })
 
 function handleSelect(key: string) {
@@ -72,6 +76,22 @@ function handleSelect(key: string) {
             <span>激活背景色</span>
             <input v-model="state.activeBgColor" type="color" />
           </label>
+          <label>
+            <span>字号</span>
+            <input v-model.number="state.fontSize" type="number" min="11" max="24" />
+          </label>
+          <label>
+            <span>默认字重</span>
+            <input v-model.number="state.fontWeight" type="number" min="100" max="900" step="100" />
+          </label>
+          <label>
+            <span>激活字重</span>
+            <input v-model.number="state.activeFontWeight" type="number" min="100" max="900" step="100" />
+          </label>
+          <label>
+            <span>字体族</span>
+            <input v-model="state.fontFamily" type="text" />
+          </label>
         </div>
 
         <div class="menu-preview" :class="[`menu-preview--${state.mode}`]">
@@ -84,6 +104,10 @@ function handleSelect(key: string) {
             :text-color="state.textColor"
             :active-text-color="state.activeTextColor"
             :active-bg-color="state.activeBgColor"
+            :font-size="state.fontSize"
+            :font-weight="state.fontWeight"
+            :active-font-weight="state.activeFontWeight"
+            :font-family="state.fontFamily"
             @select="handleSelect"
           />
         </div>
@@ -120,6 +144,22 @@ function handleSelect(key: string) {
   border-radius: 6px;
   min-height: 34px;
   padding: 0 10px;
+}
+
+.menu-controls input[type="number"],
+.menu-controls input[type="text"] {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+}
+
+.menu-controls input[type="number"] {
+  width: 72px;
+}
+
+.menu-controls input[type="text"] {
+  width: 180px;
 }
 
 .menu-controls input[type="color"] {

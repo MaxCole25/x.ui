@@ -18,4 +18,8 @@ export interface NavMenuProps {
   textColor?: string
   activeTextColor?: string
   activeBgColor?: string
+  fontSize?: number | string
+  fontWeight?: number | string
+  activeFontWeight?: number | string
+  fontFamily?: string
 }

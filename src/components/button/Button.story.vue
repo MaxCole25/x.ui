@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ElementStylePlayground from '../_story/ElementStylePlayground.vue'
 import { computed, reactive } from 'vue'
 import { XButton } from './index'
 import type { ButtonSize, ButtonVariant } from './src/types'
@@ -27,10 +28,35 @@ const previewCode = computed(() => {
 function handleClick() {
   state.clickCount += 1
 }
+
+const sample = reactive({
+  input: '外观接口预览',
+  autocomplete: '上海',
+  cascader: [],
+  checked: true,
+  radio: 'A',
+  select: 'vue',
+  color: '#1264f4',
+  date: '2026-05-12',
+  dateTime: '2026-05-12T09:30',
+  time: '09:30',
+  number: 36
+})
+
+const selectOptions = [
+  { label: 'Vue', value: 'vue' },
+  { label: 'TypeScript', value: 'typescript' }
+]
+
+const autocompleteOptions = [
+  { label: '上海', value: '上海' },
+  { label: '深圳', value: '深圳' },
+  { label: '杭州', value: '杭州' }
+]
 </script>
 
 <template>
-  <Story title="组件/按钮 Button" group="components">
+  <Story title="元素/Button 按钮" group="components">
     <Variant title="交互式验收">
       <div class="story-playground">
         <div class="story-preview">
@@ -114,6 +140,12 @@ function handleClick() {
         <XButton variant="outline">这是一段较长的按钮文案</XButton>
         <XButton variant="ghost" size="lg">提交并继续下一步操作</XButton>
       </div>
+    </Variant>
+
+    <Variant title="外观接口">
+      <ElementStylePlayground v-slot="styleProps">
+        <XButton v-bind="styleProps">外观按钮</XButton>
+      </ElementStylePlayground>
     </Variant>
   </Story>
 </template>

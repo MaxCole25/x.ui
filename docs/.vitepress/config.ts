@@ -21,16 +21,58 @@ export default defineConfig({
       {
         text: '组件',
         items: [
-          { text: '按钮 Button', link: '/components/button' },
-          { text: '弹窗 Dialog', link: '/components/dialog' },
-          { text: '布局 Layout', link: '/components/layout' },
-          { text: '菜单 NavMenu', link: '/components/nav-menu' },
-          { text: '树目录 Tree', link: '/components/tree' },
-          { text: '标签页 Tabs', link: '/components/tabs' },
-          { text: '表格 Table', link: '/components/table' },
-          { text: '登录 Login', link: '/components/login' },
-          { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' },
-          { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' }
+          {
+            text: '元素',
+            items: [
+              { text: '按钮 Button', link: '/components/button' },
+              { text: '基础输入框 BaseInput', link: '/components/base-input' },
+              { text: '输入框 Input', link: '/components/input' },
+              { text: '文本 Text', link: '/components/text' },
+              { text: '滚动条 Scrollbar', link: '/components/scrollbar' },
+              { text: '自动补全 Autocomplete', link: '/components/autocomplete' },
+              { text: '级联选择 Cascader', link: '/components/cascader' },
+              { text: '多选框 Checkbox', link: '/components/checkbox' },
+              { text: '颜色选择器面板 ColorPickerPanel', link: '/components/color-picker-panel' },
+              { text: '颜色选择器 ColorPicker', link: '/components/color-picker' },
+              { text: '日期选择器面板 DatePickerPanel', link: '/components/date-picker-panel' },
+              { text: '日期选择器 DatePicker', link: '/components/date-picker' },
+              { text: '日期时间选择器 DateTimePicker', link: '/components/date-time-picker' },
+              { text: '数字输入框 InputNumber', link: '/components/input-number' },
+              { text: '单选框 Radio', link: '/components/radio' },
+              { text: '选择器 Select', link: '/components/select' },
+              { text: '滑块 Slider', link: '/components/slider' },
+              { text: '开关 Switch', link: '/components/switch' },
+              { text: '表单 Form', link: '/components/form' },
+              { text: '时间选择器 TimePicker', link: '/components/time-picker' },
+              { text: '时间选择 TimeSelect', link: '/components/time-select' },
+              { text: '头像 Avatar', link: '/components/avatar' }
+            ]
+          },
+          {
+            text: '数据展示',
+            items: [
+              { text: '表格 Table', link: '/components/table' },
+              { text: '树目录 Tree', link: '/components/tree' },
+              { text: '标签页 Tabs', link: '/components/tabs' }
+            ]
+          },
+          {
+            text: '反馈与导航',
+            items: [
+              { text: '弹窗 Dialog', link: '/components/dialog' },
+              { text: '菜单 NavMenu', link: '/components/nav-menu' }
+            ]
+          },
+          {
+            text: '业务组件',
+            items: [
+              { text: '登录 Login', link: '/components/login' },
+              { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' },
+              { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' },
+              { text: '文件磁盘 FileDisk', link: '/components/file-disk' },
+              { text: '页面构建器 PageBuilder', link: '/components/page-builder' }
+            ]
+          }
         ]
       }
     ],

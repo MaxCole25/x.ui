@@ -42,6 +42,10 @@ const items: NavMenuItem[] = [
 | textColor | 菜单文字默认色 | `string` | `'var(--x-color-text)'` |
 | activeTextColor | 菜单文字激活色 | `string` | `'#fff'` |
 | activeBgColor | 菜单激活背景色 | `string` | `'var(--x-color-primary)'` |
+| fontSize | 菜单文字大小，传入数字时按 px 处理 | `number \| string` | `14` |
+| fontWeight | 菜单文字默认字重 | `number \| string` | `400` |
+| activeFontWeight | 菜单文字激活字重 | `number \| string` | `600` |
+| fontFamily | 菜单字体族 | `string` | `'var(--x-font-family)'` |
 
 ## NavMenuItem 类型
 
@@ -65,3 +69,4 @@ const items: NavMenuItem[] = [
 1. 在 Histoire 中切换 `vertical/horizontal`，确认菜单布局变化正确。
 2. 在 `vertical` 模式下开启 `collapsed`，确认一级菜单仅显示图标并保留 `title` 提示。
 3. 点击多级菜单叶子项，确认 `select` 事件能正确返回 `key`。
+4. 调整字体大小、字重和字体族，确认一级菜单、子菜单和激活态文本样式同步生效。

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { Component } from 'vue'
+import type { Component, CSSProperties } from 'vue'
 import type { TabItem, TabName, TabsCloseAllPayload, TabsCloseOthersPayload, TabsPaneContext, TabsProps, TabsReorderPosition } from './types'
 import 'remixicon/fonts/remixicon.css'
 
@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<TabsProps>(), {
   type: 'card',
   size: 'default',
   tabPosition: 'top',
+  labelDirection: 'horizontal',
   stretch: false,
   closable: false,
   addable: false,
@@ -25,10 +26,17 @@ const props = withDefaults(defineProps<TabsProps>(), {
   tabBgColor: 'transparent',
   tabTextColor: '#6B7C93',
   tabFontSize: undefined,
+  tabMinWidth: undefined,
   tabGap: 4,
+  verticalWidth: undefined,
+  verticalLabelMinHeight: undefined,
   borderRadius: 4,
   tabBorder: '1px solid var(--x-color-border)',
   contentBorder: '1px solid var(--x-color-border)',
+  contentBackgroundColor: '#fff',
+  contextMenuBackgroundColor: '#fff',
+  contextMenuTextColor: 'var(--x-color-text)',
+  fillHeight: false,
   beforeLeave: undefined
 })
 
@@ -84,11 +92,17 @@ const isContextTargetLocked = computed(() => {
   const targetName = contextMenu.value.targetName
   return targetName !== null && isTabLocked(targetName)
 })
+const isContextTargetInternalLocked = computed(() => {
+  const targetName = contextMenu.value.targetName
+  return targetName !== null && isTabInternallyLocked(targetName)
+})
 
 const rootClasses = computed(() => ({
   [`x-tabs--${props.type || 'line'}`]: true,
   [`x-tabs--${props.size}`]: true,
   [`x-tabs--${props.tabPosition}`]: true,
+  [`x-tabs--label-${props.labelDirection}`]: true,
+  'is-fill-height': props.fillHeight,
   'is-vertical': isVertical.value,
   'is-horizontal': !isVertical.value
 }))
@@ -106,8 +120,23 @@ const tabsStyleVars = computed<Record<string, string>>(() => ({
   '--x-tabs-radius': toCssLength(props.borderRadius),
   '--x-tabs-tab-border': props.tabBorder,
   '--x-tabs-content-border': props.contentBorder,
+  '--x-tabs-content-bg': props.contentBackgroundColor,
+  '--x-tabs-context-menu-bg': props.contextMenuBackgroundColor,
+  '--x-tabs-context-menu-text': props.contextMenuTextColor,
   ...getTabsSizeVars(props.size),
-  ...(props.tabFontSize === undefined ? {} : { '--x-tabs-label-font-size': toCssLength(props.tabFontSize) })
+  ...(props.tabFontSize === undefined ? {} : { '--x-tabs-label-font-size': toCssLength(props.tabFontSize) }),
+  ...(props.tabMinWidth === undefined ? {} : { '--x-tabs-item-min-width': toCssLength(props.tabMinWidth) }),
+  ...(props.verticalWidth === undefined ? {} : { '--x-tabs-vertical-width': toCssLength(props.verticalWidth) }),
+  ...(props.verticalLabelMinHeight === undefined
+    ? {}
+    : { '--x-tabs-vertical-label-min-height': toCssLength(props.verticalLabelMinHeight) })
+}))
+
+const contextMenuStyle = computed<CSSProperties>(() => ({
+  left: `${contextMenu.value.x}px`,
+  top: `${contextMenu.value.y}px`,
+  '--x-tabs-context-menu-bg': props.contextMenuBackgroundColor,
+  '--x-tabs-context-menu-text': props.contextMenuTextColor
 }))
 
 function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
@@ -123,7 +152,8 @@ function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
       '--x-tabs-icon-svg-size': '17px',
       '--x-tabs-close-size': '20px',
       '--x-tabs-action-size': '32px',
-      '--x-tabs-scroll-size': '30px'
+      '--x-tabs-scroll-size': '30px',
+      '--x-tabs-vertical-width': '52px'
     },
     default: {
       '--x-tabs-item-height': '40px',
@@ -136,7 +166,8 @@ function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
       '--x-tabs-icon-svg-size': '16px',
       '--x-tabs-close-size': '18px',
       '--x-tabs-action-size': '30px',
-      '--x-tabs-scroll-size': '28px'
+      '--x-tabs-scroll-size': '28px',
+      '--x-tabs-vertical-width': '48px'
     },
     small: {
       '--x-tabs-item-height': '34px',
@@ -149,7 +180,8 @@ function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
       '--x-tabs-icon-svg-size': '14px',
       '--x-tabs-close-size': '16px',
       '--x-tabs-action-size': '26px',
-      '--x-tabs-scroll-size': '24px'
+      '--x-tabs-scroll-size': '24px',
+      '--x-tabs-vertical-width': '44px'
     }
   } satisfies Record<NonNullable<TabsProps['size']>, Record<string, string>>
 
@@ -242,7 +274,7 @@ function handleLabelDragStart(item: TabItem, event: DragEvent) {
 }
 
 function handleLabelDragOver(item: TabItem, event: DragEvent) {
-  if (!props.draggable || draggingTabName.value === null || draggingTabName.value === item.name) {
+  if (!props.draggable || isTabLocked(item.name) || draggingTabName.value === null || draggingTabName.value === item.name) {
     dragOverTargetName.value = null
     dragOverPosition.value = null
     return
@@ -264,7 +296,7 @@ function handleLabelDragOver(item: TabItem, event: DragEvent) {
 }
 
 function handleLabelDrop(item: TabItem, event: DragEvent) {
-  if (!props.draggable) {
+  if (!props.draggable || isTabLocked(item.name)) {
     return
   }
 
@@ -347,8 +379,16 @@ function hideContextMenu() {
   contextMenu.value.visible = false
 }
 
-function isTabLocked(name: TabName): boolean {
+function getTabItem(name: TabName): TabItem | undefined {
+  return props.items.find((item) => item.name === name)
+}
+
+function isTabInternallyLocked(name: TabName): boolean {
   return Boolean(lockedTabs.value[String(name)])
+}
+
+function isTabLocked(name: TabName): boolean {
+  return Boolean(getTabItem(name)?.locked) || isTabInternallyLocked(name)
 }
 
 function canClose(item: TabItem): boolean {
@@ -395,7 +435,7 @@ function lockCurrentTab() {
 
 function unlockCurrentTab() {
   const targetName = contextMenu.value.targetName
-  if (targetName === null || !isTabLocked(targetName)) {
+  if (targetName === null || !isTabInternallyLocked(targetName)) {
     return
   }
 
@@ -613,13 +653,13 @@ onBeforeUnmount(() => {
       <ul
         v-if="contextMenu.visible"
         class="x-tabs__menu"
-        :style="{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }"
+        :style="contextMenuStyle"
       >
         <li class="x-tabs__menu-item" :class="{ 'is-disabled': isContextTargetLocked }" @click="lockCurrentTab">
           <i class="x-tabs__menu-icon ri-lock-2-line" aria-hidden="true"></i>
           <span>锁定标签</span>
         </li>
-        <li class="x-tabs__menu-item" :class="{ 'is-disabled': !isContextTargetLocked }" @click="unlockCurrentTab">
+        <li class="x-tabs__menu-item" :class="{ 'is-disabled': !isContextTargetInternalLocked }" @click="unlockCurrentTab">
           <i class="x-tabs__menu-icon ri-lock-unlock-line" aria-hidden="true"></i>
           <span>解锁标签</span>
         </li>

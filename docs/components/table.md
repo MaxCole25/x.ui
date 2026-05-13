@@ -1,8 +1,10 @@
-﻿# 表格 Table
+# 表格 Table
 
-`XTable` 是从 NexMod `XlTable` 迁移出来的独立数据表格组件，基于 Element Plus 表格能力封装，适合业务列表、配置表、日志表和可排序数据集。
+`XTable` 是一个从简单展示重新开始的表格组件。当前版本只负责数据渲染、基础列样式和插槽扩展；分页、搜索、列设置、编辑、拖拽、导入导出等复杂能力会在后续逐步加回。
 
-组件同时导出兼容别名 `XlTable`、`XlTableColumn`，方便从 NexMod 旧写法迁移。
+组件主体使用 `div + CSS grid` 实现，方便后续扩展固定列、虚拟滚动和单元格编辑。
+
+组件同时导出兼容别名 `XlTable`、`XlTableColumn`、`XlTableProps`。
 
 ## 基础用法
 
@@ -11,324 +13,196 @@
 import { XTable, type TableColumn } from 'x.ui'
 
 const columns: TableColumn[] = [
-  { key: 'name', label: '名称', minWidth: 160, searchable: true },
-  { key: 'status', label: '状态', width: 120, type: 'tag', options: [
-    { label: '启用', value: true, type: 'success' },
-    { label: '停用', value: false, type: 'danger' }
-  ]},
-  { key: 'updatedAt', label: '更新时间', minWidth: 180, type: 'date' }
+  { key: 'name', label: '名称', minWidth: 160 },
+  { key: 'status', label: '状态', width: 120 },
+  { key: 'count', label: '数量', width: 100, align: 'right', formatter: (value) => `${value} 个` }
 ]
 
 const rows = [
-  { id: 1, name: '工作台', status: true, updatedAt: '2026-04-10T09:30:00Z' },
-  { id: 2, name: '成员管理', status: false, updatedAt: '2026-04-09T13:10:00Z' }
+  { id: 1, name: '工作台', status: '启用', count: 12 },
+  { id: 2, name: '成员管理', status: '停用', count: 5 }
 ]
 </script>
 
 <template>
-  <XTable title="模块列表" :columns="columns" :data="rows" row-key="id" />
+  <XTable :columns="columns" :data="rows" row-key="id" />
 </template>
 ```
 
-## 自定义单元格和操作列
+## 自定义表顶和表底
+
+`top` 和 `bottom` 插槽会完整接管表格上方、下方区域。`top` 插槽参数包含当前 `columns`、`data`、`columnSettings` 和列设置更新方法，适合放置列设置按钮，并在业务侧用 `XDialog` 承载具体设置表单。
 
 ```vue
-<XTable :columns="columns" :data="rows" show-actions @refresh="loadRows">
-  <template #cell-name="{ row }">
-    <strong>{{ row.name }}</strong>
+<XTable :columns="columns" :data="rows">
+  <template #top="{ columns, data }">
+    <div class="table-header">
+      <strong>模块列表</strong>
+      <span>列 {{ columns.length }} / 行 {{ data.length }}</span>
+      <button @click="settingsVisible = true">列设置</button>
+    </div>
   </template>
 
-  <template #row-actions="{ row }">
-    <button @click="edit(row)">编辑</button>
+  <template #bottom="{ data }">
+    <div class="table-footer">
+      <span class="table-footer__total">共 {{ data.length }} 条记录</span>
+    </div>
   </template>
 </XTable>
 ```
 
-## 可编辑表格和脏数据提交
+## 列设置
 
-开启 `editable` 后，`columns` 中 `editorType` 为 `input`、`select`、`dropdown`、`boolean`、`date`、`datetime` 的列会渲染为可编辑控件。编辑、粘贴或下拉选择后，组件会先更新内部草稿数据，并用脏数据标记记录变更；点击“提交修改”时通过 `submit-changes` 一次性抛出所有变更。
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XTable, type TableColumn } from 'x.ui'
-
-const users = [
-  { id: 1, name: '林舟', team: '平台组' },
-  { id: 2, name: '周宁', team: '体验组' }
-]
-
-const rows = ref([
-  { id: 1, name: '工作台', priority: 'P0', ownerId: 1, enabled: true }
-])
-
-const columns: TableColumn[] = [
-  { key: 'name', label: '名称', displayType: 'text', editorType: 'input', editable: true },
-  {
-    key: 'priority',
-    label: '优先级',
-    displayType: 'text',
-    editorType: 'select',
-    editable: true,
-    options: [
-      { label: 'P0', value: 'P0', type: 'danger' },
-      { label: 'P1', value: 'P1', type: 'warning' }
-    ]
-  },
-  {
-    key: 'ownerId',
-    label: '负责人',
-    displayType: 'text',
-    editorType: 'dropdown',
-    editable: true,
-    valueKey: 'id',
-    labelKey: 'name',
-    dialogTitle: '选择负责人',
-    dialogColumns: [
-      { key: 'name', label: '姓名' },
-      { key: 'team', label: '团队' }
-    ],
-    dialogData: users
-  },
-  { key: 'enabled', label: '启用', displayType: 'boolean', editorType: 'boolean', editable: true }
-]
-
-function save(payload) {
-  // payload.changes 是脏数据明细，payload.rows 是最新草稿数据
-  console.log(payload)
-}
-</script>
-
-<template>
-  <XTable
-    v-model:data="rows"
-    editable
-    fill-height
-    :columns="columns"
-    row-key="id"
-    @submit-changes="save"
-  />
-</template>
-```
-
-表格支持单元格复制、粘贴与多单元格范围操作。单击单元格或 `el-table__cell` 单元格留白区域只会激活和选中；在单元格按下鼠标左键并拖过其它单元格，可以框选范围；右键菜单提供“复制”“粘贴”“向上插入一行”“向下插入一行”。开启 `editable` 后，可编辑单元格需要双击才进入编辑状态；可以从 Excel 或其它表格复制多行多列文本，再粘贴到当前激活单元格，组件会按可编辑列顺序写入草稿数据。复制单个值后，也可以框选多个可编辑单元格并一次性粘贴填充。
-
-工具栏内置 `导出CSV`、`导出Excel`、`导入Excel` 按钮，可直接进行表格文件交换。
-
-## 列设置状态
-
-列设置弹窗支持列显隐、拖拽排序、固定到左侧或右侧、按比例分配列宽，以及直接指定 `px` 宽度。`宽度px` 优先级最高；只要任意列填写了 `列宽比例`，未填写 `宽度px` 的列都会参与剩余宽度分配，其中未填写比例的列按 `1` 份自动均分。
-
-需要把列设置保存到后端时，可以通过组件实例方法读取当前状态，再在下次进入页面时回填：
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XTable, type TableExpose, type TableColumnSetting } from 'x.ui'
-
-const tableRef = ref<TableExpose>()
-
-async function saveColumnState() {
-  const columnSettings = tableRef.value?.getColumnSettings() ?? []
-  await saveToServer(columnSettings)
-}
-
-function restoreColumnState(columnSettings: TableColumnSetting[]) {
-  tableRef.value?.setColumnSettings(columnSettings)
-}
-</script>
-
-<template>
-  <XTable ref="tableRef" :columns="columns" :data="rows" storage-key="module-table" />
-  <button @click="saveColumnState">保存列设置</button>
-</template>
-```
-
-## 填充父容器
-
-`fillHeight` 会让表格撑满父元素。父元素需要有明确高度；当内容超过表格可视区时，滚动条出现在表格内部；内容不足时，表格内部保留留白。
-
-```vue
-<div style="height: 520px">
-  <XTable fill-height :columns="columns" :data="rows" />
-</div>
-```
-
-没有数据时，可通过 `empty-image` 自定义空态图片：
+通过 `column-settings` 可以控制列排序、冻结、默认对齐、比例宽度和固定像素宽度。也可以在 `top` 插槽中使用 `columnSettings`、`updateColumnSetting`、`moveColumnSetting`、`reorderColumnSetting`、`resetColumnSettings` 构建自定义列设置入口，例如表顶只放一个“列设置”按钮，点击后用 `XDialog` 打开配置弹窗；弹窗内可以参考 Histoire 示例，用列名或拖拽手柄把列拖到目标列的上方或下方完成排序。
 
 ```vue
 <XTable
   :columns="columns"
-  :data="[]"
-  empty-text="没有匹配的数据"
-  empty-image="/empty-table.svg"
+  :data="rows"
+  :column-settings="[
+    { key: 'name', order: 0, fixed: 'left', align: 'left', width: 220 },
+    { key: 'status', order: 1, fixed: 'none', align: 'center', widthRatio: 25 },
+    { key: 'count', order: 2, fixed: 'right', align: 'right', width: 120 }
+  ]"
 />
 ```
 
-未传 `empty-image` 时，默认使用内置的 `x.ui` 空态图标。
+`width` 优先级高于 `widthRatio`。多个 px 宽度列相加超过表格可视宽度时，表格正文会出现横向滚动条；`widthRatio` 使用百分比，按表格可视宽度分配。
 
-## 服务端分页与排序
+## 自定义单元格和操作列
 
-当数据量很大（例如合同查询）时，建议启用服务端分页/排序，避免一次性全量请求到前端：
+通过 `cell-[key]` 覆盖某一列的单元格内容。开启 `show-actions` 后，可以使用 `row-actions` 插槽渲染操作列。
+
+```vue
+<XTable :columns="columns" :data="rows" show-actions :actions-width="180">
+  <template #cell-name="{ value }">
+    <strong>{{ value }}</strong>
+  </template>
+
+  <template #row-actions="{ row }">
+    <button @click="view(row)">查看</button>
+  </template>
+</XTable>
+```
+
+## 选择列和行拖拽排序
+
+开启 `show-selection` 后，表格进入可选择状态。`selection-mode="row"` 时点击当前行任意位置会选中或取消选中该行，通过 `v-model:selected-row-keys` 维护当前选中的行键；同时可以用 `show-selection-column` 控制是否显示左侧选择行列，显示时选中行会自动打勾。开启 `editable` 后，普通单元格点击需要留给编辑交互，整行点击选中会失效，用户只能通过左侧选择列勾选行；双击数据单元格会进入内联编辑，内部使用 `XBaseInput`，失焦、回车或 change 后通过 `update:data` 和 `cell-change` 抛出结果。`selection-mode="cell"` 时普通点击数据单元格只会在当前单元格上显示激活框，通过 `v-model:selected-cell-keys` 维护当前激活的单元格 key；选中一个单元格后按 Tab 会让选区右移一列，当前行最后一列会跳到下一行第一列，按 Shift+Tab 会左移一列，当前行第一列会跳到上一行最后一列；按 Enter 会让选区移动到当前列下一行，当前列最后一行会跳到下一列第一行；选中一个单元格后直接输入普通字符，也会进入编辑态并用输入的字符作为新内容；按住 Ctrl 或 Command 点击时可以保留多个单元格激活态；按下并拖过其它单元格时会形成矩形框选区域，选区右下角的方形手柄可以再次拖拽调整选区大小。选择行列和单元格选择互不冲突，单元格选择模式下仍可通过左侧选择列勾选行。
+
+开启 `row-draggable` 后，数据行左侧会显示拖拽手柄。只有从拖拽列开始拖动时才会触发行排序，避免影响后续单元格框选能力。拖拽完成时组件触发 `row-reorder`，业务侧需要用事件中的 `rows` 更新数据源顺序。
 
 ```vue
 <script setup lang="ts">
-function handleQueryChange(payload) {
-  // payload: { page, pageSize, keyword, sorter }
-  // 在这里调用后端接口，并把响应数据回填给 data + total
+import { ref } from 'vue'
+import { XTable, type TableRowKey, type TableRowReorderPayload } from 'x.ui'
+
+const selectedRowKeys = ref<TableRowKey[]>([])
+const rows = ref([
+  { id: 1, name: '工作台' },
+  { id: 2, name: '成员管理' }
+])
+
+function handleRowReorder(payload: TableRowReorderPayload) {
+  rows.value = payload.rows
 }
 </script>
 
 <template>
   <XTable
-    remote
-    :total="total"
+    v-model:selected-row-keys="selectedRowKeys"
     :columns="columns"
     :data="rows"
-    @query-change="handleQueryChange"
+    show-selection
+    selection-mode="row"
+    row-draggable
+    @row-reorder="handleRowReorder"
   />
 </template>
 ```
 
-`remote=true` 时，组件不再对前端全量数据做本地分页；分页、排序、搜索条件会通过 `query-change` 抛出，由业务侧请求后端并回填。
+## 撑满父元素
+
+父容器有明确高度时，可以开启 `fill-height`，让表格高度撑满父元素，表头、表底保持固定，数据区域在内部滚动。
+
+```vue
+<div style="height: 520px">
+  <XTable :columns="columns" :data="rows" fill-height />
+</div>
+```
 
 ## Props
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| title | 表格标题 | `string` | `''` |
 | data | 表格数据 | `Record<string, unknown>[]` | 必填 |
 | columns | 列配置 | `TableColumn[]` | 必填 |
+| columnSettings | 列设置，支持排序、冻结、对齐和宽度 | `TableColumnSetting[]` | - |
+| selectedRowKeys | 选中行的 key，支持 `v-model:selected-row-keys` | `TableRowKey[]` | - |
+| selectedCellKeys | 选中单元格的 key，支持 `v-model:selected-cell-keys` | `string[]` | - |
+| selectionMode | 选择模式，行选或单元格选择 | `'row' \| 'cell'` | `'row'` |
 | rowKey | 行唯一键字段 | `string` | `'id'` |
-| loading | 是否加载中 | `boolean` | `false` |
-| searchable | 是否显示搜索框 | `boolean` | `true` |
-| selectable | 是否显示多选列 | `boolean` | `true` |
-| showIndex | 是否显示序号列 | `boolean` | `true` |
-| pageSize | 默认每页条数 | `number` | `10` |
-| pageSizes | 每页条数选项 | `number[]` | `[10, 20, 50, 100]` |
-| showToolbar | 是否显示顶部工具栏 | `boolean` | `true` |
-| showMetrics | 是否显示统计信息 | `boolean` | `true` |
-| showPagination | 是否显示分页 | `boolean` | `true` |
-| showActions | 是否显示操作列 | `boolean` | `false` |
-| actionsMinWidth | 操作列最小宽度 | `number \| string` | `180` |
 | emptyText | 空数据文案 | `string` | `'暂无数据'` |
-| emptyImage | 空数据图片地址 | `string` | `''` |
-| editable | 是否启用内置编辑能力 | `boolean` | `false` |
-| showDirtyActions | 是否显示提交、标记已保存、撤销修改按钮 | `boolean` | `true` |
-| storageKey | 本地存储 key，用于保存搜索、分页、列显隐、排序、固定列和列宽设置 | `string` | `''` |
-| draggableRows | 是否允许行拖拽排序 | `boolean` | `true` |
-| draggableColumns | 是否允许列设置中拖拽排序 | `boolean` | `true` |
-| fillHeight | 是否填满父容器高度 | `boolean` | `false` |
-| zebraStripeColor | 斑马纹行颜色 | `string` | `'#f8fbff'` |
-| showHeaderVerticalDivider | 表头是否显示竖向分隔线 | `boolean` | `true` |
-| showBodyVerticalDivider | 内容区是否显示竖向分隔线 | `boolean` | `true` |
-| density | 表格密度，`large` 为宽松，`default` 为标准，`small` 为紧凑，支持 `v-model:density` | `'large' \| 'default' \| 'small'` | `'default'` |
-| rowHeight | 表格行高（px） | `number` | `40` |
-| activeCellBorderColor | 激活单元格边框颜色 | `string` | `'var(--x-color-primary, #0e7490)'` |
-| activeCellBorderWidth | 激活单元格边框宽度 | `number \| string` | `2` |
-| selectedCellBackgroundColor | 框选单元格背景色 | `string` | `'rgb(191 219 254 / 72%)'` |
-| selectedCellBorderColor | 框选区域外框颜色 | `string` | `'#2680eb'` |
-| selectedCellInnerBorderColor | 框选区域内部单元格分隔线颜色 | `string` | `'rgb(96 165 250 / 42%)'` |
-| selectionMode | 鼠标框选模式，`cell` 为单元格选择，`row` 为整行选择 | `'cell' \| 'row'` | `'cell'` |
-| headerAlign | 全局列头对齐方式 | `'left' \| 'center' \| 'right'` | `'left'` |
-| remote | 是否启用服务端分页/排序模式 | `boolean` | `false` |
-| total | 服务端分页总条数（`remote=true` 时生效） | `number` | `0` |
+| showHeader | 是否显示表头 | `boolean` | `true` |
+| showActions | 是否显示操作列 | `boolean` | `false` |
+| showSelection | 表格是否可选 | `boolean` | `false` |
+| showSelectionColumn | 是否显示左侧选择行列，可和单元格选择同时使用 | `boolean` | `true` |
+| editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |
+| rowDraggable | 是否开启行拖拽排序 | `boolean` | `false` |
+| actionsWidth | 操作列宽度 | `number \| string` | `160` |
+| fillHeight | 是否撑满父元素高度 | `boolean` | `false` |
 
 ## TableColumn
 
-| 字段 | 说明 | 类型 |
-| --- | --- | --- |
-| key | 数据字段名 | `string` |
-| label | 列标题 | `string` |
-| width | 固定宽度 | `number \| string` |
-| minWidth | 最小宽度 | `number \| string` |
-| align | 对齐方式 | `'left' \| 'center' \| 'right'` |
-| headerAlign | 当前列表头对齐方式（优先级高于全局 `headerAlign`） | `'left' \| 'center' \| 'right'` |
-| fixed | 固定列 | `true \| 'left' \| 'right'` |
-| sortable | 是否排序 | `boolean \| 'custom'` |
-| searchable | 是否参与关键字搜索 | `boolean` |
-| type | 兼容类型（历史字段，建议迁移到 `displayType/editorType`） | `TableColumnType` |
-| displayType | 显示类型 | `'text' \| 'tag' \| 'boolean' \| 'date'` |
-| editorType | 编辑类型 | `'none' \| 'input' \| 'select' \| 'dropdown' \| 'boolean' \| 'date' \| 'datetime'` |
-| editable | 当前列是否可编辑 | `boolean` |
-| placeholder | 输入类控件占位文案 | `string` |
-| formatter | 自定义格式化 | `(value, row) => string` |
-| options | `tag` 类型映射配置 | `TableColumnOption[]` |
-| valueKey | `dropdown` 取值字段 | `string` |
-| labelKey | `dropdown` 显示字段 | `string` |
-| dialogTitle | `dropdown` 下拉面板标题配置（兼容字段） | `string` |
-| dialogColumns | `dropdown` 下拉表格列配置 | `TableColumn[]` |
-| dialogData | `dropdown` 下拉表格数据 | `Record<string, unknown>[]` |
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| key | 数据字段名 | `string` | 必填 |
+| label | 表头文本 | `string` | 必填 |
+| width | 固定列宽，数字会转为 px | `number \| string` | - |
+| minWidth | 最小列宽，未设置 `width` 时参与自适应分配 | `number \| string` | - |
+| align | 内容对齐方式 | `'left' \| 'center' \| 'right'` | `'left'` |
+| formatter | 单元格格式化函数 | `(value, row) => string` | - |
 
-## Methods
+## TableColumnSetting
 
-通过模板引用访问组件实例：
-
-| 方法名 | 说明 | 类型 |
-| --- | --- | --- |
-| getColumnSettings | 获取当前列显隐、排序、固定列、列宽比例和 px 宽度设置，适合保存到后端 | `() => TableColumnSetting[]` |
-| setColumnSettings | 回填列设置状态 | `(settings: TableColumnSetting[]) => void` |
-| resetColumnSettings | 重置列显隐、排序、固定列和列宽设置 | `() => void` |
-| getStoredState | 获取当前完整表格状态，包含搜索、分页、密度、列设置和行顺序 | `() => TableStoredState` |
-| setStoredState | 回填完整表格状态 | `(state: Partial<TableStoredState>) => void` |
-
-`TableColumnSetting` 字段：
-
-| 字段 | 说明 | 类型 |
-| --- | --- | --- |
-| key | 列字段名 | `string` |
-| visible | 是否显示 | `boolean` |
-| order | 当前列顺序，从 `0` 开始 | `number` |
-| fixed | 固定列方向，未设置表示不固定 | `true \| 'left' \| 'right'` |
-| widthRatio | 列宽比例，空值时忽略 | `number` |
-| width | 固定宽度 px，空值时忽略；优先级高于 `widthRatio` | `number` |
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| key | 对应列字段名 | `string` | 必填 |
+| order | 列排序序号，从小到大排列 | `number` | 列原始顺序 |
+| fixed | 列冻结方向 | `'left' \| 'none' \| 'right'` | `'none'` |
+| align | 单元格默认内容对齐方式 | `'left' \| 'center' \| 'right'` | 当前列 `align` 或 `'left'` |
+| widthRatio | 列宽比例，按表格可视宽度百分比分配 | `number` | - |
+| width | 固定列宽 px，优先级高于 `widthRatio` | `number` | - |
 
 ## Events
 
-| 事件名 | 说明 | 回调参数 |
+| 名称 | 说明 | 参数 |
 | --- | --- | --- |
-| refresh | 点击刷新按钮 | `()` |
-| selection-change | 多选变化 | `(rows) => void` |
-| row-order-change | 行拖拽排序变化 | `(rowKeys) => void` |
-| column-order-change | 列拖拽排序变化 | `(columnKeys) => void` |
-| cell-change | 单元格编辑变化 | `(change) => void` |
-| dirty-change | 脏数据变化 | `(changes) => void` |
-| submit-changes | 点击统一提交修改 | `({ changes, rows }) => void` |
-| update:data | 草稿数据变化，支持 `v-model:data` | `(rows) => void` |
-| update:density | 表格密度变化，支持 `v-model:density` | `(value) => void` |
-| query-change | 远程分页/排序/搜索参数变化 | `({ page, pageSize, keyword, sorter }) => void` |
-| import-success | Excel 导入并映射完成 | `(rows) => void` |
-| row-dblclick | 双击非可编辑单元格区域时触发 | `({ row, rowKey, event }) => void` |
-
-同时保留兼容事件名：`selectionChange`、`rowOrderChange`、`columnOrderChange`、`rowDblclick`。
+| update:columnSettings | 列设置变化时触发 | `TableColumnSetting[]` |
+| column-settings-change | 列设置变化时触发 | `TableColumnSetting[]` |
+| update:selectedRowKeys | 选中行变化时触发 | `string[]` |
+| selection-change | 选中行变化时触发，包含选中 key 和行数据 | `{ keys, rows }` |
+| update:selectedCellKeys | 选中单元格变化时触发 | `string[]` |
+| cell-selection-change | 选中单元格变化时触发，包含选中 key 和单元格数据 | `{ keys, cells }` |
+| update:data | 单元格编辑提交后触发，支持 `v-model:data` | `Record<string, unknown>[]` |
+| cell-change | 单元格编辑提交后触发，包含当前行、全量行、列和值变化 | `TableCellChangePayload` |
+| row-reorder | 行拖拽排序完成时触发，业务侧应使用 `rows` 更新数据源 | `TableRowReorderPayload` |
 
 ## Slots
 
-| 插槽名 | 说明 | 参数 |
+| 名称 | 说明 | 参数 |
 | --- | --- | --- |
-| toolbar-left-extra | 标题和统计信息右侧扩展 | - |
-| toolbar-right-prefix | 工具栏右侧最前方扩展 | - |
-| toolbar-extra | 搜索框前扩展操作 | - |
-| cell-[key] | 指定列单元格自定义渲染 | `{ row, value }` |
-| row-actions | 操作列内容 | `{ row }` |
+| top | 自定义表顶区域，可用于列设置 | `{ columns, data, columnSettings, selectedRowKeys, selectedCellKeys, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings }` |
+| bottom | 自定义表底区域 | `{ columns, data, columnSettings, selectedRowKeys, selectedCellKeys, updateColumnSetting, moveColumnSetting, reorderColumnSetting, resetColumnSettings }` |
+| cell-[key] | 自定义指定列单元格 | `{ row, value, column, rowIndex }` |
+| row-actions | 自定义操作列内容，需要 `showActions` | `{ row, rowIndex }` |
 
 ## 手动验收建议
 
-- 输入关键字，确认当前表格数据被过滤且分页回到第一页。
-- 打开列设置，确认列显隐、拖拽排序、固定列、列宽比例和宽度 px 设置生效。
-- 拖拽行排序，确认触发 `row-order-change`。
-- 勾选多选列，确认选择统计和 `selection-change` 生效。
-- 检查 `tag`、`boolean`、`date`、自定义单元格和操作列显示是否正确。
-- 开启 `editable`，分别检查输入框、下拉框、开关、日期、日期时间和 `dropdown` 选择列。
-- 确认可编辑单元格单击只选中、双击才进入编辑；双击非可编辑单元格会触发 `row-dblclick`。
-- 检查激活单元格边框泛光、编辑控件无外框样式是否符合预期。
-- 检查 `zebraStripeColor`、列头对齐、行高、竖向分隔线开关是否生效。
-- 导入 `.xlsx` 后确认字段映射正确，再导出 CSV/Excel 校验内容。
-- 开启 `remote`，确认分页/排序/搜索时触发 `query-change`，由后端返回全量分页正确排序结果。
-- 从 Excel 复制多行多列文本粘贴到表格，确认脏数据数量和 `submit-changes` 正确。
-- 按住鼠标左键框选多个单元格，确认选区背景不受斑马纹影响，外框和内部边框颜色有区分。
-- 拖拽选区右下角手柄，确认可以扩大或缩小当前选区。
-- 将 `selectionMode` 切换为 `row`，确认单击或拖拽会按整行选择。
-- 右键检查复制、粘贴、向上插入一行、向下插入一行功能。
-- 在固定高度父容器中开启 `fillHeight`，确认表格内部滚动和空态图片正常。
-
+- 检查基础表头、数据行和空态是否正常显示。
+- 检查 `width`、`minWidth`、`align` 和 `formatter` 是否生效。
+- 检查 `top`、`bottom`、`cell-[key]`、`row-actions` 插槽是否能正常渲染。
+- 开启 `show-selection` 后，检查行选、单元格点击选择、Tab / Shift+Tab 横向移动选区、Ctrl/Command 多选、拖拽框选、手柄调整选区、选择行列勾选和已选数量是否正确；再开启 `editable`，确认普通单元格点击不会切换行选，只能通过选择列勾选行，双击单元格或选中单元格后直接输入字符都可以进入编辑并提交新值。
+- 开启 `row-draggable` 后，从拖拽列拖拽数据行，检查拖拽高亮和排序结果是否正确；从普通单元格开始拖动不应触发行排序。
+- 点击表顶“列设置”按钮，在 `XDialog` 弹窗中检查列名拖拽排序、左/右冻结、对齐、比例宽度和 px 宽度是否生效。
+- 在窄容器中检查横向滚动和文本截断效果。
+- 开启 `fill-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。

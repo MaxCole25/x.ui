@@ -1,436 +1,833 @@
-﻿import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
+import { describe, expect, it, vi } from 'vitest'
 import { XTable } from '../src'
-import type { TableColumn, TableExpose } from '../src'
-
-class ResizeObserverMock {
-  observe = vi.fn()
-  unobserve = vi.fn()
-  disconnect = vi.fn()
-}
-
-globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn()
-  }))
-})
+import type { TableColumn } from '../src'
 
 describe('XTable', () => {
   const columns: TableColumn[] = [
-    { key: 'name', label: '名称', searchable: true },
-    { key: 'status', label: '状态', type: 'tag', options: [{ label: '启用', value: true, type: 'success' }] },
-    { key: 'enabled', label: '启用', type: 'boolean' }
+    { key: 'name', label: '名称', minWidth: 160 },
+    { key: 'status', label: '状态', width: 120 },
+    { key: 'count', label: '数量', width: 96, align: 'right', formatter: (value) => `${value} 个` }
   ]
 
   const data = [
-    { id: 1, name: '工作台', status: true, enabled: true },
-    { id: 2, name: '成员管理', status: false, enabled: false }
+    { id: 1, name: '工作台', status: '启用', count: 12 },
+    { id: 2, name: '成员管理', status: '停用', count: 5 }
   ]
 
-  it('renders title and toolbar metrics', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        title: '模块表格',
-        columns,
-        data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-
-    expect(wrapper.find('.x-table__title').text()).toBe('模块表格')
-    expect(wrapper.text()).toContain('共 2 条')
-  })
-
-  it('filters rows by keyword and updates metrics', async () => {
+  it('renders headers and rows', () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
-        data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
+        data
       }
     })
 
-    await wrapper.find('.x-table__search input').setValue('成员')
-    await nextTick()
-
+    expect(wrapper.findAll('.x-table__cell--header').map((cell) => cell.text())).toEqual(['名称', '状态', '数量'])
+    expect(wrapper.text()).toContain('工作台')
     expect(wrapper.text()).toContain('成员管理')
-    expect(wrapper.text()).toContain('共 1 条')
   })
 
-  it('emits refresh from toolbar button', async () => {
+  it('renders empty text when data is empty', () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
-        data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false
+        data: [],
+        emptyText: '没有数据'
       }
     })
 
-    const buttons = wrapper.findAll('button')
-    const refreshButton = buttons.find((button) => button.attributes('aria-label') === '刷新')
-    expect(refreshButton).toBeTruthy()
-
-    await refreshButton!.trigger('click')
-
-    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    expect(wrapper.find('.x-table__empty').text()).toBe('没有数据')
   })
 
-  it('exposes custom cell and row actions slot outlets through table configuration', async () => {
+  it('formats cell values with column formatter', () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
-        data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showActions: true,
-        showPagination: false
+        data
+      }
+    })
+
+    expect(wrapper.text()).toContain('12 个')
+    expect(wrapper.text()).toContain('5 个')
+  })
+
+  it('maps align width and minWidth to grid and cell styles', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    const firstRow = wrapper.find('.x-table__row--body')
+    expect(firstRow.attributes('style')).toContain('minmax(160px, 1fr) 120px 96px')
+
+    const countCell = firstRow.findAll('.x-table__cell')[2]
+    expect(countCell.attributes('style')).toContain('justify-content: flex-end')
+    expect(countCell.attributes('style')).toContain('text-align: right')
+  })
+
+  it('renders top and bottom slots with columns and data scope', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
       },
       slots: {
-        'cell-name': '<template #default="{ row }"><span class="custom-name">{{ row.name }}!</span></template>',
-        'row-actions': '<template #default="{ row }"><button class="row-action">编辑 {{ row.id }}</button></template>'
+        top: '<template #default="{ columns, data }"><div class="custom-top">列 {{ columns.length }} / 行 {{ data.length }}</div></template>',
+        bottom: '<template #default="{ data }"><div class="custom-bottom">共 {{ data.length }} 条</div></template>'
       }
     })
 
-    await nextTick()
-
-    expect(wrapper.props('showActions')).toBe(true)
-    expect(wrapper.vm.$slots['cell-name']).toBeTruthy()
-    expect(wrapper.vm.$slots['row-actions']).toBeTruthy()
+    expect(wrapper.find('.custom-top').text()).toBe('列 3 / 行 2')
+    expect(wrapper.find('.custom-bottom').text()).toBe('共 2 条')
   })
 
-  it('emits row double click only from non-editable cells', async () => {
+  it('renders custom cell and row actions slots', () => {
     const wrapper = mount(XTable, {
       props: {
-        columns: [
-          { key: 'name', label: '名称' },
-          { key: 'enabled', label: '启用', editorType: 'input', editable: true }
-        ],
+        columns,
         data,
-        editable: true,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    const cells = wrapper.findAll('.x-table__cell')
-    await cells[0].trigger('dblclick')
-    await cells[1].trigger('dblclick')
-
-    expect(wrapper.emitted('row-dblclick')).toHaveLength(1)
-    expect(wrapper.find('.x-table__editor-input').exists()).toBe(true)
-  })
-
-  it('keeps editable cells readonly until double click', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [{ key: 'name', label: '名称', editorType: 'input', editable: true }],
-        data,
-        editable: true,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    const cell = wrapper.find('.x-table__cell')
-    expect(wrapper.find('.x-table__editor-input').exists()).toBe(false)
-
-    await cell.trigger('click')
-    expect(wrapper.find('.x-table__editor-input').exists()).toBe(false)
-
-    await cell.trigger('dblclick')
-    expect(wrapper.find('.x-table__editor-input').exists()).toBe(true)
-  })
-
-  it('fills selected editable cells when pasting one value', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [{ key: 'name', label: '名称', editorType: 'input', editable: true }],
-        data,
-        editable: true,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false,
-        'onUpdate:data': vi.fn()
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    const cells = wrapper.findAll('.x-table__cell')
-    await cells[0].trigger('mousedown', { button: 0 })
-    await cells[1].trigger('mouseenter')
-    document.dispatchEvent(new MouseEvent('mouseup'))
-    expect(wrapper.findAll('td.x-table__selected-td')).toHaveLength(2)
-    expect(wrapper.findAll('td.x-table__selection-edge-top')).toHaveLength(1)
-    expect(wrapper.findAll('td.x-table__selection-edge-bottom')).toHaveLength(1)
-    expect(wrapper.findAll('td.x-table__selection-edge-left')).toHaveLength(2)
-    expect(wrapper.findAll('td.x-table__selection-edge-right')).toHaveLength(2)
-
-    await wrapper.find('.x-table__shell').trigger('paste', {
-      clipboardData: {
-        getData: () => '批量值'
+        showActions: true,
+        actionsWidth: 180
       },
-      preventDefault: vi.fn()
-    })
-    await nextTick()
-
-    const updateEvents = wrapper.emitted('update:data')
-    expect(updateEvents).toBeTruthy()
-    const latestRows = updateEvents?.[updateEvents.length - 1]?.[0] as Array<Record<string, unknown>>
-    expect(latestRows.map((row) => row.name)).toEqual(['批量值', '批量值'])
-  })
-
-  it('selects entire rows when selectionMode is row', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [
-          { key: 'name', label: '名称' },
-          { key: 'enabled', label: '启用' }
-        ],
-        data,
-        selectionMode: 'row',
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
+      slots: {
+        'cell-name': '<template #default="{ value, rowIndex }"><strong class="custom-name">{{ rowIndex }}-{{ value }}</strong></template>',
+        'row-actions': '<template #default="{ row }"><button class="row-action">查看 {{ row.id }}</button></template>'
       }
     })
 
-    await nextTick()
-    await nextTick()
-    const cells = wrapper.findAll('.x-table__cell')
-    await cells[0].trigger('mousedown', { button: 0 })
-    await cells[2].trigger('mouseenter')
-    document.dispatchEvent(new MouseEvent('mouseup'))
-
-    expect(wrapper.findAll('td.x-table__selected-td')).toHaveLength(4)
-    expect(wrapper.findAll('td.x-table__selection-edge-top')).toHaveLength(2)
-    expect(wrapper.findAll('td.x-table__selection-edge-bottom')).toHaveLength(2)
-    expect(wrapper.findAll('td.x-table__selection-edge-left')).toHaveLength(2)
-    expect(wrapper.findAll('td.x-table__selection-edge-right')).toHaveLength(2)
+    expect(wrapper.find('.custom-name').text()).toBe('0-工作台')
+    expect(wrapper.findAll('.row-action')).toHaveLength(2)
+    expect(wrapper.find('.row-action').text()).toBe('查看 1')
+    expect(wrapper.find('.x-table__row--body').attributes('style')).toContain('180px')
   })
 
-  it('selects cells from Element Plus table cell padding area', async () => {
+  it('adds fill height class when fillHeight is enabled', () => {
     const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [
-          { key: 'name', label: '名称' },
-          { key: 'enabled', label: '启用' }
-        ],
-        data,
-        selectable: false,
-        showIndex: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    await wrapper.find('td.el-table__cell').trigger('click')
-
-    expect(wrapper.findAll('td.x-table__selected-td')).toHaveLength(1)
-  })
-
-  it('emits row double click from Element Plus table cell padding area', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [{ key: 'name', label: '名称' }],
-        data,
-        selectable: false,
-        showIndex: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    await wrapper.find('td.el-table__cell').trigger('dblclick')
-
-    expect(wrapper.emitted('row-dblclick')).toHaveLength(1)
-  })
-
-  it('resizes selected cells from the selection handle', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [{ key: 'name', label: '名称' }],
-        data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    const cells = wrapper.findAll('.x-table__cell')
-    await cells[0].trigger('mousedown', { button: 0 })
-    await cells[1].trigger('mouseenter')
-    document.dispatchEvent(new MouseEvent('mouseup'))
-
-    expect(wrapper.find('.x-table__selection-handle').exists()).toBe(true)
-    expect(wrapper.findAll('td.x-table__selected-td')).toHaveLength(2)
-
-    await wrapper.find('.x-table__selection-handle').trigger('mousedown', { button: 0 })
-    await cells[0].trigger('mouseenter')
-    document.dispatchEvent(new MouseEvent('mouseup'))
-
-    expect(wrapper.findAll('td.x-table__selected-td')).toHaveLength(1)
-  })
-
-  it('applies column align to the inner cell content wrapper', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
-      props: {
-        columns: [
-          { key: 'name', label: '名称', align: 'center' },
-          { key: 'enabled', label: '启用', align: 'right' }
-        ],
-        data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
-      }
-    })
-
-    await nextTick()
-    await nextTick()
-    const cells = wrapper.findAll('.x-table__cell')
-
-    expect(cells[0].classes()).toContain('x-table__cell--center')
-    expect(cells[1].classes()).toContain('x-table__cell--right')
-  })
-
-  it('exposes density for loose standard and compact table sizes', async () => {
-    const wrapper = mount(XTable, {
-      attachTo: document.body,
       props: {
         columns,
         data,
-        density: 'large',
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
+        fillHeight: true
       }
     })
 
-    await nextTick()
-    expect(wrapper.find('.x-table__body').classes()).toContain('el-table--large')
-
-    await wrapper.setProps({ density: 'small' })
-    await nextTick()
-    expect(wrapper.find('.x-table__body').classes()).toContain('el-table--small')
+    expect(wrapper.classes()).toContain('is-fill-height')
   })
 
-  it('exposes runtime column settings for backend persistence', async () => {
+  it('applies column settings for order fixed align ratio and pixel width', () => {
     const wrapper = mount(XTable, {
-      attachTo: document.body,
       props: {
         columns,
         data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
+        columnSettings: [
+          { key: 'status', order: 0, fixed: 'left', align: 'center', widthRatio: 25 },
+          { key: 'name', order: 1, fixed: 'none', align: 'left', width: 220 },
+          { key: 'count', order: 2, fixed: 'right', align: 'right', width: 96 }
+        ]
       }
     })
 
-    const table = wrapper.vm as unknown as TableExpose
-    table.setColumnSettings([
-      { key: 'status', visible: true, order: 0, fixed: 'left', widthRatio: 2, width: 220 },
-      { key: 'name', visible: false, order: 1 },
-      { key: 'enabled', visible: true, order: 2, fixed: 'right', widthRatio: 1 }
+    expect(wrapper.findAll('.x-table__cell--header').map((cell) => cell.text())).toEqual(['状态', '名称', '数量'])
+    expect(wrapper.find('.x-table__row--body').attributes('style')).toContain('25% 220px 96px')
+
+    const cells = wrapper.find('.x-table__row--body').findAll('.x-table__cell')
+    expect(cells[0].attributes('style')).toContain('justify-content: center')
+    expect(cells[0].attributes('style')).toContain('position: sticky')
+    expect(cells[0].attributes('style')).toContain('left: 0px')
+    expect(cells[0].attributes('style')).toContain('box-shadow: inset -1px 0 0')
+    expect(cells[2].attributes('style')).toContain('right: 0px')
+    expect(cells[2].attributes('style')).toContain('box-shadow: inset 1px 0 0')
+  })
+
+  it('exposes column setting controls through top slot', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      },
+      slots: {
+        top: `
+          <template #default="{ columnSettings, updateColumnSetting }">
+            <span class="settings-count">{{ columnSettings.length }}</span>
+            <button class="set-align" @click="updateColumnSetting('name', { align: 'center' })">设置</button>
+          </template>
+        `
+      }
+    })
+
+    expect(wrapper.find('.settings-count').text()).toBe('3')
+    await wrapper.find('.set-align').trigger('click')
+
+    const events = wrapper.emitted('column-settings-change')
+    expect(events).toBeTruthy()
+    expect(events?.[events.length - 1]?.[0]).toContainEqual(expect.objectContaining({ key: 'name', align: 'center' }))
+  })
+
+  it('reorders column settings from the top slot', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      },
+      slots: {
+        top: `
+          <template #default="{ columnSettings, reorderColumnSetting }">
+            <span class="settings-order">{{ columnSettings.map((setting) => setting.key).join(',') }}</span>
+            <button class="reorder-column" @click="reorderColumnSetting('name', 'count', 'after')">排序</button>
+          </template>
+        `
+      }
+    })
+
+    expect(wrapper.find('.settings-order').text()).toBe('name,status,count')
+    await wrapper.find('.reorder-column').trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.settings-order').text()).toBe('status,count,name')
+    expect(wrapper.findAll('.x-table__cell--header').map((cell) => cell.text())).toEqual(['状态', '数量', '名称'])
+    const emittedSettings = wrapper.emitted('column-settings-change')?.[0]?.[0] as Array<{ key: string; order: number }>
+    expect(emittedSettings.find((setting) => setting.key === 'status')?.order).toBe(0)
+    expect(emittedSettings.find((setting) => setting.key === 'count')?.order).toBe(1)
+    expect(emittedSettings.find((setting) => setting.key === 'name')?.order).toBe(2)
+  })
+
+  it('renders selection column and emits selected row keys', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectedRowKeys: ['1']
+      }
+    })
+
+    expect(wrapper.findAll('.x-table__cell--selection')).toHaveLength(3)
+    expect((wrapper.findAll('.x-table__checkbox')[1].element as HTMLInputElement).checked).toBe(true)
+
+    await wrapper.findAll('.x-table__checkbox')[2].setValue(true)
+
+    expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual(['1', '2'])
+    expect(wrapper.emitted('selection-change')?.[0]?.[0]).toMatchObject({
+      keys: ['1', '2'],
+      rows: data
+    })
+  })
+
+  it('selects rows by clicking anywhere in row selection mode', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        showSelectionColumn: false,
+        selectionMode: 'row'
+      }
+    })
+
+    expect(wrapper.find('.x-table__cell--selection').exists()).toBe(false)
+
+    await wrapper.find('.x-table__row--body').trigger('click')
+
+    expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual(['1'])
+  })
+
+  it('keeps row click selection disabled while editable but still allows selection column', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        showSelectionColumn: true,
+        selectionMode: 'row'
+      }
+    })
+
+    await wrapper.find('.x-table__row--body').findAll('.x-table__cell')[1].trigger('click')
+    expect(wrapper.emitted('update:selectedRowKeys')).toBeUndefined()
+
+    await wrapper.findAll('.x-table__checkbox')[1].setValue(true)
+    expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual(['1'])
+  })
+
+  it('edits cell content with XBaseInput after double click when editable', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true
+      }
+    })
+
+    const firstCell = wrapper.find('.x-table__row--body').findAll('.x-table__cell')[0]
+    await firstCell.trigger('dblclick')
+
+    const input = wrapper.find('.x-base-input__inner')
+    expect(input.exists()).toBe(true)
+
+    await input.setValue('控制台')
+    await input.trigger('keydown.enter')
+    await nextTick()
+
+    const updatedRows = wrapper.emitted('update:data')?.[0]?.[0] as typeof data
+    expect(updatedRows).toHaveLength(2)
+    expect(updatedRows[0]).toMatchObject({ id: 1, name: '控制台' })
+    expect(wrapper.emitted('cell-change')?.[0]?.[0]).toMatchObject({
+      rowIndex: 0,
+      value: '控制台',
+      oldValue: '工作台'
+    })
+  })
+
+  it('returns focus to table after committing cell editing with enter', async () => {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const wrapper = mount(XTable, {
+      attachTo: host,
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'A' })
+    await wrapper.find('.x-base-input__inner').trigger('keydown.enter')
+    await nextTick()
+
+    expect(document.activeElement).toBe(wrapper.find('.x-table').element)
+
+    wrapper.unmount()
+    host.remove()
+  })
+
+  it('commits editing and moves selected cell with tab from the editor', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'A' })
+    await wrapper.find('.x-base-input__inner').trigger('keydown', { key: 'Tab' })
+
+    expect(wrapper.emitted('update:data')?.[0]?.[0]).toBeTruthy()
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::status'])
+  })
+
+  it('commits cell editing when pointer goes outside the editor', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true
+      }
+    })
+
+    const firstCell = wrapper.find('.x-table__row--body').findAll('.x-table__cell')[0]
+    await firstCell.trigger('dblclick')
+    await wrapper.find('.x-base-input__inner').setValue('控制台')
+
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    await nextTick()
+
+    const updatedRows = wrapper.emitted('update:data')?.[0]?.[0] as typeof data
+    expect(updatedRows[0]).toMatchObject({ id: 1, name: '控制台' })
+    expect(wrapper.find('.x-table__cell-editor').exists()).toBe(false)
+  })
+
+  it('does not flash cell selection when another cell ends editing', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell'
+      }
+    })
+
+    const cells = wrapper.find('.x-table__row--body').findAll('.x-table__cell')
+    await cells[1].trigger('dblclick')
+    await wrapper.find('.x-base-input__inner').setValue('控制台')
+
+    cells[2].element.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+    await cells[2].trigger('mousedown', { button: 0 })
+    await cells[2].trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:data')?.[0]?.[0]).toBeTruthy()
+    expect(wrapper.emitted('update:selectedCellKeys')).toBeUndefined()
+  })
+
+  it('starts editing selected cell with typed character when editable', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'A' })
+
+    const input = wrapper.find('.x-base-input__inner')
+    expect(input.exists()).toBe(true)
+    expect((input.element as HTMLInputElement).value).toBe('A')
+  })
+
+  it('moves selected cell to the next column with tab', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'Tab' })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::status'])
+  })
+
+  it('moves selected cell to the next row first column with tab at row end', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::count']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'Tab' })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['2::name'])
+  })
+
+  it('moves selected cell to the previous column with shift tab', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::status']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'Tab', shiftKey: true })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::name'])
+  })
+
+  it('moves selected cell to the previous row last column with shift tab at row start', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['2::name']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'Tab', shiftKey: true })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::count'])
+  })
+
+  it('moves selected cell to the next row in the same column with enter', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::status']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['2::status'])
+  })
+
+  it('moves selected cell to the next column first row with enter at column bottom', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['2::status']
+      }
+    })
+
+    await wrapper.find('.x-table').trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::count'])
+  })
+
+  it('uses the latest internal cell selection when tab is pressed rapidly', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    const table = wrapper.find('.x-table')
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events.map((event) => event[0])).toEqual([
+      ['1::status'],
+      ['1::count'],
+      ['2::name'],
+      ['2::status'],
+      ['2::count']
     ])
-    await nextTick()
-
-    expect(table.getColumnSettings()).toEqual([
-      { key: 'status', visible: true, order: 0, fixed: 'left', widthRatio: 2, width: 220 },
-      { key: 'name', visible: false, order: 1, fixed: undefined, widthRatio: undefined, width: undefined },
-      { key: 'enabled', visible: true, order: 2, fixed: 'right', widthRatio: 1, width: undefined }
-    ])
-    expect(table.getStoredState().columnSettings?.[0]).toMatchObject({
-      key: 'status',
-      fixed: 'left',
-      widthRatio: 2,
-      width: 220
-    })
   })
 
-  it('updates column widths from the cell context menu', async () => {
+  it('ignores stale controlled cell selection echoes while tab navigation is ahead', async () => {
     const wrapper = mount(XTable, {
-      attachTo: document.body,
       props: {
         columns,
         data,
-        selectable: false,
-        draggableRows: false,
-        draggableColumns: false,
-        showPagination: false
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
       }
     })
+
+    const table = wrapper.find('.x-table')
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+    await wrapper.setProps({ selectedCellKeys: ['1::status'] })
+    await table.trigger('keydown', { key: 'Tab' })
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events.map((event) => event[0])).toEqual([
+      ['1::status'],
+      ['1::count'],
+      ['2::name']
+    ])
+  })
+
+  it('ignores older controlled cell selection values during rapid tab navigation', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    const table = wrapper.find('.x-table')
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+    await wrapper.setProps({ selectedCellKeys: ['1::name'] })
+    await table.trigger('keydown', { key: 'Tab' })
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events.map((event) => event[0])).toEqual([
+      ['1::status'],
+      ['1::count'],
+      ['2::name']
+    ])
+  })
+
+  it('keeps ignoring stale controlled cell selection after the latest echo arrives', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    const table = wrapper.find('.x-table')
+    await table.trigger('keydown', { key: 'Tab' })
+    await table.trigger('keydown', { key: 'Tab' })
+    await wrapper.setProps({ selectedCellKeys: ['1::count'] })
+    await wrapper.setProps({ selectedCellKeys: ['1::status'] })
+    await table.trigger('keydown', { key: 'Tab' })
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events.map((event) => event[0])).toEqual([
+      ['1::status'],
+      ['1::count'],
+      ['2::name']
+    ])
+  })
+
+  it('uses the latest internal cell selection when enter is pressed rapidly', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    const table = wrapper.find('.x-table')
+    await table.trigger('keydown', { key: 'Enter' })
+    await table.trigger('keydown', { key: 'Enter' })
+    await table.trigger('keydown', { key: 'Enter' })
+    await table.trigger('keydown', { key: 'Enter' })
+    await table.trigger('keydown', { key: 'Enter' })
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events.map((event) => event[0])).toEqual([
+      ['2::name'],
+      ['1::status'],
+      ['2::status'],
+      ['1::count'],
+      ['2::count']
+    ])
+  })
+
+  it('supports cell selection mode while keeping row selection column available', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        showSelectionColumn: true,
+        selectionMode: 'cell'
+      }
+    })
+
+    expect(wrapper.findAll('.x-table__cell--selection')).toHaveLength(3)
+
+    const firstCell = wrapper.find('.x-table__row--body').findAll('.x-table__cell')[1]
+    await firstCell.trigger('click')
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::name'])
+    expect(wrapper.emitted('cell-selection-change')?.[0]?.[0]).toMatchObject({
+      keys: ['1::name'],
+      cells: [
+        {
+          value: '工作台',
+          rowIndex: 0
+        }
+      ]
+    })
+  })
+
+  it('replaces active cell on plain click and preserves multiple cells with modifier click', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    const cells = wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')
+    await cells[2].trigger('click')
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::status'])
+
+    await wrapper.setProps({ selectedCellKeys: ['1::status'] })
+    await cells[3].trigger('click', { ctrlKey: true })
+
+    expect(wrapper.emitted('update:selectedCellKeys')?.[1]?.[0]).toEqual(['1::status', '1::count'])
+  })
+
+  it('marks adjacent selected cells so inner active borders stay thin', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name', '1::status', '2::name', '2::status']
+      }
+    })
+
+    const selectedCells = wrapper.findAll('.is-selected-cell')
+
+    expect(selectedCells[0].classes()).toEqual(
+      expect.arrayContaining(['is-selected-cell-adjacent-right', 'is-selected-cell-adjacent-bottom'])
+    )
+    expect(selectedCells[1].classes()).toEqual(
+      expect.arrayContaining(['is-selected-cell-adjacent-left', 'is-selected-cell-adjacent-bottom'])
+    )
+    expect(selectedCells[2].classes()).toEqual(
+      expect.arrayContaining(['is-selected-cell-adjacent-top', 'is-selected-cell-adjacent-right'])
+    )
+    expect(selectedCells[3].classes()).toEqual(
+      expect.arrayContaining(['is-selected-cell-adjacent-top', 'is-selected-cell-adjacent-left'])
+    )
+  })
+
+  it('selects a rectangular cell range by dragging across cells', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell'
+      }
+    })
+
+    const firstRowCells = wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')
+    const secondRowCells = wrapper.findAll('.x-table__row--body')[1].findAll('.x-table__cell')
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: vi.fn(() => secondRowCells[2].element)
+    })
+    await firstRowCells[1].trigger('mousedown', { button: 0 })
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1, clientY: 1 }))
+    window.dispatchEvent(new MouseEvent('mouseup'))
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events[events.length - 1][0]).toEqual(['1::name', '1::status', '2::name', '2::status'])
+  })
+
+  it('resizes the selected cell range from the bottom right handle', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name', '1::status', '2::name', '2::status']
+      }
+    })
+
+    const targetCell = wrapper.findAll('.x-table__row--body')[1].findAll('.x-table__cell')[3]
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: vi.fn(() => targetCell.element)
+    })
+    await wrapper.find('.x-table__cell-selection-handle').trigger('mousedown', { button: 0 })
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1, clientY: 1 }))
+    window.dispatchEvent(new MouseEvent('mouseup'))
+
+    const events = wrapper.emitted('update:selectedCellKeys') ?? []
+    expect(events[events.length - 1][0]).toEqual(['1::name', '1::status', '1::count', '2::name', '2::status', '2::count'])
+  })
+
+  it('moves the selection handle to bottom left when dragging left from the anchor cell', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell'
+      }
+    })
+
+    const firstRowCells = wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: vi.fn(() => firstRowCells[1].element)
+    })
+
+    await firstRowCells[3].trigger('mousedown', { button: 0 })
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 1, clientY: 1 }))
     await nextTick()
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
     await nextTick()
 
-    const table = wrapper.vm as unknown as TableExpose
-    const firstCell = wrapper.find('.x-table__cell')
-    await firstCell.trigger('contextmenu', { clientX: 20, clientY: 30 })
-    const autoWidthButton = wrapper.findAll('.x-table__context-menu button').find((button) => button.text() === '自适应内容宽度')
-    expect(autoWidthButton).toBeTruthy()
-    await autoWidthButton!.trigger('click')
+    expect(wrapper.find('.x-table__cell-selection-handle').classes()).toContain('is-bottom-left')
 
-    expect(table.getColumnSettings().every((setting) => typeof setting.width === 'number')).toBe(true)
+    window.dispatchEvent(new MouseEvent('mouseup'))
+  })
 
-    await firstCell.trigger('contextmenu', { clientX: 20, clientY: 30 })
-    const ratioButton = wrapper.findAll('.x-table__context-menu button').find((button) => button.text() === '比例适合表格总宽度')
-    expect(ratioButton).toBeTruthy()
-    await ratioButton!.trigger('click')
+  it('emits reordered rows when a row is dragged after another row', async () => {
+    const dataTransfer = {
+      effectAllowed: '',
+      dropEffect: '',
+      setData: vi.fn()
+    }
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        rowDraggable: true
+      }
+    })
 
-    const settings = table.getColumnSettings()
-    expect(settings.every((setting) => setting.width === undefined)).toBe(true)
-    expect(settings.every((setting) => typeof setting.widthRatio === 'number')).toBe(true)
+    const rows = wrapper.findAll('.x-table__row--body')
+    await rows[0].find('.x-table__cell--drag').trigger('dragstart', { dataTransfer })
+    await rows[1].trigger('dragover', { clientY: 1, dataTransfer })
+    await rows[1].trigger('drop', { dataTransfer })
+
+    const payload = wrapper.emitted('row-reorder')?.[0]?.[0] as {
+      fromIndex: number
+      toIndex: number
+      position: string
+      rows: typeof data
+    }
+    expect(payload).toMatchObject({
+      fromIndex: 0,
+      toIndex: 1,
+      position: 'after'
+    })
+    expect(payload?.rows.map((row) => row.id)).toEqual([2, 1])
+  })
+
+  it('starts row dragging only from the drag column', async () => {
+    const dataTransfer = {
+      effectAllowed: '',
+      dropEffect: '',
+      setData: vi.fn()
+    }
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        rowDraggable: true
+      }
+    })
+
+    const rows = wrapper.findAll('.x-table__row--body')
+    await rows[0].findAll('.x-table__cell')[1].trigger('dragstart', { dataTransfer })
+    await rows[1].trigger('dragover', { clientY: 1, dataTransfer })
+    await rows[1].trigger('drop', { dataTransfer })
+
+    expect(wrapper.emitted('row-reorder')).toBeUndefined()
+
+    await rows[0].find('.x-table__cell--drag').trigger('dragstart', { dataTransfer })
+    await rows[1].trigger('dragover', { clientY: 1, dataTransfer })
+    await rows[1].trigger('drop', { dataTransfer })
+
+    expect(wrapper.emitted('row-reorder')).toHaveLength(1)
   })
 })

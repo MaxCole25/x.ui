@@ -6,28 +6,15 @@ export { XTable as XlTable }
 export default XTable
 export type {
   TableAlign,
-  TableCellChange,
+  TableCellChangePayload,
   TableColumn,
-  TableColumnDisplayType,
-  TableColumnEditorType,
-  TableColumnOption,
-  TableColumnOrderChangePayload,
   TableColumnSetting,
-  TableQueryChangePayload,
-  TableColumnType,
-  TableDirtySubmitPayload,
-  TableExpose,
-  TableFixed,
-  TableProps,
+  TableReorderPosition,
   TableRowKey,
-  TableRowDblclickPayload,
-  TableRowOrderChangePayload,
+  TableRowReorderPayload,
   TableSelectionMode,
-  TableSize,
-  TableStoredState,
-  TableTagType,
+  TableProps,
   XlTableColumn,
-  XlTableColumnOption,
   XlTableProps
 } from './src/types'
 

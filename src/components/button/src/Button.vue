@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { createElementStyleVars } from '../../_utils/elementStyle'
 import type { ButtonProps } from './types'
 
 defineOptions({
@@ -11,6 +13,8 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   disabled: false,
   loading: false
 })
+
+const buttonStyle = computed(() => createElementStyleVars(props))
 </script>
 
 <template>
@@ -19,6 +23,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
     :class="[`x-button--${props.variant}`, `x-button--${props.size}`, { 'is-loading': props.loading }]"
     :disabled="props.disabled || props.loading"
     type="button"
+    :style="buttonStyle"
   >
     <span v-if="props.loading" class="x-button__spinner" aria-hidden="true" />
     <span class="x-button__content">

@@ -2,6 +2,7 @@ import type { Component } from 'vue'
 
 export type TabName = string | number
 export type TabPosition = 'top' | 'right' | 'bottom' | 'left'
+export type TabsLabelDirection = 'horizontal' | 'vertical'
 export type TabsSize = 'large' | 'default' | 'small'
 export type TabsType = '' | 'line' | 'card' | 'border-card'
 export type TabsEditAction = 'remove' | 'add'
@@ -14,6 +15,7 @@ export interface TabItem {
   avatarUrl?: string
   avatarText?: string
   disabled?: boolean
+  locked?: boolean
   closable?: boolean
   refreshable?: boolean
   draggable?: boolean
@@ -46,6 +48,7 @@ export interface TabsProps {
   type?: TabsType
   size?: TabsSize
   tabPosition?: TabPosition
+  labelDirection?: TabsLabelDirection
   stretch?: boolean
   closable?: boolean
   addable?: boolean
@@ -60,9 +63,16 @@ export interface TabsProps {
   tabBgColor?: string
   tabTextColor?: string
   tabFontSize?: number | string
+  tabMinWidth?: number | string
   tabGap?: number | string
+  verticalWidth?: number | string
+  verticalLabelMinHeight?: number | string
   borderRadius?: number | string
   tabBorder?: string
   contentBorder?: string
+  contentBackgroundColor?: string
+  contextMenuBackgroundColor?: string
+  contextMenuTextColor?: string
+  fillHeight?: boolean
   beforeLeave?: (activeName: TabName, oldActiveName: TabName) => boolean | Promise<boolean>
 }

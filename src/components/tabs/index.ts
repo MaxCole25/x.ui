@@ -6,6 +6,7 @@ export type {
   TabItem,
   TabName,
   TabPosition,
+  TabsLabelDirection,
   TabsCloseAllPayload,
   TabsCloseOthersPayload,
   TabsEditAction,

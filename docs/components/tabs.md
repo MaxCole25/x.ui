@@ -11,7 +11,7 @@ import { XTabs, type TabItem, type TabName } from 'x.ui'
 
 const active = ref<TabName>('overview')
 const items: TabItem[] = [
-  { name: 'overview', label: '总览' },
+  { name: 'overview', label: '总览', locked: true },
   { name: 'members', label: '成员', closable: true },
   { name: 'settings', label: '设置', disabled: true }
 ]
@@ -61,6 +61,7 @@ const items: TabItem[] = [
 | type | 页签类型 | `'' \| 'line' \| 'card' \| 'border-card'` | `'card'` |
 | size | 标签尺寸 | `'large' \| 'default' \| 'small'` | `'default'` |
 | tabPosition | 页签位置 | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` |
+| labelDirection | 标签文字方向 | `'horizontal' \| 'vertical'` | `'horizontal'` |
 | stretch | 是否拉伸页签 | `boolean` | `false` |
 | closable | 是否默认允许关闭 | `boolean` | `false` |
 | addable | 是否显示新增按钮 | `boolean` | `false` |
@@ -75,12 +76,16 @@ const items: TabItem[] = [
 | tabBgColor | 普通页签背景色 | `string` | `'transparent'` |
 | tabTextColor | 普通页签文字色 | `string` | `'#6B7C93'` |
 | tabFontSize | 标签文字大小（支持数字像素或 CSS 长度） | `number \| string` | `undefined` |
+| tabMinWidth | 单个页签最小宽度（支持数字像素或 CSS 长度） | `number \| string` | `undefined` |
 | borderRadius | 页签整体圆角（支持数字像素或 CSS 长度） | `number \| string` | `4` |
 | tabBorder | 单个标签头边框（不包含贴近内容页的一侧） | `string` | `'1px solid var(--x-color-border)'` |
 | contentBorder | 内容页边框 | `string` | `'1px solid var(--x-color-border)'` |
+| contentBackgroundColor | 内容页背景色 | `string` | `'#fff'` |
+| contextMenuBackgroundColor | 右键菜单背景色 | `string` | `'#fff'` |
+| contextMenuTextColor | 右键菜单文字色 | `string` | `'var(--x-color-text)'` |
 | beforeLeave | 切换前守卫，返回 `false` 阻止切换 | `(next, prev) => boolean \| Promise<boolean>` | `undefined` |
 
-默认尺寸为中尺寸 `default`，也可以通过 `size="large"` 或 `size="small"` 调整标签高度、最小宽度、内边距、文字和图标尺寸。若只需要调整标签文字大小，可使用 `tab-font-size` 覆盖尺寸预设中的字号。默认圆角为 `4px`，可通过 `border-radius="8px"` 或 `:border-radius="8"` 调整。`XTabs` 最外层和页签头容器不显示外侧边框，单个标签头边框可通过 `tab-border` 调整，内容页边框可通过 `content-border` 调整。标签头不会绘制贴近内容页的一侧边框，内容页保留完整边框；激活标签会向内容页方向溢出 `2px`，用自身背景覆盖交界处边框，避免标签和内容之间出现重叠线。图标颜色跟随当前页签文字颜色：激活态为 `#7FD6F6`，未激活态为 `#6B7C93`。
+默认尺寸为中尺寸 `default`，也可以通过 `size="large"` 或 `size="small"` 调整标签高度、最小宽度、内边距、文字和图标尺寸。若只需要调整标签文字大小，可使用 `tab-font-size` 覆盖尺寸预设中的字号；若只需要调整单个页签最小宽度，可使用 `tab-min-width` 覆盖尺寸预设中的宽度。`label-direction="vertical"` 可让标签文字上下排列，适合配合 `tab-position="left"` 或 `tab-position="right"` 做侧向标签栏。默认圆角为 `4px`，可通过 `border-radius="8px"` 或 `:border-radius="8"` 调整。`XTabs` 最外层和页签头容器不显示外侧边框，单个标签头边框可通过 `tab-border` 调整，内容页边框可通过 `content-border` 调整，内容页背景色可通过 `content-background-color` 调整，右键菜单可通过 `context-menu-background-color` 和 `context-menu-text-color` 调整背景与文字颜色。标签头不会绘制贴近内容页的一侧边框，内容页保留完整边框；激活标签会向内容页方向溢出 `2px`，用自身背景覆盖交界处边框，避免标签和内容之间出现重叠线。图标颜色跟随当前页签文字颜色：激活态为 `#7FD6F6`，未激活态为 `#6B7C93`。
 
 ## TabItem
 
@@ -92,6 +97,7 @@ const items: TabItem[] = [
 | avatarUrl | 头像图片地址 | `string` |
 | avatarText | 头像文本 | `string` |
 | disabled | 是否禁用 | `boolean` |
+| locked | 是否锁定。锁定后不可关闭、不可刷新、不可作为拖拽源或拖拽目标，并显示锁图标 | `boolean` |
 | closable | 是否覆盖全局关闭设置 | `boolean` |
 | refreshable | 是否覆盖全局刷新设置 | `boolean` |
 | draggable | 是否覆盖全局拖拽设置 | `boolean` |
@@ -126,5 +132,6 @@ const items: TabItem[] = [
 
 - 切换普通、禁用和懒渲染页签，确认内容显示和事件触发正确。
 - 开启关闭、新增、拖拽排序后，确认业务侧更新 `items` 后界面同步。
+- 为系统首页等固定页签设置 `locked: true`，确认关闭、拖拽、刷新和锁图标都遵循锁定语义。
 - 使用右键菜单锁定、解锁、刷新、关闭其它和关闭全部，确认锁定页签不会被关闭或刷新。
 - 分别检查 `top`、`bottom`、`left`、`right` 方向，确认长文本不会溢出遮挡。
