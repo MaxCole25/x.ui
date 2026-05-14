@@ -3,7 +3,7 @@ import Text from './src/Text.vue'
 
 export const XText = Text
 
-export type { TextProps, TextSize, TextType } from './src/types'
+export type { TextAlign, TextFormatter, TextProps, TextSize, TextType } from './src/types'
 
 XText.install = (app: App) => {
   app.component(XText.name!, XText)

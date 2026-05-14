@@ -62,8 +62,8 @@ const toggle = () => {
   >
     <span v-if="props.labelPosition === 'outside' && props.inactiveText" class="x-switch__text x-switch__text--inactive">{{ props.inactiveText }}</span>
     <span class="x-switch__track" aria-hidden="true">
+      <span v-if="props.labelPosition === 'inside'" class="x-switch__track-text">{{ checked ? props.activeText : props.inactiveText }}</span>
       <span class="x-switch__thumb">
-        <span v-if="props.labelPosition === 'inside'" class="x-switch__thumb-text">{{ checked ? props.activeText : props.inactiveText }}</span>
       </span>
     </span>
     <span v-if="props.labelPosition === 'outside' && props.activeText" class="x-switch__text x-switch__text--active">{{ props.activeText }}</span>

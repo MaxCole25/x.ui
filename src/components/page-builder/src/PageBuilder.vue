@@ -439,6 +439,14 @@ function stringifyFeatureValue(value: unknown) {
   return String(value)
 }
 
+function getFeaturePlaceholder(key: string) {
+  const placeholders: Record<string, string> = {
+    formatter: '(value) => `[${value}]`'
+  }
+
+  return placeholders[key] ?? ''
+}
+
 function isColorFeature(key: string, value: unknown) {
   return typeof value === 'string' && (key.toLowerCase().includes('color') || key.toLowerCase().includes('background'))
 }
@@ -901,12 +909,14 @@ function handleDropToRoot(event: DragEvent) {
                       v-else-if="value && typeof value === 'object'"
                       class="x-page-builder__feature-textarea"
                       :value="stringifyFeatureValue(value)"
+                      :placeholder="getFeaturePlaceholder(key)"
                       :disabled="readonly"
                       @change="updateSelectedFeature(key, ($event.target as HTMLTextAreaElement).value, 'complex')"
                     ></textarea>
                     <XInput
                       v-else
                       :model-value="stringifyFeatureValue(value)"
+                      :placeholder="getFeaturePlaceholder(key)"
                       :disabled="readonly"
                       @update:model-value="updateSelectedFeature(key, $event, 'string')"
                     />

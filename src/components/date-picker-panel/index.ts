@@ -3,7 +3,7 @@ import DatePickerPanel from './src/DatePickerPanel.vue'
 
 export const XDatePickerPanel = DatePickerPanel
 
-export type { DatePickerPanelProps } from './src/types'
+export type { DatePickerFestivalItem, DatePickerFestivalType, DatePickerPanelProps } from './src/types'
 
 XDatePickerPanel.install = (app: App) => {
   app.component(XDatePickerPanel.name!, XDatePickerPanel)

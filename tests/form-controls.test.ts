@@ -111,7 +111,7 @@ describe('form controls', () => {
     expect(custom.find('.x-switch__text--active').text()).toBe('开启通知')
   })
 
-  it('renders switch labels inside the thumb when configured', async () => {
+  it('renders switch labels inside the track when configured', async () => {
     const wrapper = mount(XSwitch, {
       props: {
         modelValue: false,
@@ -125,10 +125,10 @@ describe('form controls', () => {
     expect(wrapper.classes()).toContain('x-switch--label-inside')
     expect(wrapper.find('.x-switch__text--inactive').exists()).toBe(false)
     expect(wrapper.find('.x-switch__text--active').exists()).toBe(false)
-    expect(wrapper.find('.x-switch__thumb-text').text()).toBe('关')
+    expect(wrapper.find('.x-switch__track-text').text()).toBe('关')
 
     await wrapper.find('button').trigger('click')
-    expect(wrapper.find('.x-switch__thumb-text').text()).toBe('开')
+    expect(wrapper.find('.x-switch__track-text').text()).toBe('开')
   })
 
   it('exposes switch appearance variables', () => {

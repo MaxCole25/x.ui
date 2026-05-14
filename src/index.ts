@@ -81,7 +81,7 @@ export {
   pageBuilderWidgets
 } from './components/page-builder'
 
-export type { AutocompleteOption, AutocompleteProps } from './components/autocomplete'
+export type { AutocompleteProps } from './components/autocomplete'
 export type { AvatarProps, AvatarShape, AvatarSize } from './components/avatar'
 export type { BaseInputProps, BaseInputSize, BaseInputStatus, BaseInputTextAlign, BaseInputType } from './components/base-input'
 export type { ButtonProps, ButtonSize, ButtonVariant } from './components/button'

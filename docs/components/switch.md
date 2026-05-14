@@ -123,7 +123,7 @@ const enabled = ref(true)
 | size | 尺寸 | `sm \| md \| lg` | `md` |
 | activeText | 开启文案 | `string` | `开` |
 | inactiveText | 关闭文案 | `string` | `关` |
-| labelPosition | 文案位置，`outside` 为开关左右两侧，`inside` 为圆形按钮中间 | `outside \| inside` | `outside` |
+| labelPosition | 文案位置，`outside` 为开关左右两侧，`inside` 为轨道内部 | `outside \| inside` | `outside` |
 | activeValue | 开启值 | `boolean` | `true` |
 | inactiveValue | 关闭值 | `boolean` | `false` |
 | color | 开启时背景色 | `string` | - |

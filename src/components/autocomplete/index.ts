@@ -3,7 +3,7 @@ import Autocomplete from './src/Autocomplete.vue'
 
 export const XAutocomplete = Autocomplete
 
-export type { AutocompleteOption, AutocompleteProps } from './src/types'
+export type { AutocompleteProps } from './src/types'
 
 XAutocomplete.install = (app: App) => {
   app.component(XAutocomplete.name!, XAutocomplete)

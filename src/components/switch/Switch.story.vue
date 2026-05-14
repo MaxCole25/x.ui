@@ -75,7 +75,7 @@ const switchAppearance = reactive({
             <span>文案位置</span>
             <select v-model="switchAppearance.labelPosition">
               <option value="outside">左右标签</option>
-              <option value="inside">圆形按钮中间</option>
+              <option value="inside">轨道内部</option>
             </select>
           </label>
           <label>

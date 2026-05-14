@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../_utils/elementStyle'
+import { getChinaCalendarItems } from './chinaCalendar'
 import type { DatePickerPanelProps } from './types'
 
 defineOptions({
@@ -8,7 +9,8 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<DatePickerPanelProps>(), {
-  modelValue: ''
+  modelValue: '',
+  showChinaFestivals: true
 })
 
 const emit = defineEmits<{
@@ -25,8 +27,13 @@ const month = computed(() => props.month ?? baseDate.value.getMonth() + 1)
 const days = computed(() => new Date(year.value, month.value, 0).getDate())
 const cells = computed(() => Array.from({ length: days.value }, (_, index) => index + 1))
 const datePanelStyle = computed(() => createElementStyleVars(props))
+const festivalMap = computed(() => ({
+  ...(props.showChinaFestivals ? getChinaCalendarItems(year.value, month.value) : {}),
+  ...(props.festivals ?? {})
+}))
 
 const toValue = (day: number) => `${year.value}-${String(month.value).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+const getFestival = (day: number) => festivalMap.value[toValue(day)]
 const select = (day: number) => {
   const value = toValue(day)
   emit('update:modelValue', value)
@@ -46,10 +53,17 @@ const select = (day: number) => {
         :key="day"
         type="button"
         class="x-date-panel__day"
-        :class="{ 'is-active': toValue(day) === props.modelValue }"
+        :class="[
+          { 'is-active': toValue(day) === props.modelValue },
+          getFestival(day) ? `is-${getFestival(day).type}` : ''
+        ]"
         @click="select(day)"
       >
-        {{ day }}
+        <span class="x-date-panel__day-number">{{ day }}</span>
+        <span v-if="getFestival(day)" class="x-date-panel__festival-name">{{ getFestival(day).name }}</span>
+        <span v-if="getFestival(day)" class="x-date-panel__festival-badge">
+          {{ getFestival(day).type === 'solar-term' ? '气' : '节' }}
+        </span>
       </button>
     </div>
   </div>

@@ -1,7 +1,8 @@
-import type { ElementStyleProps } from '../../_utils/elementStyle'
+import type { DatePickerFestivalItem } from '../../date-picker-panel/src/types'
+import type { InputProps } from '../../input/src/types'
 
-export interface DateTimePickerProps extends ElementStyleProps {
+export interface DateTimePickerProps extends Omit<InputProps, 'modelValue' | 'type'> {
   modelValue?: string
-  placeholder?: string
-  disabled?: boolean
+  showChinaFestivals?: boolean
+  festivals?: Record<string, DatePickerFestivalItem>
 }

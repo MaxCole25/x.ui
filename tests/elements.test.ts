@@ -36,6 +36,53 @@ describe('元素组件', () => {
     expect(wrapper.classes()).toContain('x-text--title')
   })
 
+  it('exposes text appearance props', () => {
+    const wrapper = mount(XText, {
+      props: {
+        modelValue: '外层 div 承载边框',
+        borderWidth: '3px',
+        borderColor: '#ff0000',
+        radius: '8px',
+        backgroundColor: '#f0fdf4',
+        textColor: '#000000',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: 12,
+        height: 40,
+        padding: '5px 10px',
+        textAlign: 'left',
+        name: 'businessName',
+        id: 'x-text-story',
+        maxlength: 4
+      }
+    })
+
+    expect(wrapper.text()).toContain('外层 d')
+    expect(wrapper.attributes('id')).toBe('x-text-story')
+    expect(wrapper.attributes('name')).toBe('businessName')
+    const style = wrapper.attributes('style')
+    expect(style).toContain('--x-text-border-width: 3px')
+    expect(style).toContain('--x-text-border-color: #ff0000')
+    expect(style).toContain('--x-text-radius: 8px')
+    expect(style).toContain('--x-text-bg: #f0fdf4')
+    expect(style).toContain('--x-text-color: #000000')
+    expect(style).toContain('--x-text-font-family: Arial, sans-serif')
+    expect(style).toContain('--x-text-font-size: 12px')
+    expect(style).toContain('--x-text-height: 40px')
+    expect(style).toContain('--x-text-padding: 5px 10px')
+    expect(style).toContain('--x-text-align: left')
+  })
+
+  it('formats text value with custom formatter', () => {
+    const wrapper = mount(XText, {
+      props: {
+        modelValue: 12.5,
+        formatter: (value) => `[${value}]`
+      }
+    })
+
+    expect(wrapper.text()).toBe('[12.5]')
+  })
+
   it('renders avatar initials', () => {
     const wrapper = mount(XAvatar, {
       props: { name: 'UX' }
@@ -73,10 +120,10 @@ describe('元素组件', () => {
       [XSwitch, { props: { modelValue: true } }],
       [XForm, { slots: { default: '表单' } }],
       [XInputNumber, { props: { modelValue: 1 } }],
-      [XAutocomplete, { props: { modelValue: '杭', options: [] } }],
+      [XAutocomplete, { props: { modelValue: '杭' } }],
       [XCascader, { props: { modelValue: [], options: [] } }],
       [XDatePicker, { props: { modelValue: '2026-05-12' } }],
-      [XDateTimePicker, { props: { modelValue: '2026-05-12T09:30' } }],
+      [XDateTimePicker, { props: { modelValue: '2026-05-12 09:30' } }],
       [XTimePicker, { props: { modelValue: '09:30' } }],
       [XTimeSelect, { props: { modelValue: '09:30' } }],
       [XColorPicker, { props: { modelValue: '#1264f4' } }],
@@ -108,11 +155,11 @@ describe('元素组件', () => {
     const cases = [
       [XInput, { props: { modelValue: '输入' }, target: 'input' }],
       [XSelect, { props: { modelValue: 'vue', options: [{ label: 'Vue', value: 'vue' }] }, target: 'button' }],
-      [XAutocomplete, { props: { modelValue: '杭', options: [] }, target: 'input' }],
+      [XAutocomplete, { props: { modelValue: '杭' }, target: 'input' }],
       [XCascader, { props: { modelValue: [], options: [] }, target: 'button' }],
       [XInputNumber, { props: { modelValue: 1 }, target: 'input' }],
       [XDatePicker, { props: { modelValue: '2026-05-12' }, target: 'input' }],
-      [XDateTimePicker, { props: { modelValue: '2026-05-12T09:30' }, target: 'input' }],
+      [XDateTimePicker, { props: { modelValue: '2026-05-12 09:30' }, target: 'input' }],
       [XTimePicker, { props: { modelValue: '09:30' }, target: 'input' }],
       [XTimeSelect, { props: { modelValue: '09:30' }, target: 'select' }],
       [XColorPicker, { props: { modelValue: '#1264f4' }, target: 'input[type="color"]' }]
@@ -198,30 +245,273 @@ describe('元素组件', () => {
     expect(style).toContain('--x-input-number-increase-bg: #0f766e')
   })
 
-  it('selects autocomplete option', async () => {
+  it('delegates autocomplete input behavior to XInput', async () => {
     const wrapper = mount(XAutocomplete, {
       props: {
-        modelValue: '杭',
-        options: [{ label: '杭州', value: 'hangzhou' }]
+        modelValue: '上',
+        prefix: '城市',
+        suffix: 'CN'
       }
     })
 
-    await wrapper.find('.x-autocomplete__option').trigger('click')
-    expect(wrapper.emitted('select')?.[0]?.[0]).toMatchObject({ value: 'hangzhou' })
+    expect(wrapper.find('.x-base-input').exists()).toBe(true)
+    expect(wrapper.text()).toContain('城市')
+    expect(wrapper.text()).toContain('CN')
+
+    await wrapper.find('input').trigger('focus')
+    expect(wrapper.classes()).toContain('is-open')
+    expect(wrapper.find('.x-autocomplete__option').text()).toBe('上海')
+
+    await wrapper.find('input').setValue('上海')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['上海'])
+    expect(wrapper.emitted('input')?.[0]).toEqual(['上海'])
   })
 
-  it('opens autocomplete dropdown without changing option behavior', async () => {
+  it('keeps autocomplete type fixed while preserving input clearable and readonly interfaces', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '上海',
+        type: 'search',
+        readonly: true,
+        clearable: true
+      } as any
+    })
+
+    const input = wrapper.find('input')
+    expect(input.attributes('type')).toBe('text')
+    expect(input.attributes('readonly')).toBeDefined()
+    expect(wrapper.find('.x-base-input__clear').exists()).toBe(false)
+  })
+
+  it('shows autocomplete clear button when clearable and editable', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '上海',
+        clearable: true
+      }
+    })
+
+    expect(wrapper.find('.x-base-input__clear').exists()).toBe(true)
+  })
+
+  it('uses autocomplete size before explicit height and font size', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '上海',
+        size: 'sm',
+        height: 99,
+        fontSize: 30
+      }
+    })
+
+    const style = wrapper.find('.x-base-input').attributes('style')
+    expect(style).toContain('--x-base-input-font-size: 12px')
+    expect(style).toContain('--x-base-input-height: 28px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-font-size: 12px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-padding: 0 8px')
+  })
+
+  it('exposes autocomplete focus and blur events from XInput', async () => {
     const wrapper = mount(XAutocomplete, {
       props: {
         modelValue: '杭',
-        options: [{ label: '杭州', value: 'hangzhou' }]
+        showActiveBorder: false
       },
       attachTo: document.body
     })
 
     await wrapper.find('input').trigger('focus')
-    expect(wrapper.classes()).toContain('is-open')
-    expect(wrapper.find('.x-autocomplete__dropdown').isVisible()).toBe(true)
+    await wrapper.find('input').trigger('blur')
+    expect(wrapper.classes()).toContain('is-active-border-hidden')
+    expect(wrapper.emitted('focus')).toHaveLength(1)
+    expect(wrapper.emitted('blur')).toHaveLength(1)
+    wrapper.unmount()
+  })
+
+  it('delegates date picker input behavior to XInput with suffix slot icon', async () => {
+    const wrapper = mount(XDatePicker, {
+      props: {
+        modelValue: '2026-05-12',
+        prefix: '日期',
+        clearable: true,
+        size: 'lg',
+        status: 'success',
+        name: 'deliveryDate',
+        id: 'delivery-date'
+      }
+    })
+
+    expect(wrapper.find('.x-base-input').exists()).toBe(true)
+    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--lg')
+    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--success')
+    expect(wrapper.find('input').attributes('type')).toBe('text')
+    expect(wrapper.find('input').attributes('name')).toBe('deliveryDate')
+    expect(wrapper.find('input').attributes('id')).toBe('delivery-date')
+    expect(wrapper.text()).toContain('日期')
+    expect(wrapper.find('.x-base-input__prefix .ri-calendar-line').exists()).toBe(true)
+    expect(wrapper.find('.x-base-input__clear').exists()).toBe(true)
+
+    await wrapper.find('input').setValue('2026-05-13')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-05-13'])
+    expect(wrapper.emitted('input')?.[0]).toEqual(['2026-05-13'])
+  })
+
+  it('opens date picker dialog and selects date from custom panel', async () => {
+    const wrapper = mount(XDatePicker, {
+      props: {
+        modelValue: '2026-05-12'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(document.body.querySelector('.x-date-picker__dialog')).not.toBeNull()
+    expect(document.body.querySelector('.x-date-picker__current')?.textContent).toContain('2026 年 5 月')
+    expect(document.body.querySelector('.x-date-picker__dialog')?.textContent).toContain('立夏')
+    expect(document.body.querySelector('.x-date-picker__dialog')?.textContent).toContain('小满')
+
+    const days = document.body.querySelectorAll<HTMLButtonElement>('.x-date-picker__dialog .x-date-panel__day')
+    days[12].click()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-05-13'])
+    expect(wrapper.emitted('change')?.[0]).toEqual(['2026-05-13'])
+    expect(document.body.querySelector('.x-date-picker__dialog')).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('switches date picker dialog year and month from toolbar', async () => {
+    const wrapper = mount(XDatePicker, {
+      props: {
+        modelValue: '2026-05-12'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    ;(document.body.querySelector('[aria-label="上一年"]') as HTMLButtonElement).click()
+    await wrapper.vm.$nextTick()
+    expect(document.body.querySelector('.x-date-picker__current')?.textContent).toContain('2025 年 5 月')
+
+    ;(document.body.querySelector('[aria-label="下一年"]') as HTMLButtonElement).click()
+    ;(document.body.querySelector('[aria-label="下个月"]') as HTMLButtonElement).click()
+    await wrapper.vm.$nextTick()
+    expect(document.body.querySelector('.x-date-picker__current')?.textContent).toContain('2026 年 6 月')
+
+    wrapper.unmount()
+  })
+
+  it('allows date picker suffix slot to replace the default icon', () => {
+    const wrapper = mount(XDatePicker, {
+      props: { modelValue: '2026-05-12' },
+      slots: { suffix: '<span class="custom-date-suffix">交付</span>' }
+    })
+
+    expect(wrapper.find('.custom-date-suffix').text()).toBe('交付')
+    expect(wrapper.find('.x-base-input__prefix .ri-calendar-line').exists()).toBe(true)
+  })
+
+  it('delegates date time picker input behavior to XInput', async () => {
+    const wrapper = mount(XDateTimePicker, {
+      props: {
+        modelValue: '2026-05-12T09:30',
+        prefix: '时间',
+        clearable: true,
+        size: 'lg',
+        status: 'success',
+        name: 'meetingTime',
+        id: 'meeting-time'
+      }
+    })
+
+    expect(wrapper.find('.x-base-input').exists()).toBe(true)
+    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--lg')
+    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--success')
+    expect(wrapper.find('input').attributes('type')).toBe('text')
+    expect(wrapper.find('input').attributes('name')).toBe('meetingTime')
+    expect(wrapper.find('input').attributes('id')).toBe('meeting-time')
+    expect(wrapper.find('input').element.value).toBe('2026-05-12 09:30')
+    expect(wrapper.text()).toContain('时间')
+    expect(wrapper.find('.x-base-input__prefix .ri-calendar-schedule-line').exists()).toBe(true)
+    expect(wrapper.find('.x-base-input__clear').exists()).toBe(true)
+
+    await wrapper.find('input').setValue('2026-05-13T10:40')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-05-13 10:40'])
+    expect(wrapper.emitted('input')?.[0]).toEqual(['2026-05-13 10:40'])
+  })
+
+  it('opens date time picker dialog and confirms custom date time', async () => {
+    const wrapper = mount(XDateTimePicker, {
+      props: {
+        modelValue: '2026-06-19 09:30'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(document.body.querySelector('.x-date-time-picker__dialog')).not.toBeNull()
+    expect(document.body.querySelector('.x-date-time-picker__current')?.textContent).toContain('2026 年 6 月')
+    expect(document.body.querySelector('.x-date-time-picker__dialog')?.textContent).toContain('端午节')
+    expect(document.body.querySelector('.x-date-time-picker__dialog')?.textContent).toContain('夏至')
+
+    const days = document.body.querySelectorAll<HTMLButtonElement>('.x-date-time-picker__dialog .x-date-panel__day')
+    days[20].click()
+    const timeColumns = document.body.querySelectorAll('.x-date-time-picker__time-column')
+    ;(Array.from(timeColumns[0].querySelectorAll<HTMLButtonElement>('.x-date-time-picker__time-option')).find((button) => button.textContent === '14') as HTMLButtonElement).click()
+    ;(Array.from(timeColumns[1].querySelectorAll<HTMLButtonElement>('.x-date-time-picker__time-option')).find((button) => button.textContent === '45') as HTMLButtonElement).click()
+    ;(document.body.querySelector('.x-date-time-picker__primary') as HTMLButtonElement).click()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-06-21 14:45'])
+    expect(wrapper.emitted('change')?.[0]).toEqual(['2026-06-21 14:45'])
+    expect(document.body.querySelector('.x-date-time-picker__dialog')).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('keeps date time picker scroll selection aligned at time column edges', async () => {
+    const wrapper = mount(XDateTimePicker, {
+      props: {
+        modelValue: '2026-05-12 09:30'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const timeLists = document.body.querySelectorAll<HTMLElement>('.x-date-time-picker__time-list')
+    const hourList = timeLists[0]
+    const minuteList = timeLists[1]
+
+    Object.defineProperty(hourList, 'clientHeight', { configurable: true, value: 264 })
+    Object.defineProperty(minuteList, 'clientHeight', { configurable: true, value: 264 })
+    Object.defineProperty(hourList, 'scrollHeight', { configurable: true, value: 1276 })
+    Object.defineProperty(minuteList, 'scrollHeight', { configurable: true, value: 2860 })
+
+    expect(hourList.clientHeight).toBe(264)
+    expect(minuteList.clientHeight).toBe(264)
+
+    hourList.scrollTop = hourList.scrollHeight - hourList.clientHeight
+    minuteList.scrollTop = minuteList.scrollHeight - minuteList.clientHeight
+    hourList.dispatchEvent(new Event('scroll'))
+    minuteList.dispatchEvent(new Event('scroll'))
+
+    await new Promise((resolve) => window.setTimeout(resolve, 150))
+    await wrapper.vm.$nextTick()
+
+    expect(hourList.querySelector('.is-active')?.textContent).toBe('23')
+    expect(minuteList.querySelector('.is-active')?.textContent).toBe('59')
+
+    ;(document.body.querySelector('.x-date-time-picker__primary') as HTMLButtonElement).click()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-05-12 23:59'])
     wrapper.unmount()
   })
 
@@ -270,6 +560,18 @@ describe('元素组件', () => {
 
     await wrapper.findAll('.x-date-panel__day')[11].trigger('click')
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['2026-05-12'])
+  })
+
+  it('shows China traditional festivals and solar terms in date panel', () => {
+    const wrapper = mount(XDatePickerPanel, {
+      props: { year: 2026, month: 6 }
+    })
+
+    const days = wrapper.findAll('.x-date-panel__day')
+
+    expect(days.some((day) => day.classes().includes('is-festival') && day.text().includes('端午节'))).toBe(true)
+    expect(days.some((day) => day.classes().includes('is-solar-term') && day.text().includes('芒种'))).toBe(true)
+    expect(days.some((day) => day.classes().includes('is-solar-term') && day.text().includes('夏至'))).toBe(true)
   })
 
   it('shows cascader empty state', async () => {

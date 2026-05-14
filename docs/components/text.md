@@ -14,11 +14,79 @@
 <XText type="muted">辅助文本</XText>
 ```
 
+## 外观接口
+
+`XText` 支持常用外观属性，可用于在低代码配置面板中统一控制文本容器、边框和字号样式。
+
+<XText
+  model-value="外层 div 承载边框"
+  border-width="3px"
+  border-color="#ff0000"
+  background-color="#f0fdf4"
+  text-color="#000000"
+  font-family="Arial, sans-serif"
+  :font-size="12"
+  :height="40"
+  radius="8px"
+  padding="5px 10px"
+  text-align="left"
+/>
+
+```vue
+<XText
+  v-model="value"
+  border-width="3px"
+  border-color="#ff0000"
+  background-color="#f0fdf4"
+  text-color="#000000"
+  font-family="Arial, sans-serif"
+  :font-size="12"
+  :height="40"
+  radius="8px"
+  padding="5px 10px"
+  text-align="left"
+/>
+```
+
+## 文本格式化
+
+通过 `formatter` 可以把绑定值格式化后展示。组件不内置具体业务格式，展示规则由使用方决定。
+
+<XText
+  :model-value="12.5"
+  :formatter="(value) => `[${value}]`"
+/>
+
+```vue
+<XText
+  :model-value="12.5"
+  :formatter="(value) => `[${value}]`"
+/>
+```
+
 ## Props
 
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
+| modelValue | 绑定文本值，无默认插槽时显示 | `string \| number` | `''` |
 | size | 文本尺寸 | `sm \| md \| lg \| title` | `md` |
 | type | 文本语义色 | `default \| muted \| primary \| success \| warning \| danger` | `default` |
 | tag | 渲染标签 | `string` | `span` |
 | truncated | 是否单行省略 | `boolean` | `false` |
+| formatter | 自定义格式化函数 | `(value: string \| number) => string` | `undefined` |
+| disabled | 是否禁用 | `boolean` | `false` |
+| borderWidth | 边框粗细 | `number \| string` | `undefined` |
+| borderColor | 边框颜色 | `string` | `undefined` |
+| backgroundColor | 背景色 | `string` | `undefined` |
+| background | 背景色别名，优先级低于 `backgroundColor` | `string` | `undefined` |
+| textColor | 文字颜色 | `string` | `undefined` |
+| fontFamily | 字体样式 | `string` | `undefined` |
+| fontSize | 字体大小 | `number \| string` | `undefined` |
+| height | 组件高度 | `number \| string` | `undefined` |
+| autoHeight | 是否自动高度 | `boolean` | `false` |
+| padding | 容器内边距 | `number \| string` | `undefined` |
+| radius | 圆角 | `string` | `undefined` |
+| textAlign | 文字对齐 | `left \| center \| right` | `undefined` |
+| name | 原生 `name` 属性 | `string` | `undefined` |
+| id | 原生 `id` 属性 | `string` | `undefined` |
+| maxlength | 最大显示长度 | `number` | `undefined` |
