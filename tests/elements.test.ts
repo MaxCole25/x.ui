@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
+import { describe, expect, it, vi } from 'vitest'
 import {
   XAutocomplete,
   XAvatar,
@@ -161,7 +162,7 @@ describe('元素组件', () => {
       [XDatePicker, { props: { modelValue: '2026-05-12' }, target: 'input' }],
       [XDateTimePicker, { props: { modelValue: '2026-05-12 09:30' }, target: 'input' }],
       [XTimePicker, { props: { modelValue: '09:30' }, target: 'input' }],
-      [XTimeSelect, { props: { modelValue: '09:30' }, target: 'select' }],
+      [XTimeSelect, { props: { modelValue: '09:30' }, target: 'input' }],
       [XColorPicker, { props: { modelValue: '#1264f4' }, target: 'input[type="color"]' }]
     ] as const
 
@@ -283,6 +284,47 @@ describe('元素组件', () => {
     expect(wrapper.find('.x-base-input__clear').exists()).toBe(false)
   })
 
+  it('exposes select input-like appearance and readonly interfaces', async () => {
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: 'vue',
+        options: [
+          { label: 'Vue', value: 'vue' },
+          { label: 'TypeScript', value: 'ts' }
+        ],
+        prefix: '技术',
+        suffix: '必选',
+        readonly: true,
+        clearable: true,
+        hideClearButton: true,
+        size: 'sm',
+        status: 'success',
+        name: 'tech',
+        id: 'select-tech',
+        activeBorderColor: '#1d4ed8',
+        clearIconColor: '#64748b',
+        clearIconSize: 15
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-select--sm')
+    expect(wrapper.classes()).toContain('x-select--success')
+    expect(wrapper.classes()).toContain('is-readonly')
+    expect(wrapper.find('.x-select__control').attributes('name')).toBe('tech')
+    expect(wrapper.find('.x-select__control').attributes('id')).toBe('select-tech')
+    expect(wrapper.text()).toContain('技术')
+    expect(wrapper.text()).toContain('必选')
+    expect(wrapper.find('.x-select__clear').exists()).toBe(false)
+    expect(wrapper.attributes('style')).toContain('--x-select-height: 22px')
+    expect(wrapper.attributes('style')).toContain('--x-select-font-size: 10px')
+    expect(wrapper.attributes('style')).toContain('--x-select-active-border-color: #1d4ed8')
+    expect(wrapper.attributes('style')).toContain('--x-select-clear-icon-color: #64748b')
+    expect(wrapper.attributes('style')).toContain('--x-select-clear-icon-size: 15px')
+
+    await wrapper.find('.x-select__control').trigger('click')
+    expect(wrapper.classes()).not.toContain('is-open')
+  })
+
   it('shows autocomplete clear button when clearable and editable', () => {
     const wrapper = mount(XAutocomplete, {
       props: {
@@ -292,6 +334,91 @@ describe('元素组件', () => {
     })
 
     expect(wrapper.find('.x-base-input__clear').exists()).toBe(true)
+  })
+
+  it('exposes readonly autocomplete option lists', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '深',
+        options: [
+          { label: '深圳', value: 'shenzhen' },
+          { label: '上海', value: 'shanghai' }
+        ]
+      }
+    })
+
+    const vm = wrapper.vm as unknown as {
+      getOptions: () => Array<{ label: string; value: string }>
+      getVisibleOptions: () => Array<{ label: string; value: string }>
+    }
+    const options = vm.getOptions()
+    options[0].label = '已修改'
+
+    expect(vm.getOptions()[0].label).toBe('深圳')
+    expect(vm.getVisibleOptions()).toEqual([{ label: '深圳', value: 'shenzhen' }])
+  })
+
+  it('queries autocomplete remote options from server-side input method', async () => {
+    const remoteMethod = vi.fn(() => [{ label: '深圳服务端', value: 'remote-shenzhen' }])
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        remote: true,
+        remoteDebounce: 0,
+        remoteMethod
+      }
+    })
+
+    await wrapper.find('input').setValue('深')
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    await nextTick()
+
+    expect(remoteMethod).toHaveBeenCalledWith('深')
+    expect(wrapper.emitted('query')?.[0]).toEqual(['深'])
+    expect(wrapper.find('.x-autocomplete__option').text()).toBe('深圳服务端')
+  })
+
+  it('maps autocomplete key-value fields from remote options', async () => {
+    const remoteMethod = vi.fn(() => [{ name: '广州服务端', id: 20 }])
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        remote: true,
+        remoteDebounce: 0,
+        fieldNames: { label: 'name', value: 'id' },
+        remoteMethod
+      }
+    })
+
+    await wrapper.find('input').setValue('广')
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    await nextTick()
+
+    expect(wrapper.find('.x-autocomplete__option').text()).toBe('广州服务端')
+    await wrapper.find('.x-autocomplete__option').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[1]).toEqual([20])
+  })
+
+  it('loads select options from server-side dropdown request and maps key-value fields', async () => {
+    const remoteMethod = vi.fn(() => [{ name: '远程完成', id: 'done' }])
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: '',
+        remote: true,
+        fieldNames: { label: 'name', value: 'id' },
+        remoteMethod
+      }
+    })
+
+    await wrapper.find('.x-select__control').trigger('click')
+    await nextTick()
+
+    expect(remoteMethod).toHaveBeenCalledTimes(1)
+    expect(wrapper.emitted('query')).toHaveLength(1)
+    expect(wrapper.find('.x-option').text()).toContain('远程完成')
+
+    await wrapper.find('.x-option').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['done'])
   })
 
   it('uses autocomplete size before explicit height and font size', () => {
@@ -326,6 +453,21 @@ describe('元素组件', () => {
     expect(wrapper.emitted('focus')).toHaveLength(1)
     expect(wrapper.emitted('blur')).toHaveLength(1)
     wrapper.unmount()
+  })
+
+  it('uses centered text alignment by default for autocomplete and date time inputs', () => {
+    const cases: Array<[any, Record<string, string>]> = [
+      [XAutocomplete, { modelValue: '上海' }],
+      [XTimePicker, { modelValue: '09:30' }],
+      [XTimeSelect, { modelValue: '09:30' }],
+      [XDatePicker, { modelValue: '2026-05-12' }],
+      [XDateTimePicker, { modelValue: '2026-05-12 09:30' }]
+    ]
+
+    cases.forEach(([component, props]) => {
+      const wrapper = mount(component, { props })
+      expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-text-align: center')
+    })
   })
 
   it('delegates date picker input behavior to XInput with suffix slot icon', async () => {
@@ -535,6 +677,113 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([['zhejiang', 'hangzhou']])
   })
 
+  it('loads cascader columns from server-side request and maps key-value fields', async () => {
+    const remoteMethod = vi.fn((option?: { value: string | number | boolean }) => {
+      if (!option) {
+        return [{ name: '浙江', id: 'zhejiang' }]
+      }
+      if (option.value === 'hangzhou') {
+        return []
+      }
+
+      return [{ name: '杭州', id: 'hangzhou' }]
+    })
+    const wrapper = mount(XCascader, {
+      props: {
+        modelValue: [],
+        remote: true,
+        fieldNames: { label: 'name', value: 'id' },
+        remoteMethod
+      }
+    })
+
+    await wrapper.find('.x-cascader__control').trigger('click')
+    await nextTick()
+    expect(remoteMethod).toHaveBeenCalledWith(undefined, [])
+    expect(wrapper.find('.x-cascader__option').text()).toContain('浙江')
+
+    await wrapper.find('.x-cascader__option').trigger('click')
+    await nextTick()
+    expect(remoteMethod).toHaveBeenLastCalledWith(
+      expect.objectContaining({ label: '浙江', value: 'zhejiang' }),
+      [expect.objectContaining({ label: '浙江', value: 'zhejiang' })]
+    )
+
+    await wrapper.findAll('.x-cascader__option')[1].trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([['zhejiang', 'hangzhou']])
+  })
+
+  it('exposes cascader input-like appearance and readonly interfaces', async () => {
+    const wrapper = mount(XCascader, {
+      props: {
+        modelValue: ['zhejiang', 'hangzhou'],
+        options: [
+          {
+            label: '浙江',
+            value: 'zhejiang',
+            children: [{ label: '杭州', value: 'hangzhou' }]
+          }
+        ],
+        prefix: '地区',
+        suffix: '必选',
+        readonly: true,
+        clearable: true,
+        hideClearButton: true,
+        size: 'sm',
+        status: 'success',
+        separator: ' > ',
+        name: 'area',
+        id: 'cascader-area',
+        activeBorderColor: '#1d4ed8',
+        clearIconColor: '#64748b',
+        clearIconSize: 15
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-cascader--sm')
+    expect(wrapper.classes()).toContain('x-cascader--success')
+    expect(wrapper.classes()).toContain('is-readonly')
+    expect(wrapper.find('.x-cascader__control').attributes('name')).toBe('area')
+    expect(wrapper.find('.x-cascader__control').attributes('id')).toBe('cascader-area')
+    expect(wrapper.text()).toContain('地区')
+    expect(wrapper.text()).toContain('浙江 > 杭州')
+    expect(wrapper.text()).toContain('必选')
+    expect(wrapper.find('.x-cascader__clear').exists()).toBe(false)
+    expect(wrapper.attributes('style')).toContain('--x-cascader-height: 22px')
+    expect(wrapper.attributes('style')).toContain('--x-cascader-font-size: 10px')
+    expect(wrapper.attributes('style')).toContain('--x-cascader-active-border-color: #1d4ed8')
+    expect(wrapper.attributes('style')).toContain('--x-cascader-clear-icon-color: #64748b')
+    expect(wrapper.attributes('style')).toContain('--x-cascader-clear-icon-size: 15px')
+
+    await wrapper.find('.x-cascader__control').trigger('click')
+    expect(wrapper.classes()).not.toContain('is-open')
+  })
+
+  it('clears cascader value and supports selecting parent nodes', async () => {
+    const wrapper = mount(XCascader, {
+      props: {
+        modelValue: ['zhejiang', 'hangzhou'],
+        clearable: true,
+        changeOnSelect: true,
+        options: [
+          {
+            label: '浙江',
+            value: 'zhejiang',
+            children: [{ label: '杭州', value: 'hangzhou' }]
+          }
+        ]
+      }
+    })
+
+    await wrapper.find('.x-cascader__clear').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([[]])
+    expect(wrapper.emitted('clear')).toHaveLength(1)
+
+    await wrapper.find('.x-cascader__control').trigger('click')
+    await wrapper.findAll('.x-cascader__option')[0].trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[1]).toEqual([['zhejiang']])
+  })
+
   it('updates color from panel swatch', async () => {
     const wrapper = mount(XColorPickerPanel, {
       props: { modelValue: '#1264f4', colors: ['#1264f4', '#10b981'] }
@@ -604,11 +853,18 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([20])
   })
 
-  it('renders time select options', () => {
+  it('renders time select options in the custom dialog', async () => {
     const wrapper = mount(XTimeSelect, {
+      attachTo: document.body,
       props: { start: '09:00', end: '10:00', stepMinutes: 30 }
     })
 
-    expect(wrapper.findAll('option')).toHaveLength(4)
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const options = Array.from(document.body.querySelectorAll<HTMLButtonElement>('.x-time-select__time-option'))
+    expect(options.map((option) => option.textContent?.trim())).toEqual(['09:00', '09:30', '10:00'])
+
+    wrapper.unmount()
   })
 })

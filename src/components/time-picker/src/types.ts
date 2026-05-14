@@ -1,7 +1,5 @@
-import type { ElementStyleProps } from '../../_utils/elementStyle'
+import type { InputProps } from '../../input/src/types'
 
-export interface TimePickerProps extends ElementStyleProps {
+export interface TimePickerProps extends Omit<InputProps, 'modelValue' | 'type'> {
   modelValue?: string
-  placeholder?: string
-  disabled?: boolean
 }

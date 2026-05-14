@@ -3,7 +3,13 @@ import Cascader from './src/Cascader.vue'
 
 export const XCascader = Cascader
 
-export type { CascaderOption, CascaderProps } from './src/types'
+export type {
+  CascaderOption,
+  CascaderProps,
+  CascaderSize,
+  CascaderStatus,
+  CascaderTextAlign
+} from './src/types'
 
 XCascader.install = (app: App) => {
   app.component(XCascader.name!, XCascader)

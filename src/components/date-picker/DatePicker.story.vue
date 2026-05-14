@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { computed, ref, reactive } from 'vue'
 import { XDatePicker } from './index'
 import type { InputSize, InputStatus, InputTextAlign } from '../input'
 import '../../styles/index.css'
@@ -29,7 +29,7 @@ const sample = reactive({
   autoHeight: false,
   padding: '0 12px',
   radius: '8px',
-  textAlign: 'left' as InputTextAlign,
+  textAlign: 'center' as InputTextAlign,
   background: '#ffffff',
   name: 'deliveryDate',
   id: 'date-picker-delivery-date',
@@ -39,12 +39,26 @@ const sample = reactive({
   backgroundColor: '#ffffff',
   textColor: '#0f172a',
   showChinaFestivals: true,
-  showActiveBorder: true
+  showActiveBorder: true,
+  parentWidth: 300,
+  parentHeight: 96,
+  parentFullWidth: false,
+  parentFullHeight: false
 })
 
 const sizeOptions: InputSize[] = ['sm', 'md', 'lg']
 const statusOptions: InputStatus[] = ['default', 'success', 'warning', 'error']
 const alignOptions: InputTextAlign[] = ['left', 'center', 'right']
+
+const componentSample = computed(() => {
+  const props = { ...sample } as Record<string, unknown>
+  delete props.parentWidth
+  delete props.parentHeight
+  delete props.parentFullWidth
+  delete props.parentFullHeight
+
+  return props
+})
 
 const updateRadius = (event: Event) => {
   sample.radius = `${(event.target as HTMLInputElement).value}px`
@@ -70,7 +84,15 @@ const updateRadius = (event: Event) => {
     <Variant title="外观接口">
       <div class="date-picker-appearance">
         <div class="date-picker-appearance__preview">
-          <XDatePicker v-bind="sample" v-model="sample.modelValue" />
+          <div
+            class="date-picker-appearance__preview-parent"
+            :style="{
+              width: sample.parentFullWidth ? '100%' : `${sample.parentWidth}px`,
+              height: sample.parentFullHeight ? '100%' : `${sample.parentHeight}px`
+            }"
+          >
+            <XDatePicker v-bind="componentSample" v-model="sample.modelValue" />
+          </div>
         </div>
 
         <div class="date-picker-appearance__controls">
@@ -138,6 +160,14 @@ const updateRadius = (event: Event) => {
               <input v-model.number="sample.maxlength" type="number" min="1" />
             </label>
             <label>
+              <span>父元素宽度</span>
+              <input v-model.number="sample.parentWidth" type="number" min="0" />
+            </label>
+            <label>
+              <span>父元素高度</span>
+              <input v-model.number="sample.parentHeight" type="number" min="0" />
+            </label>
+            <label>
               <span>高度</span>
               <input v-model.number="sample.height" type="number" min="20" />
             </label>
@@ -196,6 +226,14 @@ const updateRadius = (event: Event) => {
 
           <div class="date-picker-appearance__column">
             <label>
+              <input v-model="sample.parentFullWidth" type="checkbox" />
+              <span>父元素撑满宽度</span>
+            </label>
+            <label>
+              <input v-model="sample.parentFullHeight" type="checkbox" />
+              <span>父元素撑满高度</span>
+            </label>
+            <label>
               <input v-model="sample.autoHeight" type="checkbox" />
               <span>自动高度</span>
             </label>
@@ -249,6 +287,14 @@ const updateRadius = (event: Event) => {
   display: flex;
   min-height: 132px;
   padding: 24px;
+}
+
+.date-picker-appearance__preview-parent {
+  background: #ecfdf5;
+  box-sizing: border-box;
+  display: grid;
+  padding: 10px;
+  place-items: center;
 }
 
 .date-picker-appearance__controls {

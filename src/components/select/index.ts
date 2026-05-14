@@ -5,7 +5,15 @@ import Option from './src/Option.vue'
 export const XSelect = Select
 export const XOption = Option
 
-export type { OptionProps, SelectOption, SelectOptionValue, SelectProps, SelectSize } from './src/types'
+export type {
+  OptionProps,
+  SelectOption,
+  SelectOptionValue,
+  SelectProps,
+  SelectSize,
+  SelectStatus,
+  SelectTextAlign
+} from './src/types'
 
 XSelect.install = (app: App) => {
   app.component(XSelect.name!, XSelect)

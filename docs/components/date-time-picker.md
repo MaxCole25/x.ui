@@ -26,6 +26,7 @@
 | hideClearButton | 是否隐藏清除按钮 | `boolean` | `false` |
 | size | 输入框尺寸 | `'sm' \| 'md' \| 'lg'` | - |
 | status | 输入框状态 | `'default' \| 'success' \| 'warning' \| 'error'` | `default` |
+| textAlign | 文本对齐方式 | `'left' \| 'center' \| 'right'` | `'center'` |
 | prefix | 前缀文本，会显示在默认日期时间图标后 | `string` | - |
 | suffix | 后缀文本 | `string` | - |
 | showChinaFestivals | 是否显示内置中国传统节日和二十四节气 | `boolean` | `true` |

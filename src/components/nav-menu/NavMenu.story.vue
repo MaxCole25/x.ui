@@ -12,7 +12,15 @@ const navItems: NavMenuItem[] = [
     icon: 'S',
     children: [
       { key: 'user', label: '用户管理', icon: 'U' },
-      { key: 'role', label: '角色管理', icon: 'R' },
+      {
+        key: 'role',
+        label: '角色管理',
+        icon: 'R',
+        children: [
+          { key: 'role-list', label: '角色列表', icon: 'L' },
+          { key: 'role-auth', label: '角色授权', icon: 'A' }
+        ]
+      },
       { key: 'permission', label: '权限配置', icon: 'P' }
     ]
   },
@@ -94,7 +102,7 @@ function handleSelect(key: string) {
           </label>
         </div>
 
-        <div class="menu-preview" :class="[`menu-preview--${state.mode}`]">
+        <div class="menu-preview" :class="[`menu-preview--${state.mode}`, { 'is-collapsed': state.collapsed }]">
           <XNavMenu
             :items="navItems"
             :active-key="state.activeKey"
@@ -120,7 +128,7 @@ function handleSelect(key: string) {
 .menu-playground {
   border: 1px solid #d8e2e8;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .menu-controls {
@@ -183,5 +191,9 @@ function handleSelect(key: string) {
 
 .menu-preview--vertical {
   max-width: 280px;
+}
+
+.menu-preview--vertical.is-collapsed {
+  max-width: 72px;
 }
 </style>

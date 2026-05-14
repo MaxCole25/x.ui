@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ElementStylePlayground from '../_story/ElementStylePlayground.vue'
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { XCascader } from './index'
+import type { CascaderSize, CascaderStatus, CascaderTextAlign } from './index'
 import '../../styles/index.css'
 
 const value = ref(['zhejiang', 'hangzhou'])
@@ -19,34 +19,64 @@ const options = [
   {
     label: '江苏',
     value: 'jiangsu',
-    children: [{ label: '南京', value: 'nanjing' }]
+    children: [
+      { label: '南京', value: 'nanjing' },
+      { label: '苏州', value: 'suzhou' }
+    ]
+  },
+  {
+    label: '广东',
+    value: 'guangdong',
+    children: [
+      { label: '深圳', value: 'shenzhen' },
+      { label: '广州', value: 'guangzhou' }
+    ]
   }
 ]
 
 const sample = reactive({
-  input: '外观接口预览',
-  autocomplete: '上海',
-  cascader: [],
-  checked: true,
-  radio: 'A',
-  select: 'vue',
-  color: '#1264f4',
-  date: '2026-05-12',
-  dateTime: '2026-05-12T09:30',
-  time: '09:30',
-  number: 36
+  modelValue: ['zhejiang', 'hangzhou'] as Array<string | number | boolean>,
+  placeholder: '请选择省市',
+  disabled: false,
+  readonly: false,
+  clearable: true,
+  hideClearButton: false,
+  autoWidth: false,
+  size: 'md' as CascaderSize,
+  status: 'default' as CascaderStatus,
+  prefix: '地区',
+  suffix: '必选',
+  separator: ' / ',
+  changeOnSelect: false,
+  activeBorderColor: '#1264f4',
+  clearIconColor: '#64748b',
+  clearIconSize: 16,
+  disabledBackgroundColor: '#f5f7fa',
+  disabledTextColor: '#94a3b8',
+  fontFamily: 'Inter, Arial, sans-serif',
+  fontSize: 12,
+  height: 30,
+  autoHeight: false,
+  padding: '0 8px',
+  radius: '6px',
+  textAlign: 'left' as CascaderTextAlign,
+  background: '#ffffff',
+  name: 'area',
+  id: 'cascader-area',
+  borderWidth: 1,
+  borderColor: '#cbd5e1',
+  backgroundColor: '#ffffff',
+  textColor: '#0f172a',
+  showActiveBorder: true
 })
 
-const selectOptions = [
-  { label: 'Vue', value: 'vue' },
-  { label: 'TypeScript', value: 'typescript' }
-]
+const sizeOptions: CascaderSize[] = ['sm', 'md', 'lg']
+const statusOptions: CascaderStatus[] = ['default', 'success', 'warning', 'error']
+const alignOptions: CascaderTextAlign[] = ['left', 'center', 'right']
 
-const autocompleteOptions = [
-  { label: '上海', value: '上海' },
-  { label: '深圳', value: '深圳' },
-  { label: '杭州', value: '杭州' }
-]
+const updateRadius = (event: Event) => {
+  sample.radius = `${(event.target as HTMLInputElement).value}px`
+}
 </script>
 
 <template>
@@ -58,18 +88,202 @@ const autocompleteOptions = [
       </div>
     </Variant>
 
-    <Variant title="状态与边界">
+    <Variant title="输入框能力">
       <div class="story-stack">
-        <XCascader v-model="emptyValue" :options="options" placeholder="请选择省市" />
-        <XCascader :model-value="['zhejiang', 'hangzhou']" :options="options" disabled />
-        <XCascader :model-value="[]" :options="[]" placeholder="空数据" />
+        <XCascader
+          :model-value="['zhejiang', 'hangzhou']"
+          :options="options"
+          prefix="地区"
+          suffix="CN"
+          clearable
+          class="story-cascader story-cascader--wide"
+        />
+        <XCascader
+          :model-value="['jiangsu', 'nanjing']"
+          :options="options"
+          disabled
+          class="story-cascader story-cascader--medium"
+        />
+        <XCascader
+          v-model="emptyValue"
+          :options="options"
+          placeholder="只读状态"
+          readonly
+          status="success"
+          class="story-cascader story-cascader--wide"
+        />
+        <XCascader :model-value="[]" :options="[]" placeholder="空数据" class="story-cascader story-cascader--medium" />
       </div>
     </Variant>
 
     <Variant title="外观接口">
-      <ElementStylePlayground v-slot="styleProps">
-        <XCascader v-bind="styleProps" v-model="sample.cascader" :options="options" />
-      </ElementStylePlayground>
+      <div class="cascader-appearance">
+        <div class="cascader-appearance__preview">
+          <XCascader v-bind="sample" v-model="sample.modelValue" :options="options" class="story-cascader story-cascader--wide" />
+        </div>
+
+        <div class="cascader-appearance__controls">
+          <div class="cascader-appearance__column">
+            <label>
+              <span>绑定值</span>
+              <input :value="sample.modelValue.join(',')" readonly />
+            </label>
+            <label>
+              <span>占位文本</span>
+              <input v-model="sample.placeholder" />
+            </label>
+            <label>
+              <span>前缀</span>
+              <input v-model="sample.prefix" />
+            </label>
+            <label>
+              <span>后缀</span>
+              <input v-model="sample.suffix" />
+            </label>
+            <label>
+              <span>ID</span>
+              <input v-model="sample.id" />
+            </label>
+            <label>
+              <span>name</span>
+              <input v-model="sample.name" />
+            </label>
+            <label>
+              <span>内边距</span>
+              <input v-model="sample.padding" />
+            </label>
+            <label>
+              <span>分隔符</span>
+              <input v-model="sample.separator" />
+            </label>
+            <label>
+              <span>字体</span>
+              <select v-model="sample.fontFamily">
+                <option value="Inter, Arial, sans-serif">Inter</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Microsoft YaHei', sans-serif">微软雅黑</option>
+              </select>
+            </label>
+            <label>
+              <span>对齐</span>
+              <select v-model="sample.textAlign">
+                <option v-for="align in alignOptions" :key="align" :value="align">{{ align }}</option>
+              </select>
+            </label>
+            <label>
+              <span>尺寸</span>
+              <select v-model="sample.size">
+                <option v-for="size in sizeOptions" :key="size" :value="size">{{ size }}</option>
+              </select>
+            </label>
+            <label>
+              <span>状态</span>
+              <select v-model="sample.status">
+                <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="cascader-appearance__column">
+            <label>
+              <span>高度</span>
+              <input v-model.number="sample.height" type="number" min="20" />
+            </label>
+            <label>
+              <span>字号</span>
+              <input v-model.number="sample.fontSize" type="number" min="10" />
+            </label>
+            <label>
+              <span>圆角</span>
+              <input
+                :value="Number.parseFloat(String(sample.radius))"
+                type="number"
+                min="0"
+                @input="updateRadius"
+              />
+            </label>
+            <label>
+              <span>清除尺寸</span>
+              <input v-model.number="sample.clearIconSize" type="number" min="10" />
+            </label>
+            <label>
+              <span>边框粗细</span>
+              <input v-model.number="sample.borderWidth" type="number" min="0" max="12" />
+            </label>
+          </div>
+
+          <div class="cascader-appearance__column">
+            <label>
+              <span>激活边框色</span>
+              <input v-model="sample.activeBorderColor" type="color" />
+            </label>
+            <label>
+              <span>边框色</span>
+              <input v-model="sample.borderColor" type="color" />
+            </label>
+            <label>
+              <span>背景色</span>
+              <input v-model="sample.backgroundColor" type="color" />
+            </label>
+            <label>
+              <span>输入背景色</span>
+              <input v-model="sample.background" type="color" />
+            </label>
+            <label>
+              <span>文字色</span>
+              <input v-model="sample.textColor" type="color" />
+            </label>
+            <label>
+              <span>清除色</span>
+              <input v-model="sample.clearIconColor" type="color" />
+            </label>
+            <label>
+              <span>禁用背景色</span>
+              <input v-model="sample.disabledBackgroundColor" type="color" />
+            </label>
+            <label>
+              <span>禁用文字色</span>
+              <input v-model="sample.disabledTextColor" type="color" />
+            </label>
+          </div>
+
+          <div class="cascader-appearance__column">
+            <label>
+              <input v-model="sample.autoHeight" type="checkbox" />
+              <span>自动高度</span>
+            </label>
+            <label>
+              <input v-model="sample.autoWidth" type="checkbox" />
+              <span>自动宽度</span>
+            </label>
+            <label>
+              <input v-model="sample.showActiveBorder" type="checkbox" />
+              <span>显示激活边框</span>
+            </label>
+            <label>
+              <input v-model="sample.disabled" type="checkbox" />
+              <span>禁用</span>
+            </label>
+            <label>
+              <input v-model="sample.readonly" type="checkbox" />
+              <span>只读</span>
+            </label>
+            <label>
+              <input v-model="sample.clearable" type="checkbox" />
+              <span>可清空</span>
+            </label>
+            <label>
+              <input v-model="sample.hideClearButton" type="checkbox" />
+              <span>隐藏清除按钮</span>
+            </label>
+            <label>
+              <input v-model="sample.changeOnSelect" type="checkbox" />
+              <span>父级可选</span>
+            </label>
+          </div>
+        </div>
+      </div>
     </Variant>
   </Story>
 </template>
@@ -80,5 +294,68 @@ const autocompleteOptions = [
   gap: 12px;
   min-height: 220px;
   padding: 16px;
+}
+
+.story-cascader--medium {
+  width: 260px;
+}
+
+.story-cascader--wide {
+  width: 360px;
+}
+
+.cascader-appearance {
+  border: 1px solid #d8e2e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cascader-appearance__preview {
+  align-items: center;
+  background: #f8fafc;
+  display: flex;
+  min-height: 132px;
+  padding: 24px;
+}
+
+.cascader-appearance__controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, 200px);
+  overflow-x: auto;
+  padding: 16px;
+}
+
+.cascader-appearance__column {
+  display: grid;
+  gap: 10px;
+  width: 200px;
+}
+
+.cascader-appearance__column label {
+  align-items: center;
+  color: #102a43;
+  display: grid;
+  font-size: 13px;
+  gap: 8px;
+  grid-template-columns: 72px 1fr;
+  min-width: 0;
+}
+
+.cascader-appearance__column input,
+.cascader-appearance__column select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-sizing: border-box;
+  min-height: 30px;
+  min-width: 0;
+  padding: 0 8px;
+  width: 100%;
+}
+
+.cascader-appearance__column input[type='checkbox'] {
+  min-height: auto;
+  padding: 0;
+  width: auto;
 }
 </style>

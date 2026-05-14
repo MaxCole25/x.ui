@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs } from 'vue'
+import { computed, onBeforeUnmount, ref, useAttrs } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../_utils/elementStyle'
 import { XInput } from '../../input'
-import type { AutocompleteProps, AutocompleteSize } from './types'
+import type {
+  AutocompleteOption,
+  AutocompleteOptionSource,
+  AutocompleteProps,
+  AutocompleteSize
+} from './types'
 
 defineOptions({
   name: 'XAutocomplete',
   inheritAttrs: false
 })
 
-const props = defineProps<AutocompleteProps>()
+const props = withDefaults(defineProps<AutocompleteProps>(), {
+  autoWidth: false,
+  textAlign: 'center',
+  options: () => [],
+  fieldNames: () => ({}),
+  remote: false,
+  remoteDebounce: 200,
+  remoteMinLength: 0,
+  loading: false,
+  loadingText: '加载中',
+  emptyText: '暂无匹配数据'
+})
 
 const emit = defineEmits<{
   'update:modelValue': [value: string | number]
@@ -18,11 +34,16 @@ const emit = defineEmits<{
   clear: []
   focus: [event: FocusEvent]
   blur: [event: FocusEvent]
+  query: [keyword: string]
 }>()
 
 const attrs = useAttrs()
 
 const open = ref(false)
+const remoteOptions = ref<AutocompleteOption[]>([])
+const remoteLoading = ref(false)
+const queryTimer = ref<number>()
+let queryRequestId = 0
 const keyword = computed(() => String(props.modelValue ?? ''))
 const sizeFontSize: Record<AutocompleteSize, number> = {
   sm: 12,
@@ -71,6 +92,15 @@ const inputProps = computed(() => {
   }
 
   delete next.autoWidth
+  delete next.options
+  delete next.fieldNames
+  delete next.remote
+  delete next.remoteMethod
+  delete next.remoteDebounce
+  delete next.remoteMinLength
+  delete next.loading
+  delete next.loadingText
+  delete next.emptyText
 
   if (props.size) {
     delete next.height
@@ -80,27 +110,109 @@ const inputProps = computed(() => {
   return next
 })
 
-const suggestions = [
-  '上海',
-  '深圳',
-  '杭州',
-  '北京',
-  '广州',
-  '苏州',
-  '南京',
-  '成都',
-  '武汉',
-  '长沙'
+const defaultSuggestions: AutocompleteOption[] = [
+  { label: '上海', value: '上海' },
+  { label: '深圳', value: '深圳' },
+  { label: '杭州', value: '杭州' },
+  { label: '北京', value: '北京' },
+  { label: '广州', value: '广州' },
+  { label: '苏州', value: '苏州' },
+  { label: '南京', value: '南京' },
+  { label: '成都', value: '成都' },
+  { label: '武汉', value: '武汉' },
+  { label: '长沙', value: '长沙' }
 ]
 
-const filteredSuggestions = computed(() => {
-  const value = keyword.value.trim().toLowerCase()
-  if (!value) return suggestions
+const readOptionValue = (option: Record<string, unknown>, key: string) => option[key]
 
-  return suggestions.filter((suggestion) => suggestion.toLowerCase().includes(value))
+const normalizeOption = (option: AutocompleteOptionSource): AutocompleteOption => {
+  if (typeof option === 'string') {
+    return {
+      label: option,
+      value: option
+    }
+  }
+
+  const optionSource = option as Record<string, unknown>
+  const labelKey = props.fieldNames.label ?? 'label'
+  const valueKey = props.fieldNames.value ?? 'value'
+  const disabledKey = props.fieldNames.disabled ?? 'disabled'
+  const rawLabel = readOptionValue(optionSource, labelKey)
+  const rawValue = readOptionValue(optionSource, valueKey)
+  const label = rawLabel == null ? String(rawValue ?? '') : String(rawLabel)
+  const value = rawValue == null ? label : rawValue
+  const normalized: AutocompleteOption = {
+    label,
+    value: typeof value === 'number' ? value : String(value)
+  }
+
+  if (Object.prototype.hasOwnProperty.call(optionSource, disabledKey)) {
+    normalized.disabled = Boolean(readOptionValue(optionSource, disabledKey))
+  }
+
+  return normalized
+}
+
+const propOptions = computed(() => props.options.map(normalizeOption))
+const allOptions = computed(() => {
+  if (props.remote) {
+    return remoteOptions.value.length ? remoteOptions.value : propOptions.value
+  }
+
+  return propOptions.value.length ? propOptions.value : defaultSuggestions
+})
+
+const visibleOptions = computed(() => {
+  const value = keyword.value.trim().toLowerCase()
+  if (props.remote || !value) return allOptions.value
+
+  return allOptions.value.filter((suggestion) => suggestion.label.toLowerCase().includes(value))
 })
 
 const canOpen = computed(() => !props.disabled && !props.readonly)
+const isLoading = computed(() => props.loading || remoteLoading.value)
+
+const readOptions = (options: AutocompleteOption[]) =>
+  options.map((option) => ({
+    ...option
+  }))
+
+const runRemoteQuery = async (value: string) => {
+  if (!props.remote) return
+  if (value.length < props.remoteMinLength) {
+    remoteOptions.value = []
+    return
+  }
+
+  emit('query', value)
+  if (!props.remoteMethod) return
+
+  const requestId = ++queryRequestId
+  remoteLoading.value = true
+
+  try {
+    const result = await props.remoteMethod(value)
+    if (requestId !== queryRequestId || !Array.isArray(result)) return
+    remoteOptions.value = result.map(normalizeOption)
+  } finally {
+    if (requestId === queryRequestId) {
+      remoteLoading.value = false
+    }
+  }
+}
+
+const scheduleRemoteQuery = (value: string) => {
+  if (!props.remote) return
+
+  if (queryTimer.value) {
+    window.clearTimeout(queryTimer.value)
+  }
+
+  queryTimer.value = window.setTimeout(() => {
+    queryTimer.value = undefined
+    void runRemoteQuery(value)
+  }, props.remoteDebounce)
+}
 
 const handleUpdate = (value: string | number) => {
   emit('update:modelValue', value)
@@ -109,6 +221,7 @@ const handleUpdate = (value: string | number) => {
 
 const handleInput = (value: string | number) => {
   emit('input', value)
+  scheduleRemoteQuery(String(value))
   open.value = canOpen.value
 }
 
@@ -133,14 +246,25 @@ const handleBlur = (event: FocusEvent) => {
   emit('blur', event)
 }
 
-const selectSuggestion = (suggestion: string) => {
-  if (!canOpen.value) return
+const selectSuggestion = (suggestion: AutocompleteOption) => {
+  if (!canOpen.value || suggestion.disabled) return
 
-  emit('update:modelValue', suggestion)
-  emit('input', suggestion)
-  emit('change', suggestion)
+  emit('update:modelValue', suggestion.value)
+  emit('input', suggestion.value)
+  emit('change', suggestion.value)
   open.value = false
 }
+
+defineExpose({
+  getOptions: () => readOptions(allOptions.value),
+  getVisibleOptions: () => readOptions(visibleOptions.value)
+})
+
+onBeforeUnmount(() => {
+  if (queryTimer.value) {
+    window.clearTimeout(queryTimer.value)
+  }
+})
 </script>
 
 <template>
@@ -172,18 +296,23 @@ const selectSuggestion = (suggestion: string) => {
     </XInput>
 
     <div v-show="open" class="x-autocomplete__dropdown" role="listbox">
-      <button
-        v-for="suggestion in filteredSuggestions"
-        :key="suggestion"
-        class="x-autocomplete__option"
-        type="button"
-        role="option"
-        @mousedown.prevent
-        @click="selectSuggestion(suggestion)"
-      >
-        {{ suggestion }}
-      </button>
-      <div v-if="!filteredSuggestions.length" class="x-autocomplete__empty">暂无匹配数据</div>
+      <div v-if="isLoading" class="x-autocomplete__empty">{{ props.loadingText }}</div>
+      <template v-else>
+        <button
+          v-for="suggestion in visibleOptions"
+          :key="String(suggestion.value)"
+          class="x-autocomplete__option"
+          :class="{ 'is-disabled': suggestion.disabled }"
+          type="button"
+          role="option"
+          :disabled="suggestion.disabled"
+          @mousedown.prevent
+          @click="selectSuggestion(suggestion)"
+        >
+          {{ suggestion.label }}
+        </button>
+      </template>
+      <div v-if="!isLoading && !visibleOptions.length" class="x-autocomplete__empty">{{ props.emptyText }}</div>
     </div>
   </div>
 </template>

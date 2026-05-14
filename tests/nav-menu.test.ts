@@ -10,7 +10,11 @@ const items: NavMenuItem[] = [
     label: '系统管理',
     children: [
       { key: 'user', label: '用户管理' },
-      { key: 'role', label: '角色管理' }
+      {
+        key: 'role',
+        label: '角色管理',
+        children: [{ key: 'role-list', label: '角色列表' }]
+      }
     ]
   }
 ]
@@ -64,6 +68,31 @@ describe('XNavMenu', () => {
     await wrapper.findAll('.x-nav-menu-item__trigger')[1].trigger('click')
 
     expect(wrapper.find('.x-nav-menu-item__arrow i').classes()).toContain('ri-arrow-drop-up-fill')
+  })
+
+  it('uses cascading popup submenus when vertical menu is collapsed', async () => {
+    const wrapper = mount(XNavMenu, {
+      props: {
+        items,
+        mode: 'vertical',
+        collapsed: true,
+        allowCollapse: true
+      }
+    })
+
+    expect(wrapper.findAll('.x-nav-menu-item__label').map((label) => label.text())).not.toContain('系统管理')
+
+    await wrapper.findAll('.x-nav-menu-item__trigger')[1].trigger('click')
+
+    const popupItems = wrapper.findAll('.x-nav-menu-item.is-popup-submenu')
+    expect(popupItems).toHaveLength(2)
+    expect(wrapper.find('.x-nav-menu-submenu').exists()).toBe(true)
+    expect(wrapper.text()).toContain('用户管理')
+    expect(wrapper.find('.x-nav-menu-item__arrow i').classes()).toContain('ri-arrow-right-s-line')
+
+    await wrapper.findAll('.x-nav-menu-item__trigger')[3].trigger('click')
+
+    expect(wrapper.text()).toContain('角色列表')
   })
 
   it('exposes text active color and font variables', () => {

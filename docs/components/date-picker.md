@@ -61,7 +61,7 @@
 | autoHeight | 是否自动高度 | `boolean` | `false` |
 | padding | 内边距 | `number \| string` | - |
 | radius | 圆角 | `string` | - |
-| textAlign | 文本对齐 | `'left' \| 'center' \| 'right'` | - |
+| textAlign | 文本对齐 | `'left' \| 'center' \| 'right'` | `'center'` |
 | background | 输入背景色 | `string` | - |
 | name | 原生 name 属性 | `string` | - |
 | id | 原生 id 属性 | `string` | - |

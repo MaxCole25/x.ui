@@ -24,8 +24,17 @@ let closeTimer: ReturnType<typeof setTimeout> | null = null
 const hasChildren = computed(() => (props.item.children?.length ?? 0) > 0)
 const isActive = computed(() => props.item.key === props.activeKey)
 const shouldHideLabel = computed(() => props.mode === 'vertical' && props.collapsed && props.depth === 0)
+const isCollapsedVerticalPopup = computed(() => props.mode === 'vertical' && props.collapsed)
+const usesPopupSubmenu = computed(() => props.mode === 'horizontal' || isCollapsedVerticalPopup.value)
 const isRemixIcon = computed(() => props.item.icon?.startsWith('ri-') ?? false)
 const iconText = computed(() => props.item.icon?.slice(0, 1).toUpperCase() ?? props.item.label.slice(0, 1).toUpperCase())
+const arrowIcon = computed(() => {
+  if (isCollapsedVerticalPopup.value || (props.mode === 'horizontal' && props.depth > 0)) {
+    return 'ri-arrow-right-s-line'
+  }
+
+  return submenuOpen.value ? 'ri-arrow-drop-up-fill' : 'ri-arrow-drop-down-fill'
+})
 
 function handleSelect() {
   if (!hasChildren.value) {
@@ -38,8 +47,8 @@ function handleSelect() {
   }
 }
 
-function openHorizontalSubmenu() {
-  if (props.mode === 'horizontal' && hasChildren.value) {
+function openPopupSubmenu() {
+  if (usesPopupSubmenu.value && hasChildren.value) {
     if (closeTimer) {
       clearTimeout(closeTimer)
       closeTimer = null
@@ -48,8 +57,8 @@ function openHorizontalSubmenu() {
   }
 }
 
-function closeHorizontalSubmenu() {
-  if (props.mode === 'horizontal' && hasChildren.value) {
+function closePopupSubmenu() {
+  if (usesPopupSubmenu.value && hasChildren.value) {
     if (closeTimer) {
       clearTimeout(closeTimer)
     }
@@ -75,11 +84,12 @@ onBeforeUnmount(() => {
       {
         'is-active': isActive,
         'has-children': hasChildren,
-        'is-open': submenuOpen
+        'is-open': submenuOpen,
+        'is-popup-submenu': usesPopupSubmenu && hasChildren
       }
     ]"
-    @mouseenter="openHorizontalSubmenu"
-    @mouseleave="closeHorizontalSubmenu"
+    @mouseenter="openPopupSubmenu"
+    @mouseleave="closePopupSubmenu"
   >
     <button
       class="x-nav-menu-item__trigger"
@@ -93,15 +103,15 @@ onBeforeUnmount(() => {
       </span>
       <span v-if="!shouldHideLabel" class="x-nav-menu-item__label">{{ props.item.label }}</span>
       <span v-if="hasChildren && !shouldHideLabel" class="x-nav-menu-item__arrow" aria-hidden="true">
-        <i :class="submenuOpen ? 'ri-arrow-drop-up-fill' : 'ri-arrow-drop-down-fill'"></i>
+        <i :class="arrowIcon"></i>
       </span>
     </button>
 
     <ul
       v-if="hasChildren && (props.mode === 'vertical' ? submenuOpen : submenuOpen)"
       class="x-nav-menu-submenu"
-      @mouseenter="openHorizontalSubmenu"
-      @mouseleave="closeHorizontalSubmenu"
+      @mouseenter="openPopupSubmenu"
+      @mouseleave="closePopupSubmenu"
     >
       <NavMenuItem
         v-for="child in props.item.children"

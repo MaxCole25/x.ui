@@ -1007,9 +1007,8 @@ defineExpose({
         <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="剪切" @click="copySelected('cut')">
           <i class="ri-scissors-cut-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
-          <i class="ri-folder-open-line" aria-hidden="true" />
-          <span>粘贴</span>
+        <button type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
+          <i class="ri-clipboard-line" aria-hidden="true" />
         </button>
         <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || !canDelete || isBusy" title="删除" @click="deleteSelected">
           <i class="ri-delete-bin-line" aria-hidden="true" />
@@ -1260,7 +1259,7 @@ defineExpose({
         <span>剪切</span>
       </button>
       <button type="button" :disabled="!canPaste || isBusy" @click="pasteItems">
-        <i class="ri-folder-open-line" aria-hidden="true" />
+        <i class="ri-clipboard-line" aria-hidden="true" />
         <span>粘贴</span>
       </button>
       <span class="x-file-disk__context-divider" />
@@ -1404,7 +1403,13 @@ defineExpose({
 
 .x-file-disk__tool svg,
 .x-file-disk__tool i {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 15px;
   height: 15px;
+  justify-content: center;
+  line-height: 1;
   width: 15px;
 }
 
@@ -1457,7 +1462,12 @@ defineExpose({
 
 .x-file-disk__path-back svg,
 .x-file-disk__path-back i {
+  align-items: center;
+  display: inline-flex;
+  font-size: 18px;
   height: 18px;
+  justify-content: center;
+  line-height: 1;
   width: 18px;
 }
 
@@ -1494,7 +1504,13 @@ defineExpose({
 
 .x-file-disk__crumb svg,
 .x-file-disk__crumb i {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 14px;
   height: 14px;
+  justify-content: center;
+  line-height: 1;
   width: 14px;
 }
 
@@ -1736,7 +1752,12 @@ defineExpose({
 
 .x-file-disk__drop-mask svg,
 .x-file-disk__drop-mask i {
+  align-items: center;
+  display: inline-flex;
+  font-size: 34px;
   height: 34px;
+  justify-content: center;
+  line-height: 1;
   width: 34px;
 }
 
@@ -1789,8 +1810,13 @@ defineExpose({
 
 .x-file-disk__context-menu svg,
 .x-file-disk__context-menu i {
+  align-items: center;
+  display: inline-flex;
   flex: 0 0 auto;
+  font-size: 14px;
   height: 14px;
+  justify-content: center;
+  line-height: 1;
   width: 14px;
 }
 
@@ -1942,7 +1968,12 @@ defineExpose({
 .x-file-disk__preview-nav svg,
 .x-file-disk__preview-close i,
 .x-file-disk__preview-nav i {
+  align-items: center;
+  display: inline-flex;
+  font-size: 20px;
   height: 20px;
+  justify-content: center;
+  line-height: 1;
   width: 20px;
 }
 

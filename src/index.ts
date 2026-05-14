@@ -81,11 +81,24 @@ export {
   pageBuilderWidgets
 } from './components/page-builder'
 
-export type { AutocompleteProps } from './components/autocomplete'
+export type {
+  AutocompleteExpose,
+  AutocompleteOption,
+  AutocompleteOptionSource,
+  AutocompleteOptionValue,
+  AutocompleteProps,
+  AutocompleteRemoteMethod
+} from './components/autocomplete'
 export type { AvatarProps, AvatarShape, AvatarSize } from './components/avatar'
 export type { BaseInputProps, BaseInputSize, BaseInputStatus, BaseInputTextAlign, BaseInputType } from './components/base-input'
 export type { ButtonProps, ButtonSize, ButtonVariant } from './components/button'
-export type { CascaderOption, CascaderProps } from './components/cascader'
+export type {
+  CascaderOption,
+  CascaderProps,
+  CascaderSize,
+  CascaderStatus,
+  CascaderTextAlign
+} from './components/cascader'
 export type { CheckboxProps, CheckboxSize } from './components/checkbox'
 export type { ColorPickerPanelProps } from './components/color-picker-panel'
 export type { ColorPickerProps } from './components/color-picker'
@@ -105,7 +118,15 @@ export type { PageBuilderCanvasSchema, PageBuilderLayoutSchema, PageBuilderNodeS
 export type { RadioProps, RadioSize } from './components/radio'
 export type { RichTextEditorExpose, RichTextEditorProps, RichTextEditorTheme, RichTextEditorToolbarButton, RichTextEditorValue, UploadResult } from './components/rich-text-editor'
 export type { ScrollbarProps } from './components/scrollbar'
-export type { OptionProps, SelectOption, SelectOptionValue, SelectProps, SelectSize } from './components/select'
+export type {
+  OptionProps,
+  SelectOption,
+  SelectOptionValue,
+  SelectProps,
+  SelectSize,
+  SelectStatus,
+  SelectTextAlign
+} from './components/select'
 export type { SliderProps } from './components/slider'
 export type { SwitchLabelPosition, SwitchProps, SwitchSize } from './components/switch'
 export type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsCloseAllPayload, TabsCloseOthersPayload, TabsEditAction, TabsPaneContext, TabsProps, TabsReorderPayload, TabsReorderPosition, TabsType } from './components/tabs'

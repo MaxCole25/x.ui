@@ -1,7 +1,9 @@
-import type { ElementStyleProps } from '../../_utils/elementStyle'
+import type { InputProps, InputStatus, InputTextAlign } from '../../input'
 
 export type SelectSize = 'sm' | 'md' | 'lg'
 export type SelectOptionValue = string | number | boolean
+export type SelectStatus = InputStatus
+export type SelectTextAlign = InputTextAlign
 
 export interface SelectOption {
   label: string
@@ -9,17 +11,41 @@ export interface SelectOption {
   disabled?: boolean
 }
 
-export interface SelectProps extends ElementStyleProps {
+export interface SelectFieldNames {
+  label?: string
+  value?: string
+  disabled?: string
+}
+
+export type SelectOptionSource = SelectOption | Record<string, unknown>
+
+export type SelectRemoteMethod = () => SelectOptionSource[] | Promise<SelectOptionSource[] | void> | void
+
+export interface SelectProps
+  extends Omit<
+    InputProps,
+    'modelValue' | 'type' | 'maxlength'
+  > {
   modelValue?: SelectOptionValue | SelectOptionValue[]
-  options?: SelectOption[]
+  options?: SelectOptionSource[]
+  fieldNames?: SelectFieldNames
+  remote?: boolean
+  remoteMethod?: SelectRemoteMethod
+  loading?: boolean
+  loadingText?: string
+  emptyText?: string
   placeholder?: string
   disabled?: boolean
+  readonly?: boolean
   clearable?: boolean
+  hideClearButton?: boolean
   multiple?: boolean
   size?: SelectSize
-  color?: string
-  radius?: string
-  background?: string
+  status?: SelectStatus
+  prefix?: string
+  suffix?: string
+  autoWidth?: boolean
+  textAlign?: SelectTextAlign
   name?: string
 }
 

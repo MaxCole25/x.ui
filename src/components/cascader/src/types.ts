@@ -1,5 +1,9 @@
-import type { ElementStyleProps } from '../../_utils/elementStyle'
+import type { InputProps, InputStatus, InputTextAlign } from '../../input'
 import type { SelectOptionValue } from '../../select'
+
+export type CascaderSize = 'sm' | 'md' | 'lg'
+export type CascaderStatus = InputStatus
+export type CascaderTextAlign = InputTextAlign
 
 export interface CascaderOption {
   label: string
@@ -8,9 +12,45 @@ export interface CascaderOption {
   children?: CascaderOption[]
 }
 
-export interface CascaderProps extends ElementStyleProps {
+export interface CascaderFieldNames {
+  label?: string
+  value?: string
+  disabled?: string
+  children?: string
+}
+
+export type CascaderOptionSource = CascaderOption | Record<string, unknown>
+
+export type CascaderRemoteMethod = (
+  option?: CascaderOption,
+  path?: CascaderOption[]
+) => CascaderOptionSource[] | Promise<CascaderOptionSource[] | void> | void
+
+export interface CascaderProps
+  extends Omit<
+    InputProps,
+    'modelValue' | 'type' | 'maxlength'
+  > {
   modelValue?: SelectOptionValue[]
-  options?: CascaderOption[]
+  options?: CascaderOptionSource[]
+  fieldNames?: CascaderFieldNames
+  remote?: boolean
+  remoteMethod?: CascaderRemoteMethod
+  loading?: boolean
+  loadingText?: string
+  emptyText?: string
   placeholder?: string
   disabled?: boolean
+  readonly?: boolean
+  clearable?: boolean
+  hideClearButton?: boolean
+  size?: CascaderSize
+  status?: CascaderStatus
+  prefix?: string
+  suffix?: string
+  autoWidth?: boolean
+  textAlign?: CascaderTextAlign
+  separator?: string
+  changeOnSelect?: boolean
+  name?: string
 }

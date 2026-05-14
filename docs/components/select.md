@@ -4,17 +4,25 @@ import { ref } from 'vue'
 const selectStatus = ref('todo')
 const selectMultiple = ref(['todo', 'done'])
 const selectClear = ref('doing')
+const remoteStatus = ref('')
 const statusOptions = [
   { label: '待处理', value: 'todo' },
   { label: '处理中', value: 'doing' },
   { label: '已完成', value: 'done' },
   { label: '已归档', value: 'archived', disabled: true }
 ]
+const statusFieldNames = { label: 'name', value: 'id' }
+const queryStatus = async () => {
+  return [
+    { name: '远程待处理', id: 'todo' },
+    { name: '远程已完成', id: 'done' }
+  ]
+}
 </script>
 
 # Select 下拉框
 
-用于从一组候选项中选择一个或多个值。支持 `options` 配置，也支持配合 `XOption` 使用。
+用于从一组候选项中选择一个或多个值。支持 `options` 配置，也支持配合 `XOption` 使用。新版外观接口与输入类组件保持一致，可配置前后缀、只读、清除按钮、状态和常用样式变量。
 
 ## 基础用法
 
@@ -77,18 +85,70 @@ const options = [
 <XSelect v-model="values" multiple :options="options" />
 ```
 
+## 服务端下拉与键值数据
+
+开启 `remote` 后，展开下拉时会触发 `query` 事件，并调用 `remoteMethod` 获取选项。后端返回 `id`、`name` 这类键值字段时，可通过 `fieldNames` 映射为组件内部的 `value` 和 `label`。
+
+<div class="x-demo-block">
+  <div class="x-demo-column">
+    <XSelect
+      v-model="remoteStatus"
+      remote
+      :field-names="statusFieldNames"
+      :remote-method="queryStatus"
+      placeholder="展开后请求服务端"
+    />
+    <p class="x-demo-label">当前值：{{ remoteStatus }}</p>
+  </div>
+</div>
+
+```vue
+<script setup>
+const fieldNames = { label: 'name', value: 'id' }
+const queryStatus = async () => {
+  const response = await fetch('/api/status-options')
+  return response.json()
+}
+</script>
+
+<template>
+  <XSelect
+    v-model="status"
+    remote
+    :field-names="fieldNames"
+    :remote-method="queryStatus"
+  />
+</template>
+```
+
 ## 可清空和禁用
 
 <div class="x-demo-block">
   <div class="x-demo-column">
     <XSelect v-model="selectClear" :options="statusOptions" clearable />
+    <XSelect v-model="selectClear" :options="statusOptions" readonly clearable />
     <XSelect :options="statusOptions" disabled placeholder="禁用状态" />
   </div>
 </div>
 
 ```vue
 <XSelect v-model="value" :options="options" clearable />
+<XSelect v-model="value" :options="options" readonly clearable />
 <XSelect :options="options" disabled placeholder="禁用状态" />
+```
+
+## 前后缀和状态
+
+<div class="x-demo-block">
+  <div class="x-demo-column">
+    <XSelect v-model="selectStatus" prefix="状态" suffix="必选" status="success" :options="statusOptions" />
+    <XSelect v-model="selectStatus" prefix="负责人" suffix="只读" readonly :options="statusOptions" />
+  </div>
+</div>
+
+```vue
+<XSelect v-model="status" prefix="状态" suffix="必选" status="success" :options="options" />
+<XSelect v-model="status" prefix="负责人" suffix="只读" readonly :options="options" />
 ```
 
 ## 尺寸
@@ -130,16 +190,64 @@ const options = [
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | modelValue | 绑定值 | `string \| number \| boolean \| array` | - |
-| options | 选项列表 | `SelectOption[]` | `[]` |
+| options | 选项列表，可传入标准选项或配合 `fieldNames` 的键值数据 | `Array<SelectOption \| Record<string, unknown>>` | `[]` |
+| fieldNames | 选项字段映射，用于后端键值数据 | `{ label?: string; value?: string; disabled?: string }` | `{}` |
+| remote | 是否展开下拉时请求服务端选项 | `boolean` | `false` |
+| remoteMethod | 服务端下拉请求方法，可返回选项数组或 Promise | `() => SelectOption[] \| Promise<SelectOption[] \| void> \| void` | - |
+| loading | 是否显示加载状态，可用于外部控制远程加载态 | `boolean` | `false` |
+| loadingText | 加载状态文案 | `string` | `加载中` |
+| emptyText | 空状态文案 | `string` | `暂无数据` |
 | placeholder | 占位文本 | `string` | `请选择` |
 | disabled | 是否禁用 | `boolean` | `false` |
+| readonly | 是否只读，只读时不展开、不清空 | `boolean` | `false` |
 | clearable | 是否可清空 | `boolean` | `false` |
+| hideClearButton | 是否隐藏清除按钮 | `boolean` | `false` |
 | multiple | 是否多选 | `boolean` | `false` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
+| status | 状态样式 | `default \| success \| warning \| error` | `default` |
+| prefix | 前缀文本 | `string` | - |
+| suffix | 后缀文本 | `string` | - |
+| showActiveBorder | 聚焦或展开时是否显示激活边框 | `boolean` | `true` |
+| autoWidth | 是否自动宽度 | `boolean` | `false` |
+| autoHeight | 是否自动高度 | `boolean` | `false` |
 | color | 主题色 | `string` | - |
+| activeBorderColor | 激活边框色 | `string` | - |
 | borderColor | 边框色 | `string` | - |
+| borderWidth | 边框宽度 | `string \| number` | - |
 | radius | 圆角 | `string` | - |
 | background | 背景色 | `string` | - |
+| backgroundColor | 背景色，优先级高于 `background` | `string` | - |
+| textColor | 文字色 | `string` | - |
+| disabledBackgroundColor | 禁用背景色 | `string` | - |
+| disabledTextColor | 禁用文字色 | `string` | - |
+| clearIconColor | 清除图标颜色 | `string` | - |
+| clearIconSize | 清除图标尺寸 | `string \| number` | - |
+| fontFamily | 字体 | `string` | - |
+| fontSize | 字号 | `string \| number` | - |
+| height | 高度 | `string \| number` | - |
+| padding | 内边距 | `string \| number` | - |
+| textAlign | 文本对齐 | `left \| center \| right` | `left` |
+| id | 控件 id | `string` | - |
+| name | 控件 name | `string` | - |
+
+## Events
+
+| 名称 | 说明 | 回调参数 |
+| --- | --- | --- |
+| update:modelValue | 绑定值更新时触发 | `value` |
+| change | 选择值变化时触发 | `value` |
+| clear | 点击清除按钮时触发 | - |
+| focus | 控件获得焦点时触发 | `FocusEvent` |
+| blur | 控件失去焦点时触发 | `FocusEvent` |
+| query | 开启 `remote` 后，展开下拉请求服务端时触发 | - |
+
+## Slots
+
+| 名称 | 说明 |
+| --- | --- |
+| default | 自定义 `XOption` 选项 |
+| prefix | 自定义前缀内容 |
+| suffix | 自定义后缀内容 |
 
 ## XOption Props
 

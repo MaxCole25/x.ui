@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { XBaseInput, XCheckbox, XForm, XFormItem, XInput, XRadio, XSelect, XSwitch } from '../src'
+import { XBaseInput, XCheckbox, XForm, XFormItem, XInput, XRadio, XSelect, XSwitch, XTimePicker, XTimeSelect } from '../src'
 
 describe('form controls', () => {
   it('updates XInput model value and clears content', async () => {
@@ -214,5 +215,60 @@ describe('form controls', () => {
     expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--lg')
     expect(wrapper.find('input').attributes('disabled')).toBeDefined()
     expect(wrapper.find('label').attributes('for')).toBe(wrapper.find('input').attributes('id'))
+  })
+
+  it('confirms XTimePicker value from the custom dialog', async () => {
+    const wrapper = mount(XTimePicker, {
+      attachTo: document.body,
+      props: {
+        modelValue: '10:15',
+        'onUpdate:modelValue': (value) => wrapper.setProps({ modelValue: value })
+      }
+    })
+
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const columns = Array.from(document.body.querySelectorAll<HTMLElement>('.x-time-picker__time-column'))
+    const hourOptions = Array.from(columns[0].querySelectorAll<HTMLButtonElement>('.x-time-picker__time-option'))
+    const minuteOptions = Array.from(columns[1].querySelectorAll<HTMLButtonElement>('.x-time-picker__time-option'))
+
+    hourOptions[8].click()
+    minuteOptions[45].click()
+    document.body.querySelector<HTMLButtonElement>('.x-time-picker__primary')?.click()
+    await nextTick()
+
+    expect(wrapper.props('modelValue')).toBe('08:45')
+    const changes = wrapper.emitted('change') ?? []
+    expect(changes[changes.length - 1]).toEqual(['08:45'])
+
+    wrapper.unmount()
+  })
+
+  it('confirms XTimeSelect value from generated time options', async () => {
+    const wrapper = mount(XTimeSelect, {
+      attachTo: document.body,
+      props: {
+        modelValue: '',
+        start: '09:00',
+        end: '10:00',
+        stepMinutes: 15,
+        'onUpdate:modelValue': (value) => wrapper.setProps({ modelValue: value })
+      }
+    })
+
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const options = Array.from(document.body.querySelectorAll<HTMLButtonElement>('.x-time-select__time-option'))
+    options.find((option) => option.textContent?.trim() === '09:45')?.click()
+    document.body.querySelector<HTMLButtonElement>('.x-time-select__primary')?.click()
+    await nextTick()
+
+    expect(wrapper.props('modelValue')).toBe('09:45')
+    const changes = wrapper.emitted('change') ?? []
+    expect(changes[changes.length - 1]).toEqual(['09:45'])
+
+    wrapper.unmount()
   })
 })

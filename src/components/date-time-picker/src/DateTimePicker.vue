@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<DateTimePickerProps>(), {
   clearable: false,
   hideClearButton: false,
   status: 'default',
+  textAlign: 'center',
   showChinaFestivals: true,
   showActiveBorder: true
 })

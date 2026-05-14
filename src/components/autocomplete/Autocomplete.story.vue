@@ -1,10 +1,28 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { computed, ref, reactive } from 'vue'
 import { XAutocomplete } from './index'
+import type { AutocompleteOption } from './src/types'
 import type { InputSize, InputStatus, InputTextAlign } from '../input'
 import '../../styles/index.css'
 
 const value = ref('杭州')
+const remoteValue = ref('')
+
+const cityOptions: AutocompleteOption[] = [
+  { label: '上海', value: 'shanghai' },
+  { label: '深圳', value: 'shenzhen' },
+  { label: '杭州', value: 'hangzhou' },
+  { label: '北京', value: 'beijing' },
+  { label: '广州', value: 'guangzhou', disabled: true }
+]
+
+const serverCities: AutocompleteOption[] = [
+  { label: '上海服务端', value: 'server-shanghai' },
+  { label: '深圳服务端', value: 'server-shenzhen' },
+  { label: '杭州服务端', value: 'server-hangzhou' },
+  { label: '北京服务端', value: 'server-beijing' },
+  { label: '广州服务端', value: 'server-guangzhou' }
+]
 
 const sample = reactive({
   modelValue: '上海',
@@ -38,15 +56,44 @@ const sample = reactive({
   borderColor: '#cbd5e1',
   backgroundColor: '#ffffff',
   textColor: '#0f172a',
-  showActiveBorder: true
+  showActiveBorder: true,
+  options: cityOptions,
+  remote: false,
+  remoteDebounce: 200,
+  remoteMinLength: 0,
+  loading: false,
+  loadingText: '加载中',
+  emptyText: '暂无匹配数据',
+  parentWidth: 420,
+  parentHeight: 96,
+  parentFullWidth: false,
+  parentFullHeight: false
 })
 
 const sizeOptions: InputSize[] = ['sm', 'md', 'lg']
 const statusOptions: InputStatus[] = ['default', 'success', 'warning', 'error']
 const alignOptions: InputTextAlign[] = ['left', 'center', 'right']
 
+const componentSample = computed(() => {
+  const props = { ...sample } as Record<string, unknown>
+  delete props.parentWidth
+  delete props.parentHeight
+  delete props.parentFullWidth
+  delete props.parentFullHeight
+
+  return props
+})
+
 const updateRadius = (event: Event) => {
   sample.radius = `${(event.target as HTMLInputElement).value}px`
+}
+
+const queryFromServer = async (keyword: string) => {
+  await new Promise((resolve) => window.setTimeout(resolve, 360))
+  const value = keyword.trim().toLowerCase()
+  if (!value) return serverCities
+
+  return serverCities.filter((city) => city.label.toLowerCase().includes(value))
 }
 </script>
 
@@ -67,10 +114,38 @@ const updateRadius = (event: Event) => {
       </div>
     </Variant>
 
+    <Variant title="候选列表与远程查询">
+      <div class="story-stack">
+        <XAutocomplete
+          v-model="value"
+          :options="cityOptions"
+          placeholder="自定义候选列表"
+          class="story-autocomplete story-autocomplete--wide"
+        />
+        <XAutocomplete
+          v-model="remoteValue"
+          remote
+          :remote-method="queryFromServer"
+          :remote-debounce="300"
+          placeholder="输入后模拟服务端查询"
+          class="story-autocomplete story-autocomplete--wide"
+        />
+        <span>远程值：{{ remoteValue }}</span>
+      </div>
+    </Variant>
+
     <Variant title="外观接口">
       <div class="autocomplete-appearance">
         <div class="autocomplete-appearance__preview">
-          <XAutocomplete v-bind="sample" v-model="sample.modelValue" class="story-autocomplete story-autocomplete--wide" />
+          <div
+            class="autocomplete-appearance__preview-parent"
+            :style="{
+              width: sample.parentFullWidth ? '100%' : `${sample.parentWidth}px`,
+              height: sample.parentFullHeight ? '100%' : `${sample.parentHeight}px`
+            }"
+          >
+            <XAutocomplete v-bind="componentSample" v-model="sample.modelValue" class="story-autocomplete story-autocomplete--wide" />
+          </div>
         </div>
 
         <div class="autocomplete-appearance__controls">
@@ -102,6 +177,14 @@ const updateRadius = (event: Event) => {
             <label>
               <span>内边距</span>
               <input v-model="sample.padding" />
+            </label>
+            <label>
+              <span>加载文本</span>
+              <input v-model="sample.loadingText" />
+            </label>
+            <label>
+              <span>空态文本</span>
+              <input v-model="sample.emptyText" />
             </label>
             <label>
               <span>字体</span>
@@ -138,6 +221,14 @@ const updateRadius = (event: Event) => {
               <input v-model.number="sample.maxlength" type="number" min="1" />
             </label>
             <label>
+              <span>父元素宽度</span>
+              <input v-model.number="sample.parentWidth" type="number" min="0" />
+            </label>
+            <label>
+              <span>父元素高度</span>
+              <input v-model.number="sample.parentHeight" type="number" min="0" />
+            </label>
+            <label>
               <span>高度</span>
               <input v-model.number="sample.height" type="number" min="20" />
             </label>
@@ -161,6 +252,14 @@ const updateRadius = (event: Event) => {
             <label>
               <span>边框粗细</span>
               <input v-model.number="sample.borderWidth" type="number" min="0" max="12" />
+            </label>
+            <label>
+              <span>查询延迟</span>
+              <input v-model.number="sample.remoteDebounce" type="number" min="0" />
+            </label>
+            <label>
+              <span>最小长度</span>
+              <input v-model.number="sample.remoteMinLength" type="number" min="0" />
             </label>
           </div>
 
@@ -201,6 +300,14 @@ const updateRadius = (event: Event) => {
 
           <div class="autocomplete-appearance__column">
             <label>
+              <input v-model="sample.parentFullWidth" type="checkbox" />
+              <span>父元素撑满宽度</span>
+            </label>
+            <label>
+              <input v-model="sample.parentFullHeight" type="checkbox" />
+              <span>父元素撑满高度</span>
+            </label>
+            <label>
               <input v-model="sample.autoHeight" type="checkbox" />
               <span>自动高度</span>
             </label>
@@ -227,6 +334,14 @@ const updateRadius = (event: Event) => {
             <label>
               <input v-model="sample.hideClearButton" type="checkbox" />
               <span>隐藏清除按钮</span>
+            </label>
+            <label>
+              <input v-model="sample.remote" type="checkbox" />
+              <span>远程查询</span>
+            </label>
+            <label>
+              <input v-model="sample.loading" type="checkbox" />
+              <span>加载中</span>
             </label>
           </div>
         </div>
@@ -267,6 +382,14 @@ const updateRadius = (event: Event) => {
   display: flex;
   min-height: 132px;
   padding: 24px;
+}
+
+.autocomplete-appearance__preview-parent {
+  background: #ecfdf5;
+  box-sizing: border-box;
+  display: grid;
+  padding: 10px;
+  place-items: center;
 }
 
 .autocomplete-appearance__controls {
