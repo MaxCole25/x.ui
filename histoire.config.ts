@@ -9,7 +9,7 @@ export default defineConfig({
   storyIgnored: [
     '**/node_modules/**',
     '**/dist/**',
-    'src/components/page-builder/PageBuilder.story.vue'
+    'src/components/other-components/page-builder/PageBuilder.story.vue'
   ],
   tree: {
     groups: [

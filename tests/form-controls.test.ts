@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
 import { nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { XBaseInput, XCheckbox, XForm, XFormItem, XInput, XRadio, XSelect, XSwitch, XTimePicker, XTimeSelect } from '../src'
+import { XBaseInput, XCheckbox, XForm, XFormItem, XInput, XRadio, XRadioButton, XSelect, XSwitch, XTimePicker, XTimeSelect } from '../src'
 
 describe('form controls', () => {
   it('updates XInput model value and clears content', async () => {
@@ -36,6 +37,76 @@ describe('form controls', () => {
     expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-height: auto')
   })
 
+  it('keeps XBaseInput native input outline hidden when focused', async () => {
+    const wrapper = mount(XBaseInput, {
+      props: {
+        modelValue: '统一由外层显示聚焦边框'
+      },
+      attachTo: document.body
+    })
+
+    const input = wrapper.find<HTMLInputElement>('.x-base-input__inner')
+    input.element.focus()
+    await input.trigger('focus')
+
+    const styles = readFileSync('src/styles/index.css', 'utf-8')
+    expect(input.element).toBe(document.activeElement)
+    expect(styles).toContain('.x-base-input__inner:focus,\n.x-base-input__inner:focus-visible')
+    expect(styles).toContain('outline: none !important')
+
+    wrapper.unmount()
+  })
+
+  it('formats XBaseInput display value while emitting parsed raw values', async () => {
+    const formatCurrency = (value: string | number) => {
+      const n = Number(value ?? 0)
+      return Number.isFinite(n)
+        ? `￥${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        : '￥0.00'
+    }
+    const parseCurrency = (value: string) => {
+      const n = Number(String(value ?? '').replace(/[¥￥,\s]/g, ''))
+      return Number.isFinite(n) ? n : 0
+    }
+
+    const wrapper = mount(XBaseInput, {
+      props: {
+        modelValue: 9200,
+        type: 'number' as const,
+        textAlign: 'right' as const,
+        clearable: true,
+        formatter: formatCurrency,
+        parser: parseCurrency,
+        'onUpdate:modelValue': (value: string | number) => wrapper.setProps({ modelValue: value })
+      }
+    })
+
+    const input = wrapper.find('input')
+    expect(input.element.value).toBe('￥9,200.00')
+    expect(input.attributes('type')).toBe('text')
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-text-align: right')
+
+    await input.trigger('focus')
+    await input.setValue('￥12,345.60')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([12345.6])
+    expect(wrapper.emitted('input')?.[0]).toEqual([12345.6])
+    expect(wrapper.props('modelValue')).toBe(12345.6)
+    expect(input.element.value).toBe('￥12,345.60')
+
+    await input.trigger('change')
+    expect(wrapper.emitted('change')?.[0]).toEqual([12345.6])
+
+    await input.trigger('blur')
+    expect(input.element.value).toBe('￥12,345.60')
+
+    await wrapper.find('.x-base-input__clear').trigger('click')
+    const modelUpdates = wrapper.emitted('update:modelValue') ?? []
+    const inputEvents = wrapper.emitted('input') ?? []
+    expect(modelUpdates[modelUpdates.length - 1]).toEqual([''])
+    expect(inputEvents[inputEvents.length - 1]).toEqual([''])
+    expect(wrapper.emitted('clear')).toHaveLength(1)
+  })
+
   it('selects and clears an option in XSelect', async () => {
     const wrapper = mount(XSelect, {
       props: {
@@ -50,12 +121,122 @@ describe('form controls', () => {
     })
 
     await wrapper.find('.x-select__control').trigger('click')
-    await wrapper.findAll('.x-option')[1].trigger('click')
+    await nextTick()
+    const options = Array.from(document.body.querySelectorAll<HTMLButtonElement>('.x-select__dropdown .x-option'))
+    options[1].click()
+    await nextTick()
     expect(wrapper.props('modelValue')).toBe('done')
 
     await wrapper.find('.x-select__control').trigger('click')
-    await wrapper.find('.x-select__clear').trigger('click')
+    expect(wrapper.find('.x-base-input').exists()).toBe(true)
+    await wrapper.find('.x-base-input__clear').trigger('click')
     expect(wrapper.props('modelValue')).toBeUndefined()
+
+    wrapper.unmount()
+  })
+
+  it('teleports XSelect dropdown to body by default', async () => {
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: '',
+        radius: '10px',
+        backgroundColor: '#ffffff',
+        dropdownBackgroundColor: '#fef3c7',
+        options: [
+          { label: '待处理', value: 'todo' },
+          { label: '完成', value: 'done' }
+        ]
+      }
+    })
+
+    wrapper.element.getBoundingClientRect = () => ({
+      bottom: 70,
+      height: 30,
+      left: 24,
+      right: 224,
+      top: 40,
+      width: 200,
+      x: 24,
+      y: 40,
+      toJSON: () => ({})
+    })
+
+    await wrapper.find('.x-select__control').trigger('click')
+    await nextTick()
+
+    const dropdown = document.body.querySelector<HTMLElement>('.x-select__dropdown')
+    expect(dropdown).not.toBeNull()
+    expect(dropdown?.classList.contains('is-teleported')).toBe(true)
+    expect(wrapper.element.contains(dropdown)).toBe(false)
+    expect(dropdown?.style.left).toBe('24px')
+    expect(dropdown?.style.width).toBe('200px')
+    expect(dropdown?.style.maxWidth).toBe('360px')
+    expect(dropdown?.style.zIndex).toBe('1300')
+    expect(dropdown?.getAttribute('style')).toContain('--x-select-radius: 10px')
+    expect(dropdown?.getAttribute('style')).toContain('--x-select-dropdown-bg: #fef3c7')
+
+    wrapper.unmount()
+  })
+
+  it('expands XSelect teleported dropdown only up to the max width for long options', async () => {
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: '',
+        backgroundColor: '#fee2e2',
+        dropdownMaxWidth: 260,
+        options: [{ label: '这是一段很长很长的选项文本，用于测试弹层宽度上限', value: 'long' }]
+      }
+    })
+
+    wrapper.element.getBoundingClientRect = () => ({
+      bottom: 70,
+      height: 30,
+      left: 24,
+      right: 144,
+      top: 40,
+      width: 120,
+      x: 24,
+      y: 40,
+      toJSON: () => ({})
+    })
+
+    await wrapper.find('.x-select__control').trigger('click')
+    await nextTick()
+
+    const dropdown = document.body.querySelector<HTMLElement>('.x-select__dropdown')
+    expect(dropdown).not.toBeNull()
+    if (!dropdown) throw new Error('XSelect dropdown should render')
+    Object.defineProperty(dropdown, 'scrollWidth', {
+      configurable: true,
+      value: 420
+    })
+
+    window.dispatchEvent(new Event('resize'))
+    await nextTick()
+
+    expect(dropdown.style.width).toBe('260px')
+    expect(dropdown.style.maxWidth).toBe('260px')
+    expect(dropdown.getAttribute('style')).toContain('--x-select-dropdown-bg: #ffffff')
+
+    wrapper.unmount()
+  })
+
+  it('keeps XSelect dropdown inside the component when teleport is disabled', async () => {
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: '',
+        teleported: false,
+        options: [{ label: '待处理', value: 'todo' }]
+      }
+    })
+
+    await wrapper.find('.x-select__control').trigger('click')
+    const dropdown = wrapper.find('.x-select__dropdown')
+    expect(dropdown.exists()).toBe(true)
+    expect(dropdown.classes()).not.toContain('is-teleported')
+    expect(wrapper.element.contains(dropdown.element)).toBe(true)
+
+    wrapper.unmount()
   })
 
   it('updates checkbox array values', async () => {
@@ -198,6 +379,83 @@ describe('form controls', () => {
     expect(nativeStyle).toContain('width: 18px')
     expect(style).not.toContain('--x-radio-active-glow-color')
     expect(style).not.toContain('--x-radio-disabled-button-color')
+  })
+
+  it('updates radio button values and exposes appearance variables', async () => {
+    const wrapper = mount(XRadioButton, {
+      props: {
+        modelValue: 'day',
+        value: 'week',
+        fontFamily: 'Microsoft YaHei, 微软雅黑, sans-serif',
+        fontSize: 13,
+        textColor: '#1f2937',
+        backgroundColor: '#f8fafc',
+        borderColor: '#94a3b8',
+        borderWidth: 2,
+        buttonColor: '#2563eb',
+        variant: 'outline' as const,
+        direction: 'vertical' as const,
+        width: 120,
+        height: 36,
+        radius: 8,
+        activeBackgroundColor: '#0f766e',
+        activeBorderColor: '#115e59',
+        activeTextColor: '#ffffff',
+        buttonSize: 34,
+        'onUpdate:modelValue': (value) => wrapper.setProps({ modelValue: value })
+      }
+    })
+
+    expect(wrapper.find('.x-radio-button').classes()).not.toContain('is-checked')
+    await wrapper.find('.x-radio-button').trigger('click')
+    expect(wrapper.props('modelValue')).toBe('week')
+    expect(wrapper.find('.x-radio-button').classes()).toContain('is-checked')
+    expect(wrapper.find('.x-radio-button').attributes('role')).toBe('radio')
+    expect(wrapper.find('.x-radio-button').attributes('aria-checked')).toBe('true')
+
+    const style = wrapper.find('.x-radio-button').attributes('style')
+    expect(style).toContain('--x-radio-button-font-family: Microsoft YaHei, 微软雅黑, sans-serif')
+    expect(style).toContain('--x-radio-button-font-size: 13px')
+    expect(style).toContain('--x-radio-button-text-color: #1f2937')
+    expect(style).toContain('--x-radio-button-bg: #f8fafc')
+    expect(style).toContain('--x-radio-button-border-color: #94a3b8')
+    expect(style).toContain('--x-radio-button-border-width: 2px')
+    expect(style).toContain('--x-radio-button-color: #2563eb')
+    expect(style).toContain('--x-radio-button-width: 120px')
+    expect(style).toContain('--x-radio-button-height: 36px')
+    expect(style).toContain('--x-radio-button-radius: 8px')
+    expect(style).toContain('--x-radio-button-active-bg: #0f766e')
+    expect(style).toContain('--x-radio-button-active-border-color: #115e59')
+    expect(style).toContain('--x-radio-button-active-text: #ffffff')
+    expect(wrapper.find('.x-radio-button').classes()).toContain('x-radio-button--outline')
+    expect(wrapper.find('.x-radio-button').classes()).toContain('x-radio-button--vertical')
+  })
+
+  it('controls radio button selection inside a segmented v-model group', async () => {
+    const wrapper = mount({
+      components: { XRadioButton },
+      data: () => ({
+        city: 'washington'
+      }),
+      template: `
+        <div>
+          <XRadioButton v-model="city" name="city" value="new-york">New York</XRadioButton>
+          <XRadioButton v-model="city" name="city" value="washington">Washington</XRadioButton>
+          <XRadioButton v-model="city" name="city" value="los-angeles">Los Angeles</XRadioButton>
+          <XRadioButton v-model="city" name="city" value="chicago">Chicago</XRadioButton>
+        </div>
+      `
+    })
+
+    const buttons = wrapper.findAll('.x-radio-button')
+    expect(buttons[1].classes()).toContain('is-checked')
+    expect(buttons.filter((button) => button.classes().includes('is-checked'))).toHaveLength(1)
+
+    await wrapper.findAll('.x-radio-button')[2].trigger('click')
+
+    expect(wrapper.vm.city).toBe('los-angeles')
+    expect(wrapper.findAll('.x-radio-button')[2].classes()).toContain('is-checked')
+    expect(wrapper.findAll('.x-radio-button').filter((button) => button.classes().includes('is-checked'))).toHaveLength(1)
   })
 
   it('provides form size and disabled state to children', () => {

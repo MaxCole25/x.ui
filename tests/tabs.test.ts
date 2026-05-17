@@ -35,30 +35,30 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-bg: #fff')
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-text: var(--x-color-text)')
     expect(wrapper.attributes('style')).toContain('--x-tabs-item-height: 40px')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 14px')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 12px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-width: 48px')
   })
 
-  it('supports large and small tab sizes', () => {
+  it('supports lg and sm tab sizes', () => {
     const large = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        size: 'large'
+        size: 'lg'
       }
     })
     const small = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        size: 'small'
+        size: 'sm'
       }
     })
 
-    expect(large.classes()).toContain('x-tabs--large')
-    expect(large.attributes('style')).toContain('--x-tabs-item-height: 46px')
-    expect(small.classes()).toContain('x-tabs--small')
-    expect(small.attributes('style')).toContain('--x-tabs-item-height: 34px')
+    expect(large.classes()).toContain('x-tabs--lg')
+    expect(large.attributes('style')).toContain('--x-tabs-item-height: 38px')
+    expect(small.classes()).toContain('x-tabs--sm')
+    expect(small.attributes('style')).toContain('--x-tabs-item-height: 22px')
   })
 
   it('exposes tab label font size variable', () => {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import 'element-plus/dist/index.css'
 import 'remixicon/fonts/remixicon.css'
+import '../../src/styles/index.css'
 import { Search } from '@element-plus/icons-vue'
 import {
   ElButton,
@@ -8,17 +9,16 @@ import {
   ElDatePicker,
   ElIcon,
   ElInput,
-  ElOption,
   ElPagination,
   ElRadio,
   ElRadioGroup,
-  ElSelect,
   ElSwitch,
   ElTag,
   vLoading
 } from 'element-plus'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
+import { XOption, XSelect } from '../../src/components/select'
 import { XDialog } from '../../dialog'
 import type { TableCellChange, TableColumn, TableColumnSetting, TableDirtySubmitPayload, TableFixed, TableProps, TableQueryChangePayload, TableRowDblclickPayload, TableRowKey, TableSize, TableStoredState } from './old-types'
 
@@ -972,7 +972,7 @@ function isFromCellEditor(event: MouseEvent) {
   const target = event.target as Element | null
   return Boolean(
     target?.closest(
-      '.x-table__editor-input, .el-input, .el-select, .el-radio-group, .el-radio, .el-switch, .el-date-editor, input, textarea, select, button'
+      '.x-table__editor-input, .x-select, .x-option, .el-input, .el-select, .el-radio-group, .el-radio, .el-switch, .el-date-editor, input, textarea, select, button'
     )
   )
 }
@@ -2145,11 +2145,11 @@ defineExpose({
           <ElInput v-model="keyword" placeholder="搜索当前表格" clearable />
         </div>
 
-        <ElSelect v-model="density" class="x-table__density" aria-label="表格密度">
-          <ElOption label="宽松" value="large" />
-          <ElOption label="标准" value="default" />
-          <ElOption label="紧凑" value="small" />
-        </ElSelect>
+        <XSelect v-model="density" class="x-table__density" aria-label="表格密度">
+          <XOption label="宽松" value="large" />
+          <XOption label="标准" value="default" />
+          <XOption label="紧凑" value="small" />
+        </XSelect>
 
         <div class="x-table__tool-groups">
           <div class="x-table__tool-group">
@@ -2384,22 +2384,21 @@ defineExpose({
                       size="small"
                       @update:model-value="updateCell(row, column, $event)"
                     />
-                    <ElSelect
+                    <XSelect
                       v-else-if="isEditingCell(row, column) && resolveEditorType(column) === 'select'"
                       :model-value="getSelectModelValue(row[column.key])"
                       :placeholder="column.placeholder"
                       class="x-table__editor-input"
-                      :filterable="column.filterable !== false"
-                      size="small"
+                      size="sm"
                       @update:model-value="updateCell(row, column, $event)"
                     >
-                      <ElOption
+                      <XOption
                         v-for="option in column.options ?? []"
                         :key="String(option.value)"
                         :label="option.label"
                         :value="option.value"
                       />
-                    </ElSelect>
+                    </XSelect>
                     <ElRadioGroup
                       v-else-if="isEditingCell(row, column) && resolveEditorType(column) === 'radio'"
                       :model-value="getSelectModelValue(row[column.key])"
@@ -3442,6 +3441,8 @@ defineExpose({
 
 .x-table__editor-input :deep(.el-input__wrapper),
 .x-table__editor-input :deep(.el-select__wrapper),
+.x-table__editor-input.x-select,
+.x-table__editor-input :deep(.x-select__control),
 .x-table__editor-input :deep(.el-date-editor.el-input),
 .x-table__editor-input :deep(.el-date-editor .el-input__wrapper),
 .x-table__editor-input :deep(.el-input),
@@ -3490,6 +3491,8 @@ defineExpose({
 
 .x-table__editor-input :deep(.el-input__wrapper.is-focus),
 .x-table__editor-input :deep(.el-select__wrapper.is-focused),
+.x-table__editor-input.x-select.is-open,
+.x-table__editor-input.x-select:hover,
 .x-table__editor-input :deep(.el-date-editor .el-input__wrapper.is-focus),
 .x-table__editor-input :deep(.el-date-editor .el-input__wrapper.is-focused),
 .x-table__editor-input :deep(.el-input__wrapper:hover),

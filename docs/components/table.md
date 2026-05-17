@@ -38,6 +38,7 @@ const rows = [
   :columns="columns"
   :data="rows"
   show-column-settings
+  panel-background-color="#f8fafc"
   top-background-color="#f0f9ff"
   bottom-background-color="#f8fafc"
   header-background-color="#e0f2fe"
@@ -45,6 +46,7 @@ const rows = [
   body-background-color="#ffffff"
   body-stripe-background-color="transparent"
   body-text-color="#1f2937"
+  border-color="#bfdbfe"
   horizontal-border-color="#bfdbfe"
   :horizontal-border-width="1"
   vertical-border-color="#cbd5e1"
@@ -66,6 +68,28 @@ const rows = [
 </XTable>
 ```
 
+暗色主题中如果需要精确控制每一类边线，可以使用更明确的边框属性。`border-color` 会写入 `--x-table-border-color`，作为所有表格边线的统一兜底；`horizontal-border-color` 和 `vertical-border-color` 继续保留为横线、竖线的兼容入口；更细的外框、表头底线、行线、列线属性优先级更高。
+
+```vue
+<XTable
+  :columns="columns"
+  :data="rows"
+  panel-background-color="#111827"
+  top-background-color="#111827"
+  bottom-background-color="#111827"
+  header-background-color="#172033"
+  header-text-color="#dbeafe"
+  body-background-color="#0b1220"
+  body-stripe-background-color="#10192c"
+  body-text-color="#e5e7eb"
+  border-color="#334155"
+  viewport-border-color="#64748b"
+  header-divider-color="#38bdf8"
+  row-border-color="#1d4ed8"
+  column-border-color="#7c3aed"
+/>
+```
+
 ## 分页
 
 开启 `show-pagination` 后，表底会显示内置分页器。默认 `pagination-mode="client"`，组件会根据 `current-page` 和 `page-size` 从传入的 `data` 中切出当前页；如果表格需要全量展示，保持 `show-pagination` 为 `false` 即可隐藏分页元素并显示全部数据。
@@ -78,6 +102,23 @@ const rows = [
   :page-size="10"
   :page-sizes="[10, 20, 50]"
 />
+```
+
+分页控件、每页条数下拉框和列设置图标按钮会读取 XTable 专属 CSS 变量，并跟随 x.ui 全局 light / dark 主题默认值。业务侧需要细调时，可以在表格容器或上层主题节点覆盖这些变量：
+
+```css
+.dark-table {
+  --x-table-control-bg: #0b1726;
+  --x-table-control-text-color: #eef4fb;
+  --x-table-control-border-color: #203247;
+  --x-table-control-hover-bg: rgba(59, 130, 246, 0.16);
+  --x-table-control-hover-text-color: #3b82f6;
+  --x-table-control-hover-border-color: #3b82f6;
+  --x-table-control-disabled-bg: #111f31;
+  --x-table-control-disabled-text-color: #60738d;
+  --x-table-pagination-text-color: #8da0b8;
+  --x-table-pagination-current-text-color: #eef4fb;
+}
 ```
 
 服务器分页时使用 `pagination-mode="server"`。组件不会切分 `data`，只把当前页、每页条数、总数和页数通过事件抛出，业务侧收到事件后请求服务器并替换 `data`。
@@ -151,6 +192,24 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 开启 `show-selection` 后，表格进入可选择状态。`selection-mode="row"` 时点击当前行任意位置会选中或取消选中该行，通过 `v-model:selected-row-keys` 维护当前选中的行键；同时可以用 `show-selection-column` 控制是否显示左侧选择行列，显示时选中行会自动打勾。开启 `editable` 后，普通单元格点击需要留给编辑交互，整行点击选中会失效，用户只能通过左侧选择列勾选行；双击数据单元格会进入内联编辑，默认使用 `XBaseInput`，也可以用 `editor-[key]` 插槽替换指定列的编辑器，提交后通过 `update:data` 和 `cell-change` 抛出结果。`selection-mode="cell"` 时普通点击数据单元格只会在当前单元格上显示激活框，通过 `v-model:selected-cell-keys` 维护当前激活的单元格 key；选中一个单元格后按 Tab 会让选区右移一列，当前行最后一列会跳到下一行第一列，按 Shift+Tab 会左移一列，当前行第一列会跳到上一行最后一列；按 Enter 会让选区移动到当前列下一行，当前列最后一行会跳到下一列第一行；选中一个单元格后直接输入普通字符，也会进入编辑态并用输入的字符作为新内容；按住 Ctrl 或 Command 点击时可以保留多个单元格激活态；按下并拖过其它单元格时会形成矩形框选区域，选区右下角的方形手柄可以再次拖拽调整选区大小。选择行列和单元格选择互不冲突，单元格选择模式下仍可通过左侧选择列勾选行。
 
+单元格框选区域支持通过 props 或 CSS 变量配置选区背景色、文字色、边框色和相邻单元格之间的内线色。未传 props 时，仍可以在表格容器或主题节点上直接覆盖 `--x-table-cell-selected-background`、`--x-table-cell-selected-text-color`、`--x-table-cell-selected-border-color`、`--x-table-cell-selected-inner-border-color`。
+
+```vue
+<XTable
+  v-model:selected-cell-keys="selectedCellKeys"
+  :columns="columns"
+  :data="rows"
+  show-selection
+  selection-mode="cell"
+  body-background-color="#0b1220"
+  body-text-color="#e5e7eb"
+  selected-cell-background-color="rgba(59, 130, 246, 0.22)"
+  selected-cell-text-color="#f8fafc"
+  selected-cell-border-color="#60a5fa"
+  selected-cell-inner-border-color="rgba(96, 165, 250, 0.56)"
+/>
+```
+
 开启 `row-draggable` 后，数据行左侧会显示拖拽手柄。只有从拖拽列开始拖动时才会触发行排序，避免影响后续单元格框选能力。拖拽完成时组件触发 `row-reorder`，业务侧需要用事件中的 `rows` 更新数据源顺序。
 
 ```vue
@@ -212,6 +271,7 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | rowDraggable | 是否开启行拖拽排序 | `boolean` | `false` |
 | columnResizable | 是否允许通过表头拖拽调整列宽 | `boolean` | `true` |
 | showColumnSettings | 是否显示内置列设置图标按钮 | `boolean` | `false` |
+| panelBackgroundColor | 表顶和表底的统一面板背景色，作为 `topBackgroundColor`、`bottomBackgroundColor` 未设置时的兜底 | `string` | - |
 | topBackgroundColor | 表顶插槽容器背景色，支持 CSS 颜色值 | `string` | - |
 | bottomBackgroundColor | 表底插槽容器背景色，支持 CSS 颜色值 | `string` | - |
 | headerBackgroundColor | 表头区域背景色，支持 CSS 颜色值 | `string` | - |
@@ -219,6 +279,15 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | bodyBackgroundColor | 表格内容区背景色，支持 CSS 颜色值 | `string` | - |
 | bodyStripeBackgroundColor | 表格内容区斑马纹背景色，作用于偶数数据行，默认透明 | `string` | `'transparent'` |
 | bodyTextColor | 表格内容区文字颜色，支持 CSS 颜色值 | `string` | - |
+| selectedCellBackgroundColor | 单元格框选区域背景色，会写入 `--x-table-cell-selected-background` | `string` | - |
+| selectedCellTextColor | 单元格框选区域文字色，会写入 `--x-table-cell-selected-text-color` | `string` | - |
+| selectedCellBorderColor | 单元格框选区域边框色和手柄颜色，会写入 `--x-table-cell-selected-border-color` | `string` | - |
+| selectedCellInnerBorderColor | 单元格框选区域相邻边内线色，会写入 `--x-table-cell-selected-inner-border-color` | `string` | - |
+| borderColor | 表格所有边线的统一兜底颜色，会写入 `--x-table-border-color` | `string` | - |
+| viewportBorderColor | 表格 viewport 外框整体颜色，优先于横线和竖线颜色 | `string` | - |
+| headerDividerColor | 表头 viewport 底部分隔线颜色，未设置时回退到 `horizontalBorderColor` | `string` | - |
+| rowBorderColor | 数据行横向分隔线颜色，未设置时回退到 `horizontalBorderColor` | `string` | - |
+| columnBorderColor | 单元格竖向分隔线颜色，未设置时回退到 `verticalBorderColor` | `string` | - |
 | horizontalBorderColor | 表格横向边框颜色，影响表格上下边框、表头分隔线和行分隔线 | `string` | - |
 | horizontalBorderWidth | 表格横向边框宽度，数字会转为 px | `number \| string` | - |
 | verticalBorderColor | 表格竖向边框颜色，影响表格左右边框和列分隔线 | `string` | - |

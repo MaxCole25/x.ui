@@ -11,7 +11,7 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 
 1. 先阅读仓库根目录的 `AGENTS.md`。
 2. 再按需阅读 `references/component-workflow.md`。
-3. 参考现有组件 `src/components/button` 的结构。
+3. 参考现有组件 `src/components/basic-components/button` 的结构。
 4. 完成源码、导出、中文文档、Histoire story、Vitest 测试。
 5. 运行验证命令。
 
@@ -39,25 +39,47 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 - 使用 Vitest 和 Vue Test Utils 验证组件行为。
 - Vue 必须保持为 peer dependency。
 
+## 组件分类目录约束
+
+所有公开组件必须放在 `src/components` 下的分类目录中，不允许新增散落在 `src/components/<component>` 一级的公开组件目录。分类目录固定为：
+
+| 目录 | 中文分类 |
+| --- | --- |
+| `basic-components` | 基础组件 |
+| `form-components` | Form 组件 |
+| `display-components` | 展示组件 |
+| `navigation-components` | 导航组件 |
+| `feedback-components` | 反馈组件 |
+| `other-components` | 其它组件 |
+
+- 新增或移动组件时，组件源码目录必须使用 `src/components/<category>/<component>/`。
+- 不属于基础、Form、展示、导航、反馈五类的组件，统一放入 `src/components/other-components/`。
+- `docs/.vitepress/config.ts` 中的组件侧边栏必须按上述六个中文分类分组。
+- Histoire 的 `<Story title="...">` 必须以对应中文分类作为第一级路径，例如 `基础组件/Button 按钮`、`Form 组件/Input 输入框`。
+- `src/components/index.ts`、`src/index.ts`、测试、文档组件、Histoire story 中的导入路径必须同步到分类目录。
+
 ## Histoire 外观接口规范
 
-组件 story 中如提供“外观接口”变体，必须展示该组件所有公开属性接口，并按以下规则组织交互器：
+组件 story 中的交互菜单只保留一个 `外观接口` 变体。除 `XPageBuilder` 外，每个组件都必须把调试入口收敛到该变体中，避免同时出现“基础用法”“状态与边界”“交互调试”等其它 Variant。
 
-- 控制区使用四竖列布局，每列固定 `200px` 宽，标签放在交互器左侧。
-- 预览区必须用一个父元素 `div` 包裹被测组件，父元素固定 `padding: 10px`，背景色为淡绿色，用于验收组件在父容器中的宽高表现。
-- 父元素 `div` 中的被测组件必须水平居中、垂直居中，可使用 flex 或 grid 实现居中布局。
-- 外观接口必须提供父元素宽度和父元素高度两个数字输入框，统一放第二列；输入值用于控制父元素 `div` 的 `width` 和 `height`。
-- 后缀带“色”字的属性使用颜色拾取框，统一放第三列。
-- 带“长度”“高度”“字号”“圆角”的属性使用数字输入框，统一放第二列。
-- `绑定值`、`占位文本`、`前缀`、`后缀`、`id`、`name`、`内边距` 使用文本输入框，统一放第一列。
-- `字体`、`对齐`、`尺寸` 使用下拉选择框，统一放第一列。
-- 外观接口必须提供“父元素撑满宽度”和“父元素撑满高度”两个复选框，统一放第四列；勾选后分别让父元素 `div` 的 `width` 或 `height` 使用 `100%`。
-- `自动高度`、`自动宽度`、`显示激活边框`、`禁用`、`只读`、`可清空`、`隐藏清除按钮` 使用复选框，统一放第四列。
-- 其它公开属性如果没有命中以上规则，应按交互类型和验收便利性放入最相近的列，不要遗漏。
+- `外观接口` 必须展示当前组件所有公开的属性、接口、类型、事件；组件新增或调整这些公开能力时，必须同步更新该变体中的对应调试项。
+- `外观接口` 的控制区必须竖向排列 `属性`、`接口`、`类型`、`事件` 四块区域，每块左上角用标题标明区域类型。
+- `属性`、`接口`、`类型`、`事件` 每块区域内部都按四列排列，每列固定 `180px` 宽，标签放在交互框左侧。
+- 每列中的文字标签和输入框都必须使用紧凑宽度，避免相邻列互相挤压；标签过长时允许省略显示，输入框、下拉框、颜色框要限制在当前 `180px` 列内。
+- 组件名称包含 `group`（不区分大小写）时，预览区至少展示三个当前组件实例，方便组测试。
+- 组件或组件组外部必须套一个父 `div`，父元素固定 `padding: 10px`，并让内部组件或组件组水平居中、垂直居中显示。
+- 外观接口必须提供父元素宽度和父元素高度两个数字输入框；输入值用于控制父元素 `div` 的 `width` 和 `height`。
+- 外观接口必须提供“父元素撑满宽度”和“父元素撑满高度”两个复选框；勾选后分别让父元素 `div` 的 `width` 或 `height` 使用 `100%`。
+- 后缀带“色”字的属性使用颜色拾取框；带“长度”“高度”“字号”“圆角”的属性使用数字输入框。
+- `绑定值`、`占位文本`、`前缀`、`后缀`、`id`、`name`、`内边距` 使用文本输入框。
+- `字体`、`对齐`、`尺寸` 使用下拉选择框。
+- `自动高度`、`自动宽度`、`显示激活边框`、`禁用`、`只读`、`可清空`、`隐藏清除按钮` 使用复选框。
 
 ## 尺寸选项强制约定
 
 组件提供 `size` 属性时，必须优先使用 `sm`、`md`、`lg` 三档，并按下表统一尺寸。除非用户明确要求特例，不要为单个组件另行定义同名尺寸含义。
+
+组件属性中同时提供 `size` 与高度、字体大小、圆角、padding 等外观属性时，一旦设置了 `size`，这些属性必须自动失效，由 `size` 统一接管对应样式；`size` 不影响宽度和字体族，避免同一组件出现多套尺寸来源互相覆盖。
 
 | 尺寸 | 高度 | 字体 | padding | 圆角 |
 | --- | --- | --- | --- | --- |
@@ -67,12 +89,12 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 
 ## 标准流程
 
-1. 创建组件目录：`src/components/<component>/`。
-2. 编写组件 SFC：`src/components/<component>/src/<Component>.vue`。
-3. 编写公开类型：`src/components/<component>/src/types.ts`。
-4. 编写组件导出：`src/components/<component>/index.ts`。
+1. 创建组件目录：`src/components/<category>/<component>/`。
+2. 编写组件 SFC：`src/components/<category>/<component>/src/<Component>.vue`。
+3. 编写公开类型：`src/components/<category>/<component>/src/types.ts`。
+4. 编写组件导出：`src/components/<category>/<component>/index.ts`。
 5. 更新 `src/components/index.ts` 和 `src/index.ts`。
-6. 编写 Histoire story：`src/components/<component>/<Component>.story.vue`。
+6. 编写 Histoire story：`src/components/<category>/<component>/<Component>.story.vue`。
 7. 编写中文 VitePress 文档：`docs/components/<component>.md`。
 8. 更新 `docs/.vitepress/config.ts` 导航或侧边栏。
 9. 编写测试：`tests/<component>.test.ts`。

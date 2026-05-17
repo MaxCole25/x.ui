@@ -4,7 +4,7 @@
 
 ## 交互式预览
 
-你可以在这里手动切换按钮类型、尺寸、加载状态和禁用状态，并点击按钮确认事件是否正常触发。
+你可以在这里手动切换按钮类型、宽高、加载状态和禁用状态，并点击按钮确认事件是否正常触发。
 
 <ButtonPlayground />
 
@@ -22,18 +22,18 @@
 <XButton variant="ghost">文本按钮</XButton>
 ```
 
-## 尺寸
+## 宽高
+
+按钮默认宽度撑满父元素，可以通过 `width` 和 `height` 调整宽高。
 
 <div class="x-demo-row">
-  <XButton size="sm">小按钮</XButton>
-  <XButton>默认按钮</XButton>
-  <XButton size="lg">大按钮</XButton>
+  <XButton>默认撑满父元素</XButton>
+  <XButton width="160px" height="40px">固定宽高</XButton>
 </div>
 
 ```vue
-<XButton size="sm">小按钮</XButton>
-<XButton>默认按钮</XButton>
-<XButton size="lg">大按钮</XButton>
+<XButton>默认撑满父元素</XButton>
+<XButton width="160px" height="40px">固定宽高</XButton>
 ```
 
 ## 状态
@@ -48,10 +48,63 @@
 <XButton disabled>禁用状态</XButton>
 ```
 
+## 前后缀
+
+通过 `prefix` 和 `suffix` 插槽在按钮文字前后放置辅助文本。
+
+```vue
+<XButton width="180px">
+  <template #prefix>+</template>
+  新建
+</XButton>
+
+<XButton width="220px" variant="outline">
+  保存
+  <template #suffix>Ctrl+S</template>
+</XButton>
+```
+
+## 点击事件
+
+按钮只负责自身点击事件，不承载表单提交逻辑。组件内部固定使用原生 `type="button"`，因此放在 `form` 中时不会因为输入框回车而自动提交。
+
+```vue
+<XButton @click="handleClick">保存</XButton>
+```
+
+## Events
+
+| 事件名 | 说明 | 参数 |
+| --- | --- | --- |
+| `click` | 点击按钮时触发 | `(event: MouseEvent)` |
+
+## Props
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `variant` | 按钮类型 | `'solid' \| 'outline' \| 'ghost'` | `'solid'` |
+| `width` | 按钮宽度，数字按 px 处理 | `number \| string` | `'100%'` |
+| `height` | 按钮高度，数字按 px 处理 | `number \| string` | `'36px'` |
+| `activeBackgroundColor` | 按下激活时的背景色 | `string` | 按按钮类型决定 |
+| `activeBorderColor` | 按下激活时的边框色 | `string` | 按按钮类型决定 |
+| `activeTextColor` | 按下激活时的文字色 | `string` | 当前文字色 |
+| `disabled` | 是否禁用 | `boolean` | `false` |
+| `loading` | 是否加载中 | `boolean` | `false` |
+
+## Slots
+
+| 插槽名 | 说明 |
+| --- | --- |
+| `default` | 按钮文字内容 |
+| `prefix` | 按钮文字前缀 |
+| `suffix` | 按钮文字后缀 |
+
 ## 手动验收建议
 
 - 切换 `类型`，确认主要、描边、文本按钮的颜色层级是否符合预期。
-- 切换 `尺寸`，确认按钮高度、字号、左右间距是否协调。
+- 修改 `宽度` 和 `高度`，确认按钮在父元素内的占位符合预期。
+- 修改激活背景色、边框色、文字色，确认按下按钮时颜色符合预期。
+- 添加前缀和后缀内容，确认文字顺序和间距符合预期。
 - 勾选 `加载中`，确认按钮不可重复点击，并出现加载图标。
 - 勾选 `禁用`，确认按钮不可点击，视觉上有明确禁用态。
 - 在桌面和移动端宽度下检查按钮文本是否溢出。

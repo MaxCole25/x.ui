@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 
 const mode = ref('day')
+const buttonMode = ref('day')
 const level = ref('p1')
 const priority = ref('normal')
 </script>
@@ -32,6 +33,33 @@ const mode = ref('day')
   <XRadio v-model="mode" name="mode" value="day">日视图</XRadio>
   <XRadio v-model="mode" name="mode" value="week">周视图</XRadio>
   <XRadio v-model="mode" name="mode" value="month">月视图</XRadio>
+</template>
+```
+
+## 按钮形态
+
+`XRadioButton` 复用 `XRadio` 的绑定值、选项值、尺寸、禁用和外观属性，只是把圆形 radio 控件改成矩形按钮，更适合视图切换、筛选条件等需要紧凑分段选择的场景。
+
+<div class="x-demo-block">
+  <div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton v-model="buttonMode" name="button-mode" value="day">日视图</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="button-mode" value="week">周视图</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="button-mode" value="month">月视图</XRadioButton>
+  </div>
+  <p class="x-demo-label">当前值：{{ buttonMode }}</p>
+</div>
+
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const buttonMode = ref('day')
+</script>
+
+<template>
+  <XRadioButton v-model="buttonMode" name="button-mode" value="day">日视图</XRadioButton>
+  <XRadioButton v-model="buttonMode" name="button-mode" value="week">周视图</XRadioButton>
+  <XRadioButton v-model="buttonMode" name="button-mode" value="month">月视图</XRadioButton>
 </template>
 ```
 
@@ -99,6 +127,7 @@ const priority = ref('normal')
 <div class="x-demo-block">
   <div class="x-demo-row">
     <XRadio model-value="custom" value="custom" button-color="#7c3aed">主题覆盖</XRadio>
+    <XRadioButton model-value="button" value="button" button-color="#7c3aed">按钮主题</XRadioButton>
   </div>
 </div>
 
@@ -106,6 +135,10 @@ const priority = ref('normal')
 <XRadio model-value="custom" value="custom" button-color="#7c3aed">
   主题覆盖
 </XRadio>
+
+<XRadioButton model-value="button" value="button" button-color="#7c3aed">
+  按钮主题
+</XRadioButton>
 ```
 
 ## 外观定制
@@ -159,6 +192,8 @@ const priority = ref('normal')
 
 ## Props
 
+`XRadio` 与 `XRadioButton` 使用相同的 Props。
+
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | modelValue | 绑定值 | `string \| number \| boolean` | - |
@@ -166,9 +201,17 @@ const priority = ref('normal')
 | label | 文案 | `string` | - |
 | disabled | 是否禁用 | `boolean` | `false` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
+| variant | 按钮类型，仅 `XRadioButton` 生效 | `solid \| outline \| ghost` | `outline` |
+| direction | 相邻按钮拼接方向，仅 `XRadioButton` 生效 | `horizontal \| vertical` | `horizontal` |
+| width | 按钮宽度，仅 `XRadioButton` 生效 | `number \| string` | - |
+| height | 按钮高度，仅 `XRadioButton` 生效 | `number \| string` | - |
+| radius | 按钮组外侧圆角，仅 `XRadioButton` 生效 | `number \| string` | `6px` |
 | fontFamily | 字体 | `string` | - |
 | fontSize | 字体大小 | `number \| string` | - |
 | labelColor | 标签文字颜色 | `string` | - |
 | buttonColor | 按钮颜色 | `string` | - |
-| buttonSize | 按钮大小，作用于原生 radio 的宽高 | `number \| string` | - |
+| activeBackgroundColor | 选中态背景色，仅 `XRadioButton` 生效 | `string` | `buttonColor` |
+| activeBorderColor | 选中态边框色，仅 `XRadioButton` 生效 | `string` | `activeBackgroundColor` |
+| activeTextColor | 选中态文字色，仅 `XRadioButton` 生效 | `string` | `#ffffff` |
+| buttonSize | 按钮大小；`XRadio` 中作用于原生 radio 的宽高，`XRadioButton` 中作用于矩形按钮高度 | `number \| string` | - |
 | name | 原生 name | `string` | - |

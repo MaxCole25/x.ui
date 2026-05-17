@@ -194,6 +194,20 @@ describe('XFileDisk', () => {
     const wrapper = mount(XFileDisk, {
       props: {
         entries,
+        backgroundColor: '#0f172a',
+        textColor: '#e2e8f0',
+        mutedTextColor: '#94a3b8',
+        borderColor: '#334155',
+        headerBackgroundColor: '#111827',
+        toolbarBackgroundColor: '#1e293b',
+        itemBackgroundColor: '#111827',
+        itemHoverBackgroundColor: '#1e3a5f',
+        itemActiveBackgroundColor: '#155e75',
+        itemActiveTextColor: '#f8fafc',
+        iconColor: '#cbd5e1',
+        activeIconColor: '#67e8f9',
+        emptyBackgroundColor: '#111827',
+        dragOverBackgroundColor: 'rgba(103, 232, 249, 0.14)',
         colors: {
           primary: '#2563eb',
           selectedBackground: '#eff6ff',
@@ -204,10 +218,52 @@ describe('XFileDisk', () => {
     })
 
     const style = wrapper.attributes('style')
+    expect(style).toContain('--x-file-disk-bg: #0f172a')
+    expect(style).toContain('--x-file-disk-text: #e2e8f0')
+    expect(style).toContain('--x-file-disk-muted-text: #94a3b8')
+    expect(style).toContain('--x-file-disk-border-color: #334155')
+    expect(style).toContain('--x-file-disk-header-bg: #111827')
+    expect(style).toContain('--x-file-disk-toolbar-bg: #1e293b')
+    expect(style).toContain('--x-file-disk-item-bg: #111827')
+    expect(style).toContain('--x-file-disk-item-hover-bg: #1e3a5f')
+    expect(style).toContain('--x-file-disk-item-active-bg: #155e75')
+    expect(style).toContain('--x-file-disk-item-active-text: #f8fafc')
+    expect(style).toContain('--x-file-disk-icon-color: #cbd5e1')
+    expect(style).toContain('--x-file-disk-active-icon-color: #67e8f9')
+    expect(style).toContain('--x-file-disk-empty-bg: #111827')
+    expect(style).toContain('--x-file-disk-drag-over-bg: rgba(103, 232, 249, 0.14)')
     expect(style).toContain('--x-file-disk-primary: #2563eb')
-    expect(style).toContain('--x-file-disk-selected-bg: #eff6ff')
-    expect(style).toContain('--x-file-disk-toolbar-bg: #f8fafc')
+    expect(style).toContain('--x-file-disk-selected-bg: #155e75')
+    expect(style).toContain('--x-file-disk-toolbar-bg: #1e293b')
     expect(style).toContain('--x-file-disk-danger: #ef4444')
+  })
+
+  it('keeps legacy color aliases available for existing consumers', () => {
+    const wrapper = mount(XFileDisk, {
+      props: {
+        entries,
+        colors: {
+          background: '#111827',
+          text: '#f8fafc',
+          border: '#475569',
+          toolbarBackground: '#1f2937',
+          panelBackground: '#0f172a',
+          hoverBackground: '#1e293b',
+          selectedBackground: '#155e75',
+          dropBackground: 'rgba(21, 94, 117, 0.2)'
+        }
+      }
+    })
+
+    const style = wrapper.attributes('style')
+    expect(style).toContain('--x-file-disk-bg: #111827')
+    expect(style).toContain('--x-file-disk-text: #f8fafc')
+    expect(style).toContain('--x-file-disk-border-color: #475569')
+    expect(style).toContain('--x-file-disk-header-bg: #1f2937')
+    expect(style).toContain('--x-file-disk-item-bg: #0f172a')
+    expect(style).toContain('--x-file-disk-item-hover-bg: #1e293b')
+    expect(style).toContain('--x-file-disk-item-active-bg: #155e75')
+    expect(style).toContain('--x-file-disk-drag-over-bg: rgba(21, 94, 117, 0.2)')
   })
 
   it('shows disabled and enabled context menu actions based on selection', async () => {

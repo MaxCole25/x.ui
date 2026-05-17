@@ -59,7 +59,7 @@ const items: TabItem[] = [
 | modelValue | 当前激活页签值 | `TabName` | `undefined` |
 | items | 页签列表 | `TabItem[]` | `[]` |
 | type | 页签类型 | `'' \| 'line' \| 'card' \| 'border-card'` | `'card'` |
-| size | 标签尺寸 | `'large' \| 'default' \| 'small'` | `'default'` |
+| size | 标签尺寸 | `'sm' \| 'md' \| 'lg'` | `'md'` |
 | tabPosition | 页签位置 | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` |
 | labelDirection | 标签文字方向 | `'horizontal' \| 'vertical'` | `'horizontal'` |
 | stretch | 是否拉伸页签 | `boolean` | `false` |
@@ -85,7 +85,7 @@ const items: TabItem[] = [
 | contextMenuTextColor | 右键菜单文字色 | `string` | `'var(--x-color-text)'` |
 | beforeLeave | 切换前守卫，返回 `false` 阻止切换 | `(next, prev) => boolean \| Promise<boolean>` | `undefined` |
 
-默认尺寸为中尺寸 `default`，也可以通过 `size="large"` 或 `size="small"` 调整标签高度、最小宽度、内边距、文字和图标尺寸。若只需要调整标签文字大小，可使用 `tab-font-size` 覆盖尺寸预设中的字号；若只需要调整单个页签最小宽度，可使用 `tab-min-width` 覆盖尺寸预设中的宽度。`label-direction="vertical"` 可让标签文字上下排列，适合配合 `tab-position="left"` 或 `tab-position="right"` 做侧向标签栏。默认圆角为 `4px`，可通过 `border-radius="8px"` 或 `:border-radius="8"` 调整。`XTabs` 最外层和页签头容器不显示外侧边框，单个标签头边框可通过 `tab-border` 调整，内容页边框可通过 `content-border` 调整，内容页背景色可通过 `content-background-color` 调整，右键菜单可通过 `context-menu-background-color` 和 `context-menu-text-color` 调整背景与文字颜色。标签头不会绘制贴近内容页的一侧边框，内容页保留完整边框；激活标签会向内容页方向溢出 `2px`，用自身背景覆盖交界处边框，避免标签和内容之间出现重叠线。图标颜色跟随当前页签文字颜色：激活态为 `#7FD6F6`，未激活态为 `#6B7C93`。
+默认尺寸为中尺寸 `md`，也可以通过 `size="lg"` 或 `size="sm"` 调整标签高度、最小宽度、内边距、文字和图标尺寸。若只需要调整标签文字大小，可使用 `tab-font-size` 覆盖尺寸预设中的字号；若只需要调整单个页签最小宽度，可使用 `tab-min-width` 覆盖尺寸预设中的宽度。`label-direction="vertical"` 可让标签文字上下排列，适合配合 `tab-position="left"` 或 `tab-position="right"` 做侧向标签栏。默认圆角为 `4px`，可通过 `border-radius="8px"` 或 `:border-radius="8"` 调整。`XTabs` 最外层和页签头容器不显示外侧边框，单个标签头边框可通过 `tab-border` 调整，内容页边框可通过 `content-border` 调整，内容页背景色可通过 `content-background-color` 调整，右键菜单可通过 `context-menu-background-color` 和 `context-menu-text-color` 调整背景与文字颜色。标签头不会绘制贴近内容页的一侧边框，内容页保留完整边框；激活标签会向内容页方向溢出 `2px`，用自身背景覆盖交界处边框，避免标签和内容之间出现重叠线。图标颜色跟随当前页签文字颜色：激活态为 `#7FD6F6`，未激活态为 `#6B7C93`。
 
 ## TabItem
 

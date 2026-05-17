@@ -21,9 +21,9 @@ Histoire 适合查看每个组件运行后的真实效果。每个组件都可�
 推荐结构：
 
 ```text
-src/components/button/Button.story.vue
-src/components/input/Input.story.vue
-src/components/dialog/Dialog.story.vue
+src/components/basic-components/button/Button.story.vue
+src/components/form-components/input/Input.story.vue
+src/components/feedback-components/dialog/Dialog.story.vue
 ```
 
 ## VitePress 文档预览
@@ -107,9 +107,9 @@ describe('XButton', () => {
 新增组件时，建议按这个结构添加测试：
 
 ```text
-src/components/input/src/Input.vue
-src/components/input/src/types.ts
-src/components/input/index.ts
+src/components/form-components/input/src/Input.vue
+src/components/form-components/input/src/types.ts
+src/components/form-components/input/index.ts
 tests/input.test.ts
 docs/components/input.md
 ```

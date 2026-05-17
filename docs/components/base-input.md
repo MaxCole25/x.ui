@@ -3,7 +3,20 @@ import { ref } from 'vue'
 
 const inputBasic = ref('')
 const inputAmount = ref(128)
+const inputFormattedAmount = ref(9200)
 const inputClearable = ref('可清空内容')
+
+function formatCurrency(value) {
+  const n = Number(value ?? 0)
+  return Number.isFinite(n)
+    ? `￥${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '￥0.00'
+}
+
+function parseCurrency(value) {
+  const n = Number(String(value ?? '').replace(/[¥￥,\s]/g, ''))
+  return Number.isFinite(n) ? n : 0
+}
 </script>
 
 # BaseInput 基础输入框
@@ -41,6 +54,53 @@ const value = ref('')
 
 ```vue
 <XBaseInput v-model="value" placeholder="请输入内容" clearable />
+```
+
+## 格式化显示
+
+金额、统计值等场景可以用 `formatter` 负责展示文本，用 `parser` 把用户输入转换回真实值。输入框内显示格式化后的内容，`v-model` 仍保持解析后的原始值。
+
+<div class="x-demo-block">
+  <div class="x-demo-column">
+    <XBaseInput
+      v-model="inputFormattedAmount"
+      text-align="right"
+      type="number"
+      :formatter="formatCurrency"
+      :parser="parseCurrency"
+    />
+    <p class="x-demo-label">真实值：{{ inputFormattedAmount }}</p>
+  </div>
+</div>
+
+```vue
+<script setup>
+import { ref } from 'vue'
+
+const amount = ref(9200)
+
+function formatCurrency(value) {
+  const n = Number(value ?? 0)
+  return Number.isFinite(n)
+    ? `￥${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    : '￥0.00'
+}
+
+function parseCurrency(value) {
+  const n = Number(String(value ?? '').replace(/[¥￥,\s]/g, ''))
+  return Number.isFinite(n) ? n : 0
+}
+</script>
+
+<template>
+  <XBaseInput
+    v-model="amount"
+    text-align="right"
+    type="number"
+    :formatter="formatCurrency"
+    :parser="parseCurrency"
+  />
+</template>
 ```
 
 ## 前后缀
@@ -103,6 +163,9 @@ const value = ref('')
 | --- | --- | --- | --- |
 | modelValue | 绑定值 | `string \| number` | `''` |
 | type | 原生输入类型 | `text \| password \| email \| number \| tel \| url \| search` | `text` |
+| formatter | 将真实值格式化为输入框展示值；与 `type="number"` 同用时内部按文本输入展示 | `(value: string \| number) => string` | - |
+| parser | 将输入框展示值解析为真实值，并用于 `update:modelValue`、`input`、`change` 事件输出 | `(displayValue: string) => string \| number` | - |
+| formatOnBlur | 失焦后是否重新显示格式化值 | `boolean` | `true` |
 | placeholder | 占位文本 | `string` | - |
 | disabled | 是否禁用 | `boolean` | `false` |
 | readonly | 是否只读 | `boolean` | `false` |

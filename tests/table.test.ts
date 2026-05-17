@@ -18,6 +18,20 @@ describe('XTable', () => {
     { id: 2, name: '成员管理', status: '停用', count: 5 }
   ]
 
+  function readTableSource() {
+    return readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8')
+  }
+
+  function readGlobalStyles() {
+    return readFileSync(resolve(__dirname, '../src/styles/index.css'), 'utf8')
+  }
+
+  function getCssRule(source: string, selector: string) {
+    const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const match = source.match(new RegExp(`${escapedSelector}\\s*\\{[\\s\\S]*?\\n\\}`))
+    return match?.[0] ?? ''
+  }
+
   it('renders headers and rows', () => {
     const wrapper = mount(XTable, {
       props: {
@@ -101,8 +115,15 @@ describe('XTable', () => {
       }
     })
 
-    expect(wrapper.find('.x-table__top').attributes('style')).toContain('background: rgb(240, 249, 255)')
-    expect(wrapper.find('.x-table__bottom').attributes('style')).toContain('background: rgb(240, 253, 244)')
+    const style = wrapper.find('.x-table').attributes('style')
+    expect(style).toContain('--x-table-top-background: #f0f9ff')
+    expect(style).toContain('--x-table-bottom-background: rgb(240, 253, 244)')
+    expect(wrapper.find('.x-table__top').exists()).toBe(true)
+    expect(wrapper.find('.x-table__bottom').exists()).toBe(true)
+
+    const source = readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8')
+    expect(source).toContain('background: var(--x-table-top-background, var(--x-table-panel-background, #f8fafc));')
+    expect(source).toContain('background: var(--x-table-bottom-background, var(--x-table-panel-background, #f8fafc));')
   })
 
   it('exposes table area colors and border styles through public props', () => {
@@ -110,11 +131,21 @@ describe('XTable', () => {
       props: {
         columns,
         data,
+        panelBackgroundColor: '#0f172a',
         headerBackgroundColor: '#e0f2fe',
         headerTextColor: '#0f172a',
         bodyBackgroundColor: '#ffffff',
         bodyStripeBackgroundColor: '#f8fafc',
         bodyTextColor: '#1f2937',
+        selectedCellBackgroundColor: 'rgba(59, 130, 246, 0.22)',
+        selectedCellTextColor: '#f8fafc',
+        selectedCellBorderColor: '#60a5fa',
+        selectedCellInnerBorderColor: 'rgba(96, 165, 250, 0.56)',
+        borderColor: '#334155',
+        viewportBorderColor: '#64748b',
+        headerDividerColor: '#38bdf8',
+        rowBorderColor: '#1d4ed8',
+        columnBorderColor: '#7c3aed',
         horizontalBorderColor: '#bfdbfe',
         horizontalBorderWidth: 2,
         verticalBorderColor: '#cbd5e1',
@@ -123,22 +154,167 @@ describe('XTable', () => {
     })
 
     const style = wrapper.find('.x-table').attributes('style')
+    expect(style).toContain('--x-table-panel-background: #0f172a')
     expect(style).toContain('--x-table-header-background: #e0f2fe')
     expect(style).toContain('--x-table-header-text-color: #0f172a')
     expect(style).toContain('--x-table-body-background: #ffffff')
     expect(style).toContain('--x-table-body-stripe-background: #f8fafc')
     expect(style).toContain('--x-table-body-text-color: #1f2937')
+    expect(style).toContain('--x-table-cell-selected-background: rgba(59, 130, 246, 0.22)')
+    expect(style).toContain('--x-table-cell-selected-text-color: #f8fafc')
+    expect(style).toContain('--x-table-cell-selected-border-color: #60a5fa')
+    expect(style).toContain('--x-table-cell-selected-inner-border-color: rgba(96, 165, 250, 0.56)')
+    expect(style).toContain('--x-table-border-color: #334155')
+    expect(style).toContain('--x-table-viewport-border-color: #64748b')
+    expect(style).toContain('--x-table-header-divider-color: #38bdf8')
+    expect(style).toContain('--x-table-row-border-color: #1d4ed8')
+    expect(style).toContain('--x-table-column-border-color: #7c3aed')
     expect(style).toContain('--x-table-horizontal-border-color: #bfdbfe')
     expect(style).toContain('--x-table-horizontal-border-width: 2px')
     expect(style).toContain('--x-table-vertical-border-color: #cbd5e1')
     expect(style).toContain('--x-table-vertical-border-width: 3px')
   })
 
+  it('preserves transparent viewport and custom header divider colors on the root variables', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        viewportBorderColor: 'transparent',
+        headerDividerColor: 'rgba(148, 163, 184, 0.1)',
+        rowBorderColor: 'rgba(148, 163, 184, 0.14)',
+        columnBorderColor: 'rgba(148, 163, 184, 0.08)',
+        horizontalBorderColor: '#ffffff',
+        verticalBorderColor: '#ffffff'
+      }
+    })
+
+    const style = wrapper.find('.x-table').attributes('style')
+    expect(style).toContain('--x-table-viewport-border-color: transparent')
+    expect(style).toContain('--x-table-header-divider-color: rgba(148, 163, 184, 0.1)')
+    expect(style).toContain('--x-table-row-border-color: rgba(148, 163, 184, 0.14)')
+    expect(style).toContain('--x-table-column-border-color: rgba(148, 163, 184, 0.08)')
+  })
+
+  it('merges external style variables with table style variables', () => {
+    const wrapper = mount(XTable, {
+      attrs: {
+        style: {
+          '--x-table-horizontal-border-color': '#111827',
+          '--x-table-vertical-border-color': '#1f2937',
+          '--x-table-custom-token': '#020617'
+        }
+      },
+      props: {
+        columns,
+        data,
+        borderColor: '#334155'
+      }
+    })
+
+    const style = wrapper.find('.x-table').attributes('style')
+    expect(style).toContain('--x-table-horizontal-border-color: #111827')
+    expect(style).toContain('--x-table-vertical-border-color: #1f2937')
+    expect(style).toContain('--x-table-custom-token: #020617')
+    expect(style).toContain('--x-table-border-color: #334155')
+  })
+
+  it('keeps selected cell colors configurable through props and external CSS variables', () => {
+    const wrapper = mount(XTable, {
+      attrs: {
+        style: {
+          '--x-table-cell-selected-background': 'rgba(34, 197, 94, 0.18)',
+          '--x-table-cell-selected-text-color': '#dcfce7',
+          '--x-table-cell-selected-border-color': '#22c55e',
+          '--x-table-cell-selected-inner-border-color': 'rgba(34, 197, 94, 0.5)'
+        }
+      },
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+    const source = readTableSource()
+    const globalStyles = readGlobalStyles()
+    const selectedCellRule = getCssRule(source, '.x-table__cell.is-selected-cell')
+    const selectedCellAfterRule = getCssRule(source, '.x-table__cell.is-selected-cell::after')
+    const selectedCellAdjacentTopRule = getCssRule(source, '.x-table__cell.is-selected-cell.is-selected-cell-adjacent-top::after')
+    const style = wrapper.find('.x-table').attributes('style')
+
+    expect(style).toContain('--x-table-cell-selected-background: rgba(34, 197, 94, 0.18)')
+    expect(style).toContain('--x-table-cell-selected-text-color: #dcfce7')
+    expect(style).toContain('--x-table-cell-selected-border-color: #22c55e')
+    expect(style).toContain('--x-table-cell-selected-inner-border-color: rgba(34, 197, 94, 0.5)')
+    expect(selectedCellRule).toContain('color: var(--x-table-cell-selected-text-color, var(--x-table-body-text-color, var(--x-table-text-color, #1f2937)));')
+    expect(selectedCellRule).not.toContain('color: var(--x-table-cell-selected-text-color, #0f172a);')
+    expect(selectedCellAfterRule).toContain('border: 2px solid var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75));')
+    expect(selectedCellAdjacentTopRule).toContain('border-top-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75)));')
+    expect(globalStyles).toContain('--x-table-cell-selected-background: rgb(59 130 246 / 12%);')
+    expect(globalStyles).toContain('--x-table-cell-selected-text-color: var(--x-color-text, #1f2937);')
+    expect(globalStyles).toContain('--x-table-cell-selected-background: rgba(59, 130, 246, 0.18);')
+    expect(globalStyles).toContain('--x-table-cell-selected-text-color: var(--x-color-text, #eef4fb);')
+  })
+
+  it('routes viewport header row and column borders through layered CSS variables', () => {
+    const source = readTableSource()
+
+    expect(source).toContain('background: var(--x-table-panel-background, transparent);')
+    expect(source).toContain('border-bottom-color: var(--x-table-viewport-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));')
+    expect(source).toContain('border-left-color: var(--x-table-viewport-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color)));')
+    expect(source).toContain('border-right-color: var(--x-table-viewport-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color)));')
+    expect(source).toContain('border-top-color: var(--x-table-viewport-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));')
+    expect(source).toContain('border-bottom-color: var(--x-table-header-divider-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));')
+    expect(source).toContain('var(--x-table-row-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)))')
+    expect(source).toContain('var(--x-table-column-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color)))')
+    expect(source).not.toContain('background: #fff;\n  --x-table-border-color')
+    expect(source).not.toContain('border-bottom: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-viewport-border-color')
+    expect(source).not.toContain('border-top: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-viewport-border-color')
+    expect(source).not.toContain('var(--x-table-border-color, #d8e0ea)')
+    expect(source).not.toContain('var(--x-table-border-color, #e5eaf1)')
+  })
+
   it('keeps row backgrounds under a translucent hover overlay', () => {
-    const source = readFileSync(resolve(__dirname, '../src/components/table/src/Table.vue'), 'utf8')
+    const source = readTableSource()
 
     expect(source).toContain('linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent))')
     expect(source).toContain('.x-table__row--body:hover {\n  --x-table-row-hover-overlay-current: var(--x-table-row-hover-overlay, rgb(14 116 144 / 6%));')
+  })
+
+  it('routes column settings and pagination controls through theme CSS variables', () => {
+    const source = readTableSource()
+    const globalStyles = readGlobalStyles()
+    const controlRules = [
+      getCssRule(source, '.x-table__column-settings-button'),
+      getCssRule(source, '.x-table__column-settings-button:hover'),
+      getCssRule(source, '.x-table__pagination'),
+      getCssRule(source, '.x-table__page-size-select,\n.x-table__page-button'),
+      getCssRule(source, '.x-table__page-size-select option'),
+      getCssRule(source, '.x-table__page-size-select:hover,\n.x-table__page-button:hover:not(:disabled)'),
+      getCssRule(source, '.x-table__page-button:disabled'),
+      getCssRule(source, '.x-table__page-current')
+    ].join('\n')
+
+    expect(controlRules).toContain('background: var(--x-table-control-bg, #fff);')
+    expect(controlRules).toContain('border: 1px solid var(--x-table-control-border-color, #cbd5e1);')
+    expect(controlRules).toContain('color: var(--x-table-control-text-color, #334155);')
+    expect(controlRules).toContain('background: var(--x-table-control-hover-bg, #f8fafc);')
+    expect(controlRules).toContain('border-color: var(--x-table-control-hover-border-color, #94a3b8);')
+    expect(controlRules).toContain('color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));')
+    expect(controlRules).toContain('background: var(--x-table-control-disabled-bg, #f1f5f9);')
+    expect(controlRules).toContain('color: var(--x-table-control-disabled-text-color, #94a3b8);')
+    expect(controlRules).toContain('color: var(--x-table-pagination-text-color, #475569);')
+    expect(controlRules).toContain('color: var(--x-table-pagination-current-text-color, #334155);')
+    expect(controlRules).not.toMatch(/(?:background|border|border-color|color):\s*(#fff|#cbd5e1|#334155|#475569|#f1f5f9|#94a3b8)\b/)
+
+    expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #ffffff);')
+    expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, #e0ecff);')
+    expect(globalStyles).toContain('--x-table-pagination-current-text-color: var(--x-color-text, #334155);')
+    expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #0b1726);')
+    expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, rgba(59, 130, 246, 0.16));')
+    expect(globalStyles).toContain('--x-table-pagination-text-color: var(--x-color-text-muted, #8da0b8);')
   })
 
   it('keeps pagination hidden by default', () => {
@@ -285,7 +461,7 @@ describe('XTable', () => {
   })
 
   it('pins fill height regions to stable grid rows', () => {
-    const source = readFileSync(resolve(__dirname, '../src/components/table/src/Table.vue'), 'utf8')
+    const source = readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8')
 
     expect(source).toContain('.x-table.is-fill-height {\n  align-content: stretch;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')

@@ -13,6 +13,23 @@
   margin: 18px 0;
 }
 
+.vp-doc .x-icon-preview-row {
+  align-items: center;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 18px 0;
+  padding: 18px;
+}
+
+.vp-doc .x-icon-preview-row .x-icon {
+  color: var(--vp-c-brand-1);
+  font-size: 28px;
+}
+
 .vp-doc .x-demo-block {
   background: var(--vp-c-bg);
   border: 1px solid var(--vp-c-divider);

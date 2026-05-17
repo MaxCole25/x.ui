@@ -8,7 +8,8 @@ export default defineConfig({
     logo: '/logo.svg',
     nav: [
       { text: '指南', link: '/guide/getting-started' },
-      { text: '组件', link: '/components/button' }
+      { text: '组件', link: '/components/button' },
+      { text: '图标', link: '/components/icon' }
     ],
     sidebar: [
       {
@@ -22,13 +23,23 @@ export default defineConfig({
         text: '组件',
         items: [
           {
-            text: '元素',
+            text: '基础组件',
             items: [
               { text: '按钮 Button', link: '/components/button' },
+              { text: '按钮组 ButtonGroup', link: '/components/button-group' },
               { text: '基础输入框 BaseInput', link: '/components/base-input' },
-              { text: '输入框 Input', link: '/components/input' },
-              { text: '文本 Text', link: '/components/text' },
+              { text: '卡片 Card', link: '/components/card' },
+              { text: '分割线 Divider', link: '/components/divider' },
+              { text: '图标 Icon', link: '/components/icon' },
+              { text: '布局 Layout', link: '/components/layout' },
               { text: '滚动条 Scrollbar', link: '/components/scrollbar' },
+              { text: '文本 Text', link: '/components/text' }
+            ]
+          },
+          {
+            text: 'Form 组件',
+            items: [
+              { text: '输入框 Input', link: '/components/input' },
               { text: '自动补全 Autocomplete', link: '/components/autocomplete' },
               { text: '级联选择 Cascader', link: '/components/cascader' },
               { text: '多选框 Checkbox', link: '/components/checkbox' },
@@ -39,38 +50,54 @@ export default defineConfig({
               { text: '日期时间选择器 DateTimePicker', link: '/components/date-time-picker' },
               { text: '数字输入框 InputNumber', link: '/components/input-number' },
               { text: '单选框 Radio', link: '/components/radio' },
+              { text: '单选按钮 RadioButton', link: '/components/radio-button' },
               { text: '选择器 Select', link: '/components/select' },
               { text: '滑块 Slider', link: '/components/slider' },
               { text: '开关 Switch', link: '/components/switch' },
               { text: '表单 Form', link: '/components/form' },
               { text: '时间选择器 TimePicker', link: '/components/time-picker' },
-              { text: '时间选择 TimeSelect', link: '/components/time-select' },
-              { text: '头像 Avatar', link: '/components/avatar' }
+              { text: '时间选择 TimeSelect', link: '/components/time-select' }
             ]
           },
           {
-            text: '数据展示',
+            text: '展示组件',
             items: [
+              { text: '头像 Avatar', link: '/components/avatar' },
+              { text: '空状态 Empty', link: '/components/empty' },
               { text: '表格 Table', link: '/components/table' },
-              { text: '树目录 Tree', link: '/components/tree' },
+              { text: '标签 Tag', link: '/components/tag' },
+              { text: '树目录 Tree', link: '/components/tree' }
+            ]
+          },
+          {
+            text: '导航组件',
+            items: [
+              { text: '下拉菜单 Dropdown', link: '/components/dropdown' },
+              { text: '下拉菜单容器 DropdownMenu', link: '/components/dropdown-menu' },
+              { text: '下拉菜单项 DropdownItem', link: '/components/dropdown-item' },
+              { text: '菜单 NavMenu', link: '/components/nav-menu' },
               { text: '标签页 Tabs', link: '/components/tabs' }
             ]
           },
           {
-            text: '反馈与导航',
+            text: '反馈组件',
             items: [
               { text: '弹窗 Dialog', link: '/components/dialog' },
-              { text: '菜单 NavMenu', link: '/components/nav-menu' }
+              { text: '抽屉 Drawer', link: '/components/drawer' },
+              { text: '加载 Loading', link: '/components/loading' },
+              { text: '消息提示 Message', link: '/components/message' },
+              { text: '消息弹框 MessageBox', link: '/components/message-box' },
+              { text: '文字提示 Tooltip', link: '/components/tooltip' }
             ]
           },
           {
-            text: '业务组件',
+            text: '其它组件',
             items: [
-              { text: '登录 Login', link: '/components/login' },
-              { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' },
-              { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' },
               { text: '文件磁盘 FileDisk', link: '/components/file-disk' },
-              { text: '页面构建器 PageBuilder', link: '/components/page-builder' }
+              { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' },
+              { text: '登录 Login', link: '/components/login' },
+              { text: '页面构建器 PageBuilder', link: '/components/page-builder' },
+              { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' }
             ]
           }
         ]

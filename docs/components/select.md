@@ -85,6 +85,14 @@ const options = [
 <XSelect v-model="values" multiple :options="options" />
 ```
 
+## 显示选项值
+
+`displayField` 默认显示 `label`。设置为 `value` 后，下拉项和已选内容会显示选项值；如果 `fieldNames.value` 映射的是后端 `id` 字段，就会显示 id。
+
+```vue
+<XSelect v-model="status" :options="options" display-field="value" />
+```
+
 ## 服务端下拉与键值数据
 
 开启 `remote` 后，展开下拉时会触发 `query` 事件，并调用 `remoteMethod` 获取选项。后端返回 `id`、`name` 这类键值字段时，可通过 `fieldNames` 映射为组件内部的 `value` 和 `label`。
@@ -192,6 +200,7 @@ const queryStatus = async () => {
 | modelValue | 绑定值 | `string \| number \| boolean \| array` | - |
 | options | 选项列表，可传入标准选项或配合 `fieldNames` 的键值数据 | `Array<SelectOption \| Record<string, unknown>>` | `[]` |
 | fieldNames | 选项字段映射，用于后端键值数据 | `{ label?: string; value?: string; disabled?: string }` | `{}` |
+| displayField | 选项显示字段。设为 `value` 时显示选项值；若 `fieldNames.value` 映射为 `id`，则显示 id | `'label' \| 'value'` | `label` |
 | remote | 是否展开下拉时请求服务端选项 | `boolean` | `false` |
 | remoteMethod | 服务端下拉请求方法，可返回选项数组或 Promise | `() => SelectOption[] \| Promise<SelectOption[] \| void> \| void` | - |
 | loading | 是否显示加载状态，可用于外部控制远程加载态 | `boolean` | `false` |
@@ -210,6 +219,10 @@ const queryStatus = async () => {
 | showActiveBorder | 聚焦或展开时是否显示激活边框 | `boolean` | `true` |
 | autoWidth | 是否自动宽度 | `boolean` | `false` |
 | autoHeight | 是否自动高度 | `boolean` | `false` |
+| teleported | 是否将下拉弹层挂载到 `teleportTo`，用于避免被表格、滚动容器等父级裁剪 | `boolean` | `true` |
+| teleportTo | 下拉弹层挂载目标 | `string` | `body` |
+| dropdownZIndex | 下拉弹层层级 | `string \| number` | `1300` |
+| dropdownMaxWidth | 下拉弹层最大宽度，选项文本较长时会在该宽度内扩展 | `string \| number` | `360` |
 | color | 主题色 | `string` | - |
 | activeBorderColor | 激活边框色 | `string` | - |
 | borderColor | 边框色 | `string` | - |
@@ -217,6 +230,7 @@ const queryStatus = async () => {
 | radius | 圆角 | `string` | - |
 | background | 背景色 | `string` | - |
 | backgroundColor | 背景色，优先级高于 `background` | `string` | - |
+| dropdownBackgroundColor | 选项弹窗背景色 | `string` | `#ffffff` |
 | textColor | 文字色 | `string` | - |
 | disabledBackgroundColor | 禁用背景色 | `string` | - |
 | disabledTextColor | 禁用文字色 | `string` | - |

@@ -53,6 +53,14 @@ const areaOptions = [
 <XCascader v-model="area" :options="areaOptions" change-on-select />
 ```
 
+## 显示选项值
+
+`displayField` 默认显示 `label`。设置为 `value` 后，面板选项和已选路径会显示选项值；如果 `fieldNames.value` 映射的是后端 `id` 字段，就会显示 id。
+
+```vue
+<XCascader v-model="area" :options="areaOptions" display-field="value" />
+```
+
 ## 服务端级联与键值数据
 
 开启 `remote` 后，展开面板时会请求根级选项，点击未加载子级的父节点时会把当前节点和路径传给 `remoteMethod`，用于按需请求下一列。后端字段不是 `label` / `value` / `children` 时，可用 `fieldNames` 映射。
@@ -87,6 +95,7 @@ const queryArea = async (option, path) => {
 | modelValue | 已选路径值 | `SelectOptionValue[]` | `[]` |
 | options | 级联选项，可传入标准选项或配合 `fieldNames` 的键值数据 | `Array<CascaderOption \| Record<string, unknown>>` | `[]` |
 | fieldNames | 选项字段映射，用于后端键值数据 | `{ label?: string; value?: string; disabled?: string; children?: string }` | `{}` |
+| displayField | 选项显示字段。设为 `value` 时显示选项值；若 `fieldNames.value` 映射为 `id`，则显示 id | `'label' \| 'value'` | `label` |
 | remote | 是否按需请求服务端级联数据 | `boolean` | `false` |
 | remoteMethod | 服务端级联请求方法，接收当前节点和已选路径 | `(option?: CascaderOption, path?: CascaderOption[]) => CascaderOption[] \| Promise<CascaderOption[] \| void> \| void` | - |
 | loading | 是否显示加载状态，可用于外部控制远程加载态 | `boolean` | `false` |

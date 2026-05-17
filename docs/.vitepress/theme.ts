@@ -1,7 +1,8 @@
 import DefaultTheme from 'vitepress/theme'
 import XUi from '../../../src'
 import ButtonPlayground from './components/ButtonPlayground.vue'
-import '../../../src/styles/index.css'
+import IconGallery from './components/IconGallery.vue'
+import '../../src/styles/index.css'
 import './theme.css'
 
 export default {
@@ -9,5 +10,6 @@ export default {
   enhanceApp({ app }) {
     app.use(XUi)
     app.component('ButtonPlayground', ButtonPlayground)
+    app.component('IconGallery', IconGallery)
   }
 }

@@ -16,6 +16,7 @@ import {
   XInput,
   XInputNumber,
   XRadio,
+  XRadioButton,
   XScrollbar,
   XSelect,
   XSlider,
@@ -118,6 +119,7 @@ describe('元素组件', () => {
       [XSelect, { props: { modelValue: 'vue', options: [{ label: 'Vue', value: 'vue' }] } }],
       [XCheckbox, { props: { modelValue: true }, slots: { default: '复选' } }],
       [XRadio, { props: { modelValue: 'a', value: 'a' }, slots: { default: '单选' } }],
+      [XRadioButton, { props: { modelValue: 'a', value: 'a' }, slots: { default: '按钮单选' } }],
       [XSwitch, { props: { modelValue: true } }],
       [XForm, { slots: { default: '表单' } }],
       [XInputNumber, { props: { modelValue: 1 } }],
@@ -358,6 +360,93 @@ describe('元素组件', () => {
     expect(vm.getVisibleOptions()).toEqual([{ label: '深圳', value: 'shenzhen' }])
   })
 
+  it('filters autocomplete options by existing input value when focused', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '南',
+        options: [
+          { label: '上海', value: 'shanghai' },
+          { label: '南京', value: 'nanjing' },
+          { label: '南通', value: 'nantong' }
+        ]
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+
+    expect(wrapper.findAll('.x-autocomplete__option').map((option) => option.text())).toEqual(['南京', '南通'])
+  })
+
+  it('filters autocomplete remote fallback options by existing input value when focused', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '南通波涛',
+        remote: true,
+        options: [
+          { label: '东莞益海嘉里淀粉有限公司', value: 'customer-1' },
+          { label: '天津富洁环保工程', value: 'customer-2' },
+          { label: '南通波涛化工有限公司', value: 'customer-3' }
+        ],
+        emptyText: '暂无客户'
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+
+    expect(wrapper.findAll('.x-autocomplete__option').map((option) => option.text())).toEqual([
+      '南通波涛化工有限公司'
+    ])
+
+    await wrapper.setProps({ modelValue: '不存在客户' })
+    await wrapper.find('input').trigger('focus')
+
+    expect(wrapper.findAll('.x-autocomplete__option')).toHaveLength(0)
+    expect(wrapper.find('.x-autocomplete__empty').text()).toBe('暂无客户')
+  })
+
+  it('limits autocomplete visible options to 50 and exposes dropdown max height', async () => {
+    const options = Array.from({ length: 60 }, (_, index) => ({
+      label: `选项${index + 1}`,
+      value: index + 1
+    }))
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        options,
+        dropdownMaxHeight: 180
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+
+    expect(wrapper.findAll('.x-autocomplete__option')).toHaveLength(50)
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-dropdown-max-height: 180px')
+  })
+
+  it('limits autocomplete options after filtering existing input', async () => {
+    const options = [
+      ...Array.from({ length: 60 }, (_, index) => ({
+        label: `普通选项${index + 1}`,
+        value: index + 1
+      })),
+      { label: '目标选项一', value: 'target-1' },
+      { label: '目标选项二', value: 'target-2' }
+    ]
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '目标',
+        options
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+
+    expect(wrapper.findAll('.x-autocomplete__option').map((option) => option.text())).toEqual([
+      '目标选项一',
+      '目标选项二'
+    ])
+  })
+
   it('queries autocomplete remote options from server-side input method', async () => {
     const remoteMethod = vi.fn(() => [{ label: '深圳服务端', value: 'remote-shenzhen' }])
     const wrapper = mount(XAutocomplete, {
@@ -376,6 +465,159 @@ describe('元素组件', () => {
     expect(remoteMethod).toHaveBeenCalledWith('深')
     expect(wrapper.emitted('query')?.[0]).toEqual(['深'])
     expect(wrapper.find('.x-autocomplete__option').text()).toBe('深圳服务端')
+  })
+
+  it('queries autocomplete remote options on enter when configured', async () => {
+    const remoteMethod = vi.fn(() => [{ label: '南通服务端', value: 'remote-nantong' }])
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        remote: true,
+        remoteTrigger: 'enter',
+        remoteDebounce: 0,
+        remoteMethod
+      }
+    })
+
+    await wrapper.find('input').setValue('南通')
+    await wrapper.setProps({ modelValue: '南通' })
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    await nextTick()
+
+    expect(remoteMethod).not.toHaveBeenCalled()
+
+    await wrapper.find('input').trigger('keydown', { key: 'Enter' })
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    await nextTick()
+
+    expect(remoteMethod).toHaveBeenCalledWith('南通')
+    expect(wrapper.emitted('query')?.[0]).toEqual(['南通'])
+    expect(wrapper.find('.x-autocomplete__option').text()).toBe('南通服务端')
+  })
+
+  it('selects autocomplete options with keyboard arrows and enter', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        options: [
+          { label: '南通一号', value: 1 },
+          { label: '南通二号', value: 2 }
+        ]
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+    await wrapper.find('input').trigger('keydown', { key: 'ArrowDown' })
+    await nextTick()
+    expect(wrapper.findAll('.x-autocomplete__option')[0].classes()).toContain('is-active')
+
+    await wrapper.find('input').trigger('keydown', { key: 'ArrowDown' })
+    await nextTick()
+    expect(wrapper.findAll('.x-autocomplete__option')[1].classes()).toContain('is-active')
+
+    await wrapper.find('input').trigger('keydown', { key: 'Enter' })
+    await nextTick()
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([2])
+    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual(['南通二号'])
+    expect(wrapper.emitted('select')?.[0]).toEqual([{ label: '南通二号', value: 2 }])
+  })
+
+  it('keeps autocomplete v-model input behavior compatible by default', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: ''
+      }
+    })
+
+    await wrapper.find('input').setValue('上海')
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['上海'])
+    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual(['上海'])
+    expect(wrapper.emitted('input')?.[0]).toEqual(['上海'])
+  })
+
+  it('separates autocomplete selected value from remote search input', async () => {
+    const remoteMethod = vi.fn(() => [{ label: '南通某客户', value: 456 }])
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: 123,
+        inputValue: '老客户',
+        valueOnInput: false,
+        remote: true,
+        remoteDebounce: 0,
+        remoteMethod
+      }
+    })
+
+    await wrapper.find('input').setValue('南通')
+    await wrapper.setProps({ inputValue: '南通' })
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    await nextTick()
+
+    expect(wrapper.find('input').element.value).toBe('南通')
+    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual(['南通'])
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.emitted('input')?.[0]).toEqual(['南通'])
+    expect(remoteMethod).toHaveBeenCalledWith('南通')
+  })
+
+  it('selects autocomplete options with separated model and input values', async () => {
+    const option = { label: '南通某客户', value: 456 }
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: 123,
+        inputValue: '南通',
+        valueOnInput: false,
+        options: [option]
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+    await wrapper.find('.x-autocomplete__option').trigger('click')
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([456])
+    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual(['南通某客户'])
+    expect(wrapper.emitted('input')?.[0]).toEqual(['南通某客户'])
+    expect(wrapper.emitted('change')?.[0]).toEqual([456])
+    expect(wrapper.emitted('select')?.[0]).toEqual([option])
+  })
+
+  it('clears autocomplete model and input values', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: 123,
+        inputValue: '老客户',
+        valueOnInput: false,
+        clearable: true
+      }
+    })
+
+    await wrapper.find('.x-base-input__clear').trigger('click')
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([''])
+    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual([''])
+    expect(wrapper.emitted('clear')).toHaveLength(1)
+  })
+
+  it('filters autocomplete local options from inputValue before modelValue', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: 123,
+        inputValue: '南通',
+        valueOnInput: false,
+        options: [
+          { label: '老客户', value: 123 },
+          { label: '南通某客户', value: 456 }
+        ]
+      }
+    })
+
+    const vm = wrapper.vm as unknown as {
+      getVisibleOptions: () => Array<{ label: string; value: string | number }>
+    }
+
+    expect(vm.getVisibleOptions()).toEqual([{ label: '南通某客户', value: 456 }])
   })
 
   it('maps autocomplete key-value fields from remote options', async () => {
@@ -399,6 +641,51 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[1]).toEqual([20])
   })
 
+  it('can display option values instead of labels for autocomplete, select and cascader', async () => {
+    const autocomplete = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        displayField: 'value',
+        options: [{ label: '广州', value: 'city-20' }]
+      }
+    })
+
+    await autocomplete.find('input').trigger('focus')
+    expect(autocomplete.find('.x-autocomplete__option').text()).toBe('city-20')
+
+    const select = mount(XSelect, {
+      props: {
+        modelValue: 'done',
+        displayField: 'value',
+        options: [{ label: '已完成', value: 'done' }]
+      }
+    })
+
+    expect(select.find('.x-select__value').text()).toBe('done')
+    await select.find('.x-select__control').trigger('click')
+    await nextTick()
+    const selectOptions = Array.from(document.body.querySelectorAll<HTMLButtonElement>('.x-select__dropdown .x-option'))
+    expect(selectOptions[selectOptions.length - 1].textContent).toContain('done')
+
+    const cascader = mount(XCascader, {
+      props: {
+        modelValue: ['zhejiang', 'hangzhou'],
+        displayField: 'value',
+        options: [
+          {
+            label: '浙江',
+            value: 'zhejiang',
+            children: [{ label: '杭州', value: 'hangzhou' }]
+          }
+        ]
+      }
+    })
+
+    expect(cascader.find('.x-cascader__value').text()).toBe('zhejiang / hangzhou')
+    await cascader.find('.x-cascader__control').trigger('click')
+    expect(cascader.find('.x-cascader__option').text()).toContain('zhejiang')
+  })
+
   it('loads select options from server-side dropdown request and maps key-value fields', async () => {
     const remoteMethod = vi.fn(() => [{ name: '远程完成', id: 'done' }])
     const wrapper = mount(XSelect, {
@@ -415,9 +702,12 @@ describe('元素组件', () => {
 
     expect(remoteMethod).toHaveBeenCalledTimes(1)
     expect(wrapper.emitted('query')).toHaveLength(1)
-    expect(wrapper.find('.x-option').text()).toContain('远程完成')
+    const options = Array.from(document.body.querySelectorAll<HTMLButtonElement>('.x-select__dropdown .x-option'))
+    const option = options[options.length - 1]
+    expect(option.textContent).toContain('远程完成')
 
-    await wrapper.find('.x-option').trigger('click')
+    option.click()
+    await nextTick()
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['done'])
   })
 
@@ -432,10 +722,36 @@ describe('元素组件', () => {
     })
 
     const style = wrapper.find('.x-base-input').attributes('style')
-    expect(style).toContain('--x-base-input-font-size: 12px')
-    expect(style).toContain('--x-base-input-height: 28px')
-    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-font-size: 12px')
-    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-padding: 0 8px')
+    expect(style).toContain('--x-base-input-font-size: 10px')
+    expect(style).toContain('--x-base-input-height: 22px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-font-size: 10px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-padding: 0 4px')
+  })
+
+  it('enables autocomplete active border by default and exposes its own active color variable', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '上海',
+        activeBorderColor: '#1d4ed8'
+      }
+    })
+
+    expect(wrapper.classes()).not.toContain('is-active-border-hidden')
+    expect(wrapper.find('.x-base-input').classes()).not.toContain('is-active-border-hidden')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-active-border-color: #1d4ed8')
+    expect(wrapper.attributes('style')).not.toContain('--x-cascader-active-border-color')
+  })
+
+  it('hides autocomplete outer active border when showActiveBorder is false', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '上海',
+        showActiveBorder: false
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-active-border-hidden')
+    expect(wrapper.find('.x-base-input').classes()).toContain('is-active-border-hidden')
   })
 
   it('exposes autocomplete focus and blur events from XInput', async () => {
@@ -821,6 +1137,182 @@ describe('元素组件', () => {
     expect(days.some((day) => day.classes().includes('is-festival') && day.text().includes('端午节'))).toBe(true)
     expect(days.some((day) => day.classes().includes('is-solar-term') && day.text().includes('芒种'))).toBe(true)
     expect(days.some((day) => day.classes().includes('is-solar-term') && day.text().includes('夏至'))).toBe(true)
+  })
+
+  it('writes date panel theme props to picker CSS variables', () => {
+    const wrapper = mount(XDatePickerPanel, {
+      props: {
+        year: 2026,
+        month: 5,
+        panelBackgroundColor: '#0f172a',
+        panelTextColor: '#e5e7eb',
+        panelWeekTextColor: '#93c5fd',
+        panelDayActiveBackgroundColor: '#2563eb',
+        panelDayRadius: 9,
+        festivalBackgroundColor: '#431407',
+        festivalTextColor: '#fed7aa',
+        festivalBadgeBackgroundColor: '#fb923c',
+        festivalBadgeTextColor: '#111827',
+        solarTermBackgroundColor: '#052e2b',
+        solarTermTextColor: '#99f6e4',
+        solarTermBadgeBackgroundColor: '#2dd4bf',
+        solarTermBadgeTextColor: '#042f2e',
+        customFestivalBackgroundColor: '#172554',
+        customFestivalTextColor: '#bfdbfe',
+        customFestivalBadgeBackgroundColor: '#60a5fa',
+        customFestivalBadgeTextColor: '#0f172a',
+        panelDayMarkedHoverBackgroundColor: '#1d4ed8',
+        panelDayMarkedBadgeHoverTextColor: '#1d4ed8',
+        festivals: {
+          '2026-05-14': { name: '评审', type: 'custom' }
+        }
+      }
+    })
+
+    const style = wrapper.attributes('style')
+    expect(style).toContain('--x-picker-panel-bg: #0f172a')
+    expect(style).toContain('--x-picker-week-text: #93c5fd')
+    expect(style).toContain('--x-picker-day-active-bg: #2563eb')
+    expect(style).toContain('--x-picker-day-radius: 9px')
+    expect(style).toContain('--x-picker-festival-bg: #431407')
+    expect(style).toContain('--x-picker-festival-badge-bg: #fb923c')
+    expect(style).toContain('--x-picker-solar-term-bg: #052e2b')
+    expect(style).toContain('--x-picker-solar-term-badge-bg: #2dd4bf')
+    expect(style).toContain('--x-picker-custom-festival-bg: #172554')
+    expect(style).toContain('--x-picker-custom-festival-badge-bg: #60a5fa')
+    expect(style).toContain('--x-picker-day-marked-hover-bg: #1d4ed8')
+    expect(style).toContain('--x-picker-day-marked-badge-hover-text: #1d4ed8')
+  })
+
+  it('passes date picker popup theme props to dialog and inner date panel', async () => {
+    const wrapper = mount(XDatePicker, {
+      props: {
+        modelValue: '2026-05-12',
+        showActiveBorder: false,
+        panelBackgroundColor: '#0f172a',
+        panelTextColor: '#e5e7eb',
+        panelBorderColor: '#334155',
+        panelCloseIconColor: '#94a3b8',
+        panelToolBackgroundColor: '#111827',
+        panelDayActiveBackgroundColor: '#2563eb',
+        festivalBackgroundColor: '#431407',
+        panelPrimaryButtonBackgroundColor: '#2563eb'
+      },
+      attachTo: document.body
+    })
+
+    expect(wrapper.classes()).toContain('is-active-border-hidden')
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('.x-date-picker__dialog')
+    const panel = document.body.querySelector<HTMLElement>('.x-date-picker__dialog .x-date-panel')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-panel-bg: #0f172a')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-tool-bg: #111827')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-primary-button-bg: #2563eb')
+    expect(panel?.getAttribute('style')).toContain('--x-picker-day-active-bg: #2563eb')
+    expect(panel?.getAttribute('style')).toContain('--x-picker-festival-bg: #431407')
+
+    wrapper.unmount()
+  })
+
+  it('passes date time picker calendar and time theme props to the popup', async () => {
+    const wrapper = mount(XDateTimePicker, {
+      props: {
+        modelValue: '2026-05-12 09:30',
+        panelBackgroundColor: '#0f172a',
+        panelDayActiveBackgroundColor: '#2563eb',
+        festivalBackgroundColor: '#431407',
+        timePanelBackgroundColor: '#020617',
+        timeOptionSelectionBackgroundColor: '#172554',
+        timeOptionActiveTextColor: '#ffffff',
+        timeColumnMaskTopColor: '#0f172a',
+        timeColumnMaskMiddleColor: 'rgba(15, 23, 42, 0.82)',
+        timeColumnMaskBottomColor: 'rgba(15, 23, 42, 0)',
+        panelSecondaryButtonBackgroundColor: '#111827',
+        panelPrimaryButtonBackgroundColor: '#2563eb'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('.x-date-time-picker__dialog')
+    const panel = document.body.querySelector<HTMLElement>('.x-date-time-picker__dialog .x-date-panel')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-bg: #020617')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-selection-bg: #172554')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-option-active-text: #ffffff')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-mask-top: #0f172a')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-secondary-button-bg: #111827')
+    expect(panel?.getAttribute('style')).toContain('--x-picker-day-active-bg: #2563eb')
+    expect(panel?.getAttribute('style')).toContain('--x-picker-festival-bg: #431407')
+
+    wrapper.unmount()
+  })
+
+  it('writes time picker popup theme props to dialog CSS variables', async () => {
+    const wrapper = mount(XTimePicker, {
+      props: {
+        modelValue: '09:30',
+        panelBackgroundColor: '#0f172a',
+        panelBorderColor: '#334155',
+        timePanelBackgroundColor: '#020617',
+        timePanelBorderColor: '#334155',
+        timeOptionSelectionBackgroundColor: '#172554',
+        timeOptionSelectionBorderColor: '#2563eb',
+        timeOptionActiveBackgroundColor: '#1d4ed8',
+        timeColumnMaskTopColor: '#0f172a',
+        panelPrimaryButtonBackgroundColor: '#2563eb',
+        panelSecondaryButtonBackgroundColor: '#111827'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('.x-time-picker__dialog')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-panel-bg: #0f172a')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-bg: #020617')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-selection-border: #2563eb')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-option-active-bg: #1d4ed8')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-primary-button-bg: #2563eb')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-secondary-button-bg: #111827')
+
+    wrapper.unmount()
+  })
+
+  it('writes time select popup theme props to dialog CSS variables', async () => {
+    const wrapper = mount(XTimeSelect, {
+      props: {
+        modelValue: '09:30',
+        start: '09:00',
+        end: '10:00',
+        stepMinutes: 30,
+        panelBackgroundColor: '#0f172a',
+        timePanelBackgroundColor: '#020617',
+        timeOptionSelectionBackgroundColor: '#172554',
+        timeOptionActiveTextColor: '#ffffff',
+        timeColumnMaskBottomColor: 'rgba(15, 23, 42, 0)',
+        panelPrimaryButtonBackgroundColor: '#2563eb',
+        panelSecondaryButtonHoverBorderColor: '#60a5fa'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('.x-time-select__dialog')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-panel-bg: #0f172a')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-bg: #020617')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-selection-bg: #172554')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-option-active-text: #ffffff')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-time-mask-bottom: rgba(15, 23, 42, 0)')
+    expect(dialog?.getAttribute('style')).toContain('--x-picker-secondary-button-hover-border: #60a5fa')
+
+    wrapper.unmount()
   })
 
   it('shows cascader empty state', async () => {

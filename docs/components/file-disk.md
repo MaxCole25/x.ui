@@ -61,26 +61,53 @@ const adapter: FileDiskAdapter = {
 
 ## 主题配色
 
-通过 `colors` 可以覆盖文件磁盘常用配色，便于和业务系统主题色保持一致。未传入的字段会继续使用组件默认色或全局设计变量。
+通过主题 props 或 `colors` 可以覆盖文件磁盘常用配色，便于和业务系统主题色保持一致。x.ui 默认色保持通用，不内置具体业务系统主题；未传入的字段会继续使用组件默认色或全局设计变量。
 
 ```vue
 <XFileDisk
   :entries="entries"
+  background-color="#0f172a"
+  text-color="#e2e8f0"
+  muted-text-color="#94a3b8"
+  border-color="#334155"
+  header-background-color="#111827"
+  toolbar-background-color="#1e293b"
+  item-background-color="#111827"
+  item-hover-background-color="#1e3a5f"
+  item-active-background-color="#155e75"
+  item-active-text-color="#f8fafc"
+  icon-color="#cbd5e1"
+  active-icon-color="#67e8f9"
+  empty-background-color="#111827"
+  drag-over-background-color="rgba(103, 232, 249, 0.14)"
   :colors="{
-    primary: '#2563eb',
-    primarySoft: '#dbeafe',
-    primaryWeak: '#eff6ff',
-    selectedBackground: '#eff6ff',
-    selectedBorder: '#93c5fd',
-    toolbarBackground: '#f8fafc',
-    border: '#cbd5e1',
-    text: '#0f172a',
-    mutedText: '#64748b',
+    primary: '#67e8f9',
+    primarySoft: 'rgba(103, 232, 249, 0.16)',
+    primaryWeak: 'rgba(103, 232, 249, 0.10)',
     success: '#16a34a',
     danger: '#dc2626'
   }"
 />
 ```
+
+这些 props 会映射为组件根节点上的 CSS variables，也可以直接通过外部 CSS 覆盖：
+
+| prop | CSS variable | 说明 |
+| --- | --- | --- |
+| `backgroundColor` | `--x-file-disk-bg` | 整体背景 |
+| `textColor` | `--x-file-disk-text` | 主文字颜色 |
+| `mutedTextColor` | `--x-file-disk-muted-text` | 次级文字、空状态文字 |
+| `borderColor` | `--x-file-disk-border-color` | 外框、分割线、文件项边框 |
+| `headerBackgroundColor` | `--x-file-disk-header-bg` | 头部背景 |
+| `toolbarBackgroundColor` | `--x-file-disk-toolbar-bg` | 工具栏按钮背景 |
+| `itemBackgroundColor` | `--x-file-disk-item-bg` | 文件/目录项背景 |
+| `itemHoverBackgroundColor` | `--x-file-disk-item-hover-bg` | 文件/目录项 hover 背景 |
+| `itemActiveBackgroundColor` | `--x-file-disk-item-active-bg` | 选中项背景 |
+| `itemActiveTextColor` | `--x-file-disk-item-active-text` | 选中项文字 |
+| `iconColor` | `--x-file-disk-icon-color` | 普通图标颜色 |
+| `activeIconColor` | `--x-file-disk-active-icon-color` | 选中或强调图标颜色 |
+| `emptyBackgroundColor` | `--x-file-disk-empty-bg` | 空状态背景 |
+| `dragOverBackgroundColor` | `--x-file-disk-drag-over-bg` | 拖拽悬浮背景 |
 
 ## Props
 
@@ -94,6 +121,20 @@ const adapter: FileDiskAdapter = {
 | `title` | 左上角标题 | `string` | `附件管理` |
 | `loading` | 外部加载状态 | `boolean` | `false` |
 | `colors` | 常用主题配色配置 | `FileDiskColors` | - |
+| `backgroundColor` | 整体背景 | `string` | - |
+| `textColor` | 主文字颜色 | `string` | - |
+| `mutedTextColor` | 次级文字、空状态文字 | `string` | - |
+| `borderColor` | 外框、分割线、文件项边框 | `string` | - |
+| `headerBackgroundColor` | 头部背景 | `string` | - |
+| `toolbarBackgroundColor` | 工具栏按钮背景 | `string` | - |
+| `itemBackgroundColor` | 文件/目录项背景 | `string` | - |
+| `itemHoverBackgroundColor` | 文件/目录项 hover 背景 | `string` | - |
+| `itemActiveBackgroundColor` | 选中项背景 | `string` | - |
+| `itemActiveTextColor` | 选中项文字 | `string` | - |
+| `iconColor` | 普通图标颜色 | `string` | - |
+| `activeIconColor` | 选中或强调图标颜色 | `string` | - |
+| `emptyBackgroundColor` | 空状态背景 | `string` | - |
+| `dragOverBackgroundColor` | 拖拽悬浮背景 | `string` | - |
 | `emptyText` | 空目录文案 | `string` | `暂无文件` |
 | `multiple` | 文件选择器是否允许多选 | `boolean` | `true` |
 | `accept` | 上传文件类型限制 | `string` | - |
@@ -108,6 +149,20 @@ const adapter: FileDiskAdapter = {
 
 | 字段 | 说明 |
 | --- | --- |
+| `backgroundColor` | 整体背景，对应 `--x-file-disk-bg` |
+| `textColor` | 主文字颜色，对应 `--x-file-disk-text` |
+| `mutedTextColor` | 次级文字、空状态文字，对应 `--x-file-disk-muted-text` |
+| `borderColor` | 外框、分割线、文件项边框，对应 `--x-file-disk-border-color` |
+| `headerBackgroundColor` | 头部背景，对应 `--x-file-disk-header-bg` |
+| `toolbarBackgroundColor` | 工具栏按钮背景，对应 `--x-file-disk-toolbar-bg` |
+| `itemBackgroundColor` | 文件/目录项背景，对应 `--x-file-disk-item-bg` |
+| `itemHoverBackgroundColor` | 文件/目录项 hover 背景，对应 `--x-file-disk-item-hover-bg` |
+| `itemActiveBackgroundColor` | 选中项背景，对应 `--x-file-disk-item-active-bg` |
+| `itemActiveTextColor` | 选中项文字，对应 `--x-file-disk-item-active-text` |
+| `iconColor` | 普通图标颜色，对应 `--x-file-disk-icon-color` |
+| `activeIconColor` | 选中或强调图标颜色，对应 `--x-file-disk-active-icon-color` |
+| `emptyBackgroundColor` | 空状态背景，对应 `--x-file-disk-empty-bg` |
+| `dragOverBackgroundColor` | 拖拽悬浮背景，对应 `--x-file-disk-drag-over-bg` |
 | `primary` | 主色，用于工具按钮激活、路径悬停、拖拽蒙层和上传进度 |
 | `primarySoft` | 主色浅底，用于按钮悬停、输入框聚焦阴影 |
 | `primaryWeak` | 更弱的主色底，用于路径和菜单悬停 |
