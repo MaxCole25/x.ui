@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import type { LoadingProps } from './types'
 
 defineOptions({
@@ -15,7 +16,7 @@ const props = withDefaults(defineProps<LoadingProps>(), {
   textColor: '#1264f4',
   spinnerColor: '#1264f4',
   spinnerSize: 32,
-  zIndex: 2000
+  zIndex: overlayZIndex.loading
 })
 
 const loadingStyle = computed(() => ({

@@ -17,6 +17,7 @@
 ## 外观接口
 
 `XText` 支持常用外观属性，可用于在低代码配置面板中统一控制文本容器、边框和字号样式。
+当显式传入 `size="sm" | "md" | "lg"` 时，组件会按统一尺寸预设接管字号、高度、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`；未显式传入 `size` 时，仍可通过 `fontSize`、`height`、`padding`、`radius` 做局部外观调整。
 
 <XText
   model-value="外层 div 承载边框"
@@ -81,11 +82,11 @@
 | background | 背景色别名，优先级低于 `backgroundColor` | `string` | `undefined` |
 | textColor | 文字颜色 | `string` | `undefined` |
 | fontFamily | 字体样式 | `string` | `undefined` |
-| fontSize | 字体大小 | `number \| string` | `undefined` |
-| height | 组件高度 | `number \| string` | `undefined` |
+| fontSize | 字体大小，未显式传入 `size` 时生效 | `number \| string` | `undefined` |
+| height | 组件高度，未显式传入 `size` 时生效 | `number \| string` | `undefined` |
 | autoHeight | 是否自动高度 | `boolean` | `false` |
-| padding | 容器内边距 | `number \| string` | `undefined` |
-| radius | 圆角 | `string` | `undefined` |
+| padding | 容器内边距，未显式传入 `size` 时生效 | `number \| string` | `undefined` |
+| radius | 圆角，未显式传入 `size` 时生效 | `string` | `undefined` |
 | textAlign | 文字对齐 | `left \| center \| right` | `undefined` |
 | name | 原生 `name` 属性 | `string` | `undefined` |
 | id | 原生 `id` 属性 | `string` | `undefined` |

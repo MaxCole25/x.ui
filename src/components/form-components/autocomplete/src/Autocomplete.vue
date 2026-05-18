@@ -57,6 +57,7 @@ const remoteLoading = ref(false)
 const queryTimer = ref<number>()
 const activeOptionIndex = ref(-1)
 let queryRequestId = 0
+let skipNextEnterKeyup = false
 const maxVisibleOptionCount = 50
 const displayInputValue = computed(() => props.inputValue ?? props.modelValue ?? '')
 const keyword = computed(() => currentInputValue.value)
@@ -76,16 +77,27 @@ const optionPadding = computed(() => {
   return inputSizePreset[mergedSize.value].padding
 })
 
+const autocompleteHeight = computed(() => {
+  if (props.size) return inputSizePreset[props.size].height
+
+  return props.height ?? inputSizePreset[mergedSize.value].height
+})
+
 const autocompleteStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-autocomplete-color': props.color ?? props.activeBorderColor,
   '--x-autocomplete-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-autocomplete-height': toCssSize(autocompleteHeight.value),
   '--x-autocomplete-option-font-size': toCssSize(optionFontSize.value),
   '--x-autocomplete-option-padding': toCssSize(optionPadding.value),
   '--x-autocomplete-dropdown-max-height': toCssSize(props.dropdownMaxHeight)
 }))
+const rootClass = computed(() => attrs.class)
+const rootStyle = computed(() => attrs.style)
 const inputAttrs = computed(() => {
   const {
+    class: _class,
+    style: _style,
     type,
     ...rest
   } = attrs as Record<string, unknown>
@@ -98,14 +110,15 @@ const inputProps = computed(() => {
   const usesExplicitSize = props.size != null
   const next: Record<string, unknown> = {
     ...props,
-    modelValue: displayInputValue.value,
+    modelValue: currentInputValue.value,
     type: 'text',
     disabled: mergedDisabled.value,
     size: mergedSize.value,
     fontSize: usesExplicitSize ? preset.fontSize : props.fontSize ?? preset.fontSize,
     height: usesExplicitSize ? preset.height : props.height ?? preset.height,
     padding: usesExplicitSize ? preset.padding : props.padding ?? preset.padding,
-    radius: usesExplicitSize ? preset.radius : props.radius ?? preset.radius
+    radius: usesExplicitSize ? preset.radius : props.radius ?? preset.radius,
+    suffix: inputSuffix.value
   }
 
   delete next.inputValue
@@ -193,6 +206,12 @@ const visibleOptions = computed(() => filteredOptions.value.slice(0, maxVisibleO
 const canOpen = computed(() => !mergedDisabled.value && !props.readonly)
 const isLoading = computed(() => props.loading || remoteLoading.value)
 const activeSuggestion = computed(() => visibleOptions.value[activeOptionIndex.value])
+const inputSuffix = computed(() => {
+  if (props.suffix === undefined || props.suffix === '') return undefined
+  if (props.loading && String(props.suffix) === props.loadingText) return undefined
+
+  return props.suffix
+})
 
 const readOptions = (options: AutocompleteOption[]) =>
   options.map((option) => ({
@@ -310,6 +329,25 @@ const moveActiveOption = (direction: 1 | -1) => {
   activeOptionIndex.value = -1
 }
 
+const isEnterKey = (event: KeyboardEvent) => event.key === 'Enter' || event.code === 'Enter' || event.keyCode === 13
+
+const handleEnter = (event: KeyboardEvent) => {
+  if (open.value && activeSuggestion.value && !activeSuggestion.value.disabled) {
+    event.preventDefault()
+    selectSuggestion(activeSuggestion.value)
+    return true
+  }
+
+  if (props.remote && props.remoteTrigger === 'enter') {
+    event.preventDefault()
+    const target = event.target as HTMLInputElement | null
+    void runRemoteQuery(String(target?.value ?? keyword.value))
+    return true
+  }
+
+  return false
+}
+
 const handleKeydown = (event: KeyboardEvent) => {
   if (!canOpen.value) return
 
@@ -327,25 +365,30 @@ const handleKeydown = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key !== 'Enter') return
+  if (!isEnterKey(event)) return
+  if (event.isComposing) return
 
-  if (open.value && activeSuggestion.value && !activeSuggestion.value.disabled) {
-    event.preventDefault()
-    selectSuggestion(activeSuggestion.value)
+  if (handleEnter(event)) {
+    skipNextEnterKeyup = true
+  }
+}
+
+const handleKeyup = (event: KeyboardEvent) => {
+  if (!canOpen.value || !isEnterKey(event)) return
+  if (skipNextEnterKeyup) {
+    skipNextEnterKeyup = false
     return
   }
+  if (event.isComposing) return
 
-  if (props.remote && props.remoteTrigger === 'enter') {
-    event.preventDefault()
-    const target = event.target as HTMLInputElement | null
-    void runRemoteQuery(String(target?.value ?? keyword.value))
-  }
+  handleEnter(event)
 }
 
 const selectSuggestion = (suggestion: AutocompleteOption) => {
   if (!canOpen.value || suggestion.disabled) return
 
   const displayText = getOptionDisplayText(suggestion)
+  currentInputValue.value = displayText
   emit('update:modelValue', suggestion.value)
   emit('update:inputValue', displayText)
   emit('input', displayText)
@@ -384,13 +427,16 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="x-autocomplete"
-    :class="{
-      'is-open': open,
-      'is-disabled': mergedDisabled,
-      'is-auto-width': props.autoWidth,
-      'is-active-border-hidden': !props.showActiveBorder
-    }"
-    :style="autocompleteStyle"
+    :class="[
+      rootClass,
+      {
+        'is-open': open,
+        'is-disabled': mergedDisabled,
+        'is-auto-width': props.autoWidth,
+        'is-active-border-hidden': !props.showActiveBorder
+      }
+    ]"
+    :style="[autocompleteStyle, rootStyle]"
   >
     <XBaseInput
       v-bind="{ ...inputAttrs, ...inputProps }"
@@ -401,6 +447,7 @@ onBeforeUnmount(() => {
       @focus="handleFocus"
       @blur="handleBlur"
       @keydown="handleKeydown"
+      @keyup="handleKeyup"
     >
       <template v-if="$slots.prefix" #prefix>
         <slot name="prefix"></slot>

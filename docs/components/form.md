@@ -109,6 +109,7 @@ const submit = async () => {
 ## 继承机制
 
 `XForm` 会通过 provide/inject 向下传递 `size`、`disabled`、`labelWidth`、`labelPosition` 和表单实例。输入框、选择器、开关等表单控件会自动继承尺寸和禁用状态。
+尺寸继承采用统一预设：`sm` 标签字号和控件高度为 `10px / 22px`，`md` 为 `12px / 30px`，`lg` 为 `14px / 38px`。左右布局的标签会使用当前控件高度作为最小高度，并在标签区域内垂直居中，避免切换尺寸后标签和输入控件出现视觉错位。
 
 <div class="x-demo-block">
   <XForm size="sm" disabled style="max-width: 520px">

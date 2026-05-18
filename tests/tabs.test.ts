@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { XTabs } from '../src'
 
@@ -34,7 +35,8 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).toContain('--x-tabs-content-bg: #fff')
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-bg: #fff')
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-text: var(--x-color-text)')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-item-height: 40px')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-item-height: 30px')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-item-frame-height: 30px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 12px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-width: 48px')
   })
@@ -57,8 +59,22 @@ describe('XTabs', () => {
 
     expect(large.classes()).toContain('x-tabs--lg')
     expect(large.attributes('style')).toContain('--x-tabs-item-height: 38px')
+    expect(large.attributes('style')).toContain('--x-tabs-item-frame-height: 30px')
+    expect(large.attributes('style')).toContain('--x-tabs-item-min-width: 140px')
+    expect(large.attributes('style')).toContain('--x-tabs-item-padding-x: 8px')
     expect(small.classes()).toContain('x-tabs--sm')
     expect(small.attributes('style')).toContain('--x-tabs-item-height: 22px')
+    expect(small.attributes('style')).toContain('--x-tabs-item-frame-height: 30px')
+    expect(small.attributes('style')).toContain('--x-tabs-item-min-width: 140px')
+    expect(small.attributes('style')).toContain('--x-tabs-item-padding-x: 8px')
+  })
+
+  it('keeps horizontal tab item frames at the md height for every size', () => {
+    const css = readFileSync('src/styles/index.css', 'utf8')
+
+    expect(css).toContain('--x-tabs-item-frame-height: 30px')
+    expect(css).toContain('height: var(--x-tabs-item-frame-height, 30px)')
+    expect(css).toContain('line-height: var(--x-tabs-item-frame-height, 30px)')
   })
 
   it('exposes tab label font size variable', () => {

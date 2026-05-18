@@ -15,6 +15,10 @@ const count = ref(12)
 </template>
 ```
 
+## 尺寸规则
+
+当显式传入 `size` 时，`XInputNumber` 会按统一尺寸预设接管控件高度、字号、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`。未显式传入 `size` 时，仍可通过 `fontSize` 和 `borderRadius` 做局部外观调整。
+
 ## Props
 
 | 名称 | 说明 | 类型 | 默认值 |
@@ -32,8 +36,8 @@ const count = ref(12)
 | color | 激活边框颜色 | `string` | - |
 | activeBorderColor | 激活边框颜色，优先级高于 `color` | `string` | - |
 | fontFamily | 字体 | `string` | - |
-| fontSize | 字体大小，同时影响输入值和加减按钮文字 | `number \| string` | - |
-| borderRadius | 圆角 | `number \| string` | - |
+| fontSize | 字体大小，未显式传入 `size` 时生效，同时影响输入值和加减按钮文字 | `number \| string` | - |
+| borderRadius | 圆角，未显式传入 `size` 时生效 | `number \| string` | - |
 | decreaseButtonBackgroundColor | 减号按钮背景色 | `string` | - |
 | increaseButtonBackgroundColor | 加号按钮背景色 | `string` | - |
 | borderWidth | 边框粗细 | `number \| string` | - |

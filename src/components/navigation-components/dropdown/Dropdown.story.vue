@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XButton } from '../../basic-components/button'
 import { XDropdown } from './index'
@@ -17,6 +18,7 @@ const appearance = reactive({
   showArrow: true,
   offset: 6,
   popperWidth: 160,
+  popperZIndex: overlayZIndex.popper,
   radius: 8,
   backgroundColor: '#ffffff',
   borderColor: '#e4e7ed',
@@ -46,6 +48,7 @@ const appearance = reactive({
             :show-arrow="appearance.showArrow"
             :offset="appearance.offset"
             :popper-width="appearance.popperWidth"
+            :popper-z-index="appearance.popperZIndex"
             :radius="appearance.radius"
             :background-color="appearance.backgroundColor"
             :border-color="appearance.borderColor"
@@ -74,6 +77,7 @@ const appearance = reactive({
         <template #column-2>
           <label><span>偏移长度</span><input v-model.number="appearance.offset" type="number" /></label>
           <label><span>弹层宽度</span><input v-model.number="appearance.popperWidth" type="number" /></label>
+          <label><span>弹层层级</span><input v-model.number="appearance.popperZIndex" type="number" /></label>
           <label><span>圆角</span><input v-model.number="appearance.radius" type="number" /></label>
         </template>
         <template #column-3>

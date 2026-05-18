@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { formContextKey, formItemContextKey } from './context'
-import type { FormControlSize, FormItemAlign, FormItemProps, FormItemRule, FormItemStyle, FormLabelPosition, FormPublicSize, FormSize } from './types'
+import type { FormControlSize, FormItemAlign, FormItemHorizontalAlign, FormItemProps, FormItemRule, FormItemStyle, FormLabelPosition, FormPublicSize, FormSize } from './types'
 
 defineOptions({
   name: 'XFormItem'
@@ -44,6 +44,12 @@ const fieldJustifyMap: Record<NonNullable<FormItemProps['contentJustify']>, stri
   stretch: 'flex-start'
 }
 
+const labelJustifyMap: Record<FormItemHorizontalAlign, string> = {
+  left: 'flex-start',
+  center: 'center',
+  right: 'flex-end'
+}
+
 provide(formItemContextKey, {
   id,
   prop: props.prop,
@@ -70,6 +76,7 @@ const labelBaseStyle = computed<Record<string, string> | undefined>(() => {
 
   if (props.labelAlign) {
     style['--x-form-item-label-align'] = props.labelAlign
+    style['--x-form-item-label-justify'] = labelJustifyMap[props.labelAlign]
   }
 
   return Object.keys(style).length > 0 ? style : undefined

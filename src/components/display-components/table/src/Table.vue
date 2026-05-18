@@ -2040,10 +2040,13 @@ defineExpose({
   align-self: stretch;
   background: var(--x-table-panel-background, transparent);
   --x-table-border-color: var(--x-border-color, rgb(216 224 234));
+  --x-table-section-gap: 8px;
+  --x-table-section-padding-y: 8px;
   box-sizing: border-box;
   color: var(--x-table-text-color, #1f2937);
   display: grid;
   font-size: var(--x-table-font-size, 12px);
+  row-gap: var(--x-table-section-gap);
   min-width: 0;
   overflow: hidden;
   width: 100%;
@@ -2071,6 +2074,7 @@ defineExpose({
 .x-table__bottom {
   min-width: 0;
   padding: var(--x-table-cell-padding, 0 8px);
+  padding-block: var(--x-table-section-padding-y);
   position: relative;
   z-index: 3;
 }

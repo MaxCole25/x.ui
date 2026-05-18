@@ -49,7 +49,7 @@ setTimeout(() => loading.close(), 1200)
 | textColor | 文字色 | `string` | `#1264f4` |
 | spinnerColor | 加载图标色 | `string` | `#1264f4` |
 | spinnerSize | 加载图标长度 | `number \| string` | `32` |
-| zIndex | 层级 | `number` | `2000` |
+| zIndex | 层级 | `number` | `2100` |
 | target | 服务挂载目标 | `HTMLElement \| string` | `document.body` |
 
 ## 手动验收建议

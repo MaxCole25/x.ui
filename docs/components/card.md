@@ -16,6 +16,7 @@
 | --- | --- | --- | --- |
 | header | 头部文本 | `string` | - |
 | footer | 底部文本 | `string` | - |
+| size | 尺寸规格，仅影响文字大小，不影响卡片内边距与圆角 | `sm \| md \| lg` | `md` |
 | shadow | 阴影策略 | `always \| hover \| never` | `always` |
 | width | 宽度 | `number \| string` | `100%` |
 | height | 高度 | `number \| string` | - |

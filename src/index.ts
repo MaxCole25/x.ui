@@ -5,6 +5,7 @@ import { XBaseInput } from './components/basic-components/base-input'
 import { XButton } from './components/basic-components/button'
 import { XButtonGroup } from './components/basic-components/button-group'
 import { XCard } from './components/basic-components/card'
+import { XChart } from './components/display-components/chart'
 import { XCascader } from './components/form-components/cascader'
 import { XCheckbox } from './components/form-components/checkbox'
 import { XColorPicker } from './components/form-components/color-picker'
@@ -50,12 +51,15 @@ import './styles/index.css'
 
 export { componentSizeOptions, componentSizePreset } from './components/_utils/size'
 export type { ComponentSizePreset, XSize } from './components/_utils/size'
+export { overlayZIndex } from './components/_utils/zIndex'
+export type { OverlayZIndexName } from './components/_utils/zIndex'
 
 export { XAutocomplete }
 export { XAvatar }
 export { XButton }
 export { XButtonGroup }
 export { XCard }
+export { XChart }
 export { XCascader }
 export { XCheckbox }
 export { XColorPicker }
@@ -127,6 +131,16 @@ export type { BaseInputProps, BaseInputSize, BaseInputStatus, BaseInputTextAlign
 export type { ButtonProps, ButtonVariant } from './components/basic-components/button'
 export type { ButtonGroupDirection, ButtonGroupProps } from './components/basic-components/button-group'
 export type { CardProps, CardShadow } from './components/basic-components/card'
+export type {
+  ChartAutoresize,
+  ChartEventBinding,
+  ChartEventHandler,
+  ChartEvents,
+  ChartExpose,
+  ChartLoadingOptions,
+  ChartProps,
+  ChartTheme
+} from './components/display-components/chart'
 export type {
   CascaderOption,
   CascaderProps,
@@ -218,6 +232,7 @@ const components = [
   XButton,
   XButtonGroup,
   XCard,
+  XChart,
   XText,
   XBaseInput,
   XInput,

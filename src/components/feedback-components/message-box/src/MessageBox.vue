@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { componentSizePreset } from '../../../_utils/size'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import type { MessageBoxAction, MessageBoxProps } from './types'
 
 defineOptions({
@@ -23,7 +24,7 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   width: 420,
   minWidth: 280,
   maxWidth: 'calc(100vw - 32px)',
-  zIndex: 2200
+  zIndex: overlayZIndex.messageBox
 })
 
 const emit = defineEmits<{
@@ -45,7 +46,6 @@ const iconClass = computed(() => {
 })
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
-const usesExplicitSize = computed(() => props.size != null)
 
 const boxStyle = computed(() => ({
   '--x-message-box-width': typeof props.width === 'number' ? `${props.width}px` : props.width,
@@ -64,8 +64,8 @@ const boxStyle = computed(() => ({
   '--x-message-box-cancel-bg': props.cancelBackgroundColor,
   '--x-message-box-cancel-text': props.cancelTextColor,
   '--x-message-box-cancel-border': props.cancelBorderColor,
-  '--x-message-box-radius': usesExplicitSize.value ? sizePreset.value.radius : typeof props.radius === 'number' ? `${props.radius}px` : props.radius,
-  '--x-message-box-padding': usesExplicitSize.value ? sizePreset.value.padding : props.padding,
+  '--x-message-box-radius': typeof props.radius === 'number' ? `${props.radius}px` : props.radius,
+  '--x-message-box-padding': props.padding,
   '--x-message-box-font-size': `${sizePreset.value.fontSize}px`,
   '--x-message-box-control-height': `${sizePreset.value.height}px`,
   '--x-message-box-shadow': props.shadow

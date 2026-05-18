@@ -19,11 +19,11 @@ describe('XTable', () => {
   ]
 
   function readTableSource() {
-    return readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8')
+    return readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8').replace(/\r\n/g, '\n')
   }
 
   function readGlobalStyles() {
-    return readFileSync(resolve(__dirname, '../src/styles/index.css'), 'utf8')
+    return readFileSync(resolve(__dirname, '../src/styles/index.css'), 'utf8').replace(/\r\n/g, '\n')
   }
 
   function getCssRule(source: string, selector: string) {
@@ -121,7 +121,7 @@ describe('XTable', () => {
     expect(wrapper.find('.x-table__top').exists()).toBe(true)
     expect(wrapper.find('.x-table__bottom').exists()).toBe(true)
 
-    const source = readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8')
+    const source = readTableSource()
     expect(source).toContain('background: var(--x-table-top-background, var(--x-table-panel-background, #f8fafc));')
     expect(source).toContain('background: var(--x-table-bottom-background, var(--x-table-panel-background, #f8fafc));')
   })
@@ -461,12 +461,25 @@ describe('XTable', () => {
   })
 
   it('pins fill height regions to stable grid rows', () => {
-    const source = readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8')
+    const source = readTableSource()
 
     expect(source).toContain('.x-table.is-fill-height {\n  align-content: stretch;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__viewport {\n  grid-row: 2;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__bottom {\n  grid-row: 3;')
+  })
+
+  it('keeps table section spacing independent from component size', () => {
+    const source = readTableSource()
+    const rootRule = getCssRule(source, '.x-table')
+    const sectionRule = getCssRule(source, '.x-table__top,\n.x-table__bottom')
+
+    expect(rootRule).toContain('--x-table-section-gap: 8px;')
+    expect(rootRule).toContain('--x-table-section-padding-y: 8px;')
+    expect(rootRule).toContain('row-gap: var(--x-table-section-gap);')
+    expect(sectionRule).toContain('padding: var(--x-table-cell-padding, 0 8px);')
+    expect(sectionRule).toContain('padding-block: var(--x-table-section-padding-y);')
+    expect(sectionRule.indexOf('padding-block')).toBeGreaterThan(sectionRule.indexOf('padding: var(--x-table-cell-padding'))
   })
 
   it('applies column settings for order fixed align ratio and pixel width', () => {

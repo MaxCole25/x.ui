@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { componentSizePreset } from '../../../_utils/size'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import type { DialogProps } from './types'
 
 defineOptions({
@@ -19,7 +20,8 @@ const props = withDefaults(defineProps<DialogProps>(), {
   maxHeight: 0,
   draggable: true,
   resizable: true,
-  closeOnMaskClick: true
+  closeOnMaskClick: true,
+  zIndex: overlayZIndex.dialog
 })
 
 const emit = defineEmits<{
@@ -32,8 +34,8 @@ const visible = computed({
   set: (value: boolean) => emit('update:modelValue', value)
 })
 
-const popupWidth = ref(props.width)
-const popupHeight = ref(props.height)
+const popupWidth = ref(toPixelNumber(props.width, 920))
+const popupHeight = ref(toPixelNumber(props.height, 760))
 const popupLeft = ref(0)
 const popupTop = ref(0)
 
@@ -57,17 +59,42 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
+function toPixelNumber(value: number | string | undefined, fallback: number) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : fallback
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value)
+    return Number.isFinite(parsed) ? parsed : fallback
+  }
+
+  return fallback
+}
+
+function getMinWidth() {
+  return toPixelNumber(props.minWidth, 720)
+}
+
+function getMinHeight() {
+  return toPixelNumber(props.minHeight, 520)
+}
+
 function getMaxWidth() {
-  return props.maxWidth > 0 ? props.maxWidth : Math.max(props.minWidth, window.innerWidth - 24)
+  const minWidth = getMinWidth()
+  const maxWidth = toPixelNumber(props.maxWidth, 0)
+  return maxWidth > 0 ? maxWidth : Math.max(minWidth, window.innerWidth - 24)
 }
 
 function getMaxHeight() {
-  return props.maxHeight > 0 ? props.maxHeight : Math.max(props.minHeight, window.innerHeight - 24)
+  const minHeight = getMinHeight()
+  const maxHeight = toPixelNumber(props.maxHeight, 0)
+  return maxHeight > 0 ? maxHeight : Math.max(minHeight, window.innerHeight - 24)
 }
 
 function centerPopup() {
-  const width = clamp(popupWidth.value, props.minWidth, getMaxWidth())
-  const height = clamp(popupHeight.value, props.minHeight, getMaxHeight())
+  const width = clamp(toPixelNumber(props.width, 920), getMinWidth(), getMaxWidth())
+  const height = clamp(toPixelNumber(props.height, 760), getMinHeight(), getMaxHeight())
   popupWidth.value = width
   popupHeight.value = height
   popupLeft.value = Math.max((window.innerWidth - width) / 2, 12)
@@ -130,8 +157,8 @@ function moveResize(event: MouseEvent) {
   }
   const nextWidth = resizeState.startWidth + (event.clientX - resizeState.startX)
   const nextHeight = resizeState.startHeight + (event.clientY - resizeState.startY)
-  popupWidth.value = clamp(nextWidth, props.minWidth, getMaxWidth())
-  popupHeight.value = clamp(nextHeight, props.minHeight, getMaxHeight())
+  popupWidth.value = clamp(nextWidth, getMinWidth(), getMaxWidth())
+  popupHeight.value = clamp(nextHeight, getMinHeight(), getMaxHeight())
 }
 
 function stopResize() {
@@ -141,8 +168,8 @@ function stopResize() {
 watch(
   () => [visible.value, props.width, props.height, props.minWidth, props.minHeight, props.maxWidth, props.maxHeight],
   ([isVisible]) => {
-    popupWidth.value = props.width
-    popupHeight.value = props.height
+    popupWidth.value = toPixelNumber(props.width, 920)
+    popupHeight.value = toPixelNumber(props.height, 760)
     if (isVisible) {
       centerPopup()
     }
@@ -183,15 +210,17 @@ const popupStyle = computed(() => ({
   left: `${popupLeft.value}px`,
   top: `${popupTop.value}px`,
   '--x-dialog-font-size': `${componentSizePreset[props.size ?? 'md'].fontSize}px`,
-  '--x-dialog-padding': componentSizePreset[props.size ?? 'md'].padding,
-  '--x-dialog-radius': componentSizePreset[props.size ?? 'md'].radius,
   '--x-dialog-control-height': `${componentSizePreset[props.size ?? 'md'].height}px`
+}))
+
+const maskStyle = computed(() => ({
+  '--x-dialog-z-index': props.zIndex
 }))
 </script>
 
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="x-dialog__mask" @click.self="onMaskClick">
+    <div v-if="visible" class="x-dialog__mask" :style="maskStyle" @click.self="onMaskClick">
       <div class="x-dialog" v-bind="$attrs" :class="`x-dialog--${props.size ?? 'md'}`" :style="popupStyle">
         <header class="x-dialog__header" @mousedown="startDrag">
           <slot name="header">
@@ -218,7 +247,7 @@ const popupStyle = computed(() => ({
 .x-dialog__mask {
   position: fixed;
   inset: 0;
-  z-index: 1900;
+  z-index: var(--x-dialog-z-index, var(--x-z-index-dialog, 1900));
   background: rgba(18, 28, 45, 0.4);
 }
 
@@ -238,7 +267,7 @@ const popupStyle = computed(() => ({
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: var(--x-dialog-padding, 16px 18px 10px);
+  padding: var(--x-dialog-header-padding, 16px 18px 10px);
   cursor: move;
   user-select: none;
 }
@@ -270,14 +299,14 @@ const popupStyle = computed(() => ({
 .x-dialog__body {
   flex: 1 1 auto;
   min-height: 0;
-  padding: var(--x-dialog-padding, 0 18px 12px);
+  padding: var(--x-dialog-body-padding, 0 18px 12px);
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .x-dialog__footer {
   flex: 0 0 auto;
-  padding: var(--x-dialog-padding, 0 18px 14px);
+  padding: var(--x-dialog-footer-padding, 0 18px 14px);
 }
 
 .x-dialog__resizer {

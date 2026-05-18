@@ -29,6 +29,24 @@ describe('feedback components', () => {
     expect(wrapper.emitted('close')?.length).toBe(1)
   })
 
+  it('keeps message size from owning padding and radius', () => {
+    const wrapper = mount(XMessageComponent, {
+      props: {
+        message: '保存成功',
+        size: 'sm',
+        padding: '18px 20px',
+        radius: 12,
+        duration: 0
+      }
+    })
+
+    const style = wrapper.find('.x-message').attributes('style')
+    expect(style).toContain('--x-message-font-size: 10px')
+    expect(style).toContain('--x-message-min-height: 22px')
+    expect(style).toContain('--x-message-padding: 18px 20px')
+    expect(style).toContain('--x-message-radius: 12px')
+  })
+
   it('creates message service instances', () => {
     const handler = XMessage.success({
       message: '服务消息',
@@ -57,6 +75,26 @@ describe('feedback components', () => {
 
     expect(wrapper.emitted('action')?.[0]).toEqual(['confirm'])
     expect(wrapper.emitted('confirm')?.length).toBe(1)
+    wrapper.unmount()
+  })
+
+  it('keeps message box size from owning padding and radius', () => {
+    const wrapper = mount(XMessageBoxComponent, {
+      props: {
+        modelValue: true,
+        message: '确认删除',
+        size: 'lg',
+        padding: '22px',
+        radius: 14
+      },
+      attachTo: document.body
+    })
+
+    const style = (document.body.querySelector('.x-message-box__mask') as HTMLElement).getAttribute('style')
+    expect(style).toContain('--x-message-box-font-size: 14px')
+    expect(style).toContain('--x-message-box-control-height: 38px')
+    expect(style).toContain('--x-message-box-padding: 22px')
+    expect(style).toContain('--x-message-box-radius: 14px')
     wrapper.unmount()
   })
 

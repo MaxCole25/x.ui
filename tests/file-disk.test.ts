@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { XFileDisk } from '../src'
 import type { FileDiskAdapter, FileDiskItem } from '../src'
@@ -283,6 +284,33 @@ describe('XFileDisk', () => {
     expect(enabledCopy?.attributes('disabled')).toBeUndefined()
   })
 
+  it('keeps the context menu inside the viewport near screen edges', async () => {
+    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function getOffsetWidth(this: HTMLElement) {
+      return this.classList.contains('x-file-disk__context-menu') ? 150 : 0
+    })
+    const offsetHeight = vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function getOffsetHeight(this: HTMLElement) {
+      return this.classList.contains('x-file-disk__context-menu') ? 260 : 0
+    })
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 800 })
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 600 })
+
+    const wrapper = mount(XFileDisk, {
+      props: {
+        entries
+      }
+    })
+
+    await wrapper.find('.x-file-disk__body').trigger('contextmenu', { clientX: 790, clientY: 590 })
+    await nextTick()
+
+    const style = wrapper.find('.x-file-disk__context-menu').attributes('style')
+    expect(style).toContain('left: 642px')
+    expect(style).toContain('top: 332px')
+
+    offsetWidth.mockRestore()
+    offsetHeight.mockRestore()
+  })
+
   it('renames a single selected item from context menu inline editor', async () => {
     const rename = vi.fn()
     const wrapper = mount(XFileDisk, {
@@ -328,7 +356,7 @@ describe('XFileDisk', () => {
     expect(wrapper.find('.x-file-disk__row-thumb[alt="盖章页-002.jpg"]').exists()).toBe(true)
   })
 
-  it('opens fullscreen image preview and switches images by wheel', async () => {
+  it('opens fullscreen image preview and supports wheel zoom and image dragging', async () => {
     const wrapper = mount(XFileDisk, {
       props: {
         entries: imageEntries
@@ -340,7 +368,14 @@ describe('XFileDisk', () => {
     expect(wrapper.find('.x-file-disk__preview-title').text()).toBe('盖章页-001.png')
 
     await wrapper.find('.x-file-disk__preview').trigger('wheel', { deltaY: 120 })
-    expect(wrapper.find('.x-file-disk__preview-title').text()).toBe('盖章页-002.jpg')
+    expect(wrapper.find('.x-file-disk__preview-title').text()).toBe('盖章页-001.png')
+    expect(wrapper.find('.x-file-disk__preview-image').attributes('style')).toContain('scale(0.893)')
+
+    await wrapper.find('.x-file-disk__preview-image').trigger('mousedown', { button: 0, clientX: 20, clientY: 30 })
+    document.dispatchEvent(new MouseEvent('mousemove', { clientX: 45, clientY: 10 }))
+    await nextTick()
+    expect(wrapper.find('.x-file-disk__preview-image').attributes('style')).toContain('translate3d(25px, -20px, 0)')
+    document.dispatchEvent(new MouseEvent('mouseup'))
 
     await wrapper.find('[title="关闭预览"]').trigger('click')
     expect(wrapper.find('.x-file-disk__preview').exists()).toBe(false)

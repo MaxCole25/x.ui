@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { componentSizePreset } from '../../../_utils/size'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import type { MessageProps } from './types'
 
 defineOptions({
@@ -18,7 +19,7 @@ const props = withDefaults(defineProps<MessageProps>(), {
   center: false,
   offset: 20,
   placement: 'top',
-  zIndex: 2100
+  zIndex: overlayZIndex.message
 })
 
 const emit = defineEmits<{
@@ -38,7 +39,6 @@ const defaultIcon = computed(() => {
 })
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
-const usesExplicitSize = computed(() => props.size != null)
 
 const messageStyle = computed(() => ({
   '--x-message-offset': `${props.offset}px`,
@@ -51,8 +51,8 @@ const messageStyle = computed(() => ({
   '--x-message-width': typeof props.width === 'number' ? `${props.width}px` : props.width,
   '--x-message-min-width': typeof props.minWidth === 'number' ? `${props.minWidth}px` : props.minWidth,
   '--x-message-max-width': typeof props.maxWidth === 'number' ? `${props.maxWidth}px` : props.maxWidth,
-  '--x-message-padding': usesExplicitSize.value ? sizePreset.value.padding : props.padding,
-  '--x-message-radius': usesExplicitSize.value ? sizePreset.value.radius : typeof props.radius === 'number' ? `${props.radius}px` : props.radius,
+  '--x-message-padding': props.padding,
+  '--x-message-radius': typeof props.radius === 'number' ? `${props.radius}px` : props.radius,
   '--x-message-font-size': `${sizePreset.value.fontSize}px`,
   '--x-message-min-height': `${sizePreset.value.height}px`,
   '--x-message-shadow': props.shadow

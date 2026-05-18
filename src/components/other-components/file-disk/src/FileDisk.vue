@@ -60,6 +60,7 @@ const emit = defineEmits<{
 const fileInput = ref<HTMLInputElement | null>(null)
 const bodyRoot = ref<HTMLElement | null>(null)
 const previewRoot = ref<HTMLElement | null>(null)
+const contextMenuRoot = ref<HTMLElement | null>(null)
 const folderNameInput = ref<HTMLInputElement | null>(null)
 const renameInput = ref<HTMLInputElement | HTMLInputElement[] | null>(null)
 const innerPath = ref(normalizePath(props.modelValue))
@@ -99,6 +100,15 @@ const clipboard = ref<{
 } | null>(null)
 const previewVisible = ref(false)
 const previewIndex = ref(0)
+const previewScale = ref(1)
+const previewOffset = ref({ x: 0, y: 0 })
+const previewDragging = ref(false)
+const previewDrag = ref({
+  startX: 0,
+  startY: 0,
+  originX: 0,
+  originY: 0
+})
 const imageUrlCache = ref<Record<string, string>>({})
 const imageUrlLoading = ref<Record<string, boolean>>({})
 
@@ -140,6 +150,9 @@ const canPaste = computed(() => canWrite.value && Boolean(clipboard.value?.items
 const hasSelection = computed(() => selectedItems.value.length > 0)
 const canRename = computed(() => canWrite.value && selectedItems.value.length === 1)
 const hasUploadTasks = computed(() => uploadTasks.value.length > 0)
+const previewImageStyle = computed<CSSProperties>(() => ({
+  transform: `translate3d(${previewOffset.value.x}px, ${previewOffset.value.y}px, 0) scale(${previewScale.value})`
+}))
 const allSelected = computed(
   () => sortedEntries.value.length > 0 && sortedEntries.value.every((item) => selectedIds.value.includes(item.id))
 )
@@ -208,6 +221,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   stopBoxSelection()
+  stopPreviewDrag()
 })
 
 function normalizePath(path?: string) {
@@ -775,6 +789,28 @@ function openContextMenu(event: MouseEvent, item?: FileDiskItem) {
     x: event.clientX,
     y: event.clientY
   }
+  nextTick(adjustContextMenuPosition)
+}
+
+function adjustContextMenuPosition() {
+  const menu = contextMenuRoot.value
+  if (!menu || !contextMenu.value.visible || typeof window === 'undefined') {
+    return
+  }
+
+  const viewportPadding = 8
+  const maxX = Math.max(viewportPadding, window.innerWidth - menu.offsetWidth - viewportPadding)
+  const maxY = Math.max(viewportPadding, window.innerHeight - menu.offsetHeight - viewportPadding)
+  const nextX = Math.min(Math.max(viewportPadding, contextMenu.value.x), maxX)
+  const nextY = Math.min(Math.max(viewportPadding, contextMenu.value.y), maxY)
+
+  if (nextX !== contextMenu.value.x || nextY !== contextMenu.value.y) {
+    contextMenu.value = {
+      ...contextMenu.value,
+      x: nextX,
+      y: nextY
+    }
+  }
 }
 
 function switchViewMode(mode: FileDiskViewMode) {
@@ -911,6 +947,7 @@ async function openImagePreview(item: FileDiskItem) {
     return
   }
   previewIndex.value = index
+  resetPreviewTransform()
   previewVisible.value = true
   closeContextMenu()
   nextTick(() => previewRoot.value?.focus())
@@ -918,6 +955,7 @@ async function openImagePreview(item: FileDiskItem) {
 
 function closeImagePreview() {
   previewVisible.value = false
+  resetPreviewTransform()
 }
 
 function showPreviousImage() {
@@ -925,6 +963,7 @@ function showPreviousImage() {
     return
   }
   previewIndex.value = (previewIndex.value - 1 + imageEntries.value.length) % imageEntries.value.length
+  resetPreviewTransform()
   if (previewItem.value) {
     void resolveImageSource(previewItem.value, 'preview')
   }
@@ -935,20 +974,60 @@ function showNextImage() {
     return
   }
   previewIndex.value = (previewIndex.value + 1) % imageEntries.value.length
+  resetPreviewTransform()
   if (previewItem.value) {
     void resolveImageSource(previewItem.value, 'preview')
   }
 }
 
+function resetPreviewTransform() {
+  previewScale.value = 1
+  previewOffset.value = { x: 0, y: 0 }
+  stopPreviewDrag()
+}
+
+function clampPreviewScale(value: number) {
+  return Math.min(6, Math.max(0.25, value))
+}
+
 function handlePreviewWheel(event: WheelEvent) {
-  if (Math.abs(event.deltaY) < 4) {
+  if (Math.abs(event.deltaY) < 2) {
     return
   }
-  if (event.deltaY > 0) {
-    showNextImage()
-  } else {
-    showPreviousImage()
+  const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12
+  previewScale.value = Number(clampPreviewScale(previewScale.value * factor).toFixed(3))
+}
+
+function startPreviewDrag(event: MouseEvent) {
+  if (event.button !== 0) {
+    return
   }
+  event.preventDefault()
+  previewDragging.value = true
+  previewDrag.value = {
+    startX: event.clientX,
+    startY: event.clientY,
+    originX: previewOffset.value.x,
+    originY: previewOffset.value.y
+  }
+  document.addEventListener('mousemove', movePreviewDrag)
+  document.addEventListener('mouseup', stopPreviewDrag)
+}
+
+function movePreviewDrag(event: MouseEvent) {
+  if (!previewDragging.value) {
+    return
+  }
+  previewOffset.value = {
+    x: previewDrag.value.originX + event.clientX - previewDrag.value.startX,
+    y: previewDrag.value.originY + event.clientY - previewDrag.value.startY
+  }
+}
+
+function stopPreviewDrag() {
+  previewDragging.value = false
+  document.removeEventListener('mousemove', movePreviewDrag)
+  document.removeEventListener('mouseup', stopPreviewDrag)
 }
 
 function handlePreviewKeydown(event: KeyboardEvent) {
@@ -1264,7 +1343,13 @@ defineExpose({
       <span>松开以上传到当前目录</span>
     </div>
 
-    <div v-if="contextMenu.visible" class="x-file-disk__context-menu" :style="contextMenuStyle" @click.stop>
+    <div
+      v-if="contextMenu.visible"
+      ref="contextMenuRoot"
+      class="x-file-disk__context-menu"
+      :style="contextMenuStyle"
+      @click.stop
+    >
       <button type="button" :disabled="isBusy" @click="refresh">
         <i class="ri-refresh-line" aria-hidden="true" />
         <span>刷新</span>
@@ -1337,20 +1422,29 @@ defineExpose({
       @keydown="handlePreviewKeydown"
     >
       <div class="x-file-disk__preview-top">
-        <span class="x-file-disk__preview-title" :title="previewItem.name">{{ previewItem.name }}</span>
         <span class="x-file-disk__preview-count">{{ previewIndex + 1 }} / {{ imageEntries.length }}</span>
-        <button type="button" class="x-file-disk__preview-close" title="关闭预览" @click="closeImagePreview">
-          <i class="ri-close-line" aria-hidden="true" />
-        </button>
       </div>
+      <button type="button" class="x-file-disk__preview-close" title="关闭预览" @click="closeImagePreview">
+        <i class="ri-close-line" aria-hidden="true" />
+      </button>
       <button type="button" class="x-file-disk__preview-nav is-prev" title="上一张" @click="showPreviousImage">
         <i class="ri-arrow-left-s-line" aria-hidden="true" />
       </button>
-      <img v-if="previewSource" class="x-file-disk__preview-image" :src="previewSource" :alt="previewItem.name" />
+      <img
+        v-if="previewSource"
+        class="x-file-disk__preview-image"
+        :class="{ 'is-dragging': previewDragging }"
+        :src="previewSource"
+        :alt="previewItem.name"
+        :style="previewImageStyle"
+        draggable="false"
+        @mousedown="startPreviewDrag"
+      />
       <div v-else class="x-file-disk__preview-empty">图片加载中...</div>
       <button type="button" class="x-file-disk__preview-nav is-next" title="下一张" @click="showNextImage">
         <i class="ri-arrow-right-s-line" aria-hidden="true" />
       </button>
+      <div class="x-file-disk__preview-title" :title="previewItem.name">{{ previewItem.name }}</div>
     </div>
   </section>
 </template>
@@ -1595,7 +1689,7 @@ defineExpose({
 
 .x-file-disk__tile {
   background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, #fff));
-  border: 1px solid var(--x-file-disk-border-color, transparent);
+  border: 1px solid transparent;
   border-radius: var(--x-file-disk-radius, 6px);
   color: var(--x-file-disk-text, #102a43);
   cursor: pointer;
@@ -1609,7 +1703,7 @@ defineExpose({
 
 .x-file-disk__tile:hover {
   background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-hover-bg, #eff6ff));
-  border-color: var(--x-file-disk-border-color, var(--x-file-disk-selected-border, #93c5fd));
+  border-color: transparent;
 }
 
 .x-file-disk__tile.is-selected {
@@ -1968,16 +2062,16 @@ defineExpose({
   inset: 0;
   justify-content: center;
   outline: none;
-  padding: 64px 72px 48px;
+  padding: 64px 72px 74px;
   position: fixed;
-  z-index: 80;
+  z-index: var(--x-file-disk-preview-z-index, var(--x-z-index-dialog, 1900));
 }
 
 .x-file-disk__preview-top {
   align-items: center;
   color: var(--x-file-disk-preview-text, #f8fafc);
   display: flex;
-  gap: 14px;
+  justify-content: flex-end;
   left: 0;
   min-width: 0;
   padding: 14px 18px;
@@ -1987,12 +2081,18 @@ defineExpose({
 }
 
 .x-file-disk__preview-title {
-  flex: 1 1 auto;
+  bottom: 18px;
+  color: var(--x-file-disk-preview-text, #f8fafc);
   font-size: 14px;
   font-weight: 600;
+  left: 50%;
+  max-width: min(720px, calc(100vw - 48px));
   min-width: 0;
   overflow: hidden;
+  position: absolute;
+  text-align: center;
   text-overflow: ellipsis;
+  transform: translateX(-50%);
   white-space: nowrap;
 }
 
@@ -2020,9 +2120,14 @@ defineExpose({
 }
 
 .x-file-disk__preview-close {
-  flex: 0 0 auto;
-  height: 34px;
-  width: 34px;
+  border-radius: 999px;
+  height: 40px;
+  left: 50%;
+  position: absolute;
+  top: 12px;
+  transform: translateX(-50%);
+  width: 40px;
+  z-index: 1;
 }
 
 .x-file-disk__preview-nav {
@@ -2055,10 +2160,18 @@ defineExpose({
 }
 
 .x-file-disk__preview-image {
+  cursor: grab;
   display: block;
   max-height: 100%;
   max-width: 100%;
   object-fit: contain;
+  transform-origin: center center;
+  user-select: none;
+  will-change: transform;
+}
+
+.x-file-disk__preview-image.is-dragging {
+  cursor: grabbing;
 }
 
 .x-file-disk.is-busy {

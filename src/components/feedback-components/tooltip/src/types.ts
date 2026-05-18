@@ -16,4 +16,5 @@ export interface TooltipProps extends ElementStyleProps {
   closeDelay?: number
   teleported?: boolean
   teleportTo?: string
+  zIndex?: number | string
 }

@@ -33,8 +33,8 @@ function createMessage(options: string | MessageOptions): MessageHandler {
     }
   })
 
-  app.mount(container)
   instances.push(handler)
+  app.mount(container)
   return handler
 }
 

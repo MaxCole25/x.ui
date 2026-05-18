@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue'
+import { computed, getCurrentInstance, useAttrs } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { componentSizePreset } from '../../../_utils/size'
 import type { TextProps } from './types'
 
 defineOptions({
@@ -19,6 +20,7 @@ const props = withDefaults(defineProps<TextProps>(), {
 })
 
 const attrs = useAttrs()
+const instance = getCurrentInstance()
 const rawValue = computed(() => props.modelValue ?? '')
 const textValue = computed(() => String(rawValue.value))
 const formattedValue = computed(() => {
@@ -30,18 +32,20 @@ const displayValue = computed(() => {
   return formattedValue.value.slice(0, props.maxlength)
 })
 const hasValue = computed(() => textValue.value !== '')
+const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'size' in instance.vnode.props))
+const sizePreset = computed(() => props.size === 'title' ? null : componentSizePreset[props.size])
 
 const textStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-text-border-color': props.borderColor,
   '--x-text-border-width': toCssSize(props.borderWidth),
-  '--x-text-radius': props.radius,
   '--x-text-bg': props.backgroundColor ?? props.background,
   '--x-text-color': props.textColor,
   '--x-text-font-family': props.fontFamily,
-  '--x-text-font-size': toCssSize(props.fontSize),
-  '--x-text-height': props.autoHeight ? 'auto' : toCssSize(props.height),
-  '--x-text-padding': toCssSize(props.padding),
+  '--x-text-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value?.fontSize) : toCssSize(props.fontSize),
+  '--x-text-height': props.autoHeight ? 'auto' : hasExplicitSize.value ? toCssSize(sizePreset.value?.height) : toCssSize(props.height),
+  '--x-text-padding': hasExplicitSize.value ? sizePreset.value?.padding : toCssSize(props.padding),
+  '--x-text-radius': hasExplicitSize.value ? sizePreset.value?.radius : props.radius,
   '--x-text-align': props.textAlign
 }))
 </script>

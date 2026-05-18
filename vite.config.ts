@@ -26,9 +26,11 @@ export default defineConfig(() => {
             cssFileName: 'style'
           },
           rollupOptions: {
-            external: ['vue'],
+            external: (id) => id === 'vue' || id === 'echarts' || id.startsWith('echarts/'),
             output: {
               globals: {
+                echarts: 'echarts',
+                'echarts/core': 'echarts',
                 vue: 'Vue'
               },
               exports: 'named'

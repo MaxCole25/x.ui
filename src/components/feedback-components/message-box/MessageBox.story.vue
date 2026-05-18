@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XButton } from '../../basic-components/button'
 import { XMessageBox, XMessageBoxComponent } from './index'
 import type { MessageBoxType } from './src/types'
+import type { XSize } from '../../_utils/size'
 import '../../../styles/index.css'
 
 const appearance = reactive({
@@ -11,8 +13,10 @@ const appearance = reactive({
   title: '删除确认',
   message: '操作后数据不可恢复，请确认是否继续。',
   type: 'warning' as MessageBoxType,
+  size: 'md' as XSize,
   width: 420,
   minWidth: 280,
+  zIndex: overlayZIndex.messageBox,
   radius: 8,
   padding: '16px',
   backgroundColor: '#ffffff',
@@ -37,6 +41,8 @@ const appearance = reactive({
 function openService() {
   XMessageBox.confirm(appearance.message, appearance.title, {
     type: appearance.type,
+    size: appearance.size,
+    zIndex: appearance.zIndex,
     confirmBackgroundColor: appearance.confirmBackgroundColor,
     confirmTextColor: appearance.confirmTextColor,
     cancelTextColor: appearance.cancelTextColor
@@ -55,8 +61,10 @@ function openService() {
             :title="appearance.title"
             :message="appearance.message"
             :type="appearance.type"
+            :size="appearance.size"
             :width="appearance.width"
             :min-width="appearance.minWidth"
+            :z-index="appearance.zIndex"
             :radius="appearance.radius"
             :padding="appearance.padding"
             :background-color="appearance.backgroundColor"
@@ -81,7 +89,9 @@ function openService() {
         <template #column-1>
           <label><span>标题</span><input v-model="appearance.title" type="text" /></label>
           <label><span>内容</span><input v-model="appearance.message" type="text" /></label>
+          <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
           <label><span>宽度</span><input v-model.number="appearance.width" type="number" /></label>
+          <label><span>层级</span><input v-model.number="appearance.zIndex" type="number" /></label>
         </template>
         <template #column-2>
           <label><span>最小宽度</span><input v-model.number="appearance.minWidth" type="number" /></label>

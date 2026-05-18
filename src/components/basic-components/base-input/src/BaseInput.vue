@@ -31,6 +31,8 @@ const emit = defineEmits<{
   clear: []
   focus: [event: FocusEvent]
   blur: [event: FocusEvent]
+  keydown: [event: KeyboardEvent]
+  keyup: [event: KeyboardEvent]
 }>()
 
 const attrs = useAttrs()
@@ -42,6 +44,7 @@ const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
 const nativeId = computed(() => props.id ?? formItem?.id)
 const inputValue = computed(() => props.modelValue ?? '')
 const hasValue = computed(() => inputValue.value !== '')
+const canClear = computed(() => hasValue.value && !mergedDisabled.value && !props.readonly)
 const isFocused = ref(false)
 const hasFormatter = computed(() => typeof props.formatter === 'function')
 const effectiveType = computed(() => (hasFormatter.value && props.type === 'number' ? 'text' : props.type))
@@ -120,6 +123,14 @@ const handleBlur = (event: FocusEvent) => {
   }
   emit('blur', event)
 }
+
+const handleKeydown = (event: KeyboardEvent) => {
+  emit('keydown', event)
+}
+
+const handleKeyup = (event: KeyboardEvent) => {
+  emit('keyup', event)
+}
 </script>
 
 <template>
@@ -134,7 +145,7 @@ const handleBlur = (event: FocusEvent) => {
         'is-auto-height': props.autoHeight,
         'is-active-border-hidden': !props.showActiveBorder,
         'has-prefix': Boolean(props.prefix || $slots.prefix),
-        'has-suffix': Boolean(props.suffix || $slots.suffix || (props.clearable && !props.hideClearButton && hasValue))
+        'has-suffix': Boolean(props.suffix !== undefined || $slots.suffix || (props.clearable && !props.hideClearButton))
       }
     ]"
     :style="inputStyle"
@@ -159,18 +170,24 @@ const handleBlur = (event: FocusEvent) => {
         @change="handleChange"
         @focus="handleFocus"
         @blur="handleBlur"
+        @keydown="handleKeydown"
+        @keyup="handleKeyup"
       />
     </slot>
     <button
-      v-if="props.clearable && !props.hideClearButton && hasValue && !mergedDisabled && !props.readonly"
+      v-if="props.clearable && !props.hideClearButton"
       class="x-base-input__clear"
+      :class="{ 'is-visible': canClear }"
       type="button"
       aria-label="清空"
-      @click="clear"
+      :aria-hidden="canClear ? undefined : 'true'"
+      :disabled="!canClear"
+      :tabindex="canClear ? 0 : -1"
+      @click="canClear && clear()"
     >
       <i class="ri-close-circle-line" aria-hidden="true"></i>
     </button>
-    <span v-if="props.suffix || $slots.suffix" class="x-base-input__affix x-base-input__suffix">
+    <span v-if="props.suffix !== undefined || $slots.suffix" class="x-base-input__affix x-base-input__suffix">
       <slot name="suffix">{{ props.suffix }}</slot>
     </span>
   </div>

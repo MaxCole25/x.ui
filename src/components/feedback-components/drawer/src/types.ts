@@ -13,4 +13,16 @@ export interface DrawerProps extends ElementStyleProps {
   showClose?: boolean
   closeOnMaskClick?: boolean
   destroyOnClose?: boolean
+  zIndex?: number
+  maskColor?: string
+  titleColor?: string
+  headerBackgroundColor?: string
+  bodyBackgroundColor?: string
+  footerBackgroundColor?: string
+  headerBorderColor?: string
+  footerBorderColor?: string
+  closeIconColor?: string
+  closeIconHoverColor?: string
+  closeIconHoverBackgroundColor?: string
+  shadow?: string
 }

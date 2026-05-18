@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, provide, ref } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import { dropdownContextKey } from './context'
 import type { DropdownProps } from './types'
 
@@ -15,7 +16,8 @@ const props = withDefaults(defineProps<DropdownProps>(), {
   disabled: false,
   hideOnClick: true,
   showArrow: true,
-  offset: 6
+  offset: 6,
+  popperZIndex: overlayZIndex.popper
 })
 
 const emit = defineEmits<{

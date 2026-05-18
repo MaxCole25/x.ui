@@ -3,11 +3,13 @@ import { reactive } from 'vue'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XCard } from './index'
 import type { CardShadow } from './src/types'
+import type { XSize } from '../../_utils/size'
 import '../../../styles/index.css'
 
 const appearance = reactive({
   header: '卡片标题',
   footer: '底部内容',
+  size: 'md' as XSize,
   shadow: 'always' as CardShadow,
   width: 220,
   height: 150,
@@ -26,6 +28,7 @@ const appearance = reactive({
             v-bind="styleProps"
             :header="appearance.header"
             :footer="appearance.footer"
+            :size="appearance.size"
             :shadow="appearance.shadow"
             :width="appearance.width"
             :height="appearance.height"
@@ -37,6 +40,7 @@ const appearance = reactive({
           <label><span>标题</span><input v-model="appearance.header" /></label>
           <label><span>底部</span><input v-model="appearance.footer" /></label>
           <label><span>内容</span><input v-model="appearance.content" /></label>
+          <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
           <label>
             <span>阴影</span>
             <select v-model="appearance.shadow">

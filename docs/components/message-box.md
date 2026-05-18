@@ -39,6 +39,7 @@ const visible = ref(false)
 | title | 标题 | `string` | `'提示'` |
 | message | 内容 | `string` | `''` |
 | type | 类型 | `'success' \| 'warning' \| 'info' \| 'error'` | `'info'` |
+| size | 尺寸规格，仅影响字号和按钮高度，不影响弹框内边距与圆角 | `sm \| md \| lg` | `md` |
 | showCancelButton | 是否显示取消按钮 | `boolean` | `false` |
 | showConfirmButton | 是否显示确认按钮 | `boolean` | `true` |
 | showClose | 是否显示关闭按钮 | `boolean` | `true` |
@@ -49,7 +50,7 @@ const visible = ref(false)
 | width | 宽度 | `number \| string` | `420` |
 | minWidth | 最小宽度 | `number \| string` | `280` |
 | maxWidth | 最大宽度 | `number \| string` | `calc(100vw - 32px)` |
-| zIndex | 层级 | `number` | `2200` |
+| zIndex | 层级 | `number` | `2300` |
 | backgroundColor | 弹框背景色 | `string` | `#fff` |
 | textColor | 内容文字色 | `string` | `#606266` |
 | titleColor | 标题色 | `string` | `#303133` |

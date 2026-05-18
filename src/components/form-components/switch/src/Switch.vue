@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { componentSizePreset } from '../../../_utils/size'
 import { formContextKey } from '../../form/src/context'
 import type { SwitchEmits, SwitchProps } from './types'
 
@@ -24,20 +25,24 @@ const emit = defineEmits<SwitchEmits>()
 const form = inject(formContextKey, null)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const hasSizeOverride = computed(() => props.size != null || form?.size.value != null)
+const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const sizeVisualHeight = computed(() => `${Number((sizePreset.value.height * 0.8).toFixed(1))}px`)
 const checked = computed(() => props.modelValue === props.activeValue)
 const switchStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-switch-color': props.color,
   '--x-switch-inactive-color': props.inactiveColor,
   '--x-switch-thumb-color': props.thumbColor,
-  '--x-switch-button-size': toCssSize(props.buttonSize),
-  '--x-switch-font-size': toCssSize(props.fontSize),
+  '--x-switch-size': hasSizeOverride.value ? sizeVisualHeight.value : toCssSize(props.buttonSize),
+  '--x-switch-button-size': hasSizeOverride.value ? undefined : toCssSize(props.buttonSize),
+  '--x-switch-font-size': hasSizeOverride.value ? toCssSize(sizePreset.value.fontSize) : toCssSize(props.fontSize),
   '--x-switch-font-family': props.fontFamily,
   '--x-switch-border-color': props.borderColor,
   '--x-switch-border-width': toCssSize(props.borderWidth),
   '--x-switch-bg': props.backgroundColor,
   '--x-switch-text-color': props.textColor,
-  '--x-switch-radius': props.radius
+  '--x-switch-radius': hasSizeOverride.value ? '999px' : props.radius
 }))
 
 const toggle = () => {

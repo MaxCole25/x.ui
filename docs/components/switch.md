@@ -58,6 +58,8 @@ const enabled = ref(true)
 
 ## 尺寸
 
+显式传入 `size` 时，开关字号由统一尺寸预设接管：`sm` 为 `10px`，`md` 为 `12px`，`lg` 为 `14px`。`XSwitch` 是尺寸特例：为保持视觉比例，轨道宽高按统一尺寸高度的 `80%` 渲染，`sm` 高度为 `17.6px`、`md` 高度为 `24px`、`lg` 高度为 `30.4px`，宽度保持高度的 2 倍。`size` 不接管圆角，轨道默认始终保持左右半圆的胶囊边线。未显式传入 `size` 时，可继续用 `buttonSize`、`fontSize`、`radius` 做局部微调。
+
 <div class="x-demo-block">
   <div class="x-demo-row">
     <XSwitch size="sm" model-value />
@@ -129,11 +131,11 @@ const enabled = ref(true)
 | color | 开启时背景色 | `string` | - |
 | inactiveColor | 关闭时背景色 | `string` | - |
 | thumbColor | 圆形按钮色 | `string` | - |
-| buttonSize | 开关按钮高度，宽度按 2:1 等比调整 | `number \| string` | - |
-| fontSize | 开/关文字大小 | `number \| string` | - |
+| buttonSize | 开关按钮高度，未显式传入 `size` 时生效，宽度按 2:1 等比调整 | `number \| string` | - |
+| fontSize | 开/关文字大小，未显式传入 `size` 时生效 | `number \| string` | - |
 | fontFamily | 开/关文字字体 | `string` | - |
 | borderColor | 边框色 | `string` | - |
-| radius | 圆角 | `string` | - |
+| radius | 圆角，未显式传入 `size` 时生效 | `string` | - |
 
 ## Events
 

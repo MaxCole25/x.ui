@@ -30,6 +30,7 @@ import { XMessageComponent } from 'x.ui'
 | --- | --- | --- | --- |
 | message | 消息内容 | `string` | `''` |
 | type | 消息类型 | `'success' \| 'warning' \| 'info' \| 'error'` | `'info'` |
+| size | 尺寸规格，仅影响字号和最小高度，不影响内边距与圆角 | `sm \| md \| lg` | `md` |
 | duration | 自动关闭时间，`0` 表示不自动关闭 | `number` | `3000` |
 | showClose | 是否显示关闭按钮 | `boolean` | `false` |
 | plain | 是否朴素背景 | `boolean` | `false` |
@@ -37,7 +38,7 @@ import { XMessageComponent } from 'x.ui'
 | center | 内容是否居中 | `boolean` | `false` |
 | placement | 弹出位置 | `'top' \| 'top-left' \| 'top-right' \| 'bottom' \| 'bottom-left' \| 'bottom-right'` | `'top'` |
 | offset | 距离边缘的偏移长度 | `number` | `20` |
-| zIndex | 层级 | `number` | `2100` |
+| zIndex | 层级 | `number` | `2200` |
 | icon | 自定义图标 class | `string` | 类型图标 |
 | backgroundColor | 背景色 | `string` | 类型色 |
 | textColor | 文字色 | `string` | 类型色 |

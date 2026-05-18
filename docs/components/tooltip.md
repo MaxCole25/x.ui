@@ -16,6 +16,7 @@
 | --- | --- | --- | --- |
 | modelValue | 受控显示状态 | `boolean` | - |
 | content | 提示内容 | `string` | - |
+| size | 尺寸规格，仅影响字号，不影响内边距与圆角 | `sm \| md \| lg` | `md` |
 | placement | 出现位置 | `top \| bottom \| left \| right` | `top` |
 | trigger | 触发方式 | `hover \| click \| focus` | `hover` |
 | disabled | 是否禁用 | `boolean` | `false` |
@@ -24,6 +25,7 @@
 | closeDelay | 关闭延迟，毫秒 | `number` | `80` |
 | teleported | 是否将提示弹层挂载到 `teleportTo`，用于避免被表格、Tabs、滚动容器等父级裁剪 | `boolean` | `true` |
 | teleportTo | 提示弹层挂载目标 | `string` | `body` |
+| zIndex | 提示弹层层级 | `number \| string` | `2000` |
 | backgroundColor | 提示弹层背景色，会写入 `--x-element-bg`，优先级高于主题变量 | `string` | - |
 | textColor | 提示弹层文字色，会写入 `--x-element-text`，优先级高于主题变量 | `string` | - |
 | borderColor | 提示弹层边框色，会写入 `--x-element-border-color`，优先级高于主题变量 | `string` | - |
@@ -51,6 +53,7 @@ Tooltip 支持两种外观定制方式：单个实例可以通过 `backgroundCol
   --x-tooltip-text: #ffffff;
   --x-tooltip-border-color: transparent;
   --x-tooltip-border-width: 0;
+  --x-tooltip-z-index: 2000;
 }
 
 :root.dark {

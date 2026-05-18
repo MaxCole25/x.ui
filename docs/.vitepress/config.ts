@@ -63,6 +63,7 @@ export default defineConfig({
             text: '展示组件',
             items: [
               { text: '头像 Avatar', link: '/components/avatar' },
+              { text: '图表 Chart', link: '/components/chart' },
               { text: '空状态 Empty', link: '/components/empty' },
               { text: '表格 Table', link: '/components/table' },
               { text: '标签 Tag', link: '/components/tag' },

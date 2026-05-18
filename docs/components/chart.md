@@ -1,0 +1,149 @@
+# 图表 Chart
+
+`XChart` 是 x.ui 的基础图表容器组件，用于把 ECharts 5 安全接入 Vue 3 生命周期。它只处理初始化、销毁、尺寸变化、加载态、事件绑定和实例暴露，不封装折线图、柱状图、饼图等业务图表类型。
+
+业务层仍然直接编写 ECharts 原生 `option`，并按需注册自己需要的图表、组件和渲染器。
+
+## 基础用法
+
+```vue
+<script setup lang="ts">
+import { computed } from 'vue'
+import { use } from 'echarts/core'
+import { LineChart } from 'echarts/charts'
+import { GridComponent, TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+import { XChart } from 'x.ui'
+import type { EChartsCoreOption } from 'echarts/core'
+
+use([LineChart, GridComponent, TooltipComponent, CanvasRenderer])
+
+const option = computed<EChartsCoreOption>(() => ({
+  tooltip: { trigger: 'axis' },
+  grid: { left: 32, right: 24, top: 24, bottom: 32, containLabel: true },
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'line', data: [12, 24, 18] }]
+}))
+</script>
+
+<template>
+  <XChart :option="option" />
+</template>
+```
+
+## 事件绑定
+
+通过 `events` 可以绑定任意 ECharts 事件。事件名称、查询条件和回调函数都保持 ECharts 原生语义。
+
+```vue
+<XChart
+  :option="option"
+  :events="{
+    click: handleClick,
+    mouseover: { query: 'series', handler: handleSeriesHover }
+  }"
+  @ready="chart = $event"
+/>
+```
+
+## 自动缩放和加载态
+
+`autoresize` 默认开启，父容器尺寸变化时会调用 `resize`。如果页面里图表很多，可以设置节流时间。
+
+```vue
+<XChart
+  :option="option"
+  :loading="loading"
+  :loading-options="{ text: '加载中' }"
+  :autoresize="{ throttle: 80 }"
+/>
+```
+
+## 主题接入
+
+`XChart` 不会把 x.ui CSS 变量自动转换成 ECharts option。业务侧可以使用 ECharts 原生 `registerTheme` 注册主题，再通过 `theme` 传入主题名或主题对象。
+
+```ts
+import { registerTheme } from 'echarts/core'
+
+registerTheme('x-dashboard-dark', {
+  backgroundColor: '#0b1726',
+  textStyle: { color: '#eef4fb' }
+})
+```
+
+```vue
+<XChart :option="option" theme="x-dashboard-dark" />
+```
+
+## 实例方法
+
+组件通过 `ref` 暴露常用 ECharts 实例能力，适合在业务交互中主动更新图表。
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { ChartExpose } from 'x.ui'
+
+const chartRef = ref<ChartExpose>()
+
+function refresh(option) {
+  chartRef.value?.setOption(option, { notMerge: true })
+  chartRef.value?.resize()
+}
+</script>
+
+<template>
+  <XChart ref="chartRef" :option="option" />
+</template>
+```
+
+## Props
+
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| option | ECharts 原生配置项 | `EChartsCoreOption` | - |
+| theme | ECharts 主题名或主题对象 | `string \| object` | - |
+| initOptions | `echarts.init` 第三个参数 | `EChartsInitOpts` | - |
+| setOptionOptions | 自动更新 option 时传给 `setOption` 的参数 | `SetOptionOpts` | - |
+| autoresize | 是否自动跟随容器尺寸变化，支持节流配置 | `boolean \| { throttle?: number }` | `true` |
+| loading | 是否显示 ECharts 加载态 | `boolean` | `false` |
+| loadingOptions | 加载态配置 | `Record<string, unknown>` | - |
+| events | 任意 ECharts 事件绑定 | `ChartEvents` | - |
+| width | 图表容器宽度，数字会转为 px | `number \| string` | `'100%'` |
+| height | 图表容器高度，数字会转为 px | `number \| string` | `320` |
+| minHeight | 图表容器最小高度，数字会转为 px | `number \| string` | `240` |
+| borderWidth | 容器边框宽度，数字会转为 px | `number \| string` | - |
+| borderColor | 容器边框颜色 | `string` | - |
+| backgroundColor | 容器背景色 | `string` | - |
+| textColor | 容器文字颜色 | `string` | - |
+
+## Events
+
+| 名称 | 说明 | 参数 |
+| --- | --- | --- |
+| ready | ECharts 实例创建完成后触发 | `ECharts` |
+| rendered | 转发 ECharts `rendered` 事件 | `unknown` |
+| finished | 转发 ECharts `finished` 事件 | `unknown` |
+
+## Exposes
+
+| 名称 | 说明 | 类型 |
+| --- | --- | --- |
+| getInstance | 获取当前 ECharts 实例 | `() => ECharts \| undefined` |
+| setOption | 调用实例 `setOption` | `(option, options?) => void` |
+| resize | 调用实例 `resize` | `(options?) => void` |
+| dispatchAction | 调用实例 `dispatchAction` | `(payload) => void` |
+| clear | 清空图表 | `() => void` |
+| showLoading | 显示加载态 | `(type?, options?) => void` |
+| hideLoading | 隐藏加载态 | `() => void` |
+| dispose | 销毁实例 | `() => void` |
+
+## 手动验收建议
+
+- 检查 `<XChart :option="option" />` 是否可以在固定高度和默认高度下正常渲染。
+- 切换 `loading`，确认 ECharts 加载态显示和隐藏正常。
+- 调整父容器宽高，确认开启 `autoresize` 后图表会重新计算尺寸。
+- 通过 `events` 绑定 click 或 mouseover，确认事件可以触发业务回调。
+- 切换 `theme` 或 `initOptions` 引用，确认图表会重建并应用当前 option。

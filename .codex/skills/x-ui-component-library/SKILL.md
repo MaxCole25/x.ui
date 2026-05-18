@@ -87,6 +87,26 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 | md | `30px` | `12px` | `0 8px` | `6px` |
 | lg | `38px` | `14px` | `0 10px` | `8px` |
 
+### 尺寸特例
+
+以下组件已被业务确认需要保留特殊尺寸规则，修改相关组件时必须优先遵守：
+
+- `XTabs`：`size` 只接管内部高度变量、字号、图标尺寸等，不接管标签外层框高度、标签内边距和默认最小宽度；`sm`、`md`、`lg` 三档 `.x-tabs__item-frame` 高度都固定为 `30px`，标签内边距都固定使用 md 规格 `0 8px`，默认最小宽度都固定使用 md 规格 `140px`。业务若需要特殊宽度，应通过 `tabMinWidth` 显式覆盖。
+- `XSwitch`：`size` 接管字号，但轨道视觉宽高按统一尺寸高度的 `80%` 渲染，即 `sm` 为 `17.6px` 高、`md` 为 `24px` 高、`lg` 为 `30.4px` 高；轨道宽度保持高度的 2 倍，因此宽度也同步缩小 20%。`size` 不接管圆角，开关轨道必须始终保持左右半圆的胶囊边线，默认使用 `999px` 圆角，不随 `sm`、`md`、`lg` 变化为 `4px`、`6px`、`8px`。
+- `XDialog`：`size` 只接管弹窗字号和关闭按钮尺寸，不接管弹窗圆角，也不接管头部、正文、底部 padding；弹窗空间节奏必须使用稳定默认值或 `--x-dialog-header-padding`、`--x-dialog-body-padding`、`--x-dialog-footer-padding` 覆盖，圆角使用稳定默认值或 `--x-dialog-radius` 覆盖，避免表单弹窗因 `sm/md/lg` 变得拥挤。
+- `XDrawer`、`XMessage`、`XMessageBox`、`XTooltip`、`XCard`：`size` 不接管容器 padding 和 radius。`XDrawer` 的 `size` 只接管字号和关闭按钮尺寸；`XMessage` 的 `size` 只接管字号和最小高度；`XMessageBox` 的 `size` 只接管字号和按钮高度；`XTooltip`、`XCard` 的 `size` 只接管字号。容器留白与圆角必须使用稳定默认值、显式 props 或对应 CSS 变量覆盖。
+
+## 浮层层级强制约定
+
+所有跨容器显示、Teleport 到 `body`、使用 `position: fixed` 或承担遮罩/全局反馈职责的浮层，都必须接入统一层级规范，不允许在单个组件里随意写死 `z-index`。
+
+- 统一层级数值维护在 `src/components/_utils/zIndex.ts` 的 `overlayZIndex`，全局 CSS 变量维护在 `src/styles/index.css` 的 `--x-z-index-*`。
+- 默认层级顺序固定为：`drawer: 1800`、`dialog: 1900`、`popper/tooltip: 2000`、`loading: 2100`、`message: 2200`、`messageBox: 2300`。
+- Select、Dropdown、Tooltip、右键菜单、折叠菜单、编辑器菜单等普通弹层统一使用 `overlayZIndex.popper` 或 `--x-z-index-popper`；这类弹层必须能覆盖 Dialog/Drawer 遮罩，避免弹窗内下拉框被遮罩盖住。
+- Dialog、Drawer、Loading、Message、MessageBox 等反馈浮层的默认 `zIndex` 必须从 `overlayZIndex` 读取，并通过对应 CSS 变量作为样式兜底。
+- 新增或修改浮层组件时，必须同步更新 Props 默认值、CSS 变量、story 控制项、中文文档和 Vitest 测试；测试至少覆盖默认层级和 CSS 变量 fallback。
+- 除组件内部很小的局部堆叠（例如表格固定列、按钮内图标）外，不要使用 `9999`、`10000` 这类魔法层级。
+
 ## 标准流程
 
 1. 创建组件目录：`src/components/<category>/<component>/`。

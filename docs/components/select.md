@@ -221,7 +221,7 @@ const queryStatus = async () => {
 | autoHeight | 是否自动高度 | `boolean` | `false` |
 | teleported | 是否将下拉弹层挂载到 `teleportTo`，用于避免被表格、滚动容器等父级裁剪 | `boolean` | `true` |
 | teleportTo | 下拉弹层挂载目标 | `string` | `body` |
-| dropdownZIndex | 下拉弹层层级 | `string \| number` | `1300` |
+| dropdownZIndex | 下拉弹层层级 | `string \| number` | `2000` |
 | dropdownMaxWidth | 下拉弹层最大宽度，选项文本较长时会在该宽度内扩展 | `string \| number` | `360` |
 | color | 主题色 | `string` | - |
 | activeBorderColor | 激活边框色 | `string` | - |

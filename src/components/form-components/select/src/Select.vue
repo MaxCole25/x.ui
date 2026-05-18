@@ -2,6 +2,7 @@
 import { computed, inject, nextTick, onBeforeUnmount, provide, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { inputSizePreset } from '../../../_utils/inputSize'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { formContextKey, formItemContextKey } from '../../form/src/context'
 import { selectContextKey, type SelectOptionRecord } from './context'
@@ -30,7 +31,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
   size: undefined,
   teleported: true,
   teleportTo: 'body',
-  dropdownZIndex: 1300,
+  dropdownZIndex: overlayZIndex.popper,
   dropdownMaxWidth: 360,
   dropdownBackgroundColor: '#ffffff',
   textAlign: 'left',
@@ -149,6 +150,7 @@ const selectStyle = computed(() => ({
   '--x-select-height': props.autoHeight ? 'auto' : toCssSize(resolvedInputHeight.value),
   '--x-select-padding': toCssSize(resolvedInputPadding.value),
   '--x-select-text-align': props.textAlign,
+  '--x-select-dropdown-z-index': props.dropdownZIndex,
   '--x-select-clear-icon-color': props.clearIconColor,
   '--x-select-clear-icon-size': toCssSize(props.clearIconSize)
 }))

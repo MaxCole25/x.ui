@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
 import { nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { XBaseInput, XCheckbox, XForm, XFormItem, XInput, XRadio, XRadioButton, XSelect, XSwitch, XTimePicker, XTimeSelect } from '../src'
+import { overlayZIndex, XBaseInput, XCheckbox, XForm, XFormItem, XInput, XInputNumber, XRadio, XRadioButton, XSelect, XSwitch, XText, XTimePicker, XTimeSelect } from '../src'
 
 describe('form controls', () => {
   it('updates XInput model value and clears content', async () => {
@@ -49,7 +49,7 @@ describe('form controls', () => {
     input.element.focus()
     await input.trigger('focus')
 
-    const styles = readFileSync('src/styles/index.css', 'utf-8')
+    const styles = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
     expect(input.element).toBe(document.activeElement)
     expect(styles).toContain('.x-base-input__inner:focus,\n.x-base-input__inner:focus-visible')
     expect(styles).toContain('outline: none !important')
@@ -171,7 +171,7 @@ describe('form controls', () => {
     expect(dropdown?.style.left).toBe('24px')
     expect(dropdown?.style.width).toBe('200px')
     expect(dropdown?.style.maxWidth).toBe('360px')
-    expect(dropdown?.style.zIndex).toBe('1300')
+    expect(dropdown?.style.zIndex).toBe(String(overlayZIndex.popper))
     expect(dropdown?.getAttribute('style')).toContain('--x-select-radius: 10px')
     expect(dropdown?.getAttribute('style')).toContain('--x-select-dropdown-bg: #fef3c7')
 
@@ -332,6 +332,60 @@ describe('form controls', () => {
     expect(style).toContain('--x-switch-button-size: 20px')
     expect(style).toContain('--x-switch-font-size: 15px')
     expect(style).toContain('--x-switch-font-family: Arial, sans-serif')
+  })
+
+  it('lets explicit size own visual dimensions for text, number input and switch', () => {
+    const text = mount(XText, {
+      props: {
+        modelValue: '尺寸文本',
+        size: 'lg',
+        fontSize: 30,
+        height: 60,
+        padding: 20,
+        radius: '20px'
+      }
+    })
+    const inputNumber = mount(XInputNumber, {
+      props: {
+        modelValue: 6,
+        size: 'sm',
+        fontSize: 24,
+        borderRadius: 12
+      }
+    })
+    const switcher = mount(XSwitch, {
+      props: {
+        size: 'lg',
+        buttonSize: 12,
+        fontSize: 30,
+        radius: '999px'
+      }
+    })
+
+    const textStyle = text.find('.x-text').attributes('style')
+    const inputNumberStyle = inputNumber.find('.x-input-number').attributes('style')
+    const switchStyle = switcher.find('.x-switch').attributes('style')
+
+    expect(textStyle).toContain('--x-text-font-size: 14px')
+    expect(textStyle).toContain('--x-text-height: 38px')
+    expect(textStyle).toContain('--x-text-padding: 0 10px')
+    expect(textStyle).toContain('--x-text-radius: 8px')
+    expect(inputNumberStyle).toContain('--x-input-number-height: 22px')
+    expect(inputNumberStyle).toContain('--x-input-number-font-size: 10px')
+    expect(inputNumberStyle).toContain('--x-input-number-radius: 4px')
+    expect(switchStyle).toContain('--x-switch-size: 30.4px')
+    expect(switchStyle).not.toContain('--x-switch-button-size')
+    expect(switchStyle).toContain('--x-switch-font-size: 14px')
+    expect(switchStyle).toContain('--x-switch-radius: 999px')
+  })
+
+  it('keeps switch size visual dimensions at 80 percent of the standard height', () => {
+    const css = readFileSync('src/styles/index.css', 'utf8')
+
+    expect(css).toContain('--x-switch-default-size: 17.6px')
+    expect(css).toContain('--x-switch-default-size: 24px')
+    expect(css).toContain('--x-switch-default-size: 30.4px')
+    expect(css).toContain('width: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) * 2)')
   })
 
   it('controls radio selection inside a v-model group', async () => {

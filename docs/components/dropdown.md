@@ -28,7 +28,7 @@
 | showArrow | 是否显示箭头 | `boolean` | `true` |
 | offset | 弹层偏移长度 | `number \| string` | `6` |
 | popperWidth | 弹层宽度 | `number \| string` | `max-content` |
-| popperZIndex | 弹层层级 | `number` | `1300` |
+| popperZIndex | 弹层层级 | `number` | `2000` |
 | radius | 弹层圆角 | `number \| string` | `6px` |
 | shadow | 弹层阴影 | `string` | 内置阴影 |
 | hoverBackgroundColor | 菜单项悬浮背景色 | `string` | 主色浅色 |

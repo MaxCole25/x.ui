@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import XSelect from './src/Select.vue'
 import type { SelectDisplayField, SelectSize, SelectStatus, SelectTextAlign } from './src/types'
 import '../../../styles/index.css'
@@ -23,7 +24,7 @@ const sample = reactive({
   emptyText: '暂无数据',
   teleported: true,
   teleportTo: 'body',
-  dropdownZIndex: 1300,
+  dropdownZIndex: overlayZIndex.popper,
   dropdownMaxWidth: 360,
   autoWidth: false,
   showActiveBorder: true,

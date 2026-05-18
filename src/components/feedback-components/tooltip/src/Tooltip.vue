@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
+import { componentSizePreset } from '../../../_utils/size'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import type { TooltipProps } from './types'
 
 defineOptions({
@@ -16,7 +18,8 @@ const props = withDefaults(defineProps<TooltipProps>(), {
   openDelay: 0,
   closeDelay: 80,
   teleported: true,
-  teleportTo: 'body'
+  teleportTo: 'body',
+  zIndex: overlayZIndex.tooltip
 })
 
 const emit = defineEmits<{
@@ -33,7 +36,13 @@ const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
 let timer: number | undefined
 let isListeningForPositionChanges = false
 
-const tooltipStyle = computed(() => createElementStyleVars(props))
+const mergedSize = computed(() => props.size ?? 'md')
+const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const tooltipStyle = computed(() => ({
+  ...createElementStyleVars(props),
+  '--x-tooltip-font-size': `${sizePreset.value.fontSize}px`,
+  '--x-tooltip-z-index': props.zIndex
+}))
 const popperStyle = computed(() => ({
   ...tooltipStyle.value,
   ...(props.teleported ? teleportedPopperStyle.value : {})

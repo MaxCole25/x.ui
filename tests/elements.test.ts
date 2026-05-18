@@ -283,7 +283,40 @@ describe('元素组件', () => {
     const input = wrapper.find('input')
     expect(input.attributes('type')).toBe('text')
     expect(input.attributes('readonly')).toBeDefined()
-    expect(wrapper.find('.x-base-input__clear').exists()).toBe(false)
+    const clearButton = wrapper.find('.x-base-input__clear')
+    expect(clearButton.exists()).toBe(true)
+    expect(clearButton.attributes('disabled')).toBeDefined()
+    expect(clearButton.attributes('aria-hidden')).toBe('true')
+    expect(clearButton.attributes('tabindex')).toBe('-1')
+  })
+
+  it('applies autocomplete class and style to the root instead of the native input', () => {
+    const wrapper = mount(XAutocomplete, {
+      attrs: {
+        class: 'contract-query-autocomplete',
+        style: 'width: 132px;',
+        name: 'customer'
+      }
+    })
+
+    const input = wrapper.find('input')
+    expect(wrapper.classes()).toContain('contract-query-autocomplete')
+    expect(wrapper.attributes('style')).toContain('width: 132px')
+    expect(input.classes()).not.toContain('contract-query-autocomplete')
+    expect(input.attributes('name')).toBe('customer')
+  })
+
+  it('does not render transient autocomplete loading suffix inside the input', () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: 'dg',
+        clearable: true,
+        loading: true,
+        suffix: '加载中'
+      }
+    })
+
+    expect(wrapper.find('.x-base-input__suffix').exists()).toBe(false)
   })
 
   it('exposes select input-like appearance and readonly interfaces', async () => {
@@ -641,6 +674,54 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[1]).toEqual([20])
   })
 
+  it('selects the active autocomplete option with enter', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        options: [
+          { label: '叶轮', value: 'impeller' },
+          { label: '叶轮螺母', value: 'nut' }
+        ]
+      }
+    })
+
+    const input = wrapper.find('input')
+    await input.trigger('focus')
+    await input.setValue('叶')
+    await input.trigger('keydown', { key: 'ArrowDown' })
+    await input.trigger('keydown', { key: 'Enter' })
+
+    const modelEvents = wrapper.emitted('update:modelValue') ?? []
+    const inputEvents = wrapper.emitted('update:inputValue') ?? []
+    expect(modelEvents[modelEvents.length - 1]).toEqual(['impeller'])
+    expect(inputEvents[inputEvents.length - 1]).toEqual(['叶轮'])
+    expect((input.element as HTMLInputElement).value).toBe('叶轮')
+  })
+
+  it('selects the active autocomplete option with enter on keyup fallback', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '',
+        options: [
+          { label: '叶轮', value: 'impeller' },
+          { label: '叶轮螺母', value: 'nut' }
+        ]
+      }
+    })
+
+    const input = wrapper.find('input')
+    await input.trigger('focus')
+    await input.setValue('叶')
+    await input.trigger('keydown', { key: 'ArrowDown' })
+    await input.trigger('keyup', { key: 'Enter' })
+
+    const modelEvents = wrapper.emitted('update:modelValue') ?? []
+    const inputEvents = wrapper.emitted('update:inputValue') ?? []
+    expect(modelEvents[modelEvents.length - 1]).toEqual(['impeller'])
+    expect(inputEvents[inputEvents.length - 1]).toEqual(['叶轮'])
+    expect((input.element as HTMLInputElement).value).toBe('叶轮')
+  })
+
   it('can display option values instead of labels for autocomplete, select and cascader', async () => {
     const autocomplete = mount(XAutocomplete, {
       props: {
@@ -724,6 +805,7 @@ describe('元素组件', () => {
     const style = wrapper.find('.x-base-input').attributes('style')
     expect(style).toContain('--x-base-input-font-size: 10px')
     expect(style).toContain('--x-base-input-height: 22px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-height: 22px')
     expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-font-size: 10px')
     expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-padding: 0 4px')
   })

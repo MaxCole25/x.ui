@@ -143,9 +143,10 @@ function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
   const vars = {
     lg: {
       '--x-tabs-item-height': '38px',
+      '--x-tabs-item-frame-height': '30px',
       '--x-tabs-item-min-height': '38px',
-      '--x-tabs-item-min-width': '152px',
-      '--x-tabs-item-padding-x': '10px',
+      '--x-tabs-item-min-width': '140px',
+      '--x-tabs-item-padding-x': '8px',
       '--x-tabs-item-padding-y': '0',
       '--x-tabs-label-font-size': '14px',
       '--x-tabs-icon-size': '22px',
@@ -156,7 +157,8 @@ function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
       '--x-tabs-vertical-width': '52px'
     },
     md: {
-      '--x-tabs-item-height': '40px',
+      '--x-tabs-item-height': '30px',
+      '--x-tabs-item-frame-height': '30px',
       '--x-tabs-item-min-height': '30px',
       '--x-tabs-item-min-width': '140px',
       '--x-tabs-item-padding-x': '8px',
@@ -171,9 +173,10 @@ function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
     },
     sm: {
       '--x-tabs-item-height': '22px',
+      '--x-tabs-item-frame-height': '30px',
       '--x-tabs-item-min-height': '22px',
-      '--x-tabs-item-min-width': '120px',
-      '--x-tabs-item-padding-x': '4px',
+      '--x-tabs-item-min-width': '140px',
+      '--x-tabs-item-padding-x': '8px',
       '--x-tabs-item-padding-y': '0',
       '--x-tabs-label-font-size': '10px',
       '--x-tabs-icon-size': '18px',

@@ -5,7 +5,7 @@ import { nextTick } from 'vue'
 import { XForm, XFormItem, XInput, XSelect, XSwitch } from '../src'
 import type { FormExpose, FormRules } from '../src'
 
-const styles = readFileSync('src/styles/index.css', 'utf-8')
+const styles = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
 const getCssRule = (selector: string) => styles.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{[^}]+\\}`))?.[0] ?? ''
 
 describe('form', () => {
@@ -75,6 +75,11 @@ describe('form', () => {
     expect(wrapper.find('input').attributes('disabled')).toBeDefined()
     expect(wrapper.find('.x-select__control').attributes('disabled')).toBeDefined()
     expect(wrapper.find('.x-form-item__label').attributes('style')).toContain('width: 120px')
+    expect(getCssRule('.x-form-item__label')).toContain('font-size: var(--x-form-item-label-font-size, 12px)')
+    expect(getCssRule('.x-form-item__label')).toContain('display: inline-flex')
+    expect(getCssRule('.x-form-item__label')).toContain('min-height: var(--x-form-control-height, 30px)')
+    expect(getCssRule('.x-form--label-top .x-form-item__label,\n.x-form-item--label-top .x-form-item__label')).toContain('min-height: 0')
+    expect(getCssRule('.x-form--sm,\n.x-form-item--sm')).toContain('--x-form-item-label-font-size: 10px')
   })
 
   it('renders custom label, help and error slots', () => {
@@ -201,6 +206,7 @@ describe('form', () => {
 
     expect(label.classes()).toContain('custom-label')
     expect(label.attributes('style')).toContain('--x-form-item-label-align: center')
+    expect(label.attributes('style')).toContain('--x-form-item-label-justify: center')
     expect(label.attributes('style')).toContain('color: rgb(18, 100, 244)')
     expect(content.classes()).toContain('custom-content')
     expect(content.classes()).toContain('is-tight')

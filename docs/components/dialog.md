@@ -31,12 +31,14 @@ const visible = ref(false)
 | --- | --- | --- | --- |
 | modelValue | 是否显示弹窗（`v-model`） | `boolean` | - |
 | title | 标题文本（未传 `header` 插槽时显示） | `string` | `''` |
+| size | 弹窗尺寸，仅影响字号和关闭按钮尺寸，不影响头部、正文、底部留白与弹窗圆角 | `sm \| md \| lg` | `md` |
 | width | 弹窗宽度（像素） | `number` | `920` |
 | height | 弹窗高度（像素） | `number` | `760` |
 | minWidth | 最小宽度（像素） | `number` | `720` |
 | minHeight | 最小高度（像素） | `number` | `520` |
 | maxWidth | 最大宽度（像素，`0` 表示按视口自适应上限） | `number` | `0` |
 | maxHeight | 最大高度（像素，`0` 表示按视口自适应上限） | `number` | `0` |
+| zIndex | 遮罩层级 | `number` | `1900` |
 | draggable | 是否允许拖拽 | `boolean` | `true` |
 | resizable | 是否允许右下角缩放 | `boolean` | `true` |
 | closeOnMaskClick | 点击遮罩是否关闭 | `boolean` | `true` |
@@ -55,6 +57,15 @@ const visible = ref(false)
 | default | 主体内容区域 |
 | header | 自定义头部区域 |
 | footer | 自定义底部操作区域 |
+
+## CSS 变量
+
+| 变量名 | 说明 |
+| --- | --- |
+| `--x-dialog-header-padding` | 头部内边距 |
+| `--x-dialog-body-padding` | 正文内边距 |
+| `--x-dialog-footer-padding` | 底部内边距 |
+| `--x-dialog-radius` | 弹窗圆角 |
 
 ## 手动验收建议
 

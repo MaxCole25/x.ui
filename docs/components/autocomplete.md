@@ -113,7 +113,7 @@ const cityFieldNames = { label: 'name', value: 'id' }
 | clearable | 是否可清空 | `boolean` | `false` |
 | hideClearButton | 是否隐藏清除按钮 | `boolean` | `false` |
 | autoWidth | 是否自动宽度 | `boolean` | `false` |
-| size | 尺寸 | `sm \| md \| lg` | `md` |
+| size | 尺寸。外层高度、内部输入框和候选项字号会同步采用 `sm=22px/10px`、`md=30px/12px`、`lg=38px/14px` 预设 | `sm \| md \| lg` | `md` |
 | status | 输入状态 | `default \| success \| warning \| error` | `default` |
 | height | 高度，传入 `size` 时由尺寸预设优先控制 | `number \| string` | - |
 | fontSize | 字号，传入 `size` 时由尺寸预设优先控制；候选项字号会与输入框保持一致 | `number \| string` | - |

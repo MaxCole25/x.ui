@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XButton } from '../../basic-components/button'
 import { XLoading, XLoadingService, vLoading } from './index'
@@ -13,7 +14,7 @@ const appearance = reactive({
   textColor: '#1264f4',
   spinnerColor: '#1264f4',
   spinnerSize: 32,
-  zIndex: 2000,
+  zIndex: overlayZIndex.loading,
   directiveLoading: true
 })
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import { XButton } from '../../basic-components/button'
 import { XDialog } from './index'
 import '../../../styles/index.css'
@@ -11,6 +12,7 @@ const state = reactive({
   height: 520,
   minWidth: 520,
   minHeight: 320,
+  zIndex: overlayZIndex.dialog,
   draggable: true,
   resizable: true,
   closeOnMaskClick: true
@@ -34,6 +36,7 @@ function onClose() {
           <XButton @click="openDialog">打开弹窗</XButton>
           <label>宽度 <input v-model.number="state.width" type="number" min="420" max="1200" style="width: 90px" /></label>
           <label>高度 <input v-model.number="state.height" type="number" min="260" max="900" style="width: 90px" /></label>
+          <label>层级 <input v-model.number="state.zIndex" type="number" min="1" step="10" style="width: 90px" /></label>
           <label><input v-model="state.draggable" type="checkbox" />可拖拽</label>
           <label><input v-model="state.resizable" type="checkbox" />可缩放</label>
           <label><input v-model="state.closeOnMaskClick" type="checkbox" />遮罩关闭</label>
@@ -51,6 +54,7 @@ function onClose() {
         :height="state.height"
         :min-width="state.minWidth"
         :min-height="state.minHeight"
+        :z-index="state.zIndex"
         :draggable="state.draggable"
         :resizable="state.resizable"
         :close-on-mask-click="state.closeOnMaskClick"

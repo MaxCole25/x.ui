@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XButton } from '../../basic-components/button'
 import { XMessage, XMessageComponent } from './index'
 import type { MessagePlacement, MessageType } from './src/types'
+import type { XSize } from '../../_utils/size'
 import '../../../styles/index.css'
 
 const appearance = reactive({
   message: '这是一条可配置的消息提示',
   type: 'info' as MessageType,
+  size: 'md' as XSize,
   placement: 'top' as MessagePlacement,
   duration: 0,
   offset: 20,
+  zIndex: overlayZIndex.message,
   width: '',
   minWidth: 280,
   maxWidth: 520,
@@ -33,7 +37,9 @@ function openService() {
   XMessage({
     message: appearance.message,
     type: appearance.type,
+    size: appearance.size,
     placement: appearance.placement,
+    zIndex: appearance.zIndex,
     showClose: appearance.showClose,
     plain: appearance.plain,
     round: appearance.round,
@@ -56,9 +62,11 @@ function openService() {
             <XMessageComponent
               :message="appearance.message"
               :type="appearance.type"
+              :size="appearance.size"
               :placement="appearance.placement"
               :duration="appearance.duration"
               :offset="appearance.offset"
+              :z-index="appearance.zIndex"
               :width="appearance.width"
               :min-width="appearance.minWidth"
               :max-width="appearance.maxWidth"
@@ -79,8 +87,10 @@ function openService() {
         </template>
         <template #column-1>
           <label><span>内容</span><input v-model="appearance.message" type="text" /></label>
+          <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
           <label><span>位置</span><select v-model="appearance.placement"><option value="top">top</option><option value="top-left">top-left</option><option value="top-right">top-right</option><option value="bottom">bottom</option><option value="bottom-left">bottom-left</option><option value="bottom-right">bottom-right</option></select></label>
           <label><span>偏移长度</span><input v-model.number="appearance.offset" type="number" /></label>
+          <label><span>层级</span><input v-model.number="appearance.zIndex" type="number" /></label>
         </template>
         <template #column-2>
           <label><span>最小宽度</span><input v-model.number="appearance.minWidth" type="number" /></label>
