@@ -40,6 +40,22 @@
   --x-drawer-close-hover-bg: var(--x-color-primary-soft, #e0ecff);
   --x-drawer-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
   --x-drawer-z-index: var(--x-z-index-drawer);
+  --x-dialog-mask: rgba(18, 28, 45, 0.4);
+  --x-dialog-bg: var(--x-color-surface, #ffffff);
+  --x-dialog-text: var(--x-color-text, #121826);
+  --x-dialog-title: var(--x-color-text, #121826);
+  --x-dialog-border-color: var(--x-color-border, #d1d9e6);
+  --x-dialog-border-width: 1px;
+  --x-dialog-header-bg: var(--x-dialog-bg);
+  --x-dialog-body-bg: var(--x-dialog-bg);
+  --x-dialog-footer-bg: var(--x-dialog-bg);
+  --x-dialog-header-border: transparent;
+  --x-dialog-footer-border: transparent;
+  --x-dialog-close-icon: var(--x-color-muted, var(--x-color-text-muted, #606b7d));
+  --x-dialog-close-icon-hover: var(--x-color-text, #121826);
+  --x-dialog-close-hover-bg: var(--x-color-primary-soft, #e0ecff);
+  --x-dialog-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
+  --x-dialog-resizer-color: rgba(140, 147, 166, 0.75);
   --x-table-control-bg: var(--x-color-surface, #ffffff);
   --x-table-control-text-color: var(--x-color-text, #334155);
   --x-table-control-border-color: var(--x-color-border, #cbd5e1);
@@ -79,6 +95,21 @@
   --x-drawer-close-icon-hover: var(--x-color-text, #eef4fb);
   --x-drawer-close-hover-bg: rgba(148, 163, 184, 0.14);
   --x-drawer-shadow: 0 18px 56px rgba(0, 0, 0, 0.42);
+  --x-dialog-mask: rgba(0, 0, 0, 0.52);
+  --x-dialog-bg: var(--x-color-surface, #0b1726);
+  --x-dialog-text: var(--x-color-text, #eef4fb);
+  --x-dialog-title: var(--x-color-text, #eef4fb);
+  --x-dialog-border-color: var(--x-color-border, #203247);
+  --x-dialog-header-bg: var(--x-dialog-bg);
+  --x-dialog-body-bg: var(--x-dialog-bg);
+  --x-dialog-footer-bg: var(--x-dialog-bg);
+  --x-dialog-header-border: var(--x-color-border, #203247);
+  --x-dialog-footer-border: var(--x-color-border, #203247);
+  --x-dialog-close-icon: var(--x-color-text-muted, #8da0b8);
+  --x-dialog-close-icon-hover: var(--x-color-text, #eef4fb);
+  --x-dialog-close-hover-bg: rgba(148, 163, 184, 0.14);
+  --x-dialog-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  --x-dialog-resizer-color: rgba(141, 160, 184, 0.75);
   --x-table-control-bg: var(--x-color-surface, #0b1726);
   --x-table-control-text-color: var(--x-color-text, #eef4fb);
   --x-table-control-border-color: var(--x-color-border, #203247);
@@ -2664,33 +2695,38 @@
 }
 
 .x-tree {
+  color: var(--x-tree-text-color, var(--x-color-text));
   display: grid;
   gap: 2px;
 }
 
 .x-tree__empty {
-  color: var(--x-color-muted);
+  color: var(--x-tree-muted-color, var(--x-color-muted));
   font-size: 12px;
   padding: 16px;
 }
 
 .x-tree-node__row {
   align-items: center;
-  border-radius: 8px;
+  border-radius: var(--x-tree-node-radius, 8px);
   cursor: pointer;
   display: flex;
   gap: 8px;
-  min-height: 34px;
-  padding-right: 8px;
+  min-height: var(--x-tree-row-height, 34px);
+  padding-right: var(--x-tree-row-padding-right, 8px);
 }
 
 .x-tree-node__row:hover {
-  background: #f5f8fb;
+  background: var(--x-tree-hover-bg-color, #f5f8fb);
 }
 
 .x-tree-node__row.is-current,
 .x-tree-node__row.is-drop-inner {
-  background: rgba(14, 116, 144, 0.12);
+  background: var(--x-tree-active-bg-color, rgba(14, 116, 144, 0.12));
+}
+
+.x-tree-node__row.is-current {
+  color: var(--x-tree-active-text-color, var(--x-tree-text-color, var(--x-color-text)));
 }
 
 .x-tree-node__row.is-drop-before,
@@ -2718,21 +2754,25 @@
 
 .x-tree-node__toggle,
 .x-tree-node__toggle-placeholder {
-  flex: 0 0 14px;
-  height: 14px;
-  width: 14px;
+  flex: 0 0 var(--x-tree-icon-size, 14px);
+  height: var(--x-tree-icon-size, 14px);
+  width: var(--x-tree-icon-size, 14px);
 }
 
 .x-tree-node__toggle {
   background: transparent;
   border: 0;
-  color: var(--x-color-muted);
+  color: var(--x-tree-muted-color, var(--x-color-muted));
   cursor: pointer;
   padding: 0;
 }
 
+.x-tree-node__row.is-current .x-tree-node__toggle {
+  color: inherit;
+}
+
 .x-tree-node__dot {
-  background: var(--x-color-muted);
+  background: var(--x-tree-muted-color, var(--x-color-muted));
   border-radius: 50%;
   flex: 0 0 auto;
   height: 6px;
@@ -2740,11 +2780,16 @@
 }
 
 .x-tree-node__dot.is-member {
-  background: var(--x-tree-active-color, var(--x-color-primary));
+  background: var(--x-tree-active-icon-color, var(--x-tree-active-color, var(--x-color-primary)));
+}
+
+.x-tree-node__row.is-current .x-tree-node__dot {
+  background: var(--x-tree-active-icon-color, var(--x-tree-active-color, currentColor));
 }
 
 .x-tree-node__label {
-  font-size: 12px;
+  color: inherit;
+  font-size: var(--x-tree-font-size, 12px);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2756,9 +2801,9 @@
   border: 1px solid var(--x-color-border);
   border-radius: var(--x-radius-md);
   color: var(--x-color-text);
-  font-size: 12px;
+  font-size: var(--x-tree-font-size, 12px);
   line-height: 1.2;
-  min-height: 28px;
+  min-height: calc(var(--x-tree-row-height, 34px) - 6px);
   min-width: 0;
   outline: none;
   padding: 0 10px;
@@ -2779,12 +2824,26 @@
   box-shadow: var(--x-shadow-focus);
 }
 
+.x-tree-node__icon,
 .x-tree-node__group-icon {
-  color: var(--x-color-muted);
+  color: var(--x-tree-muted-color, var(--x-color-muted));
   display: inline-flex;
-  flex: 0 0 14px;
-  height: 14px;
-  width: 14px;
+  flex: 0 0 var(--x-tree-icon-size, 14px);
+  height: var(--x-tree-icon-size, 14px);
+  align-items: center;
+  justify-content: center;
+  width: var(--x-tree-icon-size, 14px);
+}
+
+.x-tree-node__icon {
+  font-size: var(--x-tree-icon-size, 14px);
+  line-height: 1;
+}
+
+.x-tree-node__icon i {
+  display: inline-flex;
+  font-size: var(--x-tree-icon-size, 14px);
+  line-height: 1;
 }
 
 .x-tree-node__group-icon svg {
@@ -2793,13 +2852,19 @@
   width: 100%;
 }
 
+.x-tree-node__icon.is-member,
 .x-tree-node__group-icon.is-member {
-  color: var(--x-tree-active-color, var(--x-color-primary));
+  color: var(--x-tree-active-icon-color, var(--x-tree-active-color, var(--x-color-primary)));
+}
+
+.x-tree-node__row.is-current .x-tree-node__icon,
+.x-tree-node__row.is-current .x-tree-node__group-icon {
+  color: var(--x-tree-active-icon-color, var(--x-tree-active-color, currentColor));
 }
 
 .x-tree-node__author {
-  color: var(--x-color-muted);
-  font-size: 11px;
+  color: var(--x-tree-muted-color, var(--x-color-muted));
+  font-size: calc(var(--x-tree-font-size, 12px) - 1px);
   margin-left: auto;
   max-width: 100px;
   overflow: hidden;
@@ -2807,8 +2872,12 @@
   white-space: nowrap;
 }
 
+.x-tree-node__row.is-current .x-tree-node__author {
+  color: inherit;
+}
+
 .x-tree-menu {
-  background: #fff;
+  background: var(--x-tree-menu-bg-color, var(--x-color-surface, #fff));
   border: 1px solid var(--x-color-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(16, 42, 67, 0.12);
@@ -2821,13 +2890,14 @@
 }
 
 .x-tree-menu__item {
+  color: var(--x-tree-menu-text-color, var(--x-tree-text-color, var(--x-color-text)));
   cursor: pointer;
   font-size: 13px;
   padding: 8px 12px;
 }
 
 .x-tree-menu__item:hover {
-  background: #eef3ff;
+  background: var(--x-tree-menu-hover-bg-color, var(--x-tree-hover-bg-color, #eef3ff));
 }
 
 .x-tree-menu__item.is-danger {
@@ -4367,8 +4437,10 @@
 .x-autocomplete__dropdown {
   margin-top: 2px;
   max-height: var(--x-autocomplete-dropdown-max-height, 260px);
+  max-width: min(var(--x-autocomplete-dropdown-max-width, 360px), calc(100vw - 16px));
+  min-width: 100%;
   overflow-y: auto;
-  width: 100%;
+  width: max-content;
 }
 
 .x-autocomplete__option,
@@ -4386,6 +4458,7 @@
   min-height: 30px;
   padding: var(--x-autocomplete-option-padding, 0 10px);
   text-align: left;
+  white-space: nowrap;
   width: 100%;
 }
 

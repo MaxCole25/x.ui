@@ -1,6 +1,7 @@
+import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { XSize } from '../../../_utils/size'
 
-export interface DialogProps {
+export interface DialogProps extends ElementStyleProps {
   modelValue: boolean
   title?: string
   size?: XSize
@@ -14,4 +15,16 @@ export interface DialogProps {
   resizable?: boolean
   closeOnMaskClick?: boolean
   zIndex?: number
+  maskColor?: string
+  titleColor?: string
+  headerBackgroundColor?: string
+  bodyBackgroundColor?: string
+  footerBackgroundColor?: string
+  headerBorderColor?: string
+  footerBorderColor?: string
+  closeIconColor?: string
+  closeIconHoverColor?: string
+  closeIconHoverBackgroundColor?: string
+  shadow?: string
+  resizerColor?: string
 }

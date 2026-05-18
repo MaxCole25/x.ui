@@ -318,6 +318,7 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | --- | --- | --- | --- |
 | key | 对应列字段名 | `string` | 必填 |
 | order | 列排序序号，从小到大排列 | `number` | 列原始顺序 |
+| hidden | 是否隐藏该列 | `boolean` | `false` |
 | fixed | 列冻结方向 | `'left' \| 'none' \| 'right'` | `'none'` |
 | align | 单元格默认内容对齐方式 | `'left' \| 'center' \| 'right'` | 当前列 `align` 或 `'left'` |
 | widthRatio | 列宽比例，按表格可视宽度百分比分配 | `number` | - |

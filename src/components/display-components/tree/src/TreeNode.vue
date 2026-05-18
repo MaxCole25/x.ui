@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import type { TreeNodeData } from './types'
+import type { TreeNodeData, TreeNodeIcon } from './types'
 
 const props = defineProps<{
   node: TreeNodeData
@@ -9,6 +9,7 @@ const props = defineProps<{
   currentUserId: number | null
   expandedState: Record<string, boolean>
   draggingNode: TreeNodeData | null
+  resolveNodeIcon: (node: TreeNodeData) => TreeNodeIcon
   allowDrag: (node: TreeNodeData) => boolean
   allowDrop: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean
 }>()
@@ -33,6 +34,10 @@ const expanded = computed(() => {
 })
 const isCurrent = computed(() => props.currentTreeKey === nodeKey.value)
 const nodeType = computed(() => props.node.type ?? 'document')
+const nodeIcon = computed(() => props.resolveNodeIcon(props.node))
+const hasCustomIcon = computed(() => typeof nodeIcon.value === 'string' && nodeIcon.value.trim().length > 0)
+const isRemixIcon = computed(() => typeof nodeIcon.value === 'string' && nodeIcon.value.trim().startsWith('ri-'))
+const nodeIconText = computed(() => (typeof nodeIcon.value === 'string' ? nodeIcon.value.trim().slice(0, 1).toUpperCase() : ''))
 const isNodeOwner = computed(() => Number(props.node.authorId ?? 0) > 0 && Number(props.node.authorId ?? 0) === Number(props.currentUserId ?? 0))
 const isMember = computed(() => {
   if (props.currentUserId !== null && props.currentUserId !== undefined) {
@@ -145,7 +150,7 @@ function submitRename() {
         'is-drop-after': dropPosition === 'after',
         'is-drop-inner': dropPosition === 'inner'
       }"
-      :style="{ paddingLeft: `${8 + props.depth * 16}px` }"
+      :style="{ paddingLeft: `calc(var(--x-tree-row-padding-right, 8px) + ${props.depth} * var(--x-tree-indent-size, 16px))` }"
       :draggable="props.allowDrag(props.node)"
       @click.stop="handleClick"
       @contextmenu.prevent.stop="handleContextMenu"
@@ -158,7 +163,11 @@ function submitRename() {
         {{ expanded ? '▾' : '▸' }}
       </button>
       <span v-else class="x-tree-node__toggle-placeholder" />
-      <span v-if="nodeType === 'group'" class="x-tree-node__group-icon" :class="{ 'is-member': isMember }" aria-hidden="true">
+      <span v-if="hasCustomIcon" class="x-tree-node__icon" :class="{ 'is-member': isMember }" aria-hidden="true">
+        <i v-if="isRemixIcon" :class="nodeIcon"></i>
+        <template v-else>{{ nodeIconText }}</template>
+      </span>
+      <span v-else-if="nodeType === 'group'" class="x-tree-node__group-icon" :class="{ 'is-member': isMember }" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false">
           <path
             d="M9 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm6 1a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5ZM3.5 18.5a5.5 5.5 0 0 1 11 0v.5h-11v-.5Zm11.5.5v-.5a6.8 6.8 0 0 0-1.3-4.1A5 5 0 0 1 20.5 19H15Z"
@@ -192,6 +201,7 @@ function submitRename() {
         :current-user-id="props.currentUserId"
         :expanded-state="props.expandedState"
         :dragging-node="props.draggingNode"
+        :resolve-node-icon="props.resolveNodeIcon"
         :allow-drag="props.allowDrag"
         :allow-drop="props.allowDrop"
         @node-click="emit('node-click', $event)"

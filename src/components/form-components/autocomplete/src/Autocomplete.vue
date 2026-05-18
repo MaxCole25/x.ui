@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<AutocompleteProps>(), {
   remoteDebounce: 200,
   remoteMinLength: 0,
   dropdownMaxHeight: 260,
+  dropdownMaxWidth: 360,
   loading: false,
   loadingText: '加载中',
   emptyText: '暂无匹配数据',
@@ -90,7 +91,8 @@ const autocompleteStyle = computed(() => ({
   '--x-autocomplete-height': toCssSize(autocompleteHeight.value),
   '--x-autocomplete-option-font-size': toCssSize(optionFontSize.value),
   '--x-autocomplete-option-padding': toCssSize(optionPadding.value),
-  '--x-autocomplete-dropdown-max-height': toCssSize(props.dropdownMaxHeight)
+  '--x-autocomplete-dropdown-max-height': toCssSize(props.dropdownMaxHeight),
+  '--x-autocomplete-dropdown-max-width': toCssSize(props.dropdownMaxWidth)
 }))
 const rootClass = computed(() => attrs.class)
 const rootStyle = computed(() => attrs.style)
@@ -134,6 +136,7 @@ const inputProps = computed(() => {
   delete next.remoteDebounce
   delete next.remoteMinLength
   delete next.dropdownMaxHeight
+  delete next.dropdownMaxWidth
   delete next.loading
   delete next.loadingText
   delete next.emptyText

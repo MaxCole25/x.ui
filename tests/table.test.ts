@@ -635,6 +635,87 @@ describe('XTable', () => {
     window.dispatchEvent(new MouseEvent('pointerup'))
   })
 
+  it('auto fits a column to visible body text when double clicking the resize handle', async () => {
+    const measureText = vi.fn((text: string) => ({ width: text.includes('很长') ? 236 : text.length * 10 }))
+    const getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ measureText } as unknown as CanvasRenderingContext2D)
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'status', label: '这个列头很长但不应该参与自适应', width: 120 },
+          { key: 'count', label: '数量', width: 96 }
+        ],
+        data: [
+          { id: 1, status: '短', count: 1 },
+          { id: 2, status: '很长的可见单元格文本', count: 2 }
+        ]
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__column-resize-handle')[0].trigger('dblclick')
+      await nextTick()
+
+      const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
+      expect(settings.find((setting) => setting.key === 'status')?.width).toBe(248)
+      expect(wrapper.emitted('column-resize')?.[0]?.[0]).toMatchObject({
+        key: 'status',
+        width: 248,
+        oldWidth: 120
+      })
+      expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('248px 96px')
+      expect(measureText).not.toHaveBeenCalledWith('这个列头很长但不应该参与自适应')
+      expect(measureText).toHaveBeenCalledWith('很长的可见单元格文本')
+    } finally {
+      getContextSpy.mockRestore()
+    }
+  })
+
+  it('opens a body cell context menu and auto fits all visible columns', async () => {
+    const measureText = vi.fn((text: string) => {
+      if (text.includes('很长')) {
+        return { width: 236 }
+      }
+      if (text === '22') {
+        return { width: 80 }
+      }
+      return { width: text.length * 10 }
+    })
+    const getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ measureText } as unknown as CanvasRenderingContext2D)
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'status', label: '状态', width: 120 },
+          { key: 'count', label: '数量', width: 96 }
+        ],
+        data: [
+          { id: 1, status: '短', count: 1 },
+          { id: 2, status: '很长的可见单元格文本', count: 22 }
+        ]
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 240, clientY: 160 })
+      await nextTick()
+
+      const menu = wrapper.find('.x-table__context-menu')
+      expect(menu.exists()).toBe(true)
+      expect(menu.attributes('style')).toContain('left: 240px')
+      expect(menu.attributes('style')).toContain('top: 160px')
+      expect(wrapper.find('.x-table__context-menu-item').text()).toBe('适合内容宽度')
+
+      await wrapper.find('.x-table__context-menu-item').trigger('click')
+      await nextTick()
+
+      const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
+      expect(settings.find((setting) => setting.key === 'status')?.width).toBe(248)
+      expect(settings.find((setting) => setting.key === 'count')?.width).toBe(92)
+      expect(wrapper.find('.x-table__context-menu').exists()).toBe(false)
+    } finally {
+      getContextSpy.mockRestore()
+    }
+  })
+
   it('uses 40px as the default minimum column width while resizing', async () => {
     const wrapper = mount(XTable, {
       props: {
@@ -1239,6 +1320,34 @@ describe('XTable', () => {
         }
       ]
     })
+  })
+
+  it('keeps the selection utility column sticky when data columns are fixed left', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        showSelectionColumn: true,
+        selectionMode: 'cell',
+        columnSettings: [
+          { key: 'name', order: 0, fixed: 'left' },
+          { key: 'status', order: 1, fixed: 'left' },
+          { key: 'count', order: 2, fixed: 'none' }
+        ]
+      }
+    })
+
+    const headerCells = wrapper.find('.x-table__row--header').findAll('.x-table__cell')
+    const bodyCells = wrapper.find('.x-table__row--body').findAll('.x-table__cell')
+
+    expect(headerCells[0].classes()).toContain('x-table__cell--selection')
+    expect(headerCells[0].attributes('style')).toContain('position: sticky')
+    expect(headerCells[0].attributes('style')).toContain('left: 0px')
+    expect(bodyCells[0].classes()).toContain('x-table__cell--selection')
+    expect(bodyCells[0].attributes('style')).toContain('position: sticky')
+    expect(bodyCells[0].attributes('style')).toContain('left: 0px')
+    expect(bodyCells[1].attributes('style')).toContain('left: 44px')
   })
 
   it('replaces active cell on plain click and preserves multiple cells with modifier click', async () => {

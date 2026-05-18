@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import TreeNode from './TreeNode.vue'
-import type { TreeContextAction, TreeNodeData, TreeProps } from './types'
+import { componentSizePreset } from '../../../_utils/size'
+import type { TreeContextAction, TreeNodeData, TreeNodeIcon, TreeProps } from './types'
 
 defineOptions({ name: 'XTree' })
 
 const props = withDefaults(defineProps<TreeProps>(), {
-  currentTreeKey: '',
-  currentUserId: null,
-  activeColor: '#2f66cf',
-  allowDrag: () => true,
+    currentTreeKey: '',
+    currentUserId: null,
+    activeColor: '#2f66cf',
+    textColor: 'var(--x-color-text, #121826)',
+    mutedColor: 'var(--x-color-muted, #606b7d)',
+    hoverBgColor: 'var(--x-color-primary-soft, #f5f8fb)',
+    activeBgColor: 'rgba(14, 116, 144, 0.12)',
+    activeTextColor: 'var(--x-color-text, #121826)',
+    allowDrag: () => true,
   allowDrop: () => true,
   canCreateChildByNode: () => true,
   canDeleteNodeById: () => true,
@@ -122,6 +128,31 @@ function canDeleteCurrentNode() {
   return props.canDeleteNodeById(contextMenu.node?.rawId ?? null)
 }
 
+function resolveNodeIcon(node: TreeNodeData): TreeNodeIcon {
+  return props.nodeIcon?.(node) ?? node.icon
+}
+
+function resolveTreeStyle() {
+  const sizePreset = componentSizePreset[props.size ?? 'md']
+  const paddingParts = sizePreset.padding.split(' ')
+
+  return {
+    '--x-tree-active-color': props.activeColor,
+    '--x-tree-text-color': props.textColor,
+    '--x-tree-muted-color': props.mutedColor,
+    '--x-tree-hover-bg-color': props.hoverBgColor,
+    '--x-tree-active-bg-color': props.activeBgColor,
+    '--x-tree-active-text-color': props.activeTextColor,
+    '--x-tree-active-icon-color': props.activeIconColor ?? props.activeColor,
+    '--x-tree-row-height': `${sizePreset.height + 4}px`,
+    '--x-tree-font-size': `${sizePreset.fontSize}px`,
+    '--x-tree-icon-size': `${Math.max(12, sizePreset.fontSize + 2)}px`,
+    '--x-tree-node-radius': sizePreset.radius,
+    '--x-tree-row-padding-right': paddingParts[paddingParts.length - 1] ?? '8px',
+    '--x-tree-indent-size': `${sizePreset.height > 30 ? 18 : 16}px`,
+  }
+}
+
 onMounted(() => window.addEventListener('click', closeContextMenu))
 onBeforeUnmount(() => window.removeEventListener('click', closeContextMenu))
 
@@ -129,7 +160,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
 </script>
 
 <template>
-  <div class="x-tree" :style="{ '--x-tree-active-color': props.activeColor }">
+  <div class="x-tree" :class="`x-tree--${props.size ?? 'md'}`" :style="resolveTreeStyle()">
     <div v-if="!props.treeData.length" class="x-tree__empty">还没有数据</div>
     <TreeNode
       v-for="node in props.treeData"
@@ -140,6 +171,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
       :expanded-state="expandedState"
       :dragging-node="draggingNode"
       :current-user-id="props.currentUserId"
+      :resolve-node-icon="resolveNodeIcon"
       :allow-drag="props.allowDrag"
       :allow-drop="props.allowDrop"
       @node-click="emit('nodeClick', $event)"

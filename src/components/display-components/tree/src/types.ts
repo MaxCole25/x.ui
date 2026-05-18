@@ -7,11 +7,13 @@ export type TreeContextAction =
   | 'manage-members'
   | 'migrate-node'
 export type TreeNodeType = 'group' | 'user' | 'document'
+export type TreeNodeIcon = string | false | null | undefined
 
 export interface TreeNodeData {
   id: string | number
   rawId?: number
   label: string
+  icon?: TreeNodeIcon
   isEditing?: boolean
   type?: TreeNodeType
   authorId?: number | null
@@ -30,6 +32,13 @@ export interface TreeProps {
   currentTreeKey?: string
   currentUserId?: number | null
   activeColor?: string
+  textColor?: string
+  mutedColor?: string
+  hoverBgColor?: string
+  activeBgColor?: string
+  activeTextColor?: string
+  activeIconColor?: string
+  nodeIcon?: (node: TreeNodeData) => TreeNodeIcon
   allowDrag?: (node: TreeNodeData) => boolean
   allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean
   canCreateChildByNode?: (node: TreeNodeData) => boolean

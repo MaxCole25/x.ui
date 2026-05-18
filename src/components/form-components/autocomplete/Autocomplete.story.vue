@@ -56,6 +56,7 @@ const sample = reactive({
   remoteDebounce: 200,
   remoteMinLength: 0,
   dropdownMaxHeight: 260,
+  dropdownMaxWidth: 360,
   loading: false,
   loadingText: '加载中',
   emptyText: '暂无匹配数据',
@@ -240,6 +241,10 @@ const updateRadius = (event: Event) => {
             <label>
               <span>选项框高度</span>
               <input v-model.number="sample.dropdownMaxHeight" type="number" min="80" />
+            </label>
+            <label>
+              <span>选项框宽度</span>
+              <input v-model.number="sample.dropdownMaxWidth" type="number" min="120" />
             </label>
           </div>
 

@@ -437,7 +437,7 @@ describe('元素组件', () => {
     expect(wrapper.find('.x-autocomplete__empty').text()).toBe('暂无客户')
   })
 
-  it('limits autocomplete visible options to 50 and exposes dropdown max height', async () => {
+  it('limits autocomplete visible options to 50 and exposes dropdown max size', async () => {
     const options = Array.from({ length: 60 }, (_, index) => ({
       label: `选项${index + 1}`,
       value: index + 1
@@ -446,7 +446,8 @@ describe('元素组件', () => {
       props: {
         modelValue: '',
         options,
-        dropdownMaxHeight: 180
+        dropdownMaxHeight: 180,
+        dropdownMaxWidth: 420
       }
     })
 
@@ -454,6 +455,7 @@ describe('元素组件', () => {
 
     expect(wrapper.findAll('.x-autocomplete__option')).toHaveLength(50)
     expect(wrapper.attributes('style')).toContain('--x-autocomplete-dropdown-max-height: 180px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-dropdown-max-width: 420px')
   })
 
   it('limits autocomplete options after filtering existing input', async () => {

@@ -46,6 +46,7 @@ export interface AutocompleteProps
   remoteDebounce?: number
   remoteMinLength?: number
   dropdownMaxHeight?: number | string
+  dropdownMaxWidth?: number | string
   loading?: boolean
   loadingText?: string
   emptyText?: string

@@ -83,7 +83,13 @@ interface ResolvedColumn {
   right: string
 }
 
+interface TableContextMenuState {
+  x: number
+  y: number
+}
+
 const defaultColumnMinWidth = 40
+const autoFitColumnWidthBuffer = 12
 const internalColumnSettings = ref<TableColumnSetting[]>([])
 const tableWidth = ref(0)
 const internalCurrentPage = ref(1)
@@ -164,6 +170,7 @@ const rootAttrs = computed(() => {
 
 const resolvedColumns = computed<ResolvedColumn[]>(() => {
   const columns = getOrderedSettings()
+    .filter((setting) => !setting.hidden)
     .map((setting) => {
       const column = props.columns.find((item) => item.key === setting.key)
       return column ? createResolvedColumn(column, setting) : null
@@ -257,6 +264,7 @@ const firstRightFixedColumnKey = computed(() => {
   const rightFixedColumns = resolvedColumns.value.filter((column) => column.fixed === 'right')
   return rightFixedColumns[0]?.column.key ?? null
 })
+const hasLeftFixedColumns = computed(() => resolvedColumns.value.some((column) => column.fixed === 'left'))
 const leftFrozenBoundaryShadow = 'inset -1px 0 0 var(--x-table-column-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color))), 6px 0 12px -8px rgb(15 23 42 / 38%)'
 const rightFrozenBoundaryShadow = 'inset 1px 0 0 var(--x-table-column-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color))), -6px 0 12px -8px rgb(15 23 42 / 38%)'
 const selectedCellRange = computed(() => {
@@ -315,6 +323,11 @@ let cellSelectionAutoScrollFrame = 0
 let latestCellSelectionPointer: { clientX: number; clientY: number } | null = null
 const shouldSuppressCellClick = ref(false)
 const shouldSuppressCellSelectionStart = ref(false)
+const contextMenuState = ref<TableContextMenuState | null>(null)
+const contextMenuStyle = computed<CSSProperties>(() => ({
+  left: `${contextMenuState.value?.x ?? 0}px`,
+  top: `${contextMenuState.value?.y ?? 0}px`
+}))
 
 const verticalThumbStyle = computed<CSSProperties>(() => {
   const state = scrollState.value
@@ -366,6 +379,7 @@ function handleBodyScroll(event: Event) {
   if (headerViewportRef.value && target) {
     headerViewportRef.value.scrollLeft = target.scrollLeft
   }
+  closeContextMenu()
   syncScrollState()
 }
 
@@ -1206,6 +1220,123 @@ function stopColumnResize() {
   activeColumnResize = null
 }
 
+function autoFitColumnWidth(column: ResolvedColumn, event: MouseEvent) {
+  if (!props.columnResizable) {
+    return
+  }
+
+  event.preventDefault()
+  event.stopPropagation()
+  applyAutoFitColumnWidth(column)
+}
+
+function applyAutoFitColumnWidth(column: ResolvedColumn) {
+  stopColumnResize()
+
+  const oldWidth = getResolvedColumnWidth(column)
+  const nextWidth = getAutoFitColumnWidth(column)
+  updateColumnSetting(column.column.key, { width: nextWidth, widthRatio: undefined })
+  emit('column-resize', {
+    column: column.column,
+    key: column.column.key,
+    width: nextWidth,
+    oldWidth,
+    columnSettings: internalColumnSettings.value.map((setting) => ({ ...setting }))
+  })
+}
+
+function openCellContextMenu(event: MouseEvent) {
+  event.preventDefault()
+  event.stopPropagation()
+  contextMenuState.value = {
+    x: event.clientX,
+    y: event.clientY
+  }
+}
+
+function closeContextMenu() {
+  contextMenuState.value = null
+}
+
+function handleContextMenuAutoFit() {
+  applyAutoFitAllVisibleColumns()
+  closeContextMenu()
+}
+
+function applyAutoFitAllVisibleColumns() {
+  stopColumnResize()
+  const widthByKey = new Map(resolvedColumns.value.map((column) => [column.column.key, getAutoFitColumnWidth(column)]))
+  const next = normalizeColumnSettings(internalColumnSettings.value).map((setting) => {
+    const width = widthByKey.get(setting.key)
+    return width === undefined
+      ? setting
+      : {
+          ...setting,
+          width,
+          widthRatio: undefined
+        }
+  })
+
+  setColumnSettings(next)
+}
+
+function handleWindowPointerDown(event: PointerEvent) {
+  const target = event.target as HTMLElement | null
+  if (target?.closest('.x-table__context-menu')) {
+    return
+  }
+
+  closeContextMenu()
+}
+
+function getAutoFitColumnWidth(column: ResolvedColumn) {
+  const columnIndex = resolvedColumns.value.findIndex((item) => item.column.key === column.column.key)
+  if (columnIndex < 0 || !tableRootRef.value) {
+    return getResolvedColumnWidth(column)
+  }
+
+  const utilityColumnCount = (props.rowDraggable ? 1 : 0) + (isRowSelectionColumnVisible.value ? 1 : 0)
+  const cellIndex = utilityColumnCount + columnIndex
+  const bodyCells = Array.from(
+    tableRootRef.value.querySelectorAll<HTMLElement>(`.x-table__row--body .x-table__cell:nth-child(${cellIndex + 1})`)
+  )
+  const measuredWidth = bodyCells.reduce((maxWidth, cell) => {
+    const text = cell.textContent?.trim()
+    if (!text) {
+      return maxWidth
+    }
+
+    const style = window.getComputedStyle(cell)
+    const horizontalPadding =
+      (parseCssPixelSize(style.paddingLeft) ?? 0) +
+      (parseCssPixelSize(style.paddingRight) ?? 0) +
+      (parseCssPixelSize(style.borderLeftWidth) ?? 0) +
+      (parseCssPixelSize(style.borderRightWidth) ?? 0)
+    return Math.max(maxWidth, measureTextWidth(text, getCanvasFont(style)) + horizontalPadding + autoFitColumnWidthBuffer)
+  }, 0)
+
+  return Math.max(getColumnMinWidth(column.column), Math.ceil(measuredWidth))
+}
+
+function getCanvasFont(style: CSSStyleDeclaration) {
+  if (style.font) {
+    return style.font
+  }
+
+  return `${style.fontStyle || 'normal'} ${style.fontVariant || 'normal'} ${style.fontWeight || '400'} ${style.fontSize || '14px'} ${style.fontFamily || 'sans-serif'}`
+}
+
+function measureTextWidth(text: string, font: string) {
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return 0
+  }
+
+  context.font = font
+  return context.measureText(text).width
+}
+
 function getHorizontalTrackSize() {
   return Math.max(scrollbarThumbMinSize, scrollState.value.clientWidth - scrollbarTrackInset * 2)
 }
@@ -1274,6 +1405,7 @@ function createDefaultColumnSettings() {
   return props.columns.map((column, index) => ({
     key: column.key,
     order: index,
+    hidden: false,
     fixed: 'none' as TableFixed,
     align: column.align ?? 'left',
     width: typeof column.width === 'number' ? column.width : undefined,
@@ -1288,6 +1420,7 @@ function normalizeColumnSettings(settings: TableColumnSetting[] = []) {
     return {
       key: column.key,
       order: current?.order ?? index,
+      hidden: current?.hidden ?? false,
       fixed: current?.fixed ?? 'none',
       align: current?.align ?? column.align ?? 'left',
       width: normalizeNumber(current?.width),
@@ -1616,6 +1749,21 @@ function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body', 
   return style
 }
 
+function getUtilityCellStyle(kind: 'drag' | 'selection', type: 'header' | 'body' = 'body', rowIndex = 0): CSSProperties {
+  if (!hasLeftFixedColumns.value) {
+    return {}
+  }
+
+  const style: CSSProperties = {
+    position: 'sticky',
+    left: kind === 'selection' && props.rowDraggable ? '44px' : '0px',
+    zIndex: type === 'header' ? 3 : 2,
+    background: type === 'header' ? 'var(--x-table-header-background, #f3f6fa)' : getBodyRowLayeredBackground(rowIndex)
+  }
+
+  return style
+}
+
 function getBodyRowBackground(rowIndex: number) {
   return rowIndex % 2 === 1
     ? 'var(--x-table-body-stripe-background, transparent)'
@@ -1653,6 +1801,7 @@ onMounted(() => {
   window.addEventListener('pointerup', stopColumnResize)
   window.addEventListener('pointercancel', stopScrollbarDrag)
   window.addEventListener('pointercancel', stopColumnResize)
+  window.addEventListener('pointerdown', handleWindowPointerDown)
   window.addEventListener('mousemove', handleCellSelectionPointerMove)
   window.addEventListener('mouseup', stopCellSelectionDrag)
   document.addEventListener('pointerdown', handleCellEditOutsidePointerDown, true)
@@ -1682,6 +1831,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointerup', stopColumnResize)
   window.removeEventListener('pointercancel', stopScrollbarDrag)
   window.removeEventListener('pointercancel', stopColumnResize)
+  window.removeEventListener('pointerdown', handleWindowPointerDown)
   window.removeEventListener('mousemove', handleCellSelectionPointerMove)
   window.removeEventListener('mouseup', stopCellSelectionDrag)
   document.removeEventListener('pointerdown', handleCellEditOutsidePointerDown, true)
@@ -1809,11 +1959,13 @@ defineExpose({
             class="x-table__cell x-table__cell--header x-table__cell--drag"
             role="columnheader"
             aria-label="拖拽排序"
+            :style="getUtilityCellStyle('drag', 'header')"
           />
           <div
             v-if="isRowSelectionColumnVisible"
             class="x-table__cell x-table__cell--header x-table__cell--selection"
             role="columnheader"
+            :style="getUtilityCellStyle('selection', 'header')"
           >
             <input
               class="x-table__checkbox"
@@ -1839,7 +1991,7 @@ defineExpose({
               aria-orientation="vertical"
               :aria-label="`调整 ${column.column.label} 列宽`"
               @pointerdown="startColumnResize(column, $event)"
-              @dblclick.stop
+              @dblclick="autoFitColumnWidth(column, $event)"
             />
           </div>
           <div
@@ -1874,12 +2026,18 @@ defineExpose({
                 role="cell"
                 aria-hidden="true"
                 :draggable="rowDraggable"
+                :style="getUtilityCellStyle('drag', 'body', rowIndex)"
                 @dragstart="handleRowDragStart(row, rowIndex, $event)"
                 @dragend="resetDragState"
               >
                 <span class="x-table__drag-handle">⋮⋮</span>
               </div>
-              <div v-if="isRowSelectionColumnVisible" class="x-table__cell x-table__cell--selection" role="cell">
+              <div
+                v-if="isRowSelectionColumnVisible"
+                class="x-table__cell x-table__cell--selection"
+                role="cell"
+                :style="getUtilityCellStyle('selection', 'body', rowIndex)"
+              >
                 <input
                   class="x-table__checkbox"
                   type="checkbox"
@@ -1902,6 +2060,7 @@ defineExpose({
                 @mousedown="startCellSelection(rowIndex, columnIndex, $event)"
                 @click="toggleCellSelection(row, rowIndex, column.column, $event)"
                 @dblclick="startCellEdit(row, rowIndex, column.column, $event)"
+                @contextmenu="openCellContextMenu($event)"
               >
                 <div
                   v-if="isCellEditing(row, rowIndex, column.column)"
@@ -2030,6 +2189,18 @@ defineExpose({
           下一页
         </button>
       </div>
+    </div>
+
+    <div
+      v-if="contextMenuState"
+      class="x-table__context-menu"
+      :style="contextMenuStyle"
+      role="menu"
+      @contextmenu.prevent
+    >
+      <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFit">
+        适合内容宽度
+      </button>
     </div>
   </div>
 </template>
@@ -2378,6 +2549,40 @@ defineExpose({
 
 .x-table__cell + .x-table__cell {
   border-left: var(--x-table-vertical-border-width, 1px) solid var(--x-table-column-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color)));
+}
+
+.x-table__context-menu {
+  background: var(--x-table-control-bg, #fff);
+  border: 1px solid var(--x-table-control-border-color, #cbd5e1);
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgb(15 23 42 / 16%);
+  box-sizing: border-box;
+  min-width: 132px;
+  padding: 4px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.x-table__context-menu-item {
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--x-table-control-text-color, #334155);
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  line-height: 1.4;
+  padding: 6px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.x-table__context-menu-item:hover,
+.x-table__context-menu-item:focus-visible {
+  background: var(--x-table-control-hover-bg, #f8fafc);
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
+  outline: none;
 }
 
 .x-table__cell.is-cell-selectable {

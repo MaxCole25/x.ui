@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { componentSizePreset } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { DialogProps } from './types'
@@ -205,15 +206,32 @@ onBeforeUnmount(() => {
 })
 
 const popupStyle = computed(() => ({
+  ...createElementStyleVars(props),
   width: `${popupWidth.value}px`,
   height: `${popupHeight.value}px`,
   left: `${popupLeft.value}px`,
   top: `${popupTop.value}px`,
+  '--x-dialog-bg': props.backgroundColor,
+  '--x-dialog-text': props.textColor,
+  '--x-dialog-border-color': props.borderColor,
+  '--x-dialog-border-width': toCssSize(props.borderWidth),
+  '--x-dialog-title': props.titleColor,
+  '--x-dialog-header-bg': props.headerBackgroundColor,
+  '--x-dialog-body-bg': props.bodyBackgroundColor,
+  '--x-dialog-footer-bg': props.footerBackgroundColor,
+  '--x-dialog-header-border': props.headerBorderColor,
+  '--x-dialog-footer-border': props.footerBorderColor,
+  '--x-dialog-close-icon': props.closeIconColor,
+  '--x-dialog-close-icon-hover': props.closeIconHoverColor,
+  '--x-dialog-close-hover-bg': props.closeIconHoverBackgroundColor,
+  '--x-dialog-shadow': props.shadow,
+  '--x-dialog-resizer-color': props.resizerColor,
   '--x-dialog-font-size': `${componentSizePreset[props.size ?? 'md'].fontSize}px`,
   '--x-dialog-control-height': `${componentSizePreset[props.size ?? 'md'].height}px`
 }))
 
 const maskStyle = computed(() => ({
+  '--x-dialog-mask': props.maskColor,
   '--x-dialog-z-index': props.zIndex
 }))
 </script>
@@ -248,7 +266,7 @@ const maskStyle = computed(() => ({
   position: fixed;
   inset: 0;
   z-index: var(--x-dialog-z-index, var(--x-z-index-dialog, 1900));
-  background: rgba(18, 28, 45, 0.4);
+  background: var(--x-dialog-mask, rgba(18, 28, 45, 0.4));
 }
 
 .x-dialog {
@@ -256,10 +274,11 @@ const maskStyle = computed(() => ({
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--x-color-border, #d8d9df);
+  border: var(--x-element-border-width, var(--x-dialog-border-width, 1px)) solid var(--x-element-border-color, var(--x-dialog-border-color, var(--x-color-border, #d8d9df)));
   border-radius: var(--x-dialog-radius, 8px);
-  background: #fff;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
+  background: var(--x-element-bg, var(--x-dialog-bg, var(--x-color-surface, #fff)));
+  box-shadow: var(--x-dialog-shadow, 0 24px 80px rgba(15, 23, 42, 0.22));
+  color: var(--x-element-text, var(--x-dialog-text, var(--x-color-text, #2f3445)));
 }
 
 .x-dialog__header {
@@ -267,6 +286,9 @@ const maskStyle = computed(() => ({
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  background: var(--x-dialog-header-bg, var(--x-element-bg, var(--x-dialog-bg, var(--x-color-surface, #fff))));
+  border-bottom: 1px solid var(--x-dialog-header-border, transparent);
+  color: var(--x-dialog-title, var(--x-element-text, var(--x-dialog-text, var(--x-color-text, #2f3445))));
   padding: var(--x-dialog-header-padding, 16px 18px 10px);
   cursor: move;
   user-select: none;
@@ -276,7 +298,7 @@ const maskStyle = computed(() => ({
   min-width: 0;
   font-size: calc(var(--x-dialog-font-size, 12px) + 4px);
   font-weight: 700;
-  color: var(--x-color-text, #2f3445);
+  color: inherit;
 }
 
 .x-dialog__close {
@@ -285,18 +307,20 @@ const maskStyle = computed(() => ({
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--x-color-text-muted, #8c93a6);
+  color: var(--x-dialog-close-icon, var(--x-color-text-muted, #8c93a6));
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
 }
 
 .x-dialog__close:hover {
-  background: var(--x-color-surface-soft, #f7f8fb);
-  color: var(--x-color-text, #2f3445);
+  background: var(--x-dialog-close-hover-bg, var(--x-color-surface-soft, #f7f8fb));
+  color: var(--x-dialog-close-icon-hover, var(--x-color-text, #2f3445));
 }
 
 .x-dialog__body {
+  background: var(--x-dialog-body-bg, var(--x-element-bg, var(--x-dialog-bg, var(--x-color-surface, #fff))));
+  color: var(--x-element-text, var(--x-dialog-text, var(--x-color-text, #2f3445)));
   flex: 1 1 auto;
   min-height: 0;
   padding: var(--x-dialog-body-padding, 0 18px 12px);
@@ -305,6 +329,8 @@ const maskStyle = computed(() => ({
 }
 
 .x-dialog__footer {
+  background: var(--x-dialog-footer-bg, var(--x-element-bg, var(--x-dialog-bg, var(--x-color-surface, #fff))));
+  border-top: 1px solid var(--x-dialog-footer-border, transparent);
   flex: 0 0 auto;
   padding: var(--x-dialog-footer-padding, 0 18px 14px);
 }
@@ -325,8 +351,8 @@ const maskStyle = computed(() => ({
   position: absolute;
   right: 1px;
   bottom: 1px;
-  border-right: 2px solid rgba(140, 147, 166, 0.75);
-  border-bottom: 2px solid rgba(140, 147, 166, 0.75);
+  border-right: 2px solid var(--x-dialog-resizer-color, rgba(140, 147, 166, 0.75));
+  border-bottom: 2px solid var(--x-dialog-resizer-color, rgba(140, 147, 166, 0.75));
 }
 
 .x-dialog__resizer::before {

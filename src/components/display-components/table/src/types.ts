@@ -18,6 +18,7 @@ export interface TableColumn<Row extends Record<string, unknown> = Record<string
 export interface TableColumnSetting {
   key: string
   order?: number
+  hidden?: boolean
   fixed?: TableFixed
   align?: TableAlign
   widthRatio?: number
