@@ -1,8 +1,9 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import * as XLSX from 'xlsx'
 import { XTable } from '../src'
 import type { TableColumn } from '../src'
 
@@ -30,6 +31,30 @@ describe('XTable', () => {
     const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const match = source.match(new RegExp(`${escapedSelector}\\s*\\{[\\s\\S]*?\\n\\}`))
     return match?.[0] ?? ''
+  }
+
+  function mockClipboard(text = '') {
+    const original = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    const clipboard = {
+      readText: vi.fn().mockResolvedValue(text),
+      writeText: vi.fn().mockResolvedValue(undefined)
+    }
+
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: clipboard
+    })
+
+    return {
+      clipboard,
+      restore: () => {
+        if (original) {
+          Object.defineProperty(navigator, 'clipboard', original)
+        } else {
+          delete (navigator as unknown as { clipboard?: Clipboard }).clipboard
+        }
+      }
+    }
   }
 
   it('renders headers and rows', () => {
@@ -702,9 +727,20 @@ describe('XTable', () => {
       expect(menu.exists()).toBe(true)
       expect(menu.attributes('style')).toContain('left: 240px')
       expect(menu.attributes('style')).toContain('top: 160px')
-      expect(wrapper.find('.x-table__context-menu-item').text()).toBe('适合内容宽度')
+      expect(wrapper.findAll('.x-table__context-menu-item').map((item) => item.text())).toEqual([
+        '复制Ctrl+C',
+        '粘贴Ctrl+V',
+        '增加行Ctrl+I',
+        '向上插入行Ctrl+U',
+        '向下插入行Ctrl+D',
+        '适合宽度Ctrl+W',
+        '适应宽度',
+        '导出Excel（默认表格数据）',
+        '导出Excel（格式化文字）',
+        '导入Excel'
+      ])
 
-      await wrapper.find('.x-table__context-menu-item').trigger('click')
+      await wrapper.findAll('.x-table__context-menu-item')[5].trigger('click')
       await nextTick()
 
       const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
@@ -714,6 +750,464 @@ describe('XTable', () => {
     } finally {
       getContextSpy.mockRestore()
     }
+  })
+
+  it('keeps the context menu inside the viewport near browser edges', async () => {
+    const widthDescriptor = Object.getOwnPropertyDescriptor(window, 'innerWidth')
+    const heightDescriptor = Object.getOwnPropertyDescriptor(window, 'innerHeight')
+    const getRectSpy = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      if (this.classList.contains('x-table__context-menu')) {
+        return {
+          width: 220,
+          height: 180,
+          x: 450,
+          y: 260,
+          top: 260,
+          left: 450,
+          right: 670,
+          bottom: 440,
+          toJSON: () => ({})
+        } as DOMRect
+      }
+
+      return {
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        toJSON: () => ({})
+      } as DOMRect
+    })
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 500 })
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 300 })
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 450, clientY: 260 })
+      await nextTick()
+      await nextTick()
+
+      const style = wrapper.find('.x-table__context-menu').attributes('style')
+      expect(style).toContain('left: 272px')
+      expect(style).toContain('top: 80px')
+    } finally {
+      getRectSpy.mockRestore()
+      if (widthDescriptor) {
+        Object.defineProperty(window, 'innerWidth', widthDescriptor)
+      }
+      if (heightDescriptor) {
+        Object.defineProperty(window, 'innerHeight', heightDescriptor)
+      }
+    }
+  })
+
+  it('auto fits all visible columns with the keyboard shortcut', async () => {
+    const measureText = vi.fn((text: string) => ({ width: text.includes('很长') ? 236 : text.length * 10 }))
+    const getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ measureText } as unknown as CanvasRenderingContext2D)
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'status', label: '状态', width: 120 },
+          { key: 'count', label: '数量', width: 96 }
+        ],
+        data: [
+          { id: 1, status: '短', count: 1 },
+          { id: 2, status: '很长的可见单元格文本', count: 22 }
+        ]
+      }
+    })
+
+    try {
+      await wrapper.find('.x-table').trigger('keydown', { key: 'w', ctrlKey: true })
+      await nextTick()
+
+      const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
+      expect(settings.find((setting) => setting.key === 'status')?.width).toBe(248)
+      expect(settings.find((setting) => setting.key === 'count')?.width).toBe(40)
+    } finally {
+      getContextSpy.mockRestore()
+    }
+  })
+
+  it('auto fits all visible columns with header text from the context menu', async () => {
+    const measureText = vi.fn((text: string) => {
+      if (text === '很长的表头文字') {
+        return { width: 220 }
+      }
+      if (text === '22') {
+        return { width: 80 }
+      }
+      return { width: text.length * 10 }
+    })
+    const getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ measureText } as unknown as CanvasRenderingContext2D)
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'status', label: '很长的表头文字', width: 120 },
+          { key: 'count', label: '数量', width: 96 }
+        ],
+        data: [
+          { id: 1, status: '短', count: 1 },
+          { id: 2, status: '中', count: 22 }
+        ]
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+      await wrapper.findAll('.x-table__context-menu-item')[6].trigger('click')
+      await nextTick()
+
+      const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
+      expect(settings.find((setting) => setting.key === 'status')?.width).toBe(232)
+      expect(settings.find((setting) => setting.key === 'count')?.width).toBe(92)
+      expect(measureText).toHaveBeenCalledWith('很长的表头文字')
+      expect(wrapper.find('.x-table__context-menu').exists()).toBe(false)
+    } finally {
+      getContextSpy.mockRestore()
+    }
+  })
+
+  it('enables copy and paste menu items only for cell selection and editable cell selection', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+
+    let menuItems = wrapper.findAll('.x-table__context-menu-item')
+    expect(menuItems[0].text()).toBe('复制Ctrl+C')
+    expect(menuItems[1].text()).toBe('粘贴Ctrl+V')
+    expect(menuItems[0].attributes('disabled')).toBeDefined()
+    expect(menuItems[1].attributes('disabled')).toBeDefined()
+
+    await wrapper.setProps({ showSelection: true, selectionMode: 'cell' })
+    menuItems = wrapper.findAll('.x-table__context-menu-item')
+    expect(menuItems[0].attributes('disabled')).toBeUndefined()
+    expect(menuItems[1].attributes('disabled')).toBeDefined()
+
+    await wrapper.setProps({ editable: true })
+    menuItems = wrapper.findAll('.x-table__context-menu-item')
+    expect(menuItems[0].attributes('disabled')).toBeUndefined()
+    expect(menuItems[1].attributes('disabled')).toBeUndefined()
+  })
+
+  it('enables row context actions only while editable and pagination is disabled', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+
+    let menuItems = wrapper.findAll('.x-table__context-menu-item')
+    expect(menuItems[2].text()).toBe('增加行Ctrl+I')
+    expect(menuItems[3].text()).toBe('向上插入行Ctrl+U')
+    expect(menuItems[4].text()).toBe('向下插入行Ctrl+D')
+    expect(menuItems[2].attributes('disabled')).toBeDefined()
+    expect(menuItems[3].attributes('disabled')).toBeDefined()
+    expect(menuItems[4].attributes('disabled')).toBeDefined()
+
+    await wrapper.setProps({ editable: true })
+    menuItems = wrapper.findAll('.x-table__context-menu-item')
+    expect(menuItems[2].attributes('disabled')).toBeUndefined()
+    expect(menuItems[3].attributes('disabled')).toBeUndefined()
+    expect(menuItems[4].attributes('disabled')).toBeUndefined()
+
+    await wrapper.setProps({ showPagination: true })
+    menuItems = wrapper.findAll('.x-table__context-menu-item')
+    expect(menuItems[2].attributes('disabled')).toBeDefined()
+    expect(menuItems[3].attributes('disabled')).toBeDefined()
+    expect(menuItems[4].attributes('disabled')).toBeDefined()
+  })
+
+  it('adds and inserts empty rows from the context menu', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true
+      }
+    })
+
+    await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+    await wrapper.findAll('.x-table__context-menu-item')[2].trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+      ...data,
+      { id: 3, name: '', status: '', count: '' }
+    ])
+
+    await wrapper.setProps({
+      data: [
+        ...data,
+        { id: 3, name: '', status: '', count: '' }
+      ]
+    })
+    await wrapper.findAll('.x-table__row--body')[1].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+    await wrapper.findAll('.x-table__context-menu-item')[3].trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:data')?.[1]?.[0]).toEqual([
+      data[0],
+      { id: 4, name: '', status: '', count: '' },
+      data[1],
+      { id: 3, name: '', status: '', count: '' }
+    ])
+
+    await wrapper.setProps({
+      data: [
+        data[0],
+        { id: 4, name: '', status: '', count: '' },
+        data[1],
+        { id: 3, name: '', status: '', count: '' }
+      ]
+    })
+    await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+    await wrapper.findAll('.x-table__context-menu-item')[4].trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:data')?.[2]?.[0]).toEqual([
+      data[0],
+      { id: 5, name: '', status: '', count: '' },
+      { id: 4, name: '', status: '', count: '' },
+      data[1],
+      { id: 3, name: '', status: '', count: '' }
+    ])
+  })
+
+  it('adds and inserts empty rows with keyboard shortcuts', async () => {
+    const appendWrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true
+      }
+    })
+
+    await appendWrapper.find('.x-table').trigger('keydown', { key: 'i', ctrlKey: true })
+    await nextTick()
+
+    expect(appendWrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+      ...data,
+      { id: 3, name: '', status: '', count: '' }
+    ])
+
+    const insertAboveWrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['2::name']
+      }
+    })
+
+    await insertAboveWrapper.find('.x-table').trigger('keydown', { key: 'u', ctrlKey: true })
+    await nextTick()
+
+    expect(insertAboveWrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+      data[0],
+      { id: 3, name: '', status: '', count: '' },
+      data[1]
+    ])
+
+    const insertBelowWrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    await insertBelowWrapper.find('.x-table').trigger('keydown', { key: 'd', ctrlKey: true })
+    await nextTick()
+
+    expect(insertBelowWrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+      data[0],
+      { id: 3, name: '', status: '', count: '' },
+      data[1]
+    ])
+  })
+
+  it('copies selected cell text from the context menu and keyboard shortcut', async () => {
+    const { clipboard, restore } = mockClipboard()
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::name', '1::status', '2::name', '2::status']
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[1].trigger('contextmenu', { clientX: 20, clientY: 20 })
+      await wrapper.findAll('.x-table__context-menu-item')[0].trigger('click')
+      await flushPromises()
+
+      expect(clipboard.writeText).toHaveBeenLastCalledWith('工作台\t启用\n成员管理\t停用')
+
+      await wrapper.find('.x-table').trigger('keydown', { key: 'c', ctrlKey: true })
+      await flushPromises()
+
+      expect(clipboard.writeText).toHaveBeenLastCalledWith('工作台\t启用\n成员管理\t停用')
+    } finally {
+      restore()
+    }
+  })
+
+  it('pastes clipboard text into selected cells from the context menu and keyboard shortcut', async () => {
+    const { clipboard, restore } = mockClipboard('控制台\t启用\n报表中心\t停用')
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true,
+        selectionMode: 'cell',
+        editable: true,
+        selectedCellKeys: ['1::name']
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[1].trigger('contextmenu', { clientX: 20, clientY: 20 })
+      await wrapper.findAll('.x-table__context-menu-item')[1].trigger('click')
+      await flushPromises()
+
+      expect(clipboard.readText).toHaveBeenCalled()
+      expect(wrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+        { id: 1, name: '控制台', status: '启用', count: 12 },
+        { id: 2, name: '报表中心', status: '停用', count: 5 }
+      ])
+      expect(wrapper.emitted('update:selectedCellKeys')?.[0]?.[0]).toEqual(['1::name', '1::status', '2::name', '2::status'])
+
+      const keyboardWrapper = mount(XTable, {
+        props: {
+          columns,
+          data: [
+            { id: 1, name: '控制台', status: '启用', count: 12 },
+            { id: 2, name: '报表中心', status: '停用', count: 5 }
+          ],
+          showSelection: true,
+          selectionMode: 'cell',
+          editable: true,
+          selectedCellKeys: ['1::count']
+        }
+      })
+      clipboard.readText.mockResolvedValue('42')
+      await keyboardWrapper.find('.x-table').trigger('keydown', { key: 'v', ctrlKey: true })
+      await flushPromises()
+
+      expect(keyboardWrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+        { id: 1, name: '控制台', status: '启用', count: 42 },
+        { id: 2, name: '报表中心', status: '停用', count: 5 }
+      ])
+      const keyboardCellChangeEvents = keyboardWrapper.emitted('cell-change') ?? []
+      expect(keyboardCellChangeEvents[keyboardCellChangeEvents.length - 1]?.[0]).toMatchObject({
+        rowIndex: 0,
+        column: expect.objectContaining({ key: 'count' }),
+        value: 42,
+        oldValue: 12
+      })
+    } finally {
+      restore()
+    }
+  })
+
+  it('exports raw and formatted Excel data from the context menu', async () => {
+    const aoaSpy = vi.spyOn(XLSX.utils, 'aoa_to_sheet')
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    try {
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+      await wrapper.findAll('.x-table__context-menu-item')[7].trigger('click')
+      await flushPromises()
+
+      expect(aoaSpy).toHaveBeenLastCalledWith([
+        ['名称', '状态', '数量'],
+        ['工作台', '启用', 12],
+        ['成员管理', '停用', 5]
+      ])
+      expect(wrapper.emitted('excel-export')?.[0]?.[0]).toMatchObject({ mode: 'raw', fileName: 'table-data.xlsx' })
+
+      await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+      await wrapper.findAll('.x-table__context-menu-item')[8].trigger('click')
+      await flushPromises()
+
+      expect(aoaSpy).toHaveBeenLastCalledWith([
+        ['名称', '状态', '数量'],
+        ['工作台', '启用', '12 个'],
+        ['成员管理', '停用', '5 个']
+      ])
+      expect(wrapper.emitted('excel-export')?.[1]?.[0]).toMatchObject({ mode: 'formatted', fileName: 'table-formatted.xlsx' })
+    } finally {
+      aoaSpy.mockRestore()
+    }
+  })
+
+  it('enables Excel import only while editable and imports rows by column label', async () => {
+    const worksheet = XLSX.utils.aoa_to_sheet([
+      ['名称', '状态', '数量'],
+      ['控制台', '启用', 42],
+      ['报表中心', '停用', 8]
+    ])
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+    const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer
+    const file = new File([buffer], 'rows.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+
+    await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
+    expect(wrapper.findAll('.x-table__context-menu-item')[9].attributes('disabled')).toBeDefined()
+
+    await wrapper.setProps({ editable: true })
+    expect(wrapper.findAll('.x-table__context-menu-item')[9].attributes('disabled')).toBeUndefined()
+
+    await (wrapper.vm as unknown as { importExcelFile: (file: File) => Promise<void> }).importExcelFile(file)
+    await flushPromises()
+
+    expect(wrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+      { id: 1, name: '控制台', status: '启用', count: 42 },
+      { id: 2, name: '报表中心', status: '停用', count: 8 }
+    ])
+    expect(wrapper.emitted('excel-import')?.[0]?.[0]).toMatchObject({
+      file,
+      rows: [
+        { id: 1, name: '控制台', status: '启用', count: 42 },
+        { id: 2, name: '报表中心', status: '停用', count: 8 }
+      ]
+    })
   })
 
   it('uses 40px as the default minimum column width while resizing', async () => {
@@ -807,6 +1301,30 @@ describe('XTable', () => {
 
     await wrapper.findAll('.x-table__checkbox')[2].setValue(true)
 
+    expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual(['1', '2'])
+    expect(wrapper.emitted('selection-change')?.[0]?.[0]).toMatchObject({
+      keys: ['1', '2'],
+      rows: data
+    })
+  })
+
+  it('selects all visible rows from the header checkbox without external row key binding', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showSelection: true
+      }
+    })
+
+    const checkboxes = wrapper.findAll('.x-table__checkbox')
+    await checkboxes[0].setValue(true)
+    await nextTick()
+
+    const nextCheckboxes = wrapper.findAll('.x-table__checkbox')
+    expect((nextCheckboxes[0].element as HTMLInputElement).checked).toBe(true)
+    expect((nextCheckboxes[1].element as HTMLInputElement).checked).toBe(true)
+    expect((nextCheckboxes[2].element as HTMLInputElement).checked).toBe(true)
     expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual(['1', '2'])
     expect(wrapper.emitted('selection-change')?.[0]?.[0]).toMatchObject({
       keys: ['1', '2'],

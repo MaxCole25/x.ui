@@ -58,6 +58,7 @@ export interface TabsProps {
   showAvatar?: boolean
   showCloseIcon?: boolean
   showRefreshIcon?: boolean
+  showContextMenu?: boolean
   draggable?: boolean
   activeTabBgColor?: string
   activeTabTextColor?: string

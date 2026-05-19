@@ -5,6 +5,7 @@ export type TableRowKey = string | number
 export type TableReorderPosition = 'before' | 'after'
 export type TableSelectionMode = 'row' | 'cell'
 export type TablePaginationMode = 'client' | 'server'
+export type TableExcelExportMode = 'raw' | 'formatted'
 
 export interface TableColumn<Row extends Record<string, unknown> = Record<string, unknown>> {
   key: string
@@ -87,6 +88,19 @@ export interface TableCellChangePayload<Row extends Record<string, unknown> = Re
   oldValue: unknown
 }
 
+export interface TableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  mode: TableExcelExportMode
+  fileName: string
+  rows: Row[]
+  columns: TableColumn<Row>[]
+}
+
+export interface TableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  file: File
+  rows: Row[]
+  columns: TableColumn<Row>[]
+}
+
 export interface TableProps<Row extends Record<string, unknown> = Record<string, unknown>> {
   size?: XSize
   data: Row[]
@@ -139,6 +153,9 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
 export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>
 export type XlTableColumnSetting = TableColumnSetting
 export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
+export type XlTableExcelExportMode = TableExcelExportMode
+export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
+export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>
 export type XlTablePaginationChangePayload = TablePaginationChangePayload
 export type XlTablePaginationMode = TablePaginationMode
 export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>

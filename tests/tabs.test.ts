@@ -159,6 +159,23 @@ describe('XTabs', () => {
     wrapper.unmount()
   })
 
+  it('hides context menu when showContextMenu is false', async () => {
+    const wrapper = mount(XTabs, {
+      attachTo: document.body,
+      props: {
+        modelValue: 'a',
+        items,
+        showContextMenu: false
+      }
+    })
+
+    await wrapper.find('.x-tabs__item').trigger('contextmenu', { clientX: 12, clientY: 24 })
+
+    expect(document.body.querySelector('.x-tabs__menu')).toBeNull()
+
+    wrapper.unmount()
+  })
+
   it('switches active tab', async () => {
     const wrapper = mount(XTabs, {
       props: {

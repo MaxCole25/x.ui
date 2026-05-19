@@ -10,6 +10,9 @@ import type {
   TableColumn,
   TableColumnResizePayload,
   TableColumnSetting,
+  TableExcelExportMode,
+  TableExcelExportPayload,
+  TableExcelImportPayload,
   TableFixed,
   TablePaginationChangePayload,
   TablePaginationMode,
@@ -71,6 +74,8 @@ const emit = defineEmits<{
   (e: 'page-change', value: TablePaginationChangePayload): void
   (e: 'page-size-change', value: TablePaginationChangePayload): void
   (e: 'pagination-change', value: TablePaginationChangePayload): void
+  (e: 'excel-export', value: TableExcelExportPayload): void
+  (e: 'excel-import', value: TableExcelImportPayload): void
 }>()
 
 interface ResolvedColumn {
@@ -86,6 +91,7 @@ interface ResolvedColumn {
 interface TableContextMenuState {
   x: number
   y: number
+  rowIndex: number
 }
 
 const defaultColumnMinWidth = 40
@@ -204,7 +210,7 @@ const slotScope = computed<TableTopSlotScope>(() => ({
   data: props.data,
   visibleData: visibleData.value,
   columnSettings: getOrderedSettings().map((setting) => ({ ...setting })),
-  selectedRowKeys: normalizedSelectedRowKeys.value,
+  selectedRowKeys: activeSelectedRowKeys.value,
   selectedCellKeys: normalizedSelectedCellKeys.value,
   pagination: paginationState.value,
   updateColumnSetting,
@@ -218,6 +224,8 @@ const slotScope = computed<TableTopSlotScope>(() => ({
 const tableRootRef = ref<HTMLElement | null>(null)
 const headerViewportRef = ref<HTMLElement | null>(null)
 const bodyViewportRef = ref<HTMLElement | null>(null)
+const excelInputRef = ref<HTMLInputElement | null>(null)
+const contextMenuRef = ref<HTMLElement | null>(null)
 const scrollState = ref({
   scrollLeft: 0,
   scrollTop: 0,
@@ -231,21 +239,27 @@ const hasVerticalScrollbar = computed(() => scrollState.value.scrollHeight > scr
 const hasHorizontalScrollbar = computed(() => scrollState.value.scrollWidth > scrollState.value.clientWidth + 1)
 const scrollbarTrackInset = 8
 const scrollbarThumbMinSize = 28
+const contextMenuViewportMargin = 8
 const normalizedSelectionMode = computed<TableSelectionMode>(() => props.selectionMode ?? 'row')
 const isRowSelectionEnabled = computed(() => props.showSelection && normalizedSelectionMode.value === 'row' && !props.editable)
 const isRowSelectionColumnVisible = computed(() => props.showSelection && props.showSelectionColumn)
 const isCellSelectionEnabled = computed(() => props.showSelection && normalizedSelectionMode.value === 'cell')
+const isCellCopyEnabled = computed(() => isCellSelectionEnabled.value)
+const isCellPasteEnabled = computed(() => props.editable && isCellSelectionEnabled.value)
+const isContextRowMutationEnabled = computed(() => props.editable && !props.showPagination)
 const normalizedSelectedRowKeys = computed(() => (props.selectedRowKeys ?? []).map((key) => String(key)))
 const normalizedSelectedCellKeys = computed(() => props.selectedCellKeys ?? [])
+const internalSelectedRowKeys = ref<string[]>([])
 const internalSelectedCellKeys = ref<string[]>([])
 const previewSelectedCellKeys = ref<string[] | null>(null)
+const activeSelectedRowKeys = computed(() => internalSelectedRowKeys.value)
 const activeSelectedCellKeys = computed(() => previewSelectedCellKeys.value ?? internalSelectedCellKeys.value)
 let latestLocalSelectedCellSignature = ''
 const pendingLocalSelectedCellSignatures = new Set<string>()
 let isIgnoringStaleExternalCellSelection = false
 let staleExternalCellSelectionTimer: number | null = null
 const selectableRowKeys = computed(() => visibleRows.value.map(({ row, rowIndex }) => getRowKey(row, rowIndex)))
-const selectedRowKeySet = computed(() => new Set(normalizedSelectedRowKeys.value))
+const selectedRowKeySet = computed(() => new Set(activeSelectedRowKeys.value))
 const selectedCellKeySet = computed(() => new Set(activeSelectedCellKeys.value))
 const rowIndexByKey = computed(() => new Map(props.data.map((row, index) => [getRowKey(row, index), index])))
 const columnIndexByKey = computed(() => new Map(resolvedColumns.value.map((column, index) => [column.column.key, index])))
@@ -319,6 +333,7 @@ let pendingCellSelection:
       cells: Array<{ row: Record<string, unknown>; value: unknown; column: TableColumn; rowIndex: number }>
     }
   | null = null
+let internalClipboardText = ''
 let cellSelectionAutoScrollFrame = 0
 let latestCellSelectionPointer: { clientX: number; clientY: number } | null = null
 const shouldSuppressCellClick = ref(false)
@@ -529,7 +544,7 @@ function emitCellRangeSelection(startRowIndex: number, startColumnIndex: number,
 
 function toggleRowSelection(row: Record<string, unknown>, rowIndex: number, checked: boolean) {
   const key = getRowKey(row, rowIndex)
-  const next = new Set(normalizedSelectedRowKeys.value)
+  const next = new Set(activeSelectedRowKeys.value)
   if (checked) {
     next.add(key)
   } else {
@@ -544,6 +559,7 @@ function toggleAllSelection(checked: boolean) {
 }
 
 function emitSelectionChange(keys: string[]) {
+  internalSelectedRowKeys.value = [...keys]
   const keySet = new Set(keys)
   const rows = props.data.filter((row, index) => keySet.has(getRowKey(row, index)))
   emit('update:selectedRowKeys', keys)
@@ -967,6 +983,58 @@ function handleTableKeydown(event: KeyboardEvent) {
     return
   }
 
+  if (isCopyShortcut(event) && !editingCellKey.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    void copySelectedCells()
+    return
+  }
+
+  if (isPasteShortcut(event) && !editingCellKey.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    void pasteSelectedCells()
+    return
+  }
+
+  if (isAppendRowShortcut(event) && !editingCellKey.value && isContextRowMutationEnabled.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    appendEmptyRow()
+    return
+  }
+
+  if (
+    isInsertRowAboveShortcut(event) &&
+    !editingCellKey.value &&
+    isContextRowMutationEnabled.value &&
+    getActiveSelectedCellCoordinate()
+  ) {
+    event.preventDefault()
+    event.stopPropagation()
+    insertEmptyRowFromActiveSelection('above')
+    return
+  }
+
+  if (
+    isInsertRowBelowShortcut(event) &&
+    !editingCellKey.value &&
+    isContextRowMutationEnabled.value &&
+    getActiveSelectedCellCoordinate()
+  ) {
+    event.preventDefault()
+    event.stopPropagation()
+    insertEmptyRowFromActiveSelection('below')
+    return
+  }
+
+  if (isAutoFitWidthShortcut(event) && !editingCellKey.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    applyAutoFitAllVisibleColumns()
+    return
+  }
+
   if (event.key === 'Tab' && isCellSelectionEnabled.value && !editingCellKey.value) {
     event.preventDefault()
     event.stopPropagation()
@@ -1015,6 +1083,217 @@ function handleTableKeydown(event: KeyboardEvent) {
   event.preventDefault()
   event.stopPropagation()
   beginCellEdit(row, rowIndex, column, event.key)
+}
+
+function isCopyShortcut(event: KeyboardEvent) {
+  return (event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'c'
+}
+
+function isPasteShortcut(event: KeyboardEvent) {
+  return (event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'v'
+}
+
+function isAppendRowShortcut(event: KeyboardEvent) {
+  return isPlainControlShortcut(event, 'i')
+}
+
+function isInsertRowAboveShortcut(event: KeyboardEvent) {
+  return isPlainControlShortcut(event, 'u')
+}
+
+function isInsertRowBelowShortcut(event: KeyboardEvent) {
+  return isPlainControlShortcut(event, 'd')
+}
+
+function isAutoFitWidthShortcut(event: KeyboardEvent) {
+  return isPlainControlShortcut(event, 'w')
+}
+
+function isPlainControlShortcut(event: KeyboardEvent, key: string) {
+  return (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === key
+}
+
+async function copySelectedCells() {
+  if (!isCellCopyEnabled.value) {
+    return
+  }
+
+  const text = getSelectedCellsClipboardText()
+  if (!text) {
+    return
+  }
+
+  internalClipboardText = text
+  await writeClipboardText(text)
+}
+
+async function pasteSelectedCells() {
+  if (!isCellPasteEnabled.value) {
+    return
+  }
+
+  const text = await readClipboardText()
+  if (!text) {
+    return
+  }
+
+  pasteClipboardTextToCells(text)
+}
+
+function getSelectedCellsClipboardText() {
+  const coordinates = getSelectedCellCoordinates()
+  if (coordinates.length === 0) {
+    return ''
+  }
+
+  const minRowIndex = Math.min(...coordinates.map((item) => item.rowIndex))
+  const maxRowIndex = Math.max(...coordinates.map((item) => item.rowIndex))
+  const minColumnIndex = Math.min(...coordinates.map((item) => item.columnIndex))
+  const maxColumnIndex = Math.max(...coordinates.map((item) => item.columnIndex))
+  const selectedCoordinateSet = new Set(coordinates.map((item) => `${item.rowIndex}:${item.columnIndex}`))
+  const lines: string[] = []
+
+  for (let rowIndex = minRowIndex; rowIndex <= maxRowIndex; rowIndex += 1) {
+    const values: string[] = []
+    const row = props.data[rowIndex]
+    for (let columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex += 1) {
+      const column = resolvedColumns.value[columnIndex]?.column
+      values.push(row && column && selectedCoordinateSet.has(`${rowIndex}:${columnIndex}`) ? formatCellValue(row, column) : '')
+    }
+    lines.push(values.join('\t'))
+  }
+
+  return lines.join('\n')
+}
+
+function getSelectedCellCoordinates() {
+  const coordinates: Array<{ rowIndex: number; columnIndex: number }> = []
+  const visited = new Set<string>()
+
+  activeSelectedCellKeys.value.forEach((key) => {
+    const separatorIndex = key.indexOf('::')
+    if (separatorIndex < 0) {
+      return
+    }
+
+    const rowKey = key.slice(0, separatorIndex)
+    const columnKey = key.slice(separatorIndex + 2)
+    const rowIndex = rowIndexByKey.value.get(rowKey)
+    const columnIndex = columnIndexByKey.value.get(columnKey)
+    const coordinateKey = `${rowIndex}:${columnIndex}`
+    if (rowIndex !== undefined && columnIndex !== undefined && !visited.has(coordinateKey)) {
+      visited.add(coordinateKey)
+      coordinates.push({ rowIndex, columnIndex })
+    }
+  })
+
+  return coordinates.sort((a, b) => a.rowIndex - b.rowIndex || a.columnIndex - b.columnIndex)
+}
+
+function pasteClipboardTextToCells(text: string) {
+  const origin = getActiveSelectedCellCoordinate()
+  if (!origin) {
+    return
+  }
+
+  const matrix = parseClipboardText(text)
+  if (matrix.length === 0) {
+    return
+  }
+
+  const rows = props.data.map((row) => ({ ...row }))
+  const changedCells: Array<{ rowIndex: number; column: TableColumn; value: unknown; oldValue: unknown }> = []
+  matrix.forEach((line, rowOffset) => {
+    const rowIndex = origin.rowIndex + rowOffset
+    const row = rows[rowIndex]
+    if (!row) {
+      return
+    }
+
+    line.forEach((rawValue, columnOffset) => {
+      const column = resolvedColumns.value[origin.columnIndex + columnOffset]?.column
+      if (!column) {
+        return
+      }
+
+      const oldValue = getCellValue(props.data[rowIndex], column)
+      const value = normalizeEditedCellValue(rawValue, oldValue)
+      if (Object.is(value, oldValue)) {
+        return
+      }
+
+      row[column.key] = value
+      changedCells.push({ rowIndex, column, value, oldValue })
+    })
+  })
+
+  const lastRowIndex = Math.min(props.data.length - 1, origin.rowIndex + matrix.length - 1)
+  const lastColumnIndex = Math.min(resolvedColumns.value.length - 1, origin.columnIndex + Math.max(...matrix.map((line) => line.length)) - 1)
+  if (lastRowIndex >= origin.rowIndex && lastColumnIndex >= origin.columnIndex) {
+    const selection = getRangeCellSelection(origin.rowIndex, origin.columnIndex, lastRowIndex, lastColumnIndex)
+    emitCellSelectionChange(selection.keys, selection.cells)
+  }
+
+  if (changedCells.length === 0) {
+    return
+  }
+
+  emit('update:data', rows)
+  changedCells.forEach((cell) => {
+    const row = rows[cell.rowIndex]
+    emit('cell-change', {
+      row,
+      rows,
+      rowIndex: cell.rowIndex,
+      column: cell.column,
+      key: getRowKey(row, cell.rowIndex),
+      value: cell.value,
+      oldValue: cell.oldValue
+    })
+  })
+}
+
+function getActiveSelectedCellCoordinate() {
+  const key = activeSelectedCellKeys.value[activeSelectedCellKeys.value.length - 1]
+  if (!key) {
+    return null
+  }
+
+  const separatorIndex = key.indexOf('::')
+  if (separatorIndex < 0) {
+    return null
+  }
+
+  const rowKey = key.slice(0, separatorIndex)
+  const columnKey = key.slice(separatorIndex + 2)
+  const rowIndex = rowIndexByKey.value.get(rowKey)
+  const columnIndex = columnIndexByKey.value.get(columnKey)
+  return rowIndex === undefined || columnIndex === undefined ? null : { rowIndex, columnIndex }
+}
+
+function parseClipboardText(text: string) {
+  const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n+$/, '')
+  if (!normalized) {
+    return []
+  }
+
+  return normalized.split('\n').map((line) => line.split('\t'))
+}
+
+async function writeClipboardText(text: string) {
+  try {
+    await navigator.clipboard?.writeText(text)
+  } catch {
+    // The in-memory fallback keeps component copy/paste usable in non-secure test or preview contexts.
+  }
+}
+
+async function readClipboardText() {
+  try {
+    return (await navigator.clipboard?.readText()) ?? internalClipboardText
+  } catch {
+    return internalClipboardText
+  }
 }
 
 function moveActiveCellSelectionByColumn(delta: -1 | 1, fromKey = activeSelectedCellKeys.value[activeSelectedCellKeys.value.length - 1]) {
@@ -1245,17 +1524,145 @@ function applyAutoFitColumnWidth(column: ResolvedColumn) {
   })
 }
 
-function openCellContextMenu(event: MouseEvent) {
+function openCellContextMenu(event: MouseEvent, rowIndex: number) {
   event.preventDefault()
   event.stopPropagation()
   contextMenuState.value = {
     x: event.clientX,
-    y: event.clientY
+    y: event.clientY,
+    rowIndex
   }
+  void nextTick(adjustContextMenuPosition)
 }
 
 function closeContextMenu() {
   contextMenuState.value = null
+}
+
+function adjustContextMenuPosition() {
+  const state = contextMenuState.value
+  const menu = contextMenuRef.value
+  if (!state || !menu) {
+    return
+  }
+
+  const rect = menu.getBoundingClientRect()
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+  const maxX = Math.max(contextMenuViewportMargin, viewportWidth - rect.width - contextMenuViewportMargin)
+  const maxY = Math.max(contextMenuViewportMargin, viewportHeight - rect.height - contextMenuViewportMargin)
+  let x = state.x
+  let y = state.y
+
+  if (x + rect.width + contextMenuViewportMargin > viewportWidth) {
+    x = maxX
+  }
+
+  if (y + rect.height + contextMenuViewportMargin > viewportHeight) {
+    y = Math.max(contextMenuViewportMargin, state.y - rect.height)
+  }
+
+  if (y + rect.height + contextMenuViewportMargin > viewportHeight) {
+    y = maxY
+  }
+
+  if (x !== state.x || y !== state.y) {
+    contextMenuState.value = { ...state, x, y }
+  }
+}
+
+function handleContextMenuCopy() {
+  if (!isCellCopyEnabled.value) {
+    return
+  }
+
+  closeContextMenu()
+  void copySelectedCells()
+}
+
+function handleContextMenuPaste() {
+  if (!isCellPasteEnabled.value) {
+    return
+  }
+
+  closeContextMenu()
+  void pasteSelectedCells()
+}
+
+function handleContextMenuAppendRow() {
+  if (!isContextRowMutationEnabled.value) {
+    return
+  }
+
+  appendEmptyRow()
+  closeContextMenu()
+}
+
+function handleContextMenuInsertRow(position: 'above' | 'below') {
+  if (!isContextRowMutationEnabled.value) {
+    return
+  }
+
+  insertEmptyRow(contextMenuState.value?.rowIndex ?? props.data.length - 1, position)
+  closeContextMenu()
+}
+
+function appendEmptyRow() {
+  emit('update:data', [...props.data, createEmptyRow()])
+}
+
+function insertEmptyRow(targetRowIndex: number, position: 'above' | 'below') {
+  const rows = [...props.data]
+  const safeTargetIndex = Math.min(Math.max(targetRowIndex, 0), rows.length - 1)
+  const insertIndex = rows.length === 0 ? 0 : safeTargetIndex + (position === 'below' ? 1 : 0)
+  rows.splice(insertIndex, 0, createEmptyRow())
+  emit('update:data', rows)
+}
+
+function insertEmptyRowFromActiveSelection(position: 'above' | 'below') {
+  if (!isContextRowMutationEnabled.value) {
+    return
+  }
+
+  const coordinate = getActiveSelectedCellCoordinate()
+  if (!coordinate) {
+    return
+  }
+
+  insertEmptyRow(coordinate.rowIndex, position)
+}
+
+function createEmptyRow() {
+  const row: Record<string, unknown> = {}
+  props.columns.forEach((column) => {
+    row[column.key] = ''
+  })
+  row[props.rowKey] = getNextRowKeyValue()
+  return row
+}
+
+function getNextRowKeyValue() {
+  const values = props.data.map((row) => row[props.rowKey])
+  if (values.length === 0) {
+    return 1
+  }
+
+  const numberValues = values.filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+  if (numberValues.length === values.length) {
+    return Math.max(...numberValues) + 1
+  }
+
+  const stringValues = values.filter((value): value is string => typeof value === 'string' && /^\d+$/.test(value))
+  if (stringValues.length === values.length) {
+    return String(Math.max(...stringValues.map((value) => Number(value))) + 1)
+  }
+
+  const existingKeys = new Set(values.map((value) => String(value)))
+  let nextIndex = props.data.length + 1
+  while (existingKeys.has(String(nextIndex))) {
+    nextIndex += 1
+  }
+  return String(nextIndex)
 }
 
 function handleContextMenuAutoFit() {
@@ -1263,9 +1670,156 @@ function handleContextMenuAutoFit() {
   closeContextMenu()
 }
 
-function applyAutoFitAllVisibleColumns() {
+function handleContextMenuAutoFitWithHeader() {
+  applyAutoFitAllVisibleColumns({ includeHeader: true })
+  closeContextMenu()
+}
+
+function handleContextMenuExport(mode: TableExcelExportMode) {
+  closeContextMenu()
+  void exportExcel(mode)
+}
+
+function handleContextMenuImport() {
+  if (!props.editable) {
+    return
+  }
+
+  closeContextMenu()
+  excelInputRef.value?.click()
+}
+
+async function exportExcel(mode: TableExcelExportMode) {
+  const xlsx = await import('xlsx')
+  const columns = getExcelColumns()
+  const rows = props.data
+  const fileName = mode === 'formatted' ? 'table-formatted.xlsx' : 'table-data.xlsx'
+  const body = rows.map((row) =>
+    columns.map((column) => (mode === 'formatted' ? formatCellValue(row, column) : normalizeExcelCellValue(getCellValue(row, column))))
+  )
+  const worksheet = xlsx.utils.aoa_to_sheet([columns.map((column) => column.label), ...body])
+  const workbook = xlsx.utils.book_new()
+  xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+  downloadExcelWorkbook(xlsx, workbook, fileName)
+  emit('excel-export', {
+    mode,
+    fileName,
+    rows: rows.map((row) => ({ ...row })),
+    columns: columns.map((column) => ({ ...column }))
+  })
+}
+
+async function handleExcelFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+
+  if (!file || !props.editable) {
+    return
+  }
+
+  await importExcelFile(file)
+}
+
+async function importExcelFile(file: File) {
+  if (!props.editable) {
+    return
+  }
+
+  const xlsx = await import('xlsx')
+  const buffer = await readExcelFile(file)
+  const workbook = xlsx.read(buffer, { type: 'array' })
+  const firstSheetName = workbook.SheetNames[0]
+  const worksheet = firstSheetName ? workbook.Sheets[firstSheetName] : undefined
+  if (!worksheet) {
+    return
+  }
+
+  const matrix = xlsx.utils.sheet_to_json<unknown[]>(worksheet, { header: 1, defval: '' }) as unknown[][]
+  const rows = createRowsFromExcelMatrix(matrix)
+  emit('update:data', rows)
+  emit('excel-import', {
+    file,
+    rows: rows.map((row) => ({ ...row })),
+    columns: getExcelColumns().map((column) => ({ ...column }))
+  })
+}
+
+function downloadExcelWorkbook(xlsx: typeof import('xlsx'), workbook: import('xlsx').WorkBook, fileName: string) {
+  if (typeof document === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
+    return
+  }
+
+  const output = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer
+  const blob = new Blob([output], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+function readExcelFile(file: File) {
+  if (typeof file.arrayBuffer === 'function') {
+    return file.arrayBuffer()
+  }
+
+  return new Promise<ArrayBuffer>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as ArrayBuffer)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+function getExcelColumns() {
+  return resolvedColumns.value.map((item) => item.column)
+}
+
+function createRowsFromExcelMatrix(matrix: unknown[][]) {
+  const columns = getExcelColumns()
+  const dataRows = matrix.filter((row) => row.some((cell) => String(cell ?? '').trim() !== ''))
+  if (dataRows.length === 0) {
+    return []
+  }
+
+  const header = dataRows[0]
+  const headerIndexByName = new Map(header.map((cell, index) => [normalizeExcelHeader(cell), index]))
+  const hasHeader = columns.some((column) => headerIndexByName.has(normalizeExcelHeader(column.label)) || headerIndexByName.has(normalizeExcelHeader(column.key)))
+  const rows = hasHeader ? dataRows.slice(1) : dataRows
+
+  return rows.map((row, rowIndex) => {
+    const base = props.data[rowIndex] ? { ...props.data[rowIndex] } : { [props.rowKey]: rowIndex + 1 }
+    columns.forEach((column, columnIndex) => {
+      const index = hasHeader
+        ? headerIndexByName.get(normalizeExcelHeader(column.label)) ?? headerIndexByName.get(normalizeExcelHeader(column.key)) ?? columnIndex
+        : columnIndex
+      base[column.key] = row[index] ?? ''
+    })
+    return base
+  })
+}
+
+function normalizeExcelHeader(value: unknown) {
+  return String(value ?? '').trim().toLowerCase()
+}
+
+function normalizeExcelCellValue(value: unknown) {
+  if (value === null || value === undefined) {
+    return ''
+  }
+
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value instanceof Date) {
+    return value
+  }
+
+  return JSON.stringify(value)
+}
+
+function applyAutoFitAllVisibleColumns(options: { includeHeader?: boolean } = {}) {
   stopColumnResize()
-  const widthByKey = new Map(resolvedColumns.value.map((column) => [column.column.key, getAutoFitColumnWidth(column)]))
+  const widthByKey = new Map(resolvedColumns.value.map((column) => [column.column.key, getAutoFitColumnWidth(column, options)]))
   const next = normalizeColumnSettings(internalColumnSettings.value).map((setting) => {
     const width = widthByKey.get(setting.key)
     return width === undefined
@@ -1289,7 +1843,7 @@ function handleWindowPointerDown(event: PointerEvent) {
   closeContextMenu()
 }
 
-function getAutoFitColumnWidth(column: ResolvedColumn) {
+function getAutoFitColumnWidth(column: ResolvedColumn, options: { includeHeader?: boolean } = {}) {
   const columnIndex = resolvedColumns.value.findIndex((item) => item.column.key === column.column.key)
   if (columnIndex < 0 || !tableRootRef.value) {
     return getResolvedColumnWidth(column)
@@ -1300,22 +1854,28 @@ function getAutoFitColumnWidth(column: ResolvedColumn) {
   const bodyCells = Array.from(
     tableRootRef.value.querySelectorAll<HTMLElement>(`.x-table__row--body .x-table__cell:nth-child(${cellIndex + 1})`)
   )
-  const measuredWidth = bodyCells.reduce((maxWidth, cell) => {
-    const text = cell.textContent?.trim()
-    if (!text) {
-      return maxWidth
-    }
-
-    const style = window.getComputedStyle(cell)
-    const horizontalPadding =
-      (parseCssPixelSize(style.paddingLeft) ?? 0) +
-      (parseCssPixelSize(style.paddingRight) ?? 0) +
-      (parseCssPixelSize(style.borderLeftWidth) ?? 0) +
-      (parseCssPixelSize(style.borderRightWidth) ?? 0)
-    return Math.max(maxWidth, measureTextWidth(text, getCanvasFont(style)) + horizontalPadding + autoFitColumnWidthBuffer)
-  }, 0)
+  const headerCell = options.includeHeader
+    ? tableRootRef.value.querySelector<HTMLElement>(`.x-table__row--header .x-table__cell:nth-child(${cellIndex + 1})`)
+    : null
+  const measuredCells = headerCell ? [headerCell, ...bodyCells] : bodyCells
+  const measuredWidth = measuredCells.reduce((maxWidth, cell) => Math.max(maxWidth, getAutoFitCellWidth(cell)), 0)
 
   return Math.max(getColumnMinWidth(column.column), Math.ceil(measuredWidth))
+}
+
+function getAutoFitCellWidth(cell: HTMLElement) {
+  const text = cell.textContent?.trim()
+  if (!text) {
+    return 0
+  }
+
+  const style = window.getComputedStyle(cell)
+  const horizontalPadding =
+    (parseCssPixelSize(style.paddingLeft) ?? 0) +
+    (parseCssPixelSize(style.paddingRight) ?? 0) +
+    (parseCssPixelSize(style.borderLeftWidth) ?? 0) +
+    (parseCssPixelSize(style.borderRightWidth) ?? 0)
+  return measureTextWidth(text, getCanvasFont(style)) + horizontalPadding + autoFitColumnWidthBuffer
 }
 
 function getCanvasFont(style: CSSStyleDeclaration) {
@@ -1876,6 +2436,14 @@ watch(
 )
 
 watch(
+  normalizedSelectedRowKeys,
+  (keys) => {
+    internalSelectedRowKeys.value = [...keys]
+  },
+  { immediate: true }
+)
+
+watch(
   normalizedSelectedCellKeys,
   (keys) => {
     const signature = getSelectedCellKeySignature(keys)
@@ -1919,7 +2487,9 @@ defineExpose({
   resetColumnSettings,
   getPagination: () => ({ ...paginationState.value }),
   setPage,
-  setPageSize
+  setPageSize,
+  exportExcel,
+  importExcelFile
 })
 </script>
 
@@ -2060,7 +2630,7 @@ defineExpose({
                 @mousedown="startCellSelection(rowIndex, columnIndex, $event)"
                 @click="toggleCellSelection(row, rowIndex, column.column, $event)"
                 @dblclick="startCellEdit(row, rowIndex, column.column, $event)"
-                @contextmenu="openCellContextMenu($event)"
+                @contextmenu="openCellContextMenu($event, rowIndex)"
               >
                 <div
                   v-if="isCellEditing(row, rowIndex, column.column)"
@@ -2193,15 +2763,135 @@ defineExpose({
 
     <div
       v-if="contextMenuState"
+      ref="contextMenuRef"
       class="x-table__context-menu"
       :style="contextMenuStyle"
       role="menu"
       @contextmenu.prevent
     >
-      <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFit">
-        适合内容宽度
-      </button>
+      <div class="x-table__context-menu-section" role="group" aria-label="剪贴板">
+        <button
+          class="x-table__context-menu-item"
+          type="button"
+          role="menuitem"
+          :disabled="!isCellCopyEnabled"
+          @click="handleContextMenuCopy"
+        >
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-file-copy-line" aria-hidden="true"></i>
+            <span>复制</span>
+          </span>
+          <kbd class="x-table__context-menu-shortcut">Ctrl+C</kbd>
+        </button>
+        <button
+          class="x-table__context-menu-item"
+          type="button"
+          role="menuitem"
+          :disabled="!isCellPasteEnabled"
+          @click="handleContextMenuPaste"
+        >
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-clipboard-line" aria-hidden="true"></i>
+            <span>粘贴</span>
+          </span>
+          <kbd class="x-table__context-menu-shortcut">Ctrl+V</kbd>
+        </button>
+      </div>
+
+      <div class="x-table__context-menu-section" role="group" aria-label="行操作">
+        <button
+          class="x-table__context-menu-item"
+          type="button"
+          role="menuitem"
+          :disabled="!isContextRowMutationEnabled"
+          @click="handleContextMenuAppendRow"
+        >
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-add-line" aria-hidden="true"></i>
+            <span>增加行</span>
+          </span>
+          <kbd class="x-table__context-menu-shortcut">Ctrl+I</kbd>
+        </button>
+        <button
+          class="x-table__context-menu-item"
+          type="button"
+          role="menuitem"
+          :disabled="!isContextRowMutationEnabled"
+          @click="handleContextMenuInsertRow('above')"
+        >
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-insert-row-top" aria-hidden="true"></i>
+            <span>向上插入行</span>
+          </span>
+          <kbd class="x-table__context-menu-shortcut">Ctrl+U</kbd>
+        </button>
+        <button
+          class="x-table__context-menu-item"
+          type="button"
+          role="menuitem"
+          :disabled="!isContextRowMutationEnabled"
+          @click="handleContextMenuInsertRow('below')"
+        >
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-insert-row-bottom" aria-hidden="true"></i>
+            <span>向下插入行</span>
+          </span>
+          <kbd class="x-table__context-menu-shortcut">Ctrl+D</kbd>
+        </button>
+      </div>
+
+      <div class="x-table__context-menu-section" role="group" aria-label="列宽">
+        <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFit">
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-arrow-left-right-line" aria-hidden="true"></i>
+            <span>适合宽度</span>
+          </span>
+          <kbd class="x-table__context-menu-shortcut">Ctrl+W</kbd>
+        </button>
+        <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFitWithHeader">
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-layout-column-line" aria-hidden="true"></i>
+            <span>适应宽度</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="x-table__context-menu-section" role="group" aria-label="Excel">
+        <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuExport('raw')">
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-download-2-line" aria-hidden="true"></i>
+            <span>导出Excel（默认表格数据）</span>
+          </span>
+        </button>
+        <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuExport('formatted')">
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-file-excel-2-line" aria-hidden="true"></i>
+            <span>导出Excel（格式化文字）</span>
+          </span>
+        </button>
+        <button
+          class="x-table__context-menu-item"
+          type="button"
+          role="menuitem"
+          :disabled="!editable"
+          @click="handleContextMenuImport"
+        >
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-upload-2-line" aria-hidden="true"></i>
+            <span>导入Excel</span>
+          </span>
+        </button>
+      </div>
     </div>
+    <input
+      ref="excelInputRef"
+      class="x-table__excel-input"
+      type="file"
+      accept=".xlsx,.xls,.csv"
+      tabindex="-1"
+      aria-hidden="true"
+      @change="handleExcelFileChange"
+    />
   </div>
 </template>
 
@@ -2557,25 +3247,59 @@ defineExpose({
   border-radius: 6px;
   box-shadow: 0 10px 24px rgb(15 23 42 / 16%);
   box-sizing: border-box;
-  min-width: 132px;
+  min-width: 220px;
   padding: 4px;
   position: fixed;
-  z-index: 1000;
+  z-index: var(--x-z-index-popper, 2000);
+}
+
+.x-table__context-menu-section + .x-table__context-menu-section {
+  border-top: 1px solid var(--x-table-control-border-color, #e2e8f0);
+  margin-top: 4px;
+  padding-top: 4px;
 }
 
 .x-table__context-menu-item {
+  align-items: center;
   background: transparent;
   border: 0;
   border-radius: 4px;
   box-sizing: border-box;
   color: var(--x-table-control-text-color, #334155);
   cursor: pointer;
-  display: block;
+  display: flex;
   font: inherit;
+  gap: 16px;
+  justify-content: space-between;
   line-height: 1.4;
   padding: 6px 10px;
   text-align: left;
   width: 100%;
+}
+
+.x-table__context-menu-label {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.x-table__context-menu-icon {
+  color: currentcolor;
+  flex: 0 0 auto;
+  font-size: calc(var(--x-table-font-size, 12px) + 3px);
+  line-height: 1;
+}
+
+.x-table__context-menu-shortcut {
+  background: transparent;
+  border: 0;
+  color: var(--x-table-control-disabled-text-color, #94a3b8);
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: calc(var(--x-table-font-size, 12px) - 1px);
+  letter-spacing: 0;
+  padding: 0;
 }
 
 .x-table__context-menu-item:hover,
@@ -2583,6 +3307,16 @@ defineExpose({
   background: var(--x-table-control-hover-bg, #f8fafc);
   color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
   outline: none;
+}
+
+.x-table__context-menu-item:disabled {
+  background: transparent;
+  color: var(--x-table-control-disabled-text-color, #94a3b8);
+  cursor: not-allowed;
+}
+
+.x-table__excel-input {
+  display: none;
 }
 
 .x-table__cell.is-cell-selectable {

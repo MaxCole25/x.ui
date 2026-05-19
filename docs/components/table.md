@@ -1,6 +1,6 @@
 # 表格 Table
 
-`XTable` 是一个从简单展示重新开始的表格组件。当前版本负责数据渲染、基础列样式、插槽扩展、分页、列设置、选择、编辑和拖拽排序；搜索、导入导出等复杂能力会在后续逐步加回。
+`XTable` 是一个从简单展示重新开始的表格组件。当前版本负责数据渲染、基础列样式、插槽扩展、分页、列设置、选择、编辑、复制粘贴、拖拽排序和 Excel 导入导出。
 
 组件主体使用 `div + CSS grid` 实现，方便后续扩展固定列、虚拟滚动和单元格编辑。
 
@@ -190,7 +190,7 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 ## 选择列和行拖拽排序
 
-开启 `show-selection` 后，表格进入可选择状态。`selection-mode="row"` 时点击当前行任意位置会选中或取消选中该行，通过 `v-model:selected-row-keys` 维护当前选中的行键；同时可以用 `show-selection-column` 控制是否显示左侧选择行列，显示时选中行会自动打勾。开启 `editable` 后，普通单元格点击需要留给编辑交互，整行点击选中会失效，用户只能通过左侧选择列勾选行；双击数据单元格会进入内联编辑，默认使用 `XBaseInput`，也可以用 `editor-[key]` 插槽替换指定列的编辑器，提交后通过 `update:data` 和 `cell-change` 抛出结果。`selection-mode="cell"` 时普通点击数据单元格只会在当前单元格上显示激活框，通过 `v-model:selected-cell-keys` 维护当前激活的单元格 key；选中一个单元格后按 Tab 会让选区右移一列，当前行最后一列会跳到下一行第一列，按 Shift+Tab 会左移一列，当前行第一列会跳到上一行最后一列；按 Enter 会让选区移动到当前列下一行，当前列最后一行会跳到下一列第一行；选中一个单元格后直接输入普通字符，也会进入编辑态并用输入的字符作为新内容；按住 Ctrl 或 Command 点击时可以保留多个单元格激活态；按下并拖过其它单元格时会形成矩形框选区域，选区右下角的方形手柄可以再次拖拽调整选区大小。选择行列和单元格选择互不冲突，单元格选择模式下仍可通过左侧选择列勾选行。
+开启 `show-selection` 后，表格进入可选择状态。`selection-mode="row"` 时点击当前行任意位置会选中或取消选中该行，通过 `v-model:selected-row-keys` 维护当前选中的行键；同时可以用 `show-selection-column` 控制是否显示左侧选择行列，显示时选中行会自动打勾。开启 `editable` 后，普通单元格点击需要留给编辑交互，整行点击选中会失效，用户只能通过左侧选择列勾选行；双击数据单元格会进入内联编辑，默认使用 `XBaseInput`，也可以用 `editor-[key]` 插槽替换指定列的编辑器，提交后通过 `update:data` 和 `cell-change` 抛出结果。`selection-mode="cell"` 时普通点击数据单元格只会在当前单元格上显示激活框，通过 `v-model:selected-cell-keys` 维护当前激活的单元格 key；选中一个单元格后按 Tab 会让选区右移一列，当前行最后一列会跳到下一行第一列，按 Shift+Tab 会左移一列，当前行第一列会跳到上一行最后一列；按 Enter 会让选区移动到当前列下一行，当前列最后一行会跳到下一列第一行；选中一个单元格后直接输入普通字符，也会进入编辑态并用输入的字符作为新内容；按住 Ctrl 或 Command 点击时可以保留多个单元格激活态；按下并拖过其它单元格时会形成矩形框选区域，选区右下角的方形手柄可以再次拖拽调整选区大小。单元格选择开启后，可以通过右键菜单或 Ctrl/Cmd+C 复制当前选区为制表符分隔文本；只有同时开启 `editable` 和单元格选择时，才能通过右键菜单或 Ctrl/Cmd+V 从剪贴板粘贴，粘贴会从当前最后一个选中单元格开始向右、向下写入可见列。选择行列和单元格选择互不冲突，单元格选择模式下仍可通过左侧选择列勾选行。
 
 单元格框选区域支持通过 props 或 CSS 变量配置选区背景色、文字色、边框色和相邻单元格之间的内线色。未传 props 时，仍可以在表格容器或主题节点上直接覆盖 `--x-table-cell-selected-background`、`--x-table-cell-selected-text-color`、`--x-table-cell-selected-border-color`、`--x-table-cell-selected-inner-border-color`。
 
@@ -240,6 +240,23 @@ function handleRowReorder(payload: TableRowReorderPayload) {
   />
 </template>
 ```
+
+## Excel 导入导出
+
+在数据单元格上右键会打开表格右键菜单。菜单按剪贴板、行操作、列宽和 Excel 分组：
+
+- `复制`：复制当前单元格选区，快捷键为 `Ctrl+C`。只有开启单元格选择时可用。
+- `粘贴`：从当前最后一个选中单元格开始粘贴剪贴板内容，快捷键为 `Ctrl+V`。只有同时开启 `editable` 和单元格选择时可用。
+- `增加行`：在表格末尾追加一行空数据，快捷键为 `Ctrl+I`。只有开启 `editable` 且未开启分页时可用。
+- `向上插入行`：在当前右键行上方插入一行空数据，快捷键为 `Ctrl+U`。只有开启 `editable` 且未开启分页时可用。
+- `向下插入行`：在当前右键行下方插入一行空数据，快捷键为 `Ctrl+D`。只有开启 `editable` 且未开启分页时可用。
+- `适合宽度`：按当前可见列的数据单元格文字调整列宽，不计算表头文字宽度，快捷键为 `Ctrl+W`。
+- `适应宽度`：按当前可见列的数据单元格文字和表头文字调整列宽。
+- `导出Excel（默认表格数据）`：按当前可见列顺序导出 `data` 中的原始字段值。
+- `导出Excel（格式化文字）`：按当前可见列顺序导出单元格展示文字，会应用 `TableColumn.formatter`。
+- `导入Excel`：读取首个工作表，并按表头文本匹配 `column.label` 或 `column.key` 后更新 `data`。该菜单项只有 `editable` 为 `true` 时可用，导入后通过 `update:data` 和 `excel-import` 抛出结果。
+
+导入时如果 Excel 没有表头，会按当前可见列顺序读取；未在表格中显示的字段会尽量保留原行数据，新导入出的额外行会自动补充 `row-key` 字段。
 
 ## 撑满父元素
 
@@ -348,6 +365,8 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | cell-selection-change | 选中单元格变化时触发，包含选中 key 和单元格数据 | `{ keys, cells }` |
 | update:data | 单元格编辑提交后触发，支持 `v-model:data` | `Record<string, unknown>[]` |
 | cell-change | 单元格编辑提交后触发，包含当前行、全量行、列和值变化 | `TableCellChangePayload` |
+| excel-export | 右键菜单导出 Excel 后触发，包含导出模式、行数据和列配置 | `TableExcelExportPayload` |
+| excel-import | 导入 Excel 后触发，包含文件、导入后的行数据和列配置 | `TableExcelImportPayload` |
 | row-click | 单击数据行时触发，包含当前行、行索引、行 key 和原始鼠标事件 | `TableRowClickPayload` |
 | row-dblclick | 双击数据行时触发，包含当前行、行索引、行 key 和原始鼠标事件 | `TableRowClickPayload` |
 | column-resize | 表头拖拽调整列宽时触发，包含列、列 key、新旧宽度和最新列设置 | `TableColumnResizePayload` |
@@ -378,6 +397,8 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | getPagination | 获取当前分页状态 | `() => TablePaginationState` |
 | setPage | 设置当前页，并触发分页事件 | `(page: number) => void` |
 | setPageSize | 设置每页条数，并触发分页事件 | `(pageSize: number) => void` |
+| exportExcel | 导出 Excel，`raw` 为默认字段值，`formatted` 为格式化文字 | `(mode: 'raw' \| 'formatted') => Promise<void>` |
+| importExcelFile | 导入指定 Excel 文件，只有 `editable` 为 `true` 时会更新数据 | `(file: File) => Promise<void>` |
 
 ## 手动验收建议
 
@@ -387,5 +408,8 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 - 开启 `show-selection` 后，检查行选、单元格点击选择、Tab / Shift+Tab 横向移动选区、Ctrl/Command 多选、拖拽框选、手柄调整选区、选择行列勾选和已选数量是否正确；再开启 `editable`，确认普通单元格点击不会切换行选，只能通过选择列勾选行，双击单元格或选中单元格后直接输入字符都可以进入编辑并提交新值。
 - 开启 `row-draggable` 后，从拖拽列拖拽数据行，检查拖拽高亮和排序结果是否正确；从普通单元格开始拖动不应触发行排序。
 - 开启 `show-column-settings` 后，点击表顶列设置图标按钮，在 `XDialog` 弹窗中检查列名拖拽排序、左/右冻结、对齐、比例宽度和 px 宽度是否生效。
+- 在数据单元格右键菜单中检查复制、粘贴启用条件和 `Ctrl+C`、`Ctrl+V` 快捷键文案；开启单元格选择后复制选区，开启 `editable` 后从剪贴板粘贴多行多列内容，确认 `v-model:data` 得到更新。
+- 在未开启分页且开启 `editable` 时，通过右键菜单和 `Ctrl+I`、`Ctrl+U`、`Ctrl+D` 检查 `增加行`、`向上插入行`、`向下插入行` 是否能更新 `v-model:data`；开启分页后这三项应禁用。
+- 在数据单元格右键菜单中分别检查 `适合宽度` 和 `适应宽度`，并用 `Ctrl+W` 检查 `适合宽度` 快捷键；确认后者会把表头文字宽度也纳入列宽计算；分别导出默认表格数据和格式化文字，确认 `formatter` 列导出内容符合预期；开启 `editable` 后导入 Excel，确认菜单可用且 `v-model:data` 得到更新。
 - 在窄容器中检查横向滚动和文本截断效果。
 - 开启 `fill-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。

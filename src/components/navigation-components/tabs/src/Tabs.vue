@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<TabsProps>(), {
   showAvatar: true,
   showCloseIcon: true,
   showRefreshIcon: false,
+  showContextMenu: true,
   draggable: false,
   activeTabBgColor: '#0B4A52',
   activeTabTextColor: '#7FD6F6',
@@ -415,6 +416,10 @@ function getAvatarText(item: TabItem) {
 }
 
 function openContextMenu(item: TabItem, event: MouseEvent) {
+  if (!props.showContextMenu) {
+    return
+  }
+
   event.preventDefault()
   event.stopPropagation()
 

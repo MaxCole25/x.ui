@@ -221,6 +221,15 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
   rowEventText.value = `${payload.mode === 'server' ? '服务器' : '客户端'}分页：第 ${payload.currentPage} 页，每页 ${payload.pageSize} 条`
 }
 
+function handleExcelExport(payload: { mode: 'raw' | 'formatted' }) {
+  rowEventText.value = payload.mode === 'formatted' ? '已导出格式化文字 Excel' : '已导出默认表格数据 Excel'
+}
+
+function handleExcelImport(payload: { rows: Record<string, unknown>[] }) {
+  rows.value = payload.rows as DemoRow[]
+  rowEventText.value = `已导入 Excel：${payload.rows.length} 条`
+}
+
 function getEditorNumberValue(value: string | number | undefined) {
   if (typeof value === 'number') {
     return value
@@ -503,6 +512,8 @@ function updatePaginationMode(value: string | number | boolean) {
             @column-resize="handleColumnResize"
             @row-reorder="handleRowReorder"
             @pagination-change="handlePaginationChange"
+            @excel-export="handleExcelExport"
+            @excel-import="handleExcelImport"
             @column-settings-click="settingsDialogVisible = true"
           >
             <template #top="{ columnSettings, updateColumnSetting, reorderColumnSetting, resetColumnSettings }">

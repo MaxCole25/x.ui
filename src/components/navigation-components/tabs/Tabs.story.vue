@@ -24,6 +24,7 @@ const config = reactive({
   stretch: false,
   showAvatar: true,
   showRefreshIcon: true,
+  showContextMenu: true,
   borderRadius: 4,
   tabFontSize: 14,
   tabMinWidth: 140,
@@ -81,6 +82,7 @@ function handleReorder(payload: TabsReorderPayload) {
           <label><input v-model="config.lazy" type="checkbox" />懒渲染</label>
           <label><input v-model="config.stretch" type="checkbox" />拉伸</label>
           <label><input v-model="config.showAvatar" type="checkbox" />头像</label>
+          <label><input v-model="config.showContextMenu" type="checkbox" />右键菜单</label>
           <label>
             圆角
             <input v-model.number="config.borderRadius" type="number" min="0" max="24" style="width: 64px" />
@@ -147,6 +149,7 @@ function handleReorder(payload: TabsReorderPayload) {
             :stretch="config.stretch"
             :show-avatar="config.showAvatar"
             :show-refresh-icon="config.showRefreshIcon"
+            :show-context-menu="config.showContextMenu"
             :border-radius="config.borderRadius"
             :tab-font-size="config.tabFontSize"
             :tab-min-width="config.tabMinWidth"
