@@ -1995,8 +1995,8 @@
 }
 
 .x-radio-button {
-  --x-radio-button-color: var(--x-form-color, #0078d7);
-  --x-radio-button-radius: var(--x-radius-md);
+  --x-radio-button-color: var(--x-form-color, var(--x-color-primary, #1264f4));
+  --x-radio-button-radius: var(--x-radius-md, 6px);
   background: var(--x-radio-button-bg, var(--x-radio-button-default-bg, var(--x-element-bg, #fff)));
   border: var(--x-radio-button-border-width, var(--x-element-border-width, 1px)) solid var(--x-radio-button-border, var(--x-radio-button-border-color-fallback, var(--x-element-border-color, var(--x-form-border-color, #dcdfe6))));
   border-radius: var(--x-radio-button-radius);
@@ -2006,8 +2006,10 @@
   font-family: var(--x-radio-button-font-family, var(--x-font-family));
   gap: 0;
   justify-content: center;
+  line-height: 1;
   max-width: 100%;
   min-width: 0;
+  overflow: hidden;
   position: relative;
   transition:
     background-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1),
@@ -2015,13 +2017,14 @@
     box-shadow 160ms cubic-bezier(0.645, 0.045, 0.355, 1),
     color 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
   user-select: none;
+  white-space: nowrap;
   width: var(--x-radio-button-width, auto);
 }
 
 .x-radio-button--solid {
   --x-radio-button-default-bg: var(--x-radio-button-color);
   --x-radio-button-default-text: #fff;
-  --x-radio-button-border-color-fallback: var(--x-element-border-color, var(--x-radio-button-color));
+  --x-radio-button-border-color-fallback: var(--x-radio-button-color);
 }
 
 .x-radio-button--outline {
@@ -2033,7 +2036,7 @@
 .x-radio-button--ghost {
   --x-radio-button-default-bg: var(--x-element-bg, transparent);
   --x-radio-button-default-text: var(--x-radio-button-color);
-  --x-radio-button-border-color-fallback: var(--x-element-border-color, transparent);
+  --x-radio-button-border-color-fallback: transparent;
 }
 
 .x-radio-button--horizontal + .x-radio-button--horizontal {
@@ -2064,10 +2067,15 @@
   border-top-right-radius: 0;
 }
 
-.x-radio-button:hover:not(.is-disabled),
+.x-radio-button:hover:not(.is-disabled):not(.is-checked) {
+  border-color: var(--x-radio-button-color);
+  color: var(--x-radio-button-color);
+  z-index: 2;
+}
+
 .x-radio-button:focus-within,
 .x-radio-button.is-checked {
-  z-index: 1;
+  z-index: 3;
 }
 
 .x-radio--sm {
@@ -2085,19 +2093,19 @@
 .x-radio-button--sm {
   font-size: var(--x-radio-button-font-size, 10px);
   min-height: var(--x-radio-button-height, 22px);
-  padding: 0 8px;
+  padding: var(--x-radio-button-padding, 0 4px);
 }
 
 .x-radio-button--md {
   font-size: var(--x-radio-button-font-size, 12px);
   min-height: var(--x-radio-button-height, 30px);
-  padding: 0 12px;
+  padding: var(--x-radio-button-padding, 0 8px);
 }
 
 .x-radio-button--lg {
   font-size: var(--x-radio-button-font-size, 14px);
   min-height: var(--x-radio-button-height, 38px);
-  padding: 0 14px;
+  padding: var(--x-radio-button-padding, 0 10px);
 }
 
 .x-checkbox__native {
@@ -2224,20 +2232,23 @@
 }
 
 .x-radio-button.is-disabled {
-  background: #f5f7fa;
-  border-color: #dcdfe6;
+  background: var(--x-radio-button-disabled-bg, #f5f7fa);
+  border-color: var(--x-radio-button-disabled-border-color, #dcdfe6);
+  color: var(--x-radio-button-disabled-text, #a8abb2);
 }
 
 .x-radio-button.is-disabled.is-checked {
-  background: #dcdfe6;
-  color: #ffffff;
+  background: var(--x-radio-button-disabled-active-bg, #a0cfff);
+  border-color: var(--x-radio-button-disabled-active-border-color, #a0cfff);
+  color: var(--x-radio-button-disabled-active-text, #ffffff);
 }
 
 .x-checkbox__label,
 .x-radio__label,
 .x-radio-button__label {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .x-switch {

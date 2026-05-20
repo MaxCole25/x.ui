@@ -6,10 +6,13 @@ export { XTable as XlTable }
 export default XTable
 export type {
   TableAlign,
+  TableAppendRowPayload,
   TableCellChangePayload,
   TableColumn,
   TableColumnResizePayload,
   TableColumnSetting,
+  TableColumnSettingsDialogMode,
+  TableDeleteSelectedRowsPayload,
   TableExcelExportMode,
   TableExcelExportPayload,
   TableExcelImportPayload,
@@ -21,16 +24,33 @@ export type {
   TableRowClickPayload,
   TableRowReorderPayload,
   TableSelectionMode,
+  TableSorter,
+  TableSortOrder,
+  TableSummaryAggregator,
+  TableSummaryCell,
+  TableSummaryContext,
+  TableSummaryRow,
+  TableSummaryScope,
   TableProps,
+  XlTableAppendRowPayload,
   XlTableColumn,
+  XlTableColumnSettingsDialogMode,
   XlTableColumnResizePayload,
+  XlTableDeleteSelectedRowsPayload,
   XlTableExcelExportMode,
   XlTableExcelExportPayload,
   XlTableExcelImportPayload,
   XlTablePaginationChangePayload,
   XlTablePaginationMode,
   XlTableRowClickPayload,
-  XlTableProps
+  XlTableSorter,
+  XlTableSortOrder,
+  XlTableProps,
+  XlTableSummaryAggregator,
+  XlTableSummaryCell,
+  XlTableSummaryContext,
+  XlTableSummaryRow,
+  XlTableSummaryScope
 } from './src/types'
 
 export function install(app: App) {

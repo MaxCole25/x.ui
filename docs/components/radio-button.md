@@ -1,22 +1,23 @@
 <script setup>
 import { ref } from 'vue'
 
-const mode = ref('day')
+const mode = ref('washington')
 const level = ref('p1')
 const priority = ref('normal')
 </script>
 
 # RadioButton 单选按钮
 
-用于在一组选项中选择一个值。`XRadioButton` 复用 `XRadio` 的对外接口，只是把圆形 radio 控件改成矩形按钮。
+用于在一组选项中选择一个值。`XRadioButton` 是 `XRadio` 的按钮形态，分组方式、绑定值和事件保持一致：多个按钮绑定同一个 `v-model`，并设置同一个 `name`，即可形成一组按钮式单选。
 
 ## 基础用法
 
 <div class="x-demo-block">
   <div style="display: inline-flex; flex-wrap: wrap">
-    <XRadioButton v-model="mode" name="mode-button" value="day">日视图</XRadioButton>
-    <XRadioButton v-model="mode" name="mode-button" value="week">周视图</XRadioButton>
-    <XRadioButton v-model="mode" name="mode-button" value="month">月视图</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>
   </div>
   <p class="x-demo-label">当前值：{{ mode }}</p>
 </div>
@@ -25,19 +26,20 @@ const priority = ref('normal')
 <script setup>
 import { ref } from 'vue'
 
-const mode = ref('day')
+const mode = ref('washington')
 </script>
 
 <template>
-  <XRadioButton v-model="mode" name="mode-button" value="day">日视图</XRadioButton>
-  <XRadioButton v-model="mode" name="mode-button" value="week">周视图</XRadioButton>
-  <XRadioButton v-model="mode" name="mode-button" value="month">月视图</XRadioButton>
+  <XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
+  <XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
+  <XRadioButton v-model="mode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+  <XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>
 </template>
 ```
 
 ## 分组单选控制
 
-同一组 `XRadioButton` 绑定同一个 `v-model`，并设置相同的 `name`；不同分组使用不同的 `v-model` 和 `name`，即可互不影响。
+`XRadioButton` 不需要额外的 `XRadioGroup`。同一组按钮绑定同一个 `v-model`，并设置相同的 `name`；不同分组使用不同的 `v-model` 和 `name`，即可互不影响。这个规则与 `XRadio` 完全一致，业务中可以直接把 `XRadio` 替换为 `XRadioButton`。
 
 <div class="x-demo-block">
   <div style="display: inline-flex; flex-wrap: wrap">
@@ -125,7 +127,7 @@ const mode = ref('day')
 
 ## Props
 
-`XRadioButton` 与 `XRadio` 使用相同的 Props。
+`XRadioButton` 与 `XRadio` 使用相同的核心 Props，并额外提供按钮外观相关 Props。
 
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |

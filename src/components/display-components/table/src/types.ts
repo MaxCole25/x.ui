@@ -6,6 +6,15 @@ export type TableReorderPosition = 'before' | 'after'
 export type TableSelectionMode = 'row' | 'cell'
 export type TablePaginationMode = 'client' | 'server'
 export type TableExcelExportMode = 'raw' | 'formatted'
+export type TableSummaryAggregator = 'sum' | 'avg'
+export type TableSummaryScope = 'visible' | 'all'
+export type TableColumnSettingsDialogMode = boolean | 'auto'
+export type TableSortOrder = 'ascending' | 'descending' | null
+
+export interface TableSorter {
+  key: string
+  order: TableSortOrder
+}
 
 export interface TableColumn<Row extends Record<string, unknown> = Record<string, unknown>> {
   key: string
@@ -13,7 +22,34 @@ export interface TableColumn<Row extends Record<string, unknown> = Record<string
   width?: number | string
   minWidth?: number | string
   align?: TableAlign
+  sortable?: boolean
+  valueGetter?: (row: Row, column: TableColumn<Row>) => unknown
   formatter?: (value: unknown, row: Row) => string
+  editable?: boolean
+  readonly?: boolean
+}
+
+export interface TableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> {
+  data: Row[]
+  visibleData: Row[]
+  columns: TableColumn<Row>[]
+  scope: TableSummaryScope
+}
+
+export type TableSummaryValueGetter<Row extends Record<string, unknown> = Record<string, unknown>> = (
+  rows: Row[],
+  column: TableColumn<Row>,
+  context: TableSummaryContext<Row>
+) => unknown
+
+export type TableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> =
+  | TableSummaryAggregator
+  | TableSummaryValueGetter<Row>
+
+export interface TableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> {
+  label?: string
+  labelColumnKey?: string
+  cells?: Record<string, TableSummaryCell<Row>>
 }
 
 export interface TableColumnSetting {
@@ -34,6 +70,7 @@ export interface TableTopSlotScope<Row extends Record<string, unknown> = Record<
   selectedRowKeys: string[]
   selectedCellKeys: string[]
   pagination: TablePaginationState
+  sorter: TableSorter | null
   updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void
   moveColumnSetting: (key: string, direction: 'up' | 'down') => void
   reorderColumnSetting: (key: string, targetKey: string, position: TableReorderPosition) => void
@@ -61,6 +98,17 @@ export interface TableRowReorderPayload<Row extends Record<string, unknown> = Re
   toIndex: number
   targetRow: Row
   position: TableReorderPosition
+}
+
+export interface TableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  row: Row
+  rows: Row[]
+}
+
+export interface TableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  keys: string[]
+  rows: Row[]
+  deletedRows: Row[]
 }
 
 export interface TableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
@@ -106,19 +154,31 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   data: Row[]
   columns: TableColumn<Row>[]
   columnSettings?: TableColumnSetting[]
+  sorter?: TableSorter | null
+  defaultSorter?: TableSorter | null
   selectedRowKeys?: TableRowKey[]
   selectedCellKeys?: string[]
   selectionMode?: TableSelectionMode
   rowKey?: string
   emptyText?: string
   showHeader?: boolean
+  summaryRow?: TableSummaryRow<Row> | false
+  summaryScope?: TableSummaryScope
   showActions?: boolean
   showSelection?: boolean
   showSelectionColumn?: boolean
   editable?: boolean
+  showAppendRowButton?: boolean
+  showDeleteSelectedRowsButton?: boolean
+  appendRowButtonLabel?: string
+  deleteSelectedRowsButtonLabel?: string
   rowDraggable?: boolean
   columnResizable?: boolean
   showColumnSettings?: boolean
+  columnSettingsDialog?: TableColumnSettingsDialogMode
+  columnSettingsDialogTitle?: string
+  columnSettingsDialogWidth?: number
+  columnSettingsDialogHeight?: number
   panelBackgroundColor?: string
   topBackgroundColor?: string
   bottomBackgroundColor?: string
@@ -152,7 +212,10 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
 
 export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>
 export type XlTableColumnSetting = TableColumnSetting
+export type XlTableColumnSettingsDialogMode = TableColumnSettingsDialogMode
+export type XlTableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableAppendRowPayload<Row>
 export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
+export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>
 export type XlTableExcelExportMode = TableExcelExportMode
 export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
 export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>
@@ -160,3 +223,10 @@ export type XlTablePaginationChangePayload = TablePaginationChangePayload
 export type XlTablePaginationMode = TablePaginationMode
 export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>
 export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>
+export type XlTableSorter = TableSorter
+export type XlTableSortOrder = TableSortOrder
+export type XlTableSummaryAggregator = TableSummaryAggregator
+export type XlTableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryCell<Row>
+export type XlTableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryContext<Row>
+export type XlTableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryRow<Row>
+export type XlTableSummaryScope = TableSummaryScope

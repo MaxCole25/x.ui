@@ -31,7 +31,7 @@ const rows = [
 
 ## 自定义表顶和表底
 
-`top` 和 `bottom` 插槽会扩展表格上方、下方区域。`top` 插槽参数包含当前 `columns`、`data`、`visibleData`、`columnSettings`、`pagination` 和列设置、分页更新方法。开启 `show-column-settings` 后，表顶会内置一个列设置图标按钮，点击时触发 `column-settings-click`，适合在业务侧用 `XDialog` 承载具体设置表单。开启内置分页后，`bottom` 插槽内容会和分页器一起显示。
+`top` 和 `bottom` 插槽会扩展表格上方、下方区域。`top` 插槽参数包含当前 `columns`、`data`、`visibleData`、`columnSettings`、`pagination` 和列设置、分页更新方法。开启 `show-column-settings` 后，表顶会内置一个列设置图标按钮，默认点击后打开统一列设置弹窗，同时继续触发 `column-settings-click` 事件；需要业务侧完全自定义时可设置 `column-settings-dialog="false"` 后自行承载弹窗。开启内置分页后，`bottom` 插槽内容会和分页器一起显示。
 
 ```vue
 <XTable
@@ -51,7 +51,6 @@ const rows = [
   :horizontal-border-width="1"
   vertical-border-color="#cbd5e1"
   :vertical-border-width="1"
-  @column-settings-click="settingsVisible = true"
 >
   <template #top="{ columns, data }">
     <div class="table-header">
@@ -156,12 +155,15 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 ## 列设置
 
-通过 `column-settings` 可以控制列排序、冻结、默认对齐、比例宽度和固定像素宽度。开启 `show-column-settings` 后，表格会在表顶内置列设置图标按钮；也可以在 `top` 插槽中使用 `columnSettings`、`updateColumnSetting`、`moveColumnSetting`、`reorderColumnSetting`、`resetColumnSettings` 构建具体设置面板。弹窗内可以参考 Histoire 示例，用列名或拖拽手柄把列拖到目标列的上方或下方完成排序。
+通过 `column-settings` 可以控制列排序、隐藏、冻结、默认对齐、比例宽度和固定像素宽度。开启 `show-column-settings` 后，表格会在表顶内置列设置图标按钮，并默认打开内置列设置弹窗。内置弹窗支持显示/隐藏列、拖拽排序、左/右冻结、左/中/右对齐、比例宽度、px 宽度和恢复默认。
+
+如果页面已经通过 `column-settings-click` 事件实现了自定义弹窗，默认 `column-settings-dialog="auto"` 会保持旧行为：点击按钮只触发事件，不打开内置弹窗。需要强制使用内置弹窗时设置 `:column-settings-dialog="true"`；需要完全关闭内置弹窗时设置 `:column-settings-dialog="false"`。也可以继续在 `top` 插槽中使用 `columnSettings`、`updateColumnSetting`、`moveColumnSetting`、`reorderColumnSetting`、`resetColumnSettings` 构建自定义设置面板。
 
 ```vue
 <XTable
   :columns="columns"
   :data="rows"
+  show-column-settings
   :column-settings="[
     { key: 'name', order: 0, fixed: 'left', align: 'left', width: 220 },
     { key: 'status', order: 1, fixed: 'none', align: 'center', widthRatio: 25 },
@@ -241,6 +243,22 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 </template>
 ```
 
+## 可编辑行工具栏
+
+开启 `editable` 后，可以通过 `show-append-row-button` 和 `show-delete-selected-rows-button` 在表顶显示内置图标按钮。`新建行数据` 会在末尾追加一行空数据；`删除选择行` 会删除左侧选择列勾选的行。两个操作都会通过 `update:data` 抛出最新数据，适合和 `v-model:data` 搭配使用。为避免分页数据和全量数据不一致，开启分页时按钮会禁用。
+
+```vue
+<XTable
+  v-model:data="rows"
+  v-model:selected-row-keys="selectedRowKeys"
+  :columns="columns"
+  editable
+  show-selection
+  show-append-row-button
+  show-delete-selected-rows-button
+/>
+```
+
 ## Excel 导入导出
 
 在数据单元格上右键会打开表格右键菜单。菜单按剪贴板、行操作、列宽和 Excel 分组：
@@ -285,9 +303,17 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | showSelection | 表格是否可选 | `boolean` | `false` |
 | showSelectionColumn | 是否显示左侧选择行列，可和单元格选择同时使用 | `boolean` | `true` |
 | editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |
+| showAppendRowButton | `editable` 时是否在表顶显示新建行数据图标按钮 | `boolean` | `false` |
+| showDeleteSelectedRowsButton | `editable` 时是否在表顶显示删除选择行图标按钮 | `boolean` | `false` |
+| appendRowButtonLabel | 新建行数据图标按钮的 `aria-label` 和 `title` | `string` | `'新建行数据'` |
+| deleteSelectedRowsButtonLabel | 删除选择行图标按钮的 `aria-label` 和 `title` | `string` | `'删除选择行'` |
 | rowDraggable | 是否开启行拖拽排序 | `boolean` | `false` |
 | columnResizable | 是否允许通过表头拖拽调整列宽 | `boolean` | `true` |
 | showColumnSettings | 是否显示内置列设置图标按钮 | `boolean` | `false` |
+| columnSettingsDialog | 列设置按钮是否打开内置弹窗；`auto` 会在没有外部 `column-settings-click` 监听时打开 | `boolean \| 'auto'` | `'auto'` |
+| columnSettingsDialogTitle | 内置列设置弹窗标题 | `string` | `'列设置'` |
+| columnSettingsDialogWidth | 内置列设置弹窗宽度 | `number` | `760` |
+| columnSettingsDialogHeight | 内置列设置弹窗高度 | `number` | `620` |
 | panelBackgroundColor | 表顶和表底的统一面板背景色，作为 `topBackgroundColor`、`bottomBackgroundColor` 未设置时的兜底 | `string` | - |
 | topBackgroundColor | 表顶插槽容器背景色，支持 CSS 颜色值 | `string` | - |
 | bottomBackgroundColor | 表底插槽容器背景色，支持 CSS 颜色值 | `string` | - |
@@ -365,6 +391,8 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 | cell-selection-change | 选中单元格变化时触发，包含选中 key 和单元格数据 | `{ keys, cells }` |
 | update:data | 单元格编辑提交后触发，支持 `v-model:data` | `Record<string, unknown>[]` |
 | cell-change | 单元格编辑提交后触发，包含当前行、全量行、列和值变化 | `TableCellChangePayload` |
+| append-row | 通过表顶按钮、右键菜单或快捷键追加行后触发 | `TableAppendRowPayload` |
+| delete-selected-rows | 通过表顶按钮删除选中行后触发 | `TableDeleteSelectedRowsPayload` |
 | excel-export | 右键菜单导出 Excel 后触发，包含导出模式、行数据和列配置 | `TableExcelExportPayload` |
 | excel-import | 导入 Excel 后触发，包含文件、导入后的行数据和列配置 | `TableExcelImportPayload` |
 | row-click | 单击数据行时触发，包含当前行、行索引、行 key 和原始鼠标事件 | `TableRowClickPayload` |
@@ -410,6 +438,7 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 - 开启 `show-column-settings` 后，点击表顶列设置图标按钮，在 `XDialog` 弹窗中检查列名拖拽排序、左/右冻结、对齐、比例宽度和 px 宽度是否生效。
 - 在数据单元格右键菜单中检查复制、粘贴启用条件和 `Ctrl+C`、`Ctrl+V` 快捷键文案；开启单元格选择后复制选区，开启 `editable` 后从剪贴板粘贴多行多列内容，确认 `v-model:data` 得到更新。
 - 在未开启分页且开启 `editable` 时，通过右键菜单和 `Ctrl+I`、`Ctrl+U`、`Ctrl+D` 检查 `增加行`、`向上插入行`、`向下插入行` 是否能更新 `v-model:data`；开启分页后这三项应禁用。
+- 开启 `show-append-row-button` 和 `show-delete-selected-rows-button` 后，检查表顶图标按钮只在 `editable` 时显示；追加行应更新 `v-model:data`，删除选择行应根据左侧选择列勾选结果删除并清空选择。
 - 在数据单元格右键菜单中分别检查 `适合宽度` 和 `适应宽度`，并用 `Ctrl+W` 检查 `适合宽度` 快捷键；确认后者会把表头文字宽度也纳入列宽计算；分别导出默认表格数据和格式化文字，确认 `formatter` 列导出内容符合预期；开启 `editable` 后导入 Excel，确认菜单可用且 `v-model:data` 得到更新。
 - 在窄容器中检查横向滚动和文本截断效果。
 - 开启 `fill-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。

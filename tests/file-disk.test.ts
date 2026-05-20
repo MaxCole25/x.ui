@@ -98,16 +98,48 @@ describe('XFileDisk', () => {
     expect(adapter.createFolder).toHaveBeenCalledWith('/', '归档')
   })
 
-  it('disables write actions when write permission is false', () => {
+  it('hides mutation toolbar actions when write and delete permissions are false', () => {
     const wrapper = mount(XFileDisk, {
       props: {
         entries,
-        permissions: { read: true, write: false, delete: true, view: true }
+        permissions: { read: true, write: false, delete: false, view: true }
       }
     })
 
-    expect(wrapper.find('[title="新建目录"]').attributes('disabled')).toBeDefined()
-    expect(wrapper.find('[title="上传文件"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('[title="刷新"]').exists()).toBe(true)
+    expect(wrapper.find('[title="下载"]').exists()).toBe(true)
+    expect(wrapper.find('[title="列表视图"]').exists()).toBe(true)
+    expect(wrapper.find('[title="图标视图"]').exists()).toBe(true)
+    expect(wrapper.find('[title="新建目录"]').exists()).toBe(false)
+    expect(wrapper.find('[title="上传文件"]').exists()).toBe(false)
+    expect(wrapper.find('[title="复制"]').exists()).toBe(false)
+    expect(wrapper.find('[title="剪切"]').exists()).toBe(false)
+    expect(wrapper.find('[title="粘贴"]').exists()).toBe(false)
+    expect(wrapper.find('[title="删除"]').exists()).toBe(false)
+  })
+
+  it('hides mutation context menu actions when write and delete permissions are false', async () => {
+    const wrapper = mount(XFileDisk, {
+      props: {
+        entries,
+        permissions: { read: true, write: false, delete: false, view: true }
+      }
+    })
+
+    await wrapper.find('.x-file-disk__body').trigger('contextmenu')
+    const menuText = wrapper.find('.x-file-disk__context-menu').text()
+
+    expect(menuText).toContain('刷新')
+    expect(menuText).toContain('下载')
+    expect(menuText).toContain('列表视图')
+    expect(menuText).toContain('图标视图')
+    expect(menuText).not.toContain('新建目录')
+    expect(menuText).not.toContain('上传')
+    expect(menuText).not.toContain('重命名')
+    expect(menuText).not.toContain('复制')
+    expect(menuText).not.toContain('剪切')
+    expect(menuText).not.toContain('粘贴')
+    expect(menuText).not.toContain('删除')
   })
 
   it('opens file picker from the context menu upload action', async () => {

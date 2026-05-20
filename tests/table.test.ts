@@ -33,6 +33,24 @@ describe('XTable', () => {
     return match?.[0] ?? ''
   }
 
+  function mountWithHost(options: Parameters<typeof mount<typeof XTable>>[1]) {
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    const wrapper = mount(XTable, {
+      ...options,
+      attachTo: host
+    })
+
+    return {
+      host,
+      wrapper,
+      cleanup: () => {
+        wrapper.unmount()
+        host.remove()
+      }
+    }
+  }
+
   function mockClipboard(text = '') {
     const original = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
     const clipboard = {
@@ -92,6 +110,73 @@ describe('XTable', () => {
 
     expect(wrapper.text()).toContain('12 个')
     expect(wrapper.text()).toContain('5 个')
+  })
+
+  it('renders valueGetter columns and passes computed values to formatters and cell slots', () => {
+    const formatter = vi.fn((value: unknown) => `合计 ${value}`)
+    const computedColumns: TableColumn[] = [
+      ...columns,
+      {
+        key: 'total',
+        label: '合计',
+        valueGetter: (row) => Number(row.count) * 2,
+        formatter
+      }
+    ]
+    const wrapper = mount(XTable, {
+      props: {
+        columns: computedColumns,
+        data
+      }
+    })
+
+    expect(wrapper.text()).toContain('合计 24')
+    expect(formatter).toHaveBeenCalledWith(24, data[0])
+
+    const slotWrapper = mount(XTable, {
+      props: {
+        columns: computedColumns,
+        data
+      },
+      slots: {
+        'cell-total': '<template #default="{ value }"><span class="computed-total">{{ value }}</span></template>'
+      }
+    })
+
+    expect(slotWrapper.find('.computed-total').text()).toBe('24')
+  })
+
+  it('renders summary rows with sum avg custom aggregators and summary slots', () => {
+    const summaryColumns: TableColumn[] = [
+      ...columns,
+      {
+        key: 'total',
+        label: '合计',
+        valueGetter: (row) => Number(row.count) * 2,
+        formatter: (value) => `￥${value}`
+      }
+    ]
+    const wrapper = mount(XTable, {
+      props: {
+        columns: summaryColumns,
+        data,
+        summaryRow: {
+          label: '汇总',
+          cells: {
+            status: (rows) => `${rows.length} 项`,
+            count: 'sum',
+            total: 'avg'
+          }
+        }
+      },
+      slots: {
+        'summary-total': '<template #default="{ value, rows, context }"><span class="summary-total">平均 {{ value }} / {{ rows.length }} / {{ context.scope }}</span></template>'
+      }
+    })
+
+    const cells = wrapper.find('.x-table__row--summary').findAll('.x-table__cell')
+
+    expect(cells.map((cell) => cell.text())).toEqual(['汇总', '2 项', '17 个', '平均 17 / 2 / visible'])
   })
 
   it('maps align width and minWidth to resolved grid and cell styles', () => {
@@ -465,8 +550,8 @@ describe('XTable', () => {
     expect(wrapper.classes()).toContain('is-fill-height')
   })
 
-  it('renders built-in column settings as an icon button', async () => {
-    const wrapper = mount(XTable, {
+  it('renders built-in column settings as an icon button and opens the default dialog', async () => {
+    const { wrapper, cleanup } = mountWithHost({
       props: {
         columns,
         data,
@@ -474,15 +559,203 @@ describe('XTable', () => {
       }
     })
 
-    const button = wrapper.find('.x-table__column-settings-button')
-    expect(button.exists()).toBe(true)
-    expect(button.text()).toBe('')
-    expect(button.attributes('aria-label')).toBe('列设置')
-    expect(button.find('.ri-settings-3-line').exists()).toBe(true)
+    try {
+      const button = wrapper.find('.x-table__column-settings-button')
+      expect(button.exists()).toBe(true)
+      expect(button.text()).toBe('')
+      expect(button.attributes('aria-label')).toBe('列设置')
+      expect(button.find('.ri-settings-3-line').exists()).toBe(true)
 
-    await button.trigger('click')
+      await button.trigger('click')
+      await nextTick()
 
-    expect(wrapper.emitted('column-settings-click')?.[0]?.[0]).toHaveLength(3)
+      expect(wrapper.emitted('column-settings-click')?.[0]?.[0]).toHaveLength(3)
+      expect(document.body.querySelector('.x-table__column-settings-dialog')).not.toBeNull()
+      expect(document.body.textContent).toContain('列设置')
+      expect(document.body.textContent).toContain('恢复默认')
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('keeps column-settings-click compatible when the built-in dialog is disabled', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        showColumnSettings: true,
+        columnSettingsDialog: false
+      }
+    })
+
+    try {
+      await wrapper.find('.x-table__column-settings-button').trigger('click')
+      await nextTick()
+
+      expect(wrapper.emitted('column-settings-click')?.[0]?.[0]).toHaveLength(3)
+      expect(document.body.querySelector('.x-table__column-settings-dialog')).toBeNull()
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('does not open the auto dialog when a custom column-settings-click listener is registered', async () => {
+    const onColumnSettingsClick = vi.fn()
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        showColumnSettings: true,
+        onColumnSettingsClick
+      }
+    })
+
+    try {
+      await wrapper.find('.x-table__column-settings-button').trigger('click')
+      await nextTick()
+
+      expect(onColumnSettingsClick).toHaveBeenCalledTimes(1)
+      expect(document.body.querySelector('.x-table__column-settings-dialog')).toBeNull()
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('updates column settings from the built-in dialog controls', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        showColumnSettings: true,
+        columnSettingsDialog: true
+      }
+    })
+
+    const dataTransfer = {
+      dropEffect: '',
+      effectAllowed: '',
+      setData: vi.fn()
+    }
+
+    function dispatchDrag(element: Element, type: string, clientY = 0) {
+      const event = new Event(type, { bubbles: true, cancelable: true }) as DragEvent
+      Object.defineProperty(event, 'dataTransfer', { value: dataTransfer })
+      Object.defineProperty(event, 'clientY', { value: clientY })
+      element.dispatchEvent(event)
+    }
+
+    type TestColumnSetting = {
+      key: string
+      hidden?: boolean
+      fixed?: string
+      align?: string
+      widthRatio?: number
+      width?: number
+      order?: number
+    }
+
+    function getLastColumnSettingsUpdate() {
+      const events = wrapper.emitted('update:columnSettings') ?? []
+      return events[events.length - 1]?.[0] as TestColumnSetting[]
+    }
+
+    try {
+      await wrapper.find('.x-table__column-settings-button').trigger('click')
+      await nextTick()
+
+      const rows = () => Array.from(document.body.querySelectorAll('.x-table__column-settings-row'))
+      const findSettingRow = (label: string) => rows().find((row) => row.textContent?.includes(label)) as Element
+      const statusVisibleInput = rows()[1].querySelector('.x-table__column-settings-visible .x-checkbox__native') as HTMLInputElement
+      statusVisibleInput.dispatchEvent(new Event('change', { bubbles: true }))
+      await nextTick()
+
+      let settings = getLastColumnSettingsUpdate()
+      expect(settings.find((setting) => setting.key === 'status')?.hidden).toBe(true)
+
+      const fixedRightButton = rows()[0].querySelector('.x-table__column-settings-radio-group--button .x-radio-button[data-value="right"]') as HTMLElement
+      fixedRightButton.click()
+      await nextTick()
+
+      settings = getLastColumnSettingsUpdate()
+      expect(settings.find((setting) => setting.key === 'name')?.fixed).toBe('right')
+
+      const alignCenterButton = document.body.querySelector('.x-table__column-settings-radio-group--button .x-radio-button[data-name="x-table-align-name"][data-value="center"]') as HTMLElement
+      alignCenterButton.click()
+      await nextTick()
+
+      settings = getLastColumnSettingsUpdate()
+      expect(settings.find((setting) => setting.key === 'name')?.align).toBe('center')
+
+      const nameRow = rows().find((row) => row.textContent?.includes('名称')) as Element
+      const nameNumberInputs = nameRow.querySelectorAll('.x-table__column-settings-number input')
+      ;(nameNumberInputs[0] as HTMLInputElement).value = '35'
+      nameNumberInputs[0].dispatchEvent(new Event('input', { bubbles: true }))
+      ;(nameNumberInputs[1] as HTMLInputElement).value = '240'
+      nameNumberInputs[1].dispatchEvent(new Event('input', { bubbles: true }))
+      await nextTick()
+
+      settings = getLastColumnSettingsUpdate()
+      expect(settings.find((setting) => setting.key === 'name')).toMatchObject({ widthRatio: 35, width: 240 })
+
+      const fixedNoneButton = document.body.querySelector('.x-table__column-settings-radio-group--button .x-radio-button[data-name="x-table-fixed-name"][data-value="none"]') as HTMLElement
+      fixedNoneButton.click()
+      await nextTick()
+
+      dispatchDrag(findSettingRow('数量'), 'dragstart')
+      dispatchDrag(findSettingRow('名称'), 'dragover', -1)
+      dispatchDrag(findSettingRow('名称'), 'drop')
+      await nextTick()
+
+      settings = getLastColumnSettingsUpdate()
+      const orderedKeys = [...settings].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((setting) => setting.key)
+      expect(orderedKeys).toEqual(['count', 'name', 'status'])
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('resets column settings from the built-in dialog footer', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        showColumnSettings: true,
+        columnSettingsDialog: true,
+        columnSettings: [
+          { key: 'status', order: 0, hidden: true, fixed: 'left', align: 'center', width: 200 },
+          { key: 'name', order: 1, fixed: 'none', align: 'right', widthRatio: 40 },
+          { key: 'count', order: 2, fixed: 'right', align: 'left', width: 160 }
+        ]
+      }
+    })
+
+    try {
+      await wrapper.find('.x-table__column-settings-button').trigger('click')
+      await nextTick()
+
+      const resetButton = Array.from(document.body.querySelectorAll('.x-table__column-settings-footer-button'))
+        .find((button) => button.textContent?.includes('恢复默认')) as HTMLButtonElement
+      resetButton.click()
+      await nextTick()
+
+      const events = wrapper.emitted('update:columnSettings') ?? []
+      const settings = events[events.length - 1]?.[0] as Array<{
+        key: string
+        order?: number
+        hidden?: boolean
+        fixed?: string
+        align?: string
+        width?: number
+        widthRatio?: number
+      }>
+      expect(settings).toEqual([
+        { key: 'name', order: 0, hidden: false, fixed: 'none', align: 'left', width: undefined, widthRatio: undefined },
+        { key: 'status', order: 1, hidden: false, fixed: 'none', align: 'left', width: 120, widthRatio: undefined },
+        { key: 'count', order: 2, hidden: false, fixed: 'none', align: 'right', width: 96, widthRatio: undefined }
+      ])
+    } finally {
+      cleanup()
+    }
   })
 
   it('pins fill height regions to stable grid rows', () => {
@@ -1049,6 +1322,51 @@ describe('XTable', () => {
     ])
   })
 
+  it('shows editable row toolbar buttons for appending and deleting selected rows', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showSelection: true,
+        showAppendRowButton: true,
+        showDeleteSelectedRowsButton: true,
+        selectedRowKeys: ['2']
+      }
+    })
+
+    const buttons = wrapper.findAll('.x-table__toolbar-icon-button')
+    expect(buttons).toHaveLength(2)
+    expect(buttons[0].attributes('title')).toBe('新建行数据')
+    expect(buttons[1].attributes('title')).toBe('删除选择行')
+
+    await buttons[0].trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:data')?.[0]?.[0]).toEqual([
+      ...data,
+      { id: 3, name: '', status: '', count: '' }
+    ])
+    expect(wrapper.emitted('append-row')?.[0]?.[0]).toEqual({
+      row: { id: 3, name: '', status: '', count: '' },
+      rows: [
+        ...data,
+        { id: 3, name: '', status: '', count: '' }
+      ]
+    })
+
+    await buttons[1].trigger('click')
+    await nextTick()
+
+    expect(wrapper.emitted('update:data')?.[1]?.[0]).toEqual([data[0]])
+    expect(wrapper.emitted('delete-selected-rows')?.[0]?.[0]).toEqual({
+      keys: ['2'],
+      rows: [data[0]],
+      deletedRows: [data[1]]
+    })
+    expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual([])
+  })
+
   it('copies selected cell text from the context menu and keyboard shortcut', async () => {
     const { clipboard, restore } = mockClipboard()
     const wrapper = mount(XTable, {
@@ -1171,6 +1489,97 @@ describe('XTable', () => {
     }
   })
 
+  it('exports computed valueGetter values in raw and formatted Excel modes', async () => {
+    const aoaSpy = vi.spyOn(XLSX.utils, 'aoa_to_sheet')
+    const computedColumns: TableColumn[] = [
+      ...columns,
+      {
+        key: 'total',
+        label: '合计',
+        valueGetter: (row) => Number(row.count) * 2,
+        formatter: (value) => `￥${value}`
+      }
+    ]
+    const wrapper = mount(XTable, {
+      props: {
+        columns: computedColumns,
+        data
+      }
+    })
+
+    try {
+      await (wrapper.vm as unknown as { exportExcel: (mode: 'raw' | 'formatted') => Promise<void> }).exportExcel('raw')
+      await flushPromises()
+
+      expect(aoaSpy).toHaveBeenLastCalledWith([
+        ['名称', '状态', '数量', '合计'],
+        ['工作台', '启用', 12, 24],
+        ['成员管理', '停用', 5, 10]
+      ])
+
+      await (wrapper.vm as unknown as { exportExcel: (mode: 'raw' | 'formatted') => Promise<void> }).exportExcel('formatted')
+      await flushPromises()
+
+      expect(aoaSpy).toHaveBeenLastCalledWith([
+        ['名称', '状态', '数量', '合计'],
+        ['工作台', '启用', '12 个', '￥24'],
+        ['成员管理', '停用', '5 个', '￥10']
+      ])
+    } finally {
+      aoaSpy.mockRestore()
+    }
+  })
+
+  it('exports summary rows in raw and formatted Excel modes', async () => {
+    const aoaSpy = vi.spyOn(XLSX.utils, 'aoa_to_sheet')
+    const summaryColumns: TableColumn[] = [
+      ...columns,
+      {
+        key: 'total',
+        label: '合计',
+        valueGetter: (row) => Number(row.count) * 2,
+        formatter: (value) => `￥${value}`
+      }
+    ]
+    const wrapper = mount(XTable, {
+      props: {
+        columns: summaryColumns,
+        data,
+        summaryRow: {
+          label: '汇总',
+          cells: {
+            count: 'sum',
+            total: 'sum'
+          }
+        }
+      }
+    })
+
+    try {
+      await (wrapper.vm as unknown as { exportExcel: (mode: 'raw' | 'formatted') => Promise<void> }).exportExcel('raw')
+      await flushPromises()
+
+      expect(aoaSpy).toHaveBeenLastCalledWith([
+        ['名称', '状态', '数量', '合计'],
+        ['工作台', '启用', 12, 24],
+        ['成员管理', '停用', 5, 10],
+        ['汇总', '', 17, 34]
+      ])
+
+      await (wrapper.vm as unknown as { exportExcel: (mode: 'raw' | 'formatted') => Promise<void> }).exportExcel('formatted')
+      await flushPromises()
+
+      expect(aoaSpy).toHaveBeenLastCalledWith([
+        ['名称', '状态', '数量', '合计'],
+        ['工作台', '启用', '12 个', '￥24'],
+        ['成员管理', '停用', '5 个', '￥10'],
+        ['汇总', '', '17 个', '￥34']
+      ])
+    } finally {
+      aoaSpy.mockRestore()
+    }
+  })
+
   it('enables Excel import only while editable and imports rows by column label', async () => {
     const worksheet = XLSX.utils.aoa_to_sheet([
       ['名称', '状态', '数量'],
@@ -1208,6 +1617,73 @@ describe('XTable', () => {
         { id: 2, name: '报表中心', status: '停用', count: 8 }
       ]
     })
+  })
+
+  it('keeps valueGetter columns readonly during edit paste append and import flows', async () => {
+    const { clipboard, restore } = mockClipboard('999')
+    const computedColumns: TableColumn[] = [
+      ...columns,
+      {
+        key: 'total',
+        label: '合计',
+        valueGetter: (row) => Number(row.count) * 2
+      }
+    ]
+    const wrapper = mount(XTable, {
+      props: {
+        columns: computedColumns,
+        data,
+        editable: true,
+        showSelection: true,
+        selectionMode: 'cell',
+        selectedCellKeys: ['1::total'],
+        showAppendRowButton: true
+      }
+    })
+
+    try {
+      const computedCell = wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[4]
+      await computedCell.trigger('dblclick')
+      await nextTick()
+
+      expect(wrapper.find('.x-base-input__inner').exists()).toBe(false)
+
+      await wrapper.find('.x-table').trigger('keydown', { key: 'v', ctrlKey: true })
+      await flushPromises()
+
+      expect(clipboard.readText).toHaveBeenCalled()
+      expect(wrapper.emitted('update:data')).toBeUndefined()
+
+      await wrapper.find('.x-table__toolbar-icon-button').trigger('click')
+      await nextTick()
+
+      expect(wrapper.emitted('append-row')?.[0]?.[0]).toEqual({
+        row: { id: 3, name: '', status: '', count: '' },
+        rows: [
+          ...data,
+          { id: 3, name: '', status: '', count: '' }
+        ]
+      })
+
+      const worksheet = XLSX.utils.aoa_to_sheet([
+        ['名称', '状态', '数量', '合计'],
+        ['控制台', '启用', 42, 999]
+      ])
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+      const buffer = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer
+      const file = new File([buffer], 'computed.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+      await (wrapper.vm as unknown as { importExcelFile: (file: File) => Promise<void> }).importExcelFile(file)
+      await flushPromises()
+
+      const importRows = wrapper.emitted('update:data')?.[1]?.[0]
+      expect(importRows).toEqual([
+        { id: 1, name: '控制台', status: '启用', count: 42 }
+      ])
+    } finally {
+      restore()
+    }
   })
 
   it('uses 40px as the default minimum column width while resizing', async () => {

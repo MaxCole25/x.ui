@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import type { CSSProperties } from 'vue'
+import '../../../styles/index.css'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import XRadioButton from './src/RadioButton.vue'
 import type { ButtonVariant } from '../../basic-components/button/src/types'
 import type { ButtonGroupDirection } from '../../basic-components/button-group/src/types'
 import type { RadioSize } from './src/types'
-const appearanceValue = ref('B')
+const appearanceValue = ref('washington')
+const lastEvent = ref('change: washington')
 
 const appearance = reactive({
-  label: '按钮单选',
-  value: 'A',
+  label: 'New York',
+  value: 'new-york',
   name: 'appearance-radio-button',
   size: 'md' as RadioSize,
   variant: 'outline' as ButtonVariant,
@@ -18,12 +20,12 @@ const appearance = reactive({
   width: '',
   height: '',
   radius: 6,
-  buttonColor: '#2563eb',
-  activeBackgroundColor: '#2563eb',
-  activeBorderColor: '#2563eb',
+  buttonColor: '#409eff',
+  activeBackgroundColor: '#409eff',
+  activeBorderColor: '#409eff',
   activeTextColor: '#ffffff',
-  buttonSize: 32,
-  fontSize: 13,
+  buttonSize: 30,
+  fontSize: 14,
   fontFamily: '',
   disabled: false
 })
@@ -33,6 +35,10 @@ const appearanceGroupStyle = computed<CSSProperties>(() => ({
   flexDirection: appearance.direction === 'vertical' ? 'column' : 'row',
   flexWrap: 'wrap'
 }))
+
+const handleChange = (value: string | number | boolean) => {
+  lastEvent.value = `change: ${String(value)}`
+}
 </script>
 
 <template>
@@ -64,6 +70,7 @@ const appearanceGroupStyle = computed<CSSProperties>(() => ({
               :font-size="appearance.fontSize"
               :font-family="appearance.fontFamily"
               :disabled="appearance.disabled"
+              @change="handleChange"
             >
               {{ appearance.label }}
             </XRadioButton>
@@ -71,7 +78,7 @@ const appearanceGroupStyle = computed<CSSProperties>(() => ({
               v-bind="styleProps"
               v-model="appearanceValue"
               :name="appearance.name"
-              value="B"
+              value="washington"
               :size="appearance.size"
               :variant="appearance.variant"
               :direction="appearance.direction"
@@ -86,14 +93,15 @@ const appearanceGroupStyle = computed<CSSProperties>(() => ({
               :font-size="appearance.fontSize"
               :font-family="appearance.fontFamily"
               :disabled="appearance.disabled"
+              @change="handleChange"
             >
-              对照项
+              Washington
             </XRadioButton>
             <XRadioButton
               v-bind="styleProps"
               v-model="appearanceValue"
               :name="appearance.name"
-              value="C"
+              value="los-angeles"
               :size="appearance.size"
               :variant="appearance.variant"
               :direction="appearance.direction"
@@ -107,9 +115,33 @@ const appearanceGroupStyle = computed<CSSProperties>(() => ({
               :button-size="appearance.buttonSize"
               :font-size="appearance.fontSize"
               :font-family="appearance.fontFamily"
-              disabled
+              :disabled="appearance.disabled"
+              @change="handleChange"
             >
-              禁用项
+              Los Angeles
+            </XRadioButton>
+            <XRadioButton
+              v-bind="styleProps"
+              v-model="appearanceValue"
+              :name="appearance.name"
+              value="chicago"
+              :size="appearance.size"
+              :variant="appearance.variant"
+              :direction="appearance.direction"
+              :width="appearance.width || undefined"
+              :height="appearance.height || undefined"
+              :radius="appearance.radius"
+              :button-color="appearance.buttonColor"
+              :active-background-color="appearance.activeBackgroundColor"
+              :active-border-color="appearance.activeBorderColor"
+              :active-text-color="appearance.activeTextColor"
+              :button-size="appearance.buttonSize"
+              :font-size="appearance.fontSize"
+              :font-family="appearance.fontFamily"
+              :disabled="appearance.disabled"
+              @change="handleChange"
+            >
+              Chicago
             </XRadioButton>
           </div>
         </template>
@@ -209,6 +241,44 @@ const appearanceGroupStyle = computed<CSSProperties>(() => ({
             <input v-model="appearance.disabled" type="checkbox" />
             <span>禁用状态</span>
           </label>
+        </template>
+        <template #interfaces>
+          <section class="element-style-playground__column">
+            <label>
+              <span>当前值</span>
+              <input v-model="appearanceValue" />
+            </label>
+          </section>
+        </template>
+        <template #types>
+          <section class="element-style-playground__column">
+            <label>
+              <span>尺寸类型</span>
+              <select v-model="appearance.size">
+                <option value="sm">sm</option>
+                <option value="md">md</option>
+                <option value="lg">lg</option>
+              </select>
+            </label>
+          </section>
+          <section class="element-style-playground__column">
+            <label>
+              <span>按钮类型</span>
+              <select v-model="appearance.variant">
+                <option value="solid">solid</option>
+                <option value="outline">outline</option>
+                <option value="ghost">ghost</option>
+              </select>
+            </label>
+          </section>
+        </template>
+        <template #events>
+          <section class="element-style-playground__column">
+            <label>
+              <span>change</span>
+              <input :value="lastEvent" readonly />
+            </label>
+          </section>
         </template>
       </ElementStylePlayground>
     </Variant>

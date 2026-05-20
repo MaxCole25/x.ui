@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const mode = ref('day')
-const buttonMode = ref('day')
+const buttonMode = ref('washington')
 const level = ref('p1')
 const priority = ref('normal')
 </script>
@@ -38,13 +38,14 @@ const mode = ref('day')
 
 ## 按钮形态
 
-`XRadioButton` 复用 `XRadio` 的绑定值、选项值、尺寸、禁用和外观属性，只是把圆形 radio 控件改成矩形按钮，更适合视图切换、筛选条件等需要紧凑分段选择的场景。
+`XRadioButton` 是 `XRadio` 的按钮形态，绑定值、选项值、`name`、禁用状态和事件逻辑保持一致。多个按钮绑定同一个 `v-model`，并设置同一个 `name`，即可像普通 `XRadio` 一样形成一组按钮式单选。
 
 <div class="x-demo-block">
   <div style="display: inline-flex; flex-wrap: wrap">
-    <XRadioButton v-model="buttonMode" name="button-mode" value="day">日视图</XRadioButton>
-    <XRadioButton v-model="buttonMode" name="button-mode" value="week">周视图</XRadioButton>
-    <XRadioButton v-model="buttonMode" name="button-mode" value="month">月视图</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>
   </div>
   <p class="x-demo-label">当前值：{{ buttonMode }}</p>
 </div>
@@ -53,13 +54,14 @@ const mode = ref('day')
 <script setup>
 import { ref } from 'vue'
 
-const buttonMode = ref('day')
+const buttonMode = ref('washington')
 </script>
 
 <template>
-  <XRadioButton v-model="buttonMode" name="button-mode" value="day">日视图</XRadioButton>
-  <XRadioButton v-model="buttonMode" name="button-mode" value="week">周视图</XRadioButton>
-  <XRadioButton v-model="buttonMode" name="button-mode" value="month">月视图</XRadioButton>
+  <XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
+  <XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
+  <XRadioButton v-model="buttonMode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+  <XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>
 </template>
 ```
 
@@ -192,7 +194,7 @@ const priority = ref('normal')
 
 ## Props
 
-`XRadio` 与 `XRadioButton` 使用相同的 Props。
+`XRadio` 与 `XRadioButton` 使用相同的核心 Props。`XRadioButton` 额外支持按钮外观相关 Props。
 
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |

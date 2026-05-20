@@ -466,6 +466,7 @@ describe('form controls', () => {
     expect(wrapper.find('.x-radio-button').classes()).toContain('is-checked')
     expect(wrapper.find('.x-radio-button').attributes('role')).toBe('radio')
     expect(wrapper.find('.x-radio-button').attributes('aria-checked')).toBe('true')
+    expect(wrapper.emitted('change')?.[0]).toEqual(['week'])
 
     const style = wrapper.find('.x-radio-button').attributes('style')
     expect(style).toContain('--x-radio-button-font-family: Microsoft YaHei, 微软雅黑, sans-serif')
@@ -483,6 +484,65 @@ describe('form controls', () => {
     expect(style).toContain('--x-radio-button-active-text: #ffffff')
     expect(wrapper.find('.x-radio-button').classes()).toContain('x-radio-button--outline')
     expect(wrapper.find('.x-radio-button').classes()).toContain('x-radio-button--vertical')
+  })
+
+  it('lets radio button labelColor work as textColor fallback', () => {
+    const wrapper = mount(XRadioButton, {
+      props: {
+        modelValue: 'day',
+        value: 'week',
+        labelColor: '#4c1d95',
+        buttonColor: '#7c3aed'
+      }
+    })
+
+    const style = wrapper.find('.x-radio-button').attributes('style')
+    expect(style).toContain('--x-radio-button-text-color: #4c1d95')
+    expect(style).toContain('--x-radio-button-color: #7c3aed')
+  })
+
+  it('does not emit radio button updates for disabled or already checked options', async () => {
+    const disabled = mount(XRadioButton, {
+      props: {
+        modelValue: 'day',
+        value: 'week',
+        disabled: true
+      }
+    })
+    const checked = mount(XRadioButton, {
+      props: {
+        modelValue: 'day',
+        value: 'day'
+      }
+    })
+
+    await disabled.find('.x-radio-button').trigger('click')
+    await checked.find('.x-radio-button').trigger('click')
+
+    expect(disabled.emitted('update:modelValue')).toBeUndefined()
+    expect(disabled.emitted('change')).toBeUndefined()
+    expect(checked.emitted('update:modelValue')).toBeUndefined()
+    expect(checked.emitted('change')).toBeUndefined()
+  })
+
+  it('lets explicit radio button size own visual dimensions', () => {
+    const wrapper = mount(XRadioButton, {
+      props: {
+        modelValue: 'lg',
+        value: 'lg',
+        size: 'lg',
+        height: 60,
+        buttonSize: 52,
+        fontSize: 30,
+        radius: 20
+      }
+    })
+
+    const style = wrapper.find('.x-radio-button').attributes('style')
+    expect(style).toContain('--x-radio-button-font-size: 14px')
+    expect(style).toContain('--x-radio-button-height: 38px')
+    expect(style).toContain('--x-radio-button-padding: 0 10px')
+    expect(style).toContain('--x-radio-button-radius: 8px')
   })
 
   it('controls radio button selection inside a segmented v-model group', async () => {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import '../../../styles/index.css'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import XRadio from './src/Radio.vue'
 import type { RadioSize } from './src/types'

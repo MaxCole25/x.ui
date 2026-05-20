@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
 import type { CSSProperties, StyleValue } from 'vue'
 import { XBaseInput } from '../../../basic-components/base-input'
+import { XDialog } from '../../../feedback-components/dialog'
+import { XCheckbox } from '../../../form-components/checkbox'
+import { XInputNumber } from '../../../form-components/input-number'
+import { XRadioButton } from '../../../form-components/radio'
 import { componentSizePreset } from '../../../_utils/size'
 import 'remixicon/fonts/remixicon.css'
 import type {
   TableAlign,
+  TableAppendRowPayload,
   TableCellChangePayload,
   TableColumn,
   TableColumnResizePayload,
   TableColumnSetting,
+  TableDeleteSelectedRowsPayload,
   TableExcelExportMode,
   TableExcelExportPayload,
   TableExcelImportPayload,
@@ -22,6 +28,8 @@ import type {
   TableReorderPosition,
   TableRowReorderPayload,
   TableSelectionMode,
+  TableSorter,
+  TableSummaryContext,
   TableTopSlotScope
 } from './types'
 
@@ -31,13 +39,23 @@ const props = withDefaults(defineProps<TableProps>(), {
   rowKey: 'id',
   emptyText: '暂无数据',
   showHeader: true,
+  summaryRow: undefined,
+  summaryScope: 'visible',
   showActions: false,
   showSelection: false,
   showSelectionColumn: true,
   editable: false,
+  showAppendRowButton: false,
+  showDeleteSelectedRowsButton: false,
+  appendRowButtonLabel: '新建行数据',
+  deleteSelectedRowsButtonLabel: '删除选择行',
   rowDraggable: false,
   columnResizable: true,
   showColumnSettings: false,
+  columnSettingsDialog: 'auto',
+  columnSettingsDialogTitle: '列设置',
+  columnSettingsDialogWidth: 760,
+  columnSettingsDialogHeight: 620,
   bodyStripeBackgroundColor: 'transparent',
   showPagination: false,
   paginationMode: 'client',
@@ -54,6 +72,8 @@ const emit = defineEmits<{
   (e: 'update:columnSettings', value: TableColumnSetting[]): void
   (e: 'column-settings-change', value: TableColumnSetting[]): void
   (e: 'column-settings-click', value: TableColumnSetting[]): void
+  (e: 'update:sorter', value: TableSorter): void
+  (e: 'sort-change', value: TableSorter): void
   (e: 'update:selectedRowKeys', value: string[]): void
   (e: 'selection-change', value: { keys: string[]; rows: Record<string, unknown>[] }): void
   (
@@ -66,6 +86,8 @@ const emit = defineEmits<{
   ): void
   (e: 'cell-change', value: TableCellChangePayload): void
   (e: 'row-reorder', value: TableRowReorderPayload): void
+  (e: 'append-row', value: TableAppendRowPayload): void
+  (e: 'delete-selected-rows', value: TableDeleteSelectedRowsPayload): void
   (e: 'row-click', value: TableRowClickPayload): void
   (e: 'row-dblclick', value: TableRowClickPayload): void
   (e: 'column-resize', value: TableColumnResizePayload): void
@@ -97,9 +119,11 @@ interface TableContextMenuState {
 const defaultColumnMinWidth = 40
 const autoFitColumnWidthBuffer = 12
 const internalColumnSettings = ref<TableColumnSetting[]>([])
+const internalSorter = ref<TableSorter | null>(null)
 const tableWidth = ref(0)
 const internalCurrentPage = ref(1)
 const internalPageSize = ref(10)
+const instance = getCurrentInstance()
 const attrs = useAttrs()
 
 const normalizedPaginationMode = computed<TablePaginationMode>(() => props.paginationMode ?? 'client')
@@ -112,17 +136,34 @@ const paginationTotal = computed(() => {
 const paginationPageCount = computed(() => Math.max(1, Math.ceil(paginationTotal.value / normalizedPageSize.value)))
 const normalizedCurrentPage = computed(() => clampPage(internalCurrentPage.value))
 const clientPageStartIndex = computed(() => (normalizedCurrentPage.value - 1) * normalizedPageSize.value)
-const visibleData = computed(() => {
-  if (!props.showPagination || normalizedPaginationMode.value === 'server') {
-    return props.data
+const activeSorter = computed(() => normalizeSorter(internalSorter.value))
+const sortedIndexedRows = computed(() => {
+  const rows = props.data.map((row, rowIndex) => ({ row, rowIndex }))
+  const sorter = activeSorter.value
+  if (!sorter || normalizedPaginationMode.value === 'server') {
+    return rows
   }
 
-  return props.data.slice(clientPageStartIndex.value, clientPageStartIndex.value + normalizedPageSize.value)
+  const column = props.columns.find((item) => item.key === sorter.key)
+  if (!column?.sortable) {
+    return rows
+  }
+
+  return [...rows].sort((left, right) => compareRowsByColumn(left.row, right.row, column, sorter.order))
 })
+const sortedData = computed(() => sortedIndexedRows.value.map((item) => item.row))
+const visibleIndexedRows = computed(() => {
+  if (!props.showPagination || normalizedPaginationMode.value === 'server') {
+    return sortedIndexedRows.value
+  }
+
+  return sortedIndexedRows.value.slice(clientPageStartIndex.value, clientPageStartIndex.value + normalizedPageSize.value)
+})
+const visibleData = computed(() => visibleIndexedRows.value.map((item) => item.row))
 const visibleRows = computed(() =>
-  visibleData.value.map((row, index) => ({
+  visibleIndexedRows.value.map(({ row, rowIndex }) => ({
     row,
-    rowIndex: props.showPagination && normalizedPaginationMode.value === 'client' ? clientPageStartIndex.value + index : index
+    rowIndex
   }))
 )
 const paginationState = computed<TablePaginationState>(() => ({
@@ -188,6 +229,27 @@ const resolvedColumns = computed<ResolvedColumn[]>(() => {
   return columns
 })
 
+const orderedColumnSettings = computed(() => getOrderedSettings())
+const columnSettingsDialogVisible = ref(false)
+const draggingColumnSettingKey = ref('')
+const columnSettingDragTarget = ref<{ key: string; position: TableReorderPosition } | null>(null)
+const isSummaryRowVisible = computed(() => Boolean(props.summaryRow) && resolvedColumns.value.length > 0)
+const summarySourceRows = computed(() => (props.summaryScope === 'all' ? props.data : visibleData.value))
+const summaryContext = computed<TableSummaryContext>(() => ({
+  data: props.data,
+  visibleData: visibleData.value,
+  columns: resolvedColumns.value.map((column) => column.column),
+  scope: props.summaryScope ?? 'visible'
+}))
+const summaryLabelColumnKey = computed(() => {
+  const row = props.summaryRow
+  if (!row) {
+    return null
+  }
+
+  return row.labelColumnKey ?? resolvedColumns.value[0]?.column.key ?? null
+})
+
 const gridTemplateColumns = computed(() => {
   const tracks = resolvedColumns.value.map((column) => column.track)
   if (isRowSelectionColumnVisible.value) {
@@ -213,6 +275,7 @@ const slotScope = computed<TableTopSlotScope>(() => ({
   selectedRowKeys: activeSelectedRowKeys.value,
   selectedCellKeys: normalizedSelectedCellKeys.value,
   pagination: paginationState.value,
+  sorter: activeSorter.value,
   updateColumnSetting,
   moveColumnSetting,
   reorderColumnSetting,
@@ -254,6 +317,9 @@ const internalSelectedCellKeys = ref<string[]>([])
 const previewSelectedCellKeys = ref<string[] | null>(null)
 const activeSelectedRowKeys = computed(() => internalSelectedRowKeys.value)
 const activeSelectedCellKeys = computed(() => previewSelectedCellKeys.value ?? internalSelectedCellKeys.value)
+const isRowMutationToolbarVisible = computed(() => props.editable && (props.showAppendRowButton || props.showDeleteSelectedRowsButton))
+const isAppendRowButtonDisabled = computed(() => !isContextRowMutationEnabled.value)
+const isDeleteSelectedRowsButtonDisabled = computed(() => !isContextRowMutationEnabled.value || activeSelectedRowKeys.value.length === 0)
 let latestLocalSelectedCellSignature = ''
 const pendingLocalSelectedCellSignatures = new Set<string>()
 let isIgnoringStaleExternalCellSelection = false
@@ -855,7 +921,7 @@ function beginCellEdit(
   initialValue?: string,
   cell?: HTMLElement | null
 ) {
-  if (!props.editable) {
+  if (!props.editable || isReadonlyColumn(column)) {
     return
   }
 
@@ -906,6 +972,10 @@ function commitCellEdit() {
   const rowIndex = rowIndexByKey.value.get(rowKey)
   const column = props.columns.find((item) => item.key === columnKey)
   if (rowIndex === undefined || !column) {
+    editingCellKey.value = null
+    return
+  }
+  if (isReadonlyColumn(column)) {
     editingCellKey.value = null
     return
   }
@@ -1212,7 +1282,7 @@ function pasteClipboardTextToCells(text: string) {
 
     line.forEach((rawValue, columnOffset) => {
       const column = resolvedColumns.value[origin.columnIndex + columnOffset]?.column
-      if (!column) {
+      if (!column || isReadonlyColumn(column)) {
         return
       }
 
@@ -1608,7 +1678,44 @@ function handleContextMenuInsertRow(position: 'above' | 'below') {
 }
 
 function appendEmptyRow() {
-  emit('update:data', [...props.data, createEmptyRow()])
+  const row = createEmptyRow()
+  const rows = [...props.data, row]
+  emit('update:data', rows)
+  emit('append-row', { row, rows })
+}
+
+function handleAppendRowButtonClick() {
+  if (!isContextRowMutationEnabled.value) {
+    return
+  }
+
+  appendEmptyRow()
+}
+
+function handleDeleteSelectedRowsButtonClick() {
+  if (!isContextRowMutationEnabled.value) {
+    return
+  }
+
+  deleteSelectedRows()
+}
+
+function deleteSelectedRows() {
+  const keys = [...activeSelectedRowKeys.value]
+  if (keys.length === 0) {
+    return
+  }
+
+  const keySet = new Set(keys)
+  const rows = props.data.filter((row, index) => !keySet.has(getRowKey(row, index)))
+  const deletedRows = props.data.filter((row, index) => keySet.has(getRowKey(row, index)))
+  if (deletedRows.length === 0) {
+    return
+  }
+
+  emit('update:data', rows)
+  emit('delete-selected-rows', { keys, rows, deletedRows })
+  emitSelectionChange([])
 }
 
 function insertEmptyRow(targetRowIndex: number, position: 'above' | 'below') {
@@ -1635,7 +1742,9 @@ function insertEmptyRowFromActiveSelection(position: 'above' | 'below') {
 function createEmptyRow() {
   const row: Record<string, unknown> = {}
   props.columns.forEach((column) => {
-    row[column.key] = ''
+    if (!column.valueGetter) {
+      row[column.key] = ''
+    }
   })
   row[props.rowKey] = getNextRowKeyValue()
   return row
@@ -1697,6 +1806,9 @@ async function exportExcel(mode: TableExcelExportMode) {
   const body = rows.map((row) =>
     columns.map((column) => (mode === 'formatted' ? formatCellValue(row, column) : normalizeExcelCellValue(getCellValue(row, column))))
   )
+  if (isSummaryRowVisible.value) {
+    body.push(columns.map((column) => getSummaryExcelCellValue(column, mode)))
+  }
   const worksheet = xlsx.utils.aoa_to_sheet([columns.map((column) => column.label), ...body])
   const workbook = xlsx.utils.book_new()
   xlsx.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
@@ -1792,6 +1904,10 @@ function createRowsFromExcelMatrix(matrix: unknown[][]) {
   return rows.map((row, rowIndex) => {
     const base = props.data[rowIndex] ? { ...props.data[rowIndex] } : { [props.rowKey]: rowIndex + 1 }
     columns.forEach((column, columnIndex) => {
+      if (isReadonlyColumn(column)) {
+        return
+      }
+
       const index = hasHeader
         ? headerIndexByName.get(normalizeExcelHeader(column.label)) ?? headerIndexByName.get(normalizeExcelHeader(column.key)) ?? columnIndex
         : columnIndex
@@ -1959,6 +2075,115 @@ function setPageSize(pageSize: number) {
 
 function handlePageSizeChange(event: Event) {
   setPageSize(Number((event.target as HTMLSelectElement).value))
+}
+
+function isColumnSortable(column: TableColumn) {
+  return column.sortable === true
+}
+
+function getColumnSortOrder(column: TableColumn) {
+  const sorter = activeSorter.value
+  return sorter?.key === column.key ? sorter.order : null
+}
+
+function getColumnSortIcon(column: TableColumn) {
+  const order = getColumnSortOrder(column)
+  if (order === 'ascending') {
+    return 'ri-sort-asc'
+  }
+  if (order === 'descending') {
+    return 'ri-sort-desc'
+  }
+  return 'ri-arrow-up-down-line'
+}
+
+function getColumnSortLabel(column: TableColumn) {
+  const order = getColumnSortOrder(column)
+  if (order === 'ascending') {
+    return `${column.label} 当前升序，点击切换为降序`
+  }
+  if (order === 'descending') {
+    return `${column.label} 当前降序，点击恢复默认排序`
+  }
+  return `${column.label} 当前未排序，点击升序排序`
+}
+
+function toggleColumnSort(column: TableColumn) {
+  if (!isColumnSortable(column)) {
+    return
+  }
+
+  const current = activeSorter.value
+  const nextOrder = current?.key === column.key
+    ? current.order === 'ascending'
+      ? 'descending'
+      : current.order === 'descending'
+        ? null
+        : 'ascending'
+    : 'ascending'
+  const nextSorter: TableSorter = {
+    key: column.key,
+    order: nextOrder
+  }
+  internalSorter.value = normalizeSorter(nextSorter)
+  emit('update:sorter', nextSorter)
+  emit('sort-change', nextSorter)
+  if (normalizedPaginationMode.value === 'client') {
+    setPage(1)
+  }
+}
+
+function normalizeSorter(sorter: TableSorter | null | undefined): TableSorter | null {
+  if (!sorter || !sorter.key) {
+    return null
+  }
+
+  return sorter.order === 'ascending' || sorter.order === 'descending'
+    ? {
+        key: sorter.key,
+        order: sorter.order
+      }
+    : null
+}
+
+function compareRowsByColumn(
+  left: Record<string, unknown>,
+  right: Record<string, unknown>,
+  column: TableColumn,
+  order: TableSorter['order']
+) {
+  if (!order) {
+    return 0
+  }
+
+  const multiplier = order === 'descending' ? -1 : 1
+  return compareCellValues(getCellValue(left, column), getCellValue(right, column)) * multiplier
+}
+
+function compareCellValues(left: unknown, right: unknown) {
+  if (left === right) {
+    return 0
+  }
+  if (left === null || left === undefined || left === '') {
+    return 1
+  }
+  if (right === null || right === undefined || right === '') {
+    return -1
+  }
+
+  const leftNumber = typeof left === 'number' ? left : Number(left)
+  const rightNumber = typeof right === 'number' ? right : Number(right)
+  if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber)) {
+    return leftNumber - rightNumber
+  }
+
+  const leftDate = left instanceof Date ? left.getTime() : Date.parse(String(left))
+  const rightDate = right instanceof Date ? right.getTime() : Date.parse(String(right))
+  if (Number.isFinite(leftDate) && Number.isFinite(rightDate)) {
+    return leftDate - rightDate
+  }
+
+  return String(left).localeCompare(String(right), undefined, { numeric: true, sensitivity: 'base' })
 }
 
 function createDefaultColumnSettings() {
@@ -2240,6 +2465,110 @@ function resetColumnSettings() {
 
 function handleColumnSettingsClick() {
   emit('column-settings-click', getOrderedSettings().map((setting) => ({ ...setting })))
+  if (shouldOpenBuiltInColumnSettingsDialog()) {
+    columnSettingsDialogVisible.value = true
+  }
+}
+
+function shouldOpenBuiltInColumnSettingsDialog() {
+  if (props.columnSettingsDialog === true) {
+    return true
+  }
+
+  if (props.columnSettingsDialog === false) {
+    return false
+  }
+
+  return !hasExternalColumnSettingsClickListener()
+}
+
+function hasExternalColumnSettingsClickListener() {
+  const vnodeProps = instance?.vnode.props as Record<string, unknown> | null | undefined
+  const listener = vnodeProps?.onColumnSettingsClick
+  return Array.isArray(listener) ? listener.length > 0 : typeof listener === 'function'
+}
+
+function getColumnSettingsColumn(key: string) {
+  return props.columns.find((column) => column.key === key)
+}
+
+function getColumnSettingsLabel(key: string) {
+  return getColumnSettingsColumn(key)?.label ?? key
+}
+
+function getColumnSettingsWidth(key: string) {
+  const width = getColumnSettingsColumn(key)?.width
+  return typeof width === 'number' ? width : undefined
+}
+
+function getColumnSettingsAlign(key: string) {
+  return getColumnSettingsColumn(key)?.align ?? 'left'
+}
+
+function updateColumnSettingVisible(key: string, value: boolean | Array<string | number | boolean>) {
+  updateColumnSetting(key, { hidden: !Boolean(value) })
+}
+
+function updateColumnSettingFixed(key: string, value: string | number | boolean) {
+  updateColumnSetting(key, { fixed: value as TableFixed })
+}
+
+function updateColumnSettingAlign(key: string, value: string | number | boolean) {
+  updateColumnSetting(key, { align: value as TableAlign })
+}
+
+function updateColumnSettingWidth(key: string, value: number | undefined) {
+  updateColumnSetting(key, { width: value })
+}
+
+function updateColumnSettingWidthRatio(key: string, value: number | undefined) {
+  updateColumnSetting(key, { widthRatio: value })
+}
+
+function startColumnSettingDrag(key: string, event: DragEvent) {
+  draggingColumnSettingKey.value = key
+  columnSettingDragTarget.value = null
+  event.dataTransfer?.setData('text/plain', key)
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+  }
+}
+
+function updateColumnSettingDragTarget(key: string, event: DragEvent) {
+  if (!draggingColumnSettingKey.value || draggingColumnSettingKey.value === key) {
+    return
+  }
+
+  event.preventDefault()
+  const target = event.currentTarget as HTMLElement
+  const rect = target.getBoundingClientRect()
+  columnSettingDragTarget.value = {
+    key,
+    position: event.clientY < rect.top + rect.height / 2 ? 'before' : 'after'
+  }
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+  }
+}
+
+function dropColumnSetting(targetKey: string, event: DragEvent) {
+  if (!draggingColumnSettingKey.value) {
+    return
+  }
+
+  event.preventDefault()
+  const position = columnSettingDragTarget.value?.key === targetKey ? columnSettingDragTarget.value.position : 'after'
+  reorderColumnSetting(draggingColumnSettingKey.value, targetKey, position)
+  resetColumnSettingDrag()
+}
+
+function isColumnSettingDragOver(key: string, position: TableReorderPosition) {
+  return columnSettingDragTarget.value?.key === key && columnSettingDragTarget.value.position === position
+}
+
+function resetColumnSettingDrag() {
+  draggingColumnSettingKey.value = ''
+  columnSettingDragTarget.value = null
 }
 
 function setColumnSettings(settings: TableColumnSetting[]) {
@@ -2256,7 +2585,15 @@ function getRowKey(row: Record<string, unknown>, rowIndex: number) {
 }
 
 function getCellValue(row: Record<string, unknown>, column: TableColumn) {
+  if (column.valueGetter) {
+    return column.valueGetter(row, column)
+  }
+
   return row[column.key]
+}
+
+function isReadonlyColumn(column: TableColumn) {
+  return Boolean(column.valueGetter || column.readonly || column.editable === false)
 }
 
 function normalizeInputValue(value: unknown) {
@@ -2275,6 +2612,75 @@ function normalizeEditedCellValue(value: string | number | undefined, oldValue: 
 function formatCellValue(row: Record<string, unknown>, column: TableColumn) {
   const value = getCellValue(row, column)
   return column.formatter ? column.formatter(value, row) : String(value ?? '')
+}
+
+function getSummaryCellValue(column: TableColumn) {
+  const row = props.summaryRow
+  if (!row) {
+    return ''
+  }
+
+  const cell = row.cells?.[column.key]
+  if (!cell) {
+    return column.key === summaryLabelColumnKey.value ? row.label ?? '合计' : ''
+  }
+
+  if (typeof cell === 'function') {
+    return cell(summarySourceRows.value, column, summaryContext.value)
+  }
+
+  const values = getNumericSummaryValues(summarySourceRows.value, column)
+  if (cell === 'sum') {
+    return values.reduce((total, value) => total + value, 0)
+  }
+
+  if (cell === 'avg') {
+    return values.length === 0 ? '' : values.reduce((total, value) => total + value, 0) / values.length
+  }
+
+  return ''
+}
+
+function formatSummaryCellValue(column: TableColumn) {
+  const value = getSummaryCellValue(column)
+  if (isSummaryLabelCell(column)) {
+    return String(value ?? '')
+  }
+
+  return column.formatter ? column.formatter(value, {} as Record<string, unknown>) : String(value ?? '')
+}
+
+function getSummaryExcelCellValue(column: TableColumn, mode: TableExcelExportMode) {
+  const value = getSummaryCellValue(column)
+  if (mode === 'formatted') {
+    return formatSummaryCellValue(column)
+  }
+
+  return normalizeExcelCellValue(value)
+}
+
+function isSummaryLabelCell(column: TableColumn) {
+  const row = props.summaryRow
+  return Boolean(row && !row.cells?.[column.key] && column.key === summaryLabelColumnKey.value)
+}
+
+function getNumericSummaryValues(rows: Record<string, unknown>[], column: TableColumn) {
+  return rows
+    .map((row) => normalizeSummaryNumber(getCellValue(row, column)))
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+}
+
+function normalizeSummaryNumber(value: unknown) {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const next = Number(value)
+    return Number.isFinite(next) ? next : null
+  }
+
+  return null
 }
 
 function formatCssSize(value: number | string) {
@@ -2319,6 +2725,26 @@ function getUtilityCellStyle(kind: 'drag' | 'selection', type: 'header' | 'body'
     left: kind === 'selection' && props.rowDraggable ? '44px' : '0px',
     zIndex: type === 'header' ? 3 : 2,
     background: type === 'header' ? 'var(--x-table-header-background, #f3f6fa)' : getBodyRowLayeredBackground(rowIndex)
+  }
+
+  return style
+}
+
+function getSummaryCellStyle(column: ResolvedColumn): CSSProperties {
+  const style = getCellStyle(column, 'body', visibleRows.value.length)
+  if (column.fixed !== 'none') {
+    style.zIndex = 4
+    style.background = 'var(--x-table-summary-background, #f8fafc)'
+  }
+
+  return style
+}
+
+function getSummaryUtilityCellStyle(kind: 'drag' | 'selection'): CSSProperties {
+  const style = getUtilityCellStyle(kind, 'body', visibleRows.value.length)
+  if ('position' in style) {
+    style.zIndex = 4
+    style.background = 'var(--x-table-summary-background, #f8fafc)'
   }
 
   return style
@@ -2407,6 +2833,26 @@ watch(
 )
 
 watch(
+  () => props.sorter,
+  (sorter) => {
+    if (sorter !== undefined) {
+      internalSorter.value = normalizeSorter(sorter)
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
+  () => props.defaultSorter,
+  (sorter) => {
+    if (props.sorter === undefined) {
+      internalSorter.value = normalizeSorter(sorter)
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
   () => props.currentPage,
   (page) => {
     internalCurrentPage.value = Math.max(1, normalizeInteger(page, 1))
@@ -2474,7 +2920,7 @@ watch(
 )
 
 watch(
-  () => [props.data, props.columns, props.showActions, props.actionsWidth, props.showPagination, normalizedCurrentPage.value, normalizedPageSize.value, internalColumnSettings.value],
+  () => [props.data, props.columns, props.showActions, props.actionsWidth, props.showPagination, normalizedCurrentPage.value, normalizedPageSize.value, internalColumnSettings.value, activeSorter.value],
   () => {
     nextTick(syncScrollState)
   },
@@ -2503,8 +2949,34 @@ defineExpose({
     tabindex="0"
     @keydown.capture="handleTableKeydown"
   >
-    <div v-if="$slots.top || showColumnSettings" class="x-table__top">
-      <slot name="top" v-bind="slotScope" />
+    <div v-if="$slots.top || isRowMutationToolbarVisible || showColumnSettings" class="x-table__top">
+      <div v-if="$slots.top" class="x-table__top-slot">
+        <slot name="top" v-bind="slotScope" />
+      </div>
+      <div v-if="isRowMutationToolbarVisible" class="x-table__row-mutation-actions" aria-label="行操作">
+        <button
+          v-if="showAppendRowButton"
+          class="x-table__toolbar-icon-button"
+          type="button"
+          :aria-label="appendRowButtonLabel"
+          :title="appendRowButtonLabel"
+          :disabled="isAppendRowButtonDisabled"
+          @click="handleAppendRowButtonClick"
+        >
+          <i class="ri-add-line" aria-hidden="true"></i>
+        </button>
+        <button
+          v-if="showDeleteSelectedRowsButton"
+          class="x-table__toolbar-icon-button x-table__toolbar-icon-button--danger"
+          type="button"
+          :aria-label="deleteSelectedRowsButtonLabel"
+          :title="deleteSelectedRowsButtonLabel"
+          :disabled="isDeleteSelectedRowsButtonDisabled"
+          @click="handleDeleteSelectedRowsButtonClick"
+        >
+          <i class="ri-delete-bin-6-line" aria-hidden="true"></i>
+        </button>
+      </div>
       <button
         v-if="showColumnSettings"
         class="x-table__column-settings-button"
@@ -2550,10 +3022,22 @@ defineExpose({
             v-for="column in resolvedColumns"
             :key="column.column.key"
             class="x-table__cell x-table__cell--header"
+            :class="{ 'is-sortable': isColumnSortable(column.column), 'is-sorted': Boolean(getColumnSortOrder(column.column)) }"
             role="columnheader"
+            :aria-sort="getColumnSortOrder(column.column) === 'ascending' ? 'ascending' : getColumnSortOrder(column.column) === 'descending' ? 'descending' : 'none'"
             :style="getCellStyle(column, 'header')"
           >
-            <span class="x-table__header-label">{{ column.column.label }}</span>
+            <button
+              v-if="isColumnSortable(column.column)"
+              class="x-table__header-sort"
+              type="button"
+              :aria-label="getColumnSortLabel(column.column)"
+              @click="toggleColumnSort(column.column)"
+            >
+              <span class="x-table__header-label">{{ column.column.label }}</span>
+              <i class="x-table__sort-icon" :class="getColumnSortIcon(column.column)" aria-hidden="true" />
+            </button>
+            <span v-else class="x-table__header-label">{{ column.column.label }}</span>
             <span
               v-if="columnResizable"
               class="x-table__column-resize-handle"
@@ -2576,7 +3060,7 @@ defineExpose({
 
       <div class="x-table__body-shell">
         <div ref="bodyViewportRef" class="x-table__body-viewport" @scroll="handleBodyScroll">
-          <div v-if="visibleRows.length > 0" class="x-table__body" role="rowgroup">
+          <div v-if="visibleRows.length > 0 || isSummaryRowVisible" class="x-table__body" role="rowgroup">
             <div
               v-for="{ row, rowIndex } in visibleRows"
               :key="getRowKey(row, rowIndex)"
@@ -2687,6 +3171,45 @@ defineExpose({
               <div v-if="showActions" class="x-table__cell x-table__cell--actions" role="cell">
                 <slot name="row-actions" :row="row" :row-index="rowIndex" />
               </div>
+            </div>
+            <div
+              v-if="isSummaryRowVisible"
+              class="x-table__row x-table__row--summary"
+              role="row"
+              :style="{ gridTemplateColumns }"
+            >
+              <div
+                v-if="rowDraggable"
+                class="x-table__cell x-table__cell--drag x-table__cell--summary"
+                role="cell"
+                aria-hidden="true"
+                :style="getSummaryUtilityCellStyle('drag')"
+              />
+              <div
+                v-if="isRowSelectionColumnVisible"
+                class="x-table__cell x-table__cell--selection x-table__cell--summary"
+                role="cell"
+                aria-hidden="true"
+                :style="getSummaryUtilityCellStyle('selection')"
+              />
+              <div
+                v-for="column in resolvedColumns"
+                :key="column.column.key"
+                class="x-table__cell x-table__cell--summary"
+                role="cell"
+                :style="getSummaryCellStyle(column)"
+              >
+                <slot
+                  :name="`summary-${column.column.key}`"
+                  :value="getSummaryCellValue(column.column)"
+                  :column="column.column"
+                  :rows="summarySourceRows"
+                  :context="summaryContext"
+                >
+                  {{ formatSummaryCellValue(column.column) }}
+                </slot>
+              </div>
+              <div v-if="showActions" class="x-table__cell x-table__cell--actions x-table__cell--summary" role="cell" />
             </div>
           </div>
 
@@ -2883,6 +3406,148 @@ defineExpose({
         </button>
       </div>
     </div>
+    <XDialog
+      v-if="showColumnSettings && columnSettingsDialog !== false"
+      v-model="columnSettingsDialogVisible"
+      class="x-table__column-settings-dialog"
+      :title="columnSettingsDialogTitle"
+      :width="columnSettingsDialogWidth"
+      :height="columnSettingsDialogHeight"
+      :min-width="640"
+      :min-height="460"
+    >
+      <div class="x-table__column-settings" @mouseup="resetColumnSettingDrag" @mouseleave="resetColumnSettingDrag">
+        <p class="x-table__column-settings-hint">勾选显示列，拖拽列名调整顺序，也可以设置冻结、对齐和宽度。</p>
+        <div class="x-table__column-settings-scroll">
+          <div class="x-table__column-settings-header" aria-hidden="true">
+            <span></span>
+            <span>显示</span>
+            <span class="x-table__column-settings-header-name">列名</span>
+            <span>冻结</span>
+            <span>对齐</span>
+            <span>比例%</span>
+            <span>宽度px</span>
+          </div>
+          <div class="x-table__column-settings-list">
+            <div
+              v-for="setting in orderedColumnSettings"
+              :key="setting.key"
+              class="x-table__column-settings-row"
+              :class="{
+                'is-dragging': draggingColumnSettingKey === setting.key,
+                'is-drag-over-before': isColumnSettingDragOver(setting.key, 'before'),
+                'is-drag-over-after': isColumnSettingDragOver(setting.key, 'after')
+              }"
+              draggable="true"
+              @dragstart="startColumnSettingDrag(setting.key, $event)"
+              @dragover="updateColumnSettingDragTarget(setting.key, $event)"
+              @drop="dropColumnSetting(setting.key, $event)"
+              @dragend="resetColumnSettingDrag"
+            >
+              <button
+                class="x-table__column-settings-drag-button"
+                type="button"
+                aria-label="拖拽排序"
+                title="拖拽排序"
+                draggable="true"
+                @dragstart="startColumnSettingDrag(setting.key, $event)"
+              >
+                <i class="ri-draggable" aria-hidden="true"></i>
+              </button>
+              <XCheckbox
+                class="x-table__column-settings-visible"
+                :model-value="!setting.hidden"
+                aria-label="显示列"
+                size="sm"
+                @update:model-value="updateColumnSettingVisible(setting.key, $event)"
+              />
+              <span class="x-table__column-settings-name" :title="getColumnSettingsLabel(setting.key)">
+                {{ getColumnSettingsLabel(setting.key) }}
+              </span>
+              <div class="x-table__column-settings-radio-group x-table__column-settings-radio-group--button">
+                <XRadioButton
+                  :model-value="setting.fixed"
+                  value="left"
+                  :name="`x-table-fixed-${setting.key}`"
+                  label="左"
+                  size="sm"
+                  @update:model-value="updateColumnSettingFixed(setting.key, $event)"
+                />
+                <XRadioButton
+                  :model-value="setting.fixed"
+                  value="none"
+                  :name="`x-table-fixed-${setting.key}`"
+                  label="无"
+                  size="sm"
+                  @update:model-value="updateColumnSettingFixed(setting.key, $event)"
+                />
+                <XRadioButton
+                  :model-value="setting.fixed"
+                  value="right"
+                  :name="`x-table-fixed-${setting.key}`"
+                  label="右"
+                  size="sm"
+                  @update:model-value="updateColumnSettingFixed(setting.key, $event)"
+                />
+              </div>
+              <div class="x-table__column-settings-radio-group x-table__column-settings-radio-group--button">
+                <XRadioButton
+                  :model-value="setting.align"
+                  value="left"
+                  :name="`x-table-align-${setting.key}`"
+                  label="左"
+                  size="sm"
+                  @update:model-value="updateColumnSettingAlign(setting.key, $event)"
+                />
+                <XRadioButton
+                  :model-value="setting.align"
+                  value="center"
+                  :name="`x-table-align-${setting.key}`"
+                  label="中"
+                  size="sm"
+                  @update:model-value="updateColumnSettingAlign(setting.key, $event)"
+                />
+                <XRadioButton
+                  :model-value="setting.align"
+                  value="right"
+                  :name="`x-table-align-${setting.key}`"
+                  label="右"
+                  size="sm"
+                  @update:model-value="updateColumnSettingAlign(setting.key, $event)"
+                />
+              </div>
+              <XInputNumber
+                class="x-table__column-settings-number"
+                :model-value="setting.widthRatio"
+                :min="0"
+                :max="100"
+                :step="5"
+                size="sm"
+                full-width
+                placeholder="-"
+                @update:model-value="updateColumnSettingWidthRatio(setting.key, $event)"
+              />
+              <XInputNumber
+                class="x-table__column-settings-number"
+                :model-value="setting.width"
+                :min="0"
+                :step="10"
+                size="sm"
+                full-width
+                :placeholder="String(getColumnSettingsWidth(setting.key) ?? '-')"
+                @update:model-value="updateColumnSettingWidth(setting.key, $event)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="x-table__column-settings-footer">
+          <button class="x-table__column-settings-footer-button" type="button" @click="resetColumnSettings">恢复默认</button>
+          <button class="x-table__column-settings-footer-button is-primary" type="button" @click="columnSettingsDialogVisible = false">关闭</button>
+        </div>
+      </template>
+    </XDialog>
     <input
       ref="excelInputRef"
       class="x-table__excel-input"
@@ -2948,7 +3613,23 @@ defineExpose({
   justify-content: space-between;
 }
 
-.x-table__column-settings-button {
+.x-table__top-slot {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.x-table__row-mutation-actions {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.x-table__column-settings-button,
+.x-table__toolbar-icon-button {
   align-items: center;
   background: var(--x-table-control-bg, #fff);
   border: 1px solid var(--x-table-control-border-color, #cbd5e1);
@@ -2966,15 +3647,244 @@ defineExpose({
   width: var(--x-table-row-height, 30px);
 }
 
-.x-table__column-settings-button:hover {
+.x-table__row-mutation-actions + .x-table__column-settings-button {
+  margin-left: 0;
+}
+
+.x-table__toolbar-icon-button--danger {
+  color: var(--x-color-danger, #dc2626);
+}
+
+.x-table__column-settings-button:hover,
+.x-table__toolbar-icon-button:hover:not(:disabled) {
   background: var(--x-table-control-hover-bg, #f8fafc);
   border-color: var(--x-table-control-hover-border-color, #94a3b8);
   color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
 }
 
-.x-table__column-settings-button:focus-visible {
+.x-table__toolbar-icon-button--danger:hover:not(:disabled) {
+  border-color: var(--x-color-danger, #dc2626);
+  color: var(--x-color-danger, #dc2626);
+}
+
+.x-table__column-settings-button:disabled,
+.x-table__toolbar-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.x-table__column-settings-button:focus-visible,
+.x-table__toolbar-icon-button:focus-visible {
   box-shadow: var(--x-shadow-focus, 0 0 0 3px rgb(14 116 144 / 20%));
   outline: none;
+}
+
+.x-table__column-settings {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.x-table__column-settings-hint {
+  color: var(--x-color-text-muted, #64748b);
+  font-size: var(--x-table-font-size, 12px);
+  margin: 0;
+}
+
+.x-table__column-settings-scroll {
+  border: 1px solid var(--x-color-border, #e2e8f0);
+  border-radius: 6px;
+  max-height: 464px;
+  min-width: 0;
+  overflow: auto;
+}
+
+.x-table__column-settings-header,
+.x-table__column-settings-row {
+  align-items: center;
+  box-sizing: border-box;
+  column-gap: 10px;
+  display: grid;
+  grid-template-columns: 28px 52px minmax(120px, 1fr) 84px 84px 84px 92px;
+  min-width: 604px;
+  width: 100%;
+}
+
+.x-table__column-settings-header {
+  background: var(--x-color-surface-soft, #f8fafc);
+  border-bottom: 1px solid var(--x-color-border, #e2e8f0);
+  color: var(--x-color-text-muted, #64748b);
+  font-size: var(--x-table-font-size, 12px);
+  font-weight: 600;
+  min-height: 34px;
+  padding: 0 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.x-table__column-settings-header span {
+  min-width: 0;
+  text-align: center;
+}
+
+.x-table__column-settings-header-name {
+  text-align: left !important;
+}
+
+.x-table__column-settings-list {
+  min-width: 0;
+}
+
+.x-table__column-settings-row {
+  background: var(--x-color-surface, #fff);
+  border-bottom: 1px solid var(--x-color-border, #e2e8f0);
+  min-height: 48px;
+  padding: 8px 10px;
+  position: relative;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    margin 140ms ease,
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.x-table__column-settings-row:last-child {
+  border-bottom: 0;
+}
+
+.x-table__column-settings-row.is-dragging {
+  opacity: 0.48;
+  transform: scale(0.998);
+}
+
+.x-table__column-settings-row.is-drag-over-before,
+.x-table__column-settings-row.is-drag-over-after {
+  background: var(--x-color-primary-soft, #f0f9ff);
+  box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
+}
+
+.x-table__column-settings-row.is-drag-over-before {
+  margin-top: 10px;
+}
+
+.x-table__column-settings-row.is-drag-over-after {
+  margin-bottom: 10px;
+}
+
+.x-table__column-settings-row.is-drag-over-before::before,
+.x-table__column-settings-row.is-drag-over-after::after {
+  background: var(--x-color-primary, #155e75);
+  border-radius: 999px;
+  content: "";
+  height: 2px;
+  left: 10px;
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  z-index: 2;
+}
+
+.x-table__column-settings-row.is-drag-over-before::before {
+  top: -6px;
+}
+
+.x-table__column-settings-row.is-drag-over-after::after {
+  bottom: -6px;
+}
+
+.x-table__column-settings-drag-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--x-color-text-muted, #64748b);
+  cursor: grab;
+  display: inline-flex;
+  font-size: 18px;
+  height: 26px;
+  justify-content: center;
+  padding: 0;
+  width: 26px;
+}
+
+.x-table__column-settings-drag-button:hover,
+.x-table__column-settings-drag-button:focus-visible {
+  background: var(--x-color-surface-soft, #f8fafc);
+  color: var(--x-color-primary, #155e75);
+  outline: none;
+}
+
+.x-table__column-settings-drag-button:active {
+  cursor: grabbing;
+}
+
+.x-table__column-settings-visible {
+  justify-self: center;
+}
+
+.x-table__column-settings-visible :deep(.x-checkbox__label) {
+  display: none;
+}
+
+.x-table__column-settings-name {
+  color: var(--x-color-text, #1f2937);
+  font-size: var(--x-table-font-size, 12px);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.x-table__column-settings-radio-group {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-self: center;
+  min-width: 0;
+}
+
+.x-table__column-settings-radio-group--button {
+  gap: 0;
+}
+
+.x-table__column-settings-radio-group--button :deep(.x-radio-button) {
+  min-width: 28px;
+}
+
+.x-table__column-settings-number {
+  justify-self: stretch;
+  min-width: 0;
+}
+
+.x-table__column-settings-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.x-table__column-settings-footer-button {
+  background: var(--x-table-control-bg, #fff);
+  border: 1px solid var(--x-table-control-border-color, #cbd5e1);
+  border-radius: var(--x-table-radius, 6px);
+  color: var(--x-table-control-text-color, #334155);
+  cursor: pointer;
+  min-height: var(--x-table-row-height, 30px);
+  padding: var(--x-table-cell-padding, 0 8px);
+}
+
+.x-table__column-settings-footer-button:hover {
+  background: var(--x-table-control-hover-bg, #f8fafc);
+  border-color: var(--x-table-control-hover-border-color, #94a3b8);
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
+}
+
+.x-table__column-settings-footer-button.is-primary {
+  background: var(--x-color-primary, #155e75);
+  border-color: var(--x-color-primary, #155e75);
+  color: #fff;
 }
 
 .x-table__bottom {
@@ -3179,6 +4089,16 @@ defineExpose({
 
 .x-table__row--body:hover {
   --x-table-row-hover-overlay-current: var(--x-table-row-hover-overlay, rgb(14 116 144 / 6%));
+}
+
+.x-table__row--summary {
+  background: var(--x-table-summary-background, #f8fafc);
+  border-top: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-row-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));
+  bottom: 0;
+  color: var(--x-table-summary-text-color, var(--x-table-body-text-color, var(--x-table-text-color, #1f2937)));
+  font-weight: 600;
+  position: sticky;
+  z-index: 3;
 }
 
 .x-table__row--body.is-selected {
@@ -3422,6 +4342,40 @@ defineExpose({
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.x-table__header-sort {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  justify-content: inherit;
+  letter-spacing: 0;
+  min-width: 0;
+  padding: 0;
+  text-align: inherit;
+}
+
+.x-table__header-sort:hover,
+.x-table__header-sort:focus-visible {
+  color: var(--x-color-primary, #155e75);
+  outline: none;
+}
+
+.x-table__sort-icon {
+  color: var(--x-table-sort-icon-color, #94a3b8);
+  flex: 0 0 auto;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.x-table__cell--header.is-sorted .x-table__sort-icon {
+  color: var(--x-color-primary, #155e75);
 }
 
 .x-table__column-resize-handle {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { componentSizePreset } from '../../../_utils/size'
 import { formContextKey } from '../../form/src/context'
 import type { RadioButtonProps } from './types'
 
@@ -22,9 +23,13 @@ const emit = defineEmits<{
 const form = inject(formContextKey, null)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const usesExplicitSize = computed(() => props.size != null || form?.size.value != null)
 const checked = computed(() => props.modelValue === props.value)
 const buttonColor = computed(() => props.buttonColor)
 const textColor = computed(() => props.textColor ?? props.labelColor)
+const activeBackgroundColor = computed(() => props.activeBackgroundColor ?? buttonColor.value)
+const activeBorderColor = computed(() => props.activeBorderColor ?? activeBackgroundColor.value)
 const radioButtonStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-radio-button-color': buttonColor.value,
@@ -35,16 +40,17 @@ const radioButtonStyle = computed(() => ({
   '--x-radio-button-border-color': props.borderColor,
   '--x-radio-button-border-width': toCssSize(props.borderWidth),
   '--x-radio-button-font-family': props.fontFamily,
-  '--x-radio-button-font-size': toCssSize(props.fontSize),
+  '--x-radio-button-font-size': toCssSize(usesExplicitSize.value ? sizePreset.value.fontSize : props.fontSize),
   '--x-radio-button-width': toCssSize(props.width),
-  '--x-radio-button-height': toCssSize(props.height ?? props.buttonSize),
-  '--x-radio-button-radius': toCssSize(props.radius),
-  '--x-radio-button-active-bg': props.activeBackgroundColor,
-  '--x-radio-button-active-border-color': props.activeBorderColor,
+  '--x-radio-button-height': toCssSize(usesExplicitSize.value ? sizePreset.value.height : props.height ?? props.buttonSize),
+  '--x-radio-button-padding': usesExplicitSize.value ? sizePreset.value.padding : undefined,
+  '--x-radio-button-radius': usesExplicitSize.value ? sizePreset.value.radius : toCssSize(props.radius),
+  '--x-radio-button-active-bg': activeBackgroundColor.value,
+  '--x-radio-button-active-border-color': activeBorderColor.value,
   '--x-radio-button-active-text': props.activeTextColor
 }))
 const labelStyle = computed(() => ({
-  fontSize: toCssSize(props.fontSize),
+  fontSize: toCssSize(usesExplicitSize.value ? sizePreset.value.fontSize : props.fontSize),
   fontFamily: props.fontFamily
 }))
 

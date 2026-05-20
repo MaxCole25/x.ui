@@ -149,6 +149,12 @@ const breadcrumbItems = computed(() => {
 const canPaste = computed(() => canWrite.value && Boolean(clipboard.value?.items.length))
 const hasSelection = computed(() => selectedItems.value.length > 0)
 const canRename = computed(() => canWrite.value && selectedItems.value.length === 1)
+const canShowWriteActions = computed(() => canWrite.value)
+const canShowCopyAction = computed(() => canWrite.value)
+const canShowDeleteAction = computed(() => canDelete.value)
+const hasToolbarMutationActions = computed(() =>
+  canShowWriteActions.value || canShowCopyAction.value || canShowDeleteAction.value
+)
 const hasUploadTasks = computed(() => uploadTasks.value.length > 0)
 const previewImageStyle = computed<CSSProperties>(() => ({
   transform: `translate3d(${previewOffset.value.x}px, ${previewOffset.value.y}px, 0) scale(${previewScale.value})`
@@ -1107,29 +1113,29 @@ defineExpose({
         <button type="button" class="x-file-disk__tool" :disabled="isBusy" title="刷新" @click="refresh">
           <i class="ri-refresh-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool" :disabled="!canWrite || isBusy" title="新建目录" @click="createFolder">
+        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool" :disabled="isBusy" title="新建目录" @click="createFolder">
           <i class="ri-folder-add-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="!canWrite || isBusy" title="上传文件" @click="chooseFiles">
+        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="isBusy" title="上传文件" @click="chooseFiles">
           <i class="ri-upload-2-line" aria-hidden="true" />
           <span>上传</span>
         </button>
         <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="下载" @click="downloadSelected">
           <i class="ri-download-2-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="复制" @click="copySelected('copy')">
+        <button v-if="canShowCopyAction" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="复制" @click="copySelected('copy')">
           <i class="ri-file-copy-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="剪切" @click="copySelected('cut')">
+        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="剪切" @click="copySelected('cut')">
           <i class="ri-scissors-cut-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
+        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
           <i class="ri-clipboard-line" aria-hidden="true" />
         </button>
-        <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || !canDelete || isBusy" title="删除" @click="deleteSelected">
+        <button v-if="canShowDeleteAction" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="删除" @click="deleteSelected">
           <i class="ri-delete-bin-line" aria-hidden="true" />
         </button>
-        <span class="x-file-disk__divider" />
+        <span v-if="hasToolbarMutationActions" class="x-file-disk__divider" />
         <button
           type="button"
           class="x-file-disk__tool"
@@ -1354,16 +1360,16 @@ defineExpose({
         <i class="ri-refresh-line" aria-hidden="true" />
         <span>刷新</span>
       </button>
-      <button type="button" :disabled="!canWrite || isBusy" @click="createFolder">
+      <button v-if="canShowWriteActions" type="button" :disabled="isBusy" @click="createFolder">
         <i class="ri-folder-add-line" aria-hidden="true" />
         <span>新建目录</span>
       </button>
-      <button type="button" :disabled="!canWrite || isBusy" @click="chooseFilesFromContextMenu">
+      <button v-if="canShowWriteActions" type="button" :disabled="isBusy" @click="chooseFilesFromContextMenu">
         <i class="ri-upload-2-line" aria-hidden="true" />
         <span>上传</span>
       </button>
-      <span class="x-file-disk__context-divider" />
-      <button type="button" :disabled="!canRename || isBusy" @click="beginRename">
+      <span v-if="canShowWriteActions" class="x-file-disk__context-divider" />
+      <button v-if="canShowWriteActions" type="button" :disabled="!canRename || isBusy" @click="beginRename">
         <i class="ri-edit-line" aria-hidden="true" />
         <span>重命名</span>
       </button>
@@ -1371,21 +1377,20 @@ defineExpose({
         <i class="ri-download-2-line" aria-hidden="true" />
         <span>下载</span>
       </button>
-      <span class="x-file-disk__context-divider" />
-      <button type="button" :disabled="!hasSelection || isBusy" @click="copySelected('copy')">
+      <span v-if="canShowCopyAction || canShowWriteActions || canShowDeleteAction" class="x-file-disk__context-divider" />
+      <button v-if="canShowCopyAction" type="button" :disabled="!hasSelection || isBusy" @click="copySelected('copy')">
         <i class="ri-file-copy-line" aria-hidden="true" />
         <span>复制</span>
       </button>
-      <button type="button" :disabled="!hasSelection || isBusy" @click="copySelected('cut')">
+      <button v-if="canShowWriteActions" type="button" :disabled="!hasSelection || isBusy" @click="copySelected('cut')">
         <i class="ri-scissors-cut-line" aria-hidden="true" />
         <span>剪切</span>
       </button>
-      <button type="button" :disabled="!canPaste || isBusy" @click="pasteItems">
+      <button v-if="canShowWriteActions" type="button" :disabled="!canPaste || isBusy" @click="pasteItems">
         <i class="ri-clipboard-line" aria-hidden="true" />
         <span>粘贴</span>
       </button>
-      <span class="x-file-disk__context-divider" />
-      <button type="button" :disabled="!hasSelection || !canDelete || isBusy" @click="deleteSelected">
+      <button v-if="canShowDeleteAction" type="button" :disabled="!hasSelection || isBusy" @click="deleteSelected">
         <i class="ri-delete-bin-line" aria-hidden="true" />
         <span>删除</span>
       </button>

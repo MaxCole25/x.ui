@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { XDialog } from '../../feedback-components/dialog'
 import { XInputNumber } from '../../form-components/input-number'
 import { XRadio } from '../../form-components/radio'
 import { XSelect } from '../../form-components/select'
@@ -10,10 +9,9 @@ import { XTable } from './index'
 import type {
   TableColumn,
   TableColumnResizePayload,
-  TableColumnSetting,
+  TableColumnSettingsDialogMode,
   TablePaginationChangePayload,
   TablePaginationMode,
-  TableReorderPosition,
   TableRowClickPayload,
   TableRowReorderPayload,
   TableSelectionMode
@@ -66,6 +64,10 @@ const parentState = reactive({
   showSelectionColumn: true,
   editable: false,
   columnResizable: true,
+  columnSettingsDialog: 'auto' as TableColumnSettingsDialogMode,
+  columnSettingsDialogTitle: '列设置',
+  columnSettingsDialogWidth: 760,
+  columnSettingsDialogHeight: 620,
   selectionMode: 'row' as TableSelectionMode,
   rowDraggable: true,
   showPagination: true,
@@ -94,13 +96,9 @@ const parentState = reactive({
   verticalBorderColor: '#cbd5e1',
   verticalBorderWidth: 1
 })
-const settingsDialogVisible = ref(false)
 const selectedRowKeys = ref<string[]>([])
 const selectedCellKeys = ref<string[]>([])
 const rowEventText = ref('尚未触发行事件')
-const draggingColumnSettingKey = ref<string | null>(null)
-const dragOverColumnSettingKey = ref<string | null>(null)
-const columnSettingDragOverPosition = ref<TableReorderPosition>('after')
 
 const parentStyle = computed(() => ({
   width: parentState.autoWidth ? '100%' : `${parentState.width}px`,
@@ -118,86 +116,6 @@ const selectedText = computed(() => {
 
   return parentState.selectionMode === 'row' ? `已选 ${selectedRowKeys.value.length} 行` : `已选 ${selectedCellKeys.value.length} 个单元格`
 })
-
-function getColumnLabel(key: string) {
-  return columns.find((column) => column.key === key)?.label ?? key
-}
-
-function updateSettingNumber(
-  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void,
-  key: string,
-  field: 'width' | 'widthRatio',
-  event: Event
-) {
-  const value = (event.target as HTMLInputElement).value
-  updateColumnSetting(key, { [field]: value === '' ? undefined : Number(value) })
-}
-
-function updateSettingAlign(
-  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void,
-  key: string,
-  value: string | number | boolean
-) {
-  updateColumnSetting(key, { align: value as TableColumnSetting['align'] })
-}
-
-function updateSettingFixed(
-  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void,
-  key: string,
-  value: string | number | boolean
-) {
-  updateColumnSetting(key, { fixed: value as TableColumnSetting['fixed'] })
-}
-
-function startColumnSettingDrag(key: string, event: DragEvent) {
-  draggingColumnSettingKey.value = key
-  dragOverColumnSettingKey.value = null
-  columnSettingDragOverPosition.value = 'after'
-  event.dataTransfer?.setData('text/plain', key)
-  if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
-  }
-}
-
-function updateColumnSettingDragTarget(key: string, event: DragEvent) {
-  if (!draggingColumnSettingKey.value || draggingColumnSettingKey.value === key) {
-    return
-  }
-
-  event.preventDefault()
-  const target = event.currentTarget as HTMLElement
-  const rect = target.getBoundingClientRect()
-  const midpoint = rect.top + rect.height / 2
-  dragOverColumnSettingKey.value = key
-  columnSettingDragOverPosition.value = event.clientY < midpoint ? 'before' : 'after'
-  if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = 'move'
-  }
-}
-
-function dropColumnSetting(
-  reorderColumnSetting: (key: string, targetKey: string, position: TableReorderPosition) => void,
-  key: string,
-  event: DragEvent
-) {
-  if (!draggingColumnSettingKey.value) {
-    return
-  }
-
-  event.preventDefault()
-  reorderColumnSetting(draggingColumnSettingKey.value, key, columnSettingDragOverPosition.value)
-  resetColumnSettingDrag()
-}
-
-function isColumnSettingDragOver(key: string, position: TableReorderPosition) {
-  return dragOverColumnSettingKey.value === key && columnSettingDragOverPosition.value === position
-}
-
-function resetColumnSettingDrag() {
-  draggingColumnSettingKey.value = null
-  dragOverColumnSettingKey.value = null
-  columnSettingDragOverPosition.value = 'after'
-}
 
 function handleRowReorder(payload: TableRowReorderPayload) {
   rows.value = payload.rows as DemoRow[]
@@ -263,6 +181,10 @@ function updateSelectionMode(value: string | number | boolean) {
 
 function updatePaginationMode(value: string | number | boolean) {
   parentState.paginationMode = value as TablePaginationMode
+}
+
+function updateColumnSettingsDialogMode(value: string | number | boolean) {
+  parentState.columnSettingsDialog = value as TableColumnSettingsDialogMode
 }
 
 </script>
@@ -350,6 +272,45 @@ function updatePaginationMode(value: string | number | boolean) {
             <span>列宽拖拽</span>
             <XSwitch v-model="parentState.columnResizable" size="sm" />
           </div>
+          <div class="table-story__control-item">
+            <span>列设置弹窗</span>
+            <XRadio
+              :model-value="parentState.columnSettingsDialog"
+              value="auto"
+              label="自动"
+              name="table-column-settings-dialog"
+              size="sm"
+              @update:model-value="updateColumnSettingsDialogMode"
+            />
+            <XRadio
+              :model-value="parentState.columnSettingsDialog"
+              :value="true"
+              label="强制"
+              name="table-column-settings-dialog"
+              size="sm"
+              @update:model-value="updateColumnSettingsDialogMode"
+            />
+            <XRadio
+              :model-value="parentState.columnSettingsDialog"
+              :value="false"
+              label="关闭"
+              name="table-column-settings-dialog"
+              size="sm"
+              @update:model-value="updateColumnSettingsDialogMode"
+            />
+          </div>
+          <label class="table-story__style-control">
+            <span>弹窗标题</span>
+            <input v-model="parentState.columnSettingsDialogTitle" type="text" />
+          </label>
+          <label>
+            <span>弹窗宽度</span>
+            <input v-model.number="parentState.columnSettingsDialogWidth" type="number" min="640" max="1200" step="20" />
+          </label>
+          <label>
+            <span>弹窗高度</span>
+            <input v-model.number="parentState.columnSettingsDialogHeight" type="number" min="460" max="900" step="20" />
+          </label>
           <label>
             <input v-model="parentState.rowDraggable" type="checkbox" />
             <span>行拖拽排序</span>
@@ -478,6 +439,10 @@ function updatePaginationMode(value: string | number | boolean) {
             :editable="parentState.editable"
             :column-resizable="parentState.columnResizable"
             show-column-settings
+            :column-settings-dialog="parentState.columnSettingsDialog"
+            :column-settings-dialog-title="parentState.columnSettingsDialogTitle"
+            :column-settings-dialog-width="parentState.columnSettingsDialogWidth"
+            :column-settings-dialog-height="parentState.columnSettingsDialogHeight"
             :selection-mode="parentState.selectionMode"
             :row-draggable="parentState.rowDraggable"
             :show-pagination="parentState.showPagination"
@@ -514,141 +479,7 @@ function updatePaginationMode(value: string | number | boolean) {
             @pagination-change="handlePaginationChange"
             @excel-export="handleExcelExport"
             @excel-import="handleExcelImport"
-            @column-settings-click="settingsDialogVisible = true"
           >
-            <template #top="{ columnSettings, updateColumnSetting, reorderColumnSetting, resetColumnSettings }">
-              <XDialog
-                v-model="settingsDialogVisible"
-                title="列设置"
-                :width="900"
-                :height="560"
-                :min-width="680"
-                :min-height="420"
-              >
-                <div class="table-story__settings" @mouseup="resetColumnSettingDrag" @mouseleave="resetColumnSettingDrag">
-                  <div class="table-story__setting-header" aria-hidden="true">
-                    <span></span>
-                    <span>列名</span>
-                    <span>冻结</span>
-                    <span>对齐</span>
-                    <span>比例%</span>
-                    <span>宽度px</span>
-                  </div>
-                  <div
-                    v-for="setting in columnSettings"
-                    :key="setting.key"
-                    class="table-story__setting-row"
-                    :class="{
-                      'is-dragging': draggingColumnSettingKey === setting.key,
-                      'is-drag-over-before': isColumnSettingDragOver(setting.key, 'before'),
-                      'is-drag-over-after': isColumnSettingDragOver(setting.key, 'after')
-                    }"
-                    draggable="true"
-                    @dragstart="startColumnSettingDrag(setting.key, $event)"
-                    @dragover="updateColumnSettingDragTarget(setting.key, $event)"
-                    @drop="dropColumnSetting(reorderColumnSetting, setting.key, $event)"
-                    @dragend="resetColumnSettingDrag"
-                  >
-                    <div class="table-story__setting-drag-cell">
-                      <button
-                        type="button"
-                        class="table-story__drag-button"
-                        aria-label="拖拽排序"
-                        title="拖拽排序"
-                        draggable="true"
-                        @dragstart="startColumnSettingDrag(setting.key, $event)"
-                      >
-                        <svg class="table-story__drag-icon" viewBox="0 0 16 16" aria-hidden="true">
-                          <path d="M5.5 3.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm7-9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm0 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    <span class="table-story__setting-name" title="拖拽排序">{{ getColumnLabel(setting.key) }}</span>
-                    <div class="table-story__radio-group">
-                      <XRadio
-                        :model-value="setting.fixed"
-                        value="left"
-                        :name="`table-fixed-${setting.key}`"
-                        label="左"
-                        size="sm"
-                        @update:model-value="updateSettingFixed(updateColumnSetting, setting.key, $event)"
-                      />
-                      <XRadio
-                        :model-value="setting.fixed"
-                        value="none"
-                        :name="`table-fixed-${setting.key}`"
-                        label="无"
-                        size="sm"
-                        @update:model-value="updateSettingFixed(updateColumnSetting, setting.key, $event)"
-                      />
-                      <XRadio
-                        :model-value="setting.fixed"
-                        value="right"
-                        :name="`table-fixed-${setting.key}`"
-                        label="右"
-                        size="sm"
-                        @update:model-value="updateSettingFixed(updateColumnSetting, setting.key, $event)"
-                      />
-                    </div>
-                    <div class="table-story__radio-group">
-                      <XRadio
-                        :model-value="setting.align"
-                        value="left"
-                        :name="`table-align-${setting.key}`"
-                        label="左"
-                        size="sm"
-                        @update:model-value="updateSettingAlign(updateColumnSetting, setting.key, $event)"
-                      />
-                      <XRadio
-                        :model-value="setting.align"
-                        value="center"
-                        :name="`table-align-${setting.key}`"
-                        label="中"
-                        size="sm"
-                        @update:model-value="updateSettingAlign(updateColumnSetting, setting.key, $event)"
-                      />
-                      <XRadio
-                        :model-value="setting.align"
-                        value="right"
-                        :name="`table-align-${setting.key}`"
-                        label="右"
-                        size="sm"
-                        @update:model-value="updateSettingAlign(updateColumnSetting, setting.key, $event)"
-                      />
-                    </div>
-                    <label>
-                      <input
-                        :value="setting.widthRatio ?? ''"
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="5"
-                        placeholder="-"
-                        @input="updateSettingNumber(updateColumnSetting, setting.key, 'widthRatio', $event)"
-                      />
-                    </label>
-                    <label>
-                      <input
-                        :value="setting.width ?? ''"
-                        type="number"
-                        min="0"
-                        step="10"
-                        placeholder="-"
-                        @input="updateSettingNumber(updateColumnSetting, setting.key, 'width', $event)"
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                <template #footer>
-                  <div class="table-story__dialog-footer">
-                    <button type="button" @click="resetColumnSettings">重置</button>
-                    <button type="button" @click="settingsDialogVisible = false">关闭</button>
-                  </div>
-                </template>
-              </XDialog>
-            </template>
-
             <template #editor-category="{ modelValue, updateModelValue, commitValue }">
               <XSelect
                 class="table-story__category-editor"
@@ -846,211 +677,4 @@ function updatePaginationMode(value: string | number | boolean) {
   height: 100%;
   width: 100%;
 }
-
-.table-story__dialog-footer button {
-  background: #fff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  color: #334155;
-  cursor: pointer;
-  min-height: 28px;
-  padding: 0 8px;
-}
-
-.table-story__dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.table-story__settings {
-  display: grid;
-  gap: 0;
-  min-width: 680px;
-  overflow-x: auto;
-}
-
-.table-story__setting-header,
-.table-story__setting-row {
-  grid-template-columns: 36px minmax(90px, 1fr) 132px 180px 80px 80px;
-}
-
-.table-story__setting-header {
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px 6px 0 0;
-  color: #475569;
-  display: grid;
-  font-size: 12px;
-  font-weight: 600;
-  gap: 8px;
-  min-height: 34px;
-  padding: 0 10px;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.table-story__setting-header span {
-  min-width: 0;
-  text-align: center;
-}
-
-.table-story__setting-header span:first-child {
-  text-align: center;
-}
-
-.table-story__setting-header span:nth-child(2) {
-  text-align: left;
-}
-
-.table-story__setting-row {
-  align-items: center;
-  border-bottom: 1px solid #e2e8f0;
-  border-left: 1px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
-  display: grid;
-  gap: 8px;
-  min-height: 52px;
-  padding: 8px 10px;
-  position: relative;
-  transition:
-    background-color 140ms ease,
-    box-shadow 140ms ease,
-    margin 140ms ease,
-    opacity 140ms ease,
-    transform 140ms ease;
-}
-
-.table-story__setting-row:last-child {
-  border-radius: 0 0 6px 6px;
-}
-
-.table-story__setting-row.is-dragging {
-  opacity: 0.48;
-  transform: scale(0.998);
-}
-
-.table-story__setting-row.is-drag-over-before,
-.table-story__setting-row.is-drag-over-after {
-  background: #f0f9ff;
-  box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
-}
-
-.table-story__setting-row.is-drag-over-before {
-  margin-top: 10px;
-}
-
-.table-story__setting-row.is-drag-over-after {
-  margin-bottom: 10px;
-}
-
-.table-story__setting-row.is-drag-over-before::before,
-.table-story__setting-row.is-drag-over-after::after {
-  background: var(--x-color-primary, #155e75);
-  border-radius: 999px;
-  content: "";
-  height: 2px;
-  left: 10px;
-  pointer-events: none;
-  position: absolute;
-  right: 10px;
-}
-
-.table-story__setting-row.is-drag-over-before::before {
-  top: -6px;
-}
-
-.table-story__setting-row.is-drag-over-after::after {
-  bottom: -6px;
-}
-
-.table-story__setting-drag-cell {
-  align-items: center;
-  display: inline-flex;
-  justify-content: center;
-}
-
-.table-story__drag-button {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 6px;
-  color: #94a3b8;
-  cursor: grab;
-  display: inline-flex;
-  height: 28px;
-  justify-content: center;
-  padding: 0;
-  width: 28px;
-}
-
-.table-story__drag-button:active {
-  cursor: grabbing;
-}
-
-.table-story__setting-row.is-dragging .table-story__drag-button,
-.table-story__setting-row.is-dragging .table-story__setting-name {
-  cursor: grabbing;
-}
-
-.table-story__drag-button:hover {
-  background: #eef2f7;
-  color: #475569;
-}
-
-.table-story__drag-icon {
-  fill: currentColor;
-  height: 16px;
-  width: 16px;
-}
-
-.table-story__setting-name {
-  color: #0f172a;
-  cursor: grab;
-  font-size: 13px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.table-story__setting-row label {
-  align-items: center;
-  color: #334155;
-  display: inline-flex;
-  font-size: 12px;
-  gap: 4px;
-  justify-content: center;
-}
-
-.table-story__radio-group {
-  align-items: center;
-  color: #334155;
-  display: inline-flex;
-  font-size: 12px;
-  gap: 6px;
-  justify-content: center;
-  min-width: 0;
-}
-
-.table-story__radio-group :deep(.x-radio) {
-  font-size: 12px;
-}
-
-.table-story__setting-row input {
-  background: #fff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  box-sizing: border-box;
-  color: #0f172a;
-  min-height: 28px;
-  padding: 0 6px;
-}
-
-.table-story__setting-row input {
-  width: 72px;
-}
-
 </style>
