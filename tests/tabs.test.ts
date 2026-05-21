@@ -27,11 +27,9 @@ describe('XTabs', () => {
 
     expect(wrapper.attributes('style')).toContain('--x-tabs-tab-bg: transparent')
     expect(wrapper.attributes('style')).toContain('--x-tabs-tab-text: #6B7C93')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-tab-active-bg: #0B4A52')
     expect(wrapper.attributes('style')).toContain('--x-tabs-tab-active-text: #7FD6F6')
     expect(wrapper.attributes('style')).toContain('--x-tabs-radius: 4px')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-tab-border: 1px solid var(--x-color-border)')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-content-border: 1px solid var(--x-color-border)')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-border: 1px solid var(--x-color-border)')
     expect(wrapper.attributes('style')).toContain('--x-tabs-content-bg: #fff')
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-bg: #fff')
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-text: var(--x-color-text)')
@@ -75,6 +73,14 @@ describe('XTabs', () => {
     expect(css).toContain('--x-tabs-item-frame-height: 30px')
     expect(css).toContain('height: var(--x-tabs-item-frame-height, 30px)')
     expect(css).toContain('line-height: var(--x-tabs-item-frame-height, 30px)')
+    expect(css).not.toContain('padding: 0 12px 12px;')
+  })
+
+  it('keeps the tab head background transparent while tab items use tab background variable', () => {
+    const css = readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+
+    expect(css).toContain('.x-tabs__head {\n  align-items: flex-end;\n  background: transparent;')
+    expect(css).toContain('.x-tabs__item-frame {\n  align-items: center;\n  background: var(--x-tabs-tab-bg);')
   })
 
   it('exposes tab label font size variable', () => {
@@ -127,16 +133,17 @@ describe('XTabs', () => {
         modelValue: 'a',
         items,
         borderRadius: '10px',
-        tabBorder: '1px solid #7FD6F6',
-        contentBorder: '1px dashed #0B4A52',
+        border: '1px solid #7FD6F6',
         contentBackgroundColor: '#f8fafc'
       }
     })
 
     expect(wrapper.attributes('style')).toContain('--x-tabs-radius: 10px')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-tab-border: 1px solid #7FD6F6')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-content-border: 1px dashed #0B4A52')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-border: 1px solid #7FD6F6')
     expect(wrapper.attributes('style')).toContain('--x-tabs-content-bg: #f8fafc')
+    expect(wrapper.attributes('style')).not.toContain('--x-tabs-tab-border')
+    expect(wrapper.attributes('style')).not.toContain('--x-tabs-content-border')
+    expect(wrapper.attributes('style')).not.toContain('--x-tabs-tab-active-bg')
   })
 
   it('exposes context menu color variables', async () => {

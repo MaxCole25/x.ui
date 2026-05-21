@@ -13,6 +13,7 @@ import { XColorPickerPanel } from './components/form-components/color-picker-pan
 import { XDatePicker } from './components/form-components/date-picker'
 import { XDatePickerPanel } from './components/form-components/date-picker-panel'
 import { XDateTimePicker } from './components/form-components/date-time-picker'
+import { XDataTableSettings } from './components/other-components/data-table-settings'
 import { XDialog } from './components/feedback-components/dialog'
 import { XDivider } from './components/basic-components/divider'
 import { XDrawer } from './components/feedback-components/drawer'
@@ -67,6 +68,7 @@ export { XColorPickerPanel }
 export { XDatePicker }
 export { XDatePickerPanel }
 export { XDateTimePicker }
+export { XDataTableSettings }
 export { XDialog }
 export { XDivider }
 export { XDrawer }
@@ -151,6 +153,21 @@ export type {
 export type { CheckboxProps, CheckboxSize } from './components/form-components/checkbox'
 export type { ColorPickerPanelProps } from './components/form-components/color-picker-panel'
 export type { ColorPickerProps } from './components/form-components/color-picker'
+export type {
+  DataTableSettingsAdapter,
+  DataTableSettingsColumnMeta,
+  DataTableSettingsDataSourceOption,
+  DataTableSettingsDisplayType,
+  DataTableSettingsEditorType,
+  DataTableSettingsErrorPayload,
+  DataTableSettingsKeyType,
+  DataTableSettingsLoadedPayload,
+  DataTableSettingsOption,
+  DataTableSettingsProps,
+  DataTableSettingsRow,
+  DataTableSettingsSavePayload,
+  DataTableSettingsTable
+} from './components/other-components/data-table-settings'
 export type {
   PickerButtonThemeProps,
   PickerCalendarThemeProps,
@@ -251,6 +268,7 @@ const components = [
   XDatePickerPanel,
   XDatePicker,
   XDateTimePicker,
+  XDataTableSettings,
   XTimePicker,
   XTimeSelect,
   XScrollbar,

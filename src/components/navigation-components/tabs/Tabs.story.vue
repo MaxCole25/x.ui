@@ -28,8 +28,7 @@ const config = reactive({
   borderRadius: 4,
   tabFontSize: 14,
   tabMinWidth: 140,
-  tabBorder: '1px solid #C7D7E8',
-  contentBorder: '1px solid #C7D7E8',
+  border: '1px solid #C7D7E8',
   contentBackgroundColor: '#ffffff',
   contextMenuBackgroundColor: '#ffffff',
   contextMenuTextColor: '#102a43'
@@ -99,15 +98,11 @@ function handleReorder(payload: TabsReorderPayload) {
             px
           </label>
           <label>
-            标签边框
-            <input v-model="config.tabBorder" type="text" style="width: 72px" />
+            边框
+            <input v-model="config.border" type="text" style="width: 120px" />
           </label>
           <label>
-            内容边框
-            <input v-model="config.contentBorder" type="text" style="width: 72px" />
-          </label>
-          <label>
-            内容背景
+            内容/激活背景
             <input v-model="config.contentBackgroundColor" type="text" style="width: 120px" />
           </label>
           <label>
@@ -153,8 +148,7 @@ function handleReorder(payload: TabsReorderPayload) {
             :border-radius="config.borderRadius"
             :tab-font-size="config.tabFontSize"
             :tab-min-width="config.tabMinWidth"
-            :tab-border="config.tabBorder"
-            :content-border="config.contentBorder"
+            :border="config.border"
             :content-background-color="config.contentBackgroundColor"
             :context-menu-background-color="config.contextMenuBackgroundColor"
             :context-menu-text-color="config.contextMenuTextColor"

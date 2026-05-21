@@ -98,12 +98,15 @@ describe('XLogin', () => {
     expect(wrapper.emitted('wechat-login')).toHaveLength(1)
   })
 
-  it('toggles password visibility and supports left labels with theme colors', async () => {
+  it('toggles password visibility and supports left labels with theme styles', async () => {
     const wrapper = mount(XLogin, {
       props: {
         labelPosition: 'left',
         accentColor: '#8a4b12',
-        backgroundColor: '#fffaf1'
+        backgroundColor: '#fffaf1',
+        borderWidth: '2px',
+        borderRadius: '12px',
+        width: '420px'
       }
     })
 
@@ -111,6 +114,9 @@ describe('XLogin', () => {
     expect(wrapper.classes()).toContain('x-login--label-left')
     expect(wrapper.attributes('style')).toContain('--x-login-accent: #8a4b12')
     expect(wrapper.attributes('style')).toContain('--x-login-surface: #fffaf1')
+    expect(wrapper.attributes('style')).toContain('--x-login-border-width: 2px')
+    expect(wrapper.attributes('style')).toContain('--x-login-radius: 12px')
+    expect(wrapper.attributes('style')).toContain('--x-login-width: 420px')
     expect(password.attributes('type')).toBe('password')
 
     await wrapper.find('.x-login__eye').trigger('pointerdown')

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import { overlayZIndex } from '../../_utils/zIndex'
 import { XAutocomplete } from './index'
 import type { AutocompleteDisplayField, AutocompleteOption } from './src/types'
 import type { InputSize, InputStatus, InputTextAlign } from '../input'
@@ -57,6 +58,10 @@ const sample = reactive({
   remoteMinLength: 0,
   dropdownMaxHeight: 260,
   dropdownMaxWidth: 360,
+  teleported: true,
+  teleportTo: 'body',
+  dropdownZIndex: overlayZIndex.popper,
+  dropdownBackgroundColor: '#ffffff',
   loading: false,
   loadingText: '加载中',
   emptyText: '暂无匹配数据',
@@ -246,6 +251,10 @@ const updateRadius = (event: Event) => {
               <span>选项框宽度</span>
               <input v-model.number="sample.dropdownMaxWidth" type="number" min="120" />
             </label>
+            <label>
+              <span>下拉层级</span>
+              <input v-model.number="sample.dropdownZIndex" type="number" min="0" />
+            </label>
           </div>
 
           <div class="autocomplete-appearance__column">
@@ -285,6 +294,14 @@ const updateRadius = (event: Event) => {
               <span>禁用文字色</span>
               <input v-model="sample.disabledTextColor" type="color" />
             </label>
+            <label>
+              <span>下拉背景色</span>
+              <input v-model="sample.dropdownBackgroundColor" type="color" />
+            </label>
+            <label>
+              <span>挂载目标</span>
+              <input v-model="sample.teleportTo" />
+            </label>
           </div>
 
           <div class="autocomplete-appearance__column">
@@ -303,6 +320,10 @@ const updateRadius = (event: Event) => {
             <label>
               <input v-model="sample.autoWidth" type="checkbox" />
               <span>自动宽度</span>
+            </label>
+            <label>
+              <input v-model="sample.teleported" type="checkbox" />
+              <span>挂载到外部</span>
             </label>
             <label>
               <input v-model="sample.showActiveBorder" type="checkbox" />

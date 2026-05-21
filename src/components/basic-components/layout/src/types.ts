@@ -4,6 +4,7 @@ export type LayoutMode = 'top-sidebar' | 'sidebar-top' | 'top-only'
 export interface LayoutProps {
   size?: XSize
   mode?: LayoutMode
+  fillHeight?: boolean
   sidebarWidth?: number | string
   sidebarCollapsed?: boolean
   sidebarCollapsedWidth?: number | string

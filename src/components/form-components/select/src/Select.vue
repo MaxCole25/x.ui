@@ -375,6 +375,15 @@ watch(
 )
 
 watch(
+  () => [props.dropdownMaxWidth, props.dropdownZIndex],
+  async () => {
+    if (!isOpen.value) return
+    await nextTick()
+    updateDropdownPosition()
+  }
+)
+
+watch(
   () => allOptions.value.map((option) => getOptionDisplayText(option)).join('\u0000'),
   async () => {
     if (!isOpen.value) return

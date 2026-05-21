@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import {
+  overlayZIndex,
   XAutocomplete,
   XAvatar,
   XButton,
@@ -25,6 +26,15 @@ import {
   XTimePicker,
   XTimeSelect
 } from '../src'
+
+const mountAutocomplete = (options: any = {}) =>
+  mount(XAutocomplete, {
+    ...options,
+    props: {
+      teleported: false,
+      ...options.props
+    }
+  })
 
 describe('元素组件', () => {
   it('renders text style classes', () => {
@@ -249,7 +259,7 @@ describe('元素组件', () => {
   })
 
   it('delegates autocomplete input behavior to XInput', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '上',
         prefix: '城市',
@@ -271,7 +281,7 @@ describe('元素组件', () => {
   })
 
   it('keeps autocomplete type fixed while preserving input clearable and readonly interfaces', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
         type: 'search',
@@ -291,7 +301,7 @@ describe('元素组件', () => {
   })
 
   it('applies autocomplete class and style to the root instead of the native input', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       attrs: {
         class: 'contract-query-autocomplete',
         style: 'width: 132px;',
@@ -307,7 +317,7 @@ describe('元素组件', () => {
   })
 
   it('does not render transient autocomplete loading suffix inside the input', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: 'dg',
         clearable: true,
@@ -361,7 +371,7 @@ describe('元素组件', () => {
   })
 
   it('shows autocomplete clear button when clearable and editable', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
         clearable: true
@@ -372,7 +382,7 @@ describe('元素组件', () => {
   })
 
   it('exposes readonly autocomplete option lists', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '深',
         options: [
@@ -394,7 +404,7 @@ describe('元素组件', () => {
   })
 
   it('filters autocomplete options by existing input value when focused', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '南',
         options: [
@@ -411,7 +421,7 @@ describe('元素组件', () => {
   })
 
   it('filters autocomplete remote fallback options by existing input value when focused', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '南通波涛',
         remote: true,
@@ -442,7 +452,7 @@ describe('元素组件', () => {
       label: `选项${index + 1}`,
       value: index + 1
     }))
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         options,
@@ -458,6 +468,81 @@ describe('元素组件', () => {
     expect(wrapper.attributes('style')).toContain('--x-autocomplete-dropdown-max-width: 420px')
   })
 
+  it('teleports autocomplete dropdown to body by default and updates its position', async () => {
+    let left = 24
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '南',
+        dropdownMaxHeight: 180,
+        dropdownMaxWidth: 420,
+        dropdownBackgroundColor: '#fef3c7',
+        options: [
+          { label: '南京', value: 'nanjing' },
+          { label: '南通', value: 'nantong' }
+        ]
+      }
+    })
+
+    wrapper.element.getBoundingClientRect = () => ({
+      bottom: 70,
+      height: 30,
+      left,
+      right: left + 200,
+      top: 40,
+      width: 200,
+      x: left,
+      y: 40,
+      toJSON: () => ({})
+    })
+
+    await wrapper.find('input').trigger('focus')
+    await nextTick()
+    await nextTick()
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+
+    const dropdowns = Array.from(document.body.querySelectorAll<HTMLElement>('.x-autocomplete__dropdown'))
+    const dropdown = dropdowns[dropdowns.length - 1]
+    expect(dropdown).not.toBeNull()
+    expect(dropdown?.classList.contains('is-teleported')).toBe(true)
+    expect(wrapper.element.contains(dropdown)).toBe(false)
+    expect(dropdown?.style.left).toBe('24px')
+    expect(dropdown?.style.width).toBe('200px')
+    expect(dropdown?.style.maxWidth).toBe('420px')
+    expect(dropdown?.style.maxHeight).toBe('180px')
+    expect(dropdown?.style.zIndex).toBe(String(overlayZIndex.popper))
+    expect(dropdown?.getAttribute('style')).toContain('--x-autocomplete-dropdown-bg: #fef3c7')
+
+    left = 56
+    window.dispatchEvent(new Event('resize'))
+    await nextTick()
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    expect(dropdown?.style.left).toBe('56px')
+
+    left = 72
+    window.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    await new Promise((resolve) => window.setTimeout(resolve, 0))
+    expect(dropdown?.style.left).toBe('72px')
+
+    wrapper.unmount()
+  })
+
+  it('keeps autocomplete dropdown inside the component when teleport is disabled', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '南',
+        teleported: false,
+        options: [{ label: '南京', value: 'nanjing' }]
+      }
+    })
+
+    await wrapper.find('input').trigger('focus')
+    const dropdown = wrapper.find('.x-autocomplete__dropdown')
+    expect(dropdown.exists()).toBe(true)
+    expect(dropdown.classes()).not.toContain('is-teleported')
+    expect(wrapper.element.contains(dropdown.element)).toBe(true)
+  })
+
   it('limits autocomplete options after filtering existing input', async () => {
     const options = [
       ...Array.from({ length: 60 }, (_, index) => ({
@@ -467,7 +552,7 @@ describe('元素组件', () => {
       { label: '目标选项一', value: 'target-1' },
       { label: '目标选项二', value: 'target-2' }
     ]
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '目标',
         options
@@ -484,7 +569,7 @@ describe('元素组件', () => {
 
   it('queries autocomplete remote options from server-side input method', async () => {
     const remoteMethod = vi.fn(() => [{ label: '深圳服务端', value: 'remote-shenzhen' }])
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         remote: true,
@@ -504,7 +589,7 @@ describe('元素组件', () => {
 
   it('queries autocomplete remote options on enter when configured', async () => {
     const remoteMethod = vi.fn(() => [{ label: '南通服务端', value: 'remote-nantong' }])
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         remote: true,
@@ -531,7 +616,7 @@ describe('元素组件', () => {
   })
 
   it('selects autocomplete options with keyboard arrows and enter', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         options: [
@@ -559,7 +644,7 @@ describe('元素组件', () => {
   })
 
   it('keeps autocomplete v-model input behavior compatible by default', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: ''
       }
@@ -574,7 +659,7 @@ describe('元素组件', () => {
 
   it('separates autocomplete selected value from remote search input', async () => {
     const remoteMethod = vi.fn(() => [{ label: '南通某客户', value: 456 }])
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: 123,
         inputValue: '老客户',
@@ -599,7 +684,7 @@ describe('元素组件', () => {
 
   it('selects autocomplete options with separated model and input values', async () => {
     const option = { label: '南通某客户', value: 456 }
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: 123,
         inputValue: '南通',
@@ -619,7 +704,7 @@ describe('元素组件', () => {
   })
 
   it('clears autocomplete model and input values', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: 123,
         inputValue: '老客户',
@@ -636,7 +721,7 @@ describe('元素组件', () => {
   })
 
   it('filters autocomplete local options from inputValue before modelValue', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: 123,
         inputValue: '南通',
@@ -657,7 +742,7 @@ describe('元素组件', () => {
 
   it('maps autocomplete key-value fields from remote options', async () => {
     const remoteMethod = vi.fn(() => [{ name: '广州服务端', id: 20 }])
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         remote: true,
@@ -677,7 +762,7 @@ describe('元素组件', () => {
   })
 
   it('selects the active autocomplete option with enter', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         options: [
@@ -701,7 +786,7 @@ describe('元素组件', () => {
   })
 
   it('selects the active autocomplete option with enter on keyup fallback', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '',
         options: [
@@ -725,7 +810,7 @@ describe('元素组件', () => {
   })
 
   it('can display option values instead of labels for autocomplete, select and cascader', async () => {
-    const autocomplete = mount(XAutocomplete, {
+    const autocomplete = mountAutocomplete({
       props: {
         modelValue: '',
         displayField: 'value',
@@ -795,7 +880,7 @@ describe('元素组件', () => {
   })
 
   it('uses autocomplete size before explicit height and font size', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
         size: 'sm',
@@ -813,7 +898,7 @@ describe('元素组件', () => {
   })
 
   it('enables autocomplete active border by default and exposes its own active color variable', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
         activeBorderColor: '#1d4ed8'
@@ -827,7 +912,7 @@ describe('元素组件', () => {
   })
 
   it('hides autocomplete outer active border when showActiveBorder is false', () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
         showActiveBorder: false
@@ -839,7 +924,7 @@ describe('元素组件', () => {
   })
 
   it('exposes autocomplete focus and blur events from XInput', async () => {
-    const wrapper = mount(XAutocomplete, {
+    const wrapper = mountAutocomplete({
       props: {
         modelValue: '杭',
         showActiveBorder: false
@@ -1444,3 +1529,5 @@ describe('元素组件', () => {
     wrapper.unmount()
   })
 })
+
+

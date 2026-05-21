@@ -52,6 +52,9 @@ export interface LoginProps {
   accentSoftColor?: string
   backgroundColor?: string
   borderColor?: string
+  borderWidth?: string
+  borderRadius?: string
+  width?: string
   textColor?: string
   mutedColor?: string
   inputBackgroundColor?: string

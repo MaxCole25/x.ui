@@ -21,6 +21,9 @@ const state = reactive({
   accentSoftColor: '#e1f5f7',
   backgroundColor: '#ffffff',
   borderColor: '#cfe0e6',
+  borderWidth: '1px',
+  borderRadius: '18px',
+  width: '100%',
   loading: false,
   enableImageCaptcha: true,
   enableLetterCaptcha: true,
@@ -76,6 +79,9 @@ function handleLogin(payload: LoginSubmitPayload) {
             :accent-soft-color="state.accentSoftColor"
             :background-color="state.backgroundColor"
             :border-color="state.borderColor"
+            :border-width="state.borderWidth"
+            :border-radius="state.borderRadius"
+            :width="state.width"
             :loading="state.loading"
             :enable-image-captcha="state.enableImageCaptcha"
             :enable-letter-captcha="state.enableLetterCaptcha"
@@ -142,6 +148,18 @@ function handleLogin(payload: LoginSubmitPayload) {
           <label>
             <span>边框</span>
             <input v-model="state.borderColor" type="color" />
+          </label>
+          <label>
+            <span>边框粗细</span>
+            <input v-model="state.borderWidth" />
+          </label>
+          <label>
+            <span>外边框圆角大小</span>
+            <input v-model="state.borderRadius" />
+          </label>
+          <label>
+            <span>宽度</span>
+            <input v-model="state.width" />
           </label>
           <label class="login-story__check">
             <input v-model="state.enableImageCaptcha" type="checkbox" />

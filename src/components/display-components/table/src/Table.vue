@@ -1517,8 +1517,15 @@ function resetDragState() {
 
 function getRowClasses(row: Record<string, unknown>, rowIndex: number) {
   const key = getRowKey(row, rowIndex)
+  const lastVisibleRow = visibleRows.value[visibleRows.value.length - 1]
+  const isBeforeSummary =
+    Boolean(isSummaryRowVisible.value && lastVisibleRow) &&
+    getRowKey(lastVisibleRow.row, lastVisibleRow.rowIndex) === key
+
   return {
     'is-selected': selectedRowKeySet.value.has(key),
+    'is-before-summary': isBeforeSummary,
+    'is-editing': resolvedColumns.value.some((column) => isCellEditing(row, rowIndex, column.column)),
     'is-dragging': draggingRowKey.value === key,
     'is-drag-over-before': dragOverRowKey.value === key && dragOverPosition.value === 'before',
     'is-drag-over-after': dragOverRowKey.value === key && dragOverPosition.value === 'after'
@@ -4010,6 +4017,12 @@ defineExpose({
   display: none;
 }
 
+.x-table.is-fill-height .x-table__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 .x-table__scrollbar {
   pointer-events: none;
   position: absolute;
@@ -4087,8 +4100,16 @@ defineExpose({
   border-bottom: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-row-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));
 }
 
+.x-table__row--body.is-before-summary {
+  border-bottom: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-row-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));
+}
+
 .x-table__row--body:hover {
   --x-table-row-hover-overlay-current: var(--x-table-row-hover-overlay, rgb(14 116 144 / 6%));
+}
+
+.x-table__row--body.is-editing {
+  z-index: 30;
 }
 
 .x-table__row--summary {
@@ -4099,6 +4120,10 @@ defineExpose({
   font-weight: 600;
   position: sticky;
   z-index: 3;
+}
+
+.x-table.is-fill-height .x-table__row--summary {
+  margin-top: auto;
 }
 
 .x-table__row--body.is-selected {

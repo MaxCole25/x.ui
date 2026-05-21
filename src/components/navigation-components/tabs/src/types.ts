@@ -60,7 +60,6 @@ export interface TabsProps {
   showRefreshIcon?: boolean
   showContextMenu?: boolean
   draggable?: boolean
-  activeTabBgColor?: string
   activeTabTextColor?: string
   tabBgColor?: string
   tabTextColor?: string
@@ -70,8 +69,7 @@ export interface TabsProps {
   verticalWidth?: number | string
   verticalLabelMinHeight?: number | string
   borderRadius?: number | string
-  tabBorder?: string
-  contentBorder?: string
+  border?: string
   contentBackgroundColor?: string
   contextMenuBackgroundColor?: string
   contextMenuTextColor?: string

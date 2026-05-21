@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { XLayout } from '../src'
 
@@ -24,13 +25,14 @@ describe('XLayout', () => {
     const style = wrapper.attributes('style')
 
     expect(wrapper.classes()).toContain('x-layout--top-sidebar')
+    expect(wrapper.classes()).toContain('is-fill-height')
     expect(style).toContain('--x-layout-sidebar-width: 288px')
     expect(style).toContain('--x-layout-gap: 0px')
     expect(style).toContain('--x-layout-topbar-height: 55px')
     expect(style).toContain('--x-layout-footer-height: 30px')
     expect(style).toContain('--x-layout-topbar-bg: #1E6B73')
     expect(style).toContain('--x-layout-sidebar-bg: #185A61')
-    expect(style).toContain('--x-layout-content-bg: #2A7F87')
+    expect(style).toContain('--x-layout-content-bg: transparent')
     expect(style).toContain('--x-layout-footer-bg: #124A50')
     expect(style).toContain('--x-layout-topbar-color: #F9F9F9')
     expect(style).toContain('--x-layout-topbar-radius: 0px')
@@ -51,6 +53,35 @@ describe('XLayout', () => {
     expect(wrapper.classes()).toContain('x-layout--sidebar-top')
     expect(wrapper.attributes('style')).toContain('--x-layout-sidebar-width: 320px')
     expect(wrapper.attributes('style')).toContain('--x-layout-gap: 12px')
+  })
+
+  it('can turn off fill height class', () => {
+    const wrapper = mount(XLayout, {
+      props: {
+        fillHeight: false
+      }
+    })
+
+    expect(wrapper.classes()).not.toContain('is-fill-height')
+  })
+
+  it('provides viewport min-height fallback for fill height layout', () => {
+    const style = readFileSync('src/styles/index.css', 'utf-8')
+
+    expect(style).toContain('.x-layout.is-fill-height')
+    expect(style).toContain('min-height: 100vh')
+    expect(style).toContain('--x-layout-content-bg: transparent')
+  })
+
+  it('sets horizontal padding for shell slot regions', () => {
+    const style = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
+
+    for (const selector of ['topbar', 'sidebar', 'footer']) {
+      const rule = style.match(new RegExp(`\\.x-layout__${selector} \\{[\\s\\S]*?grid-area: ${selector};[\\s\\S]*?\\}`))?.[0] ?? ''
+
+      expect(rule).toContain('padding-left: 12px')
+      expect(rule).toContain('padding-right: 12px')
+    }
   })
 
   it('applies custom region colors, edge borders and heights', () => {

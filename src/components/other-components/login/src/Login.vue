@@ -46,6 +46,9 @@ const props = withDefaults(defineProps<LoginProps>(), {
   accentSoftColor: '#e1f5f7',
   backgroundColor: '#ffffff',
   borderColor: '#cfe0e6',
+  borderWidth: '1px',
+  borderRadius: '18px',
+  width: '100%',
   textColor: '#12323a',
   mutedColor: '#6b7c93',
   inputBackgroundColor: '#ffffff',
@@ -103,6 +106,9 @@ const themeStyle = computed<Record<string, string>>(() => ({
   '--x-login-accent-soft': props.accentSoftColor,
   '--x-login-surface': props.backgroundColor,
   '--x-login-border': props.borderColor,
+  '--x-login-border-width': props.borderWidth,
+  '--x-login-radius': props.borderRadius,
+  '--x-login-width': props.width,
   '--x-login-text': props.textColor,
   '--x-login-muted': props.mutedColor,
   '--x-login-input-bg': props.inputBackgroundColor,
@@ -462,6 +468,9 @@ onBeforeUnmount(() => {
   --x-login-accent: #0b4a52;
   --x-login-accent-soft: #e1f5f7;
   --x-login-border: #cfe0e6;
+  --x-login-border-width: 1px;
+  --x-login-radius: 18px;
+  --x-login-width: 100%;
   --x-login-muted: #6b7c93;
   --x-login-text: #12323a;
   --x-login-surface: #ffffff;
@@ -470,8 +479,8 @@ onBeforeUnmount(() => {
   background:
     radial-gradient(circle at top left, rgba(127, 214, 246, 0.22), transparent 36%),
     linear-gradient(145deg, var(--x-login-surface) 0%, #f6fbfc 100%);
-  border: 1px solid var(--x-login-border);
-  border-radius: 18px;
+  border: var(--x-login-border-width) solid var(--x-login-border);
+  border-radius: var(--x-login-radius);
   box-shadow: 0 20px 60px rgba(11, 74, 82, 0.14);
   box-sizing: border-box;
   color: var(--x-login-text);
@@ -480,7 +489,7 @@ onBeforeUnmount(() => {
   gap: 24px;
   max-width: 100%;
   padding: 32px;
-  width: 100%;
+  width: var(--x-login-width);
 }
 
 .x-login--sm {
@@ -499,8 +508,13 @@ onBeforeUnmount(() => {
 }
 
 .x-login--logo-top .x-login__brand {
-  align-items: flex-start;
+  align-items: center;
   flex-direction: column;
+  text-align: center;
+}
+
+.x-login--logo-top .x-login__headline {
+  text-align: center;
 }
 
 .x-login--logo-right .x-login__brand {
@@ -1056,7 +1070,6 @@ onBeforeUnmount(() => {
 
 @media (max-width: 520px) {
   .x-login {
-    border-radius: 14px;
     padding: 22px;
   }
 

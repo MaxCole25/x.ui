@@ -8,6 +8,7 @@ export default defineConfig({
     logo: '/logo.svg',
     nav: [
       { text: '指南', link: '/guide/getting-started' },
+      { text: 'BaseX 封装', link: '/guide/base-xui' },
       { text: '组件', link: '/components/button' },
       { text: '图标', link: '/components/icon' }
     ],
@@ -16,6 +17,7 @@ export default defineConfig({
         text: '指南',
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
+          { text: 'BaseX 可复制封装', link: '/guide/base-xui' },
           { text: '组件测试', link: '/guide/testing' }
         ]
       },
@@ -95,6 +97,7 @@ export default defineConfig({
             text: '其它组件',
             items: [
               { text: '文件磁盘 FileDisk', link: '/components/file-disk' },
+              { text: '数据表设置 DataTableSettings', link: '/components/data-table-settings' },
               { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' },
               { text: '登录 Login', link: '/components/login' },
               { text: '页面构建器 PageBuilder', link: '/components/page-builder' },

@@ -2,7 +2,9 @@
 
 `XLayout` 是从 NexMod 主布局抽离出的基础布局组件，支持通过属性快速切换布局方式。
 
-属性不传时会全部使用默认值。布局容器默认撑满父容器，组件本身不额外设置内容滚动逻辑。
+属性不传时会全部使用默认值。布局容器默认撑满父容器，并至少占满视口高度，组件本身不额外设置内容滚动逻辑。
+
+`fillHeight` 默认开启。组件会通过 `min-height: 100vh` 适配 Vue 常见的 `#app { min-height: 100vh; display: block; }` 场景；当布局处在纵向 `flex` 或 `grid` 页面容器内时，也会尽量吃掉顶部工具栏、筛选区之外的剩余高度。如果 `XLayout` 放在弹窗、卡片、局部容器里，应传 `:fill-height="false"` 或由外层显式控制高度，避免局部区域默认占满视口。
 
 ## 基础用法
 
@@ -33,6 +35,7 @@ import 'x.ui/style.css'
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | mode | 布局模式 | `'top-sidebar' \| 'sidebar-top' \| 'top-only'` | `'top-sidebar'` |
+| fillHeight | 是否占满父级 flex/grid 容器的剩余高度 | `boolean` | `true` |
 | sidebarWidth | 侧栏宽度（支持数字像素或 CSS 长度） | `number \| string` | `288` |
 | sidebarCollapsed | 是否收起侧栏 | `boolean` | `false` |
 | sidebarCollapsedWidth | 收起侧栏后的宽度（支持数字像素或 CSS 长度） | `number \| string` | `88` |
@@ -47,7 +50,7 @@ import 'x.ui/style.css'
 | sidebarColor | 侧栏前景色 | `string` | `'#F9F9F9'` |
 | sidebarBorderRadius | 侧栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | sidebarBorder | 侧栏右边框 | `string` | `'none'` |
-| contentBackgroundColor | 内容区背景色 | `string` | `'#2A7F87'` |
+| contentBackgroundColor | 内容区背景色 | `string` | `'transparent'` |
 | contentColor | 内容区前景色 | `string` | `'#F9F9F9'` |
 | contentBorderRadius | 内容区圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | footerBackgroundColor | 底部栏背景色 | `string` | `'#124A50'` |

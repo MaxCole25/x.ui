@@ -47,6 +47,10 @@ export interface AutocompleteProps
   remoteMinLength?: number
   dropdownMaxHeight?: number | string
   dropdownMaxWidth?: number | string
+  teleported?: boolean
+  teleportTo?: string
+  dropdownZIndex?: number | string
+  dropdownBackgroundColor?: string
   loading?: boolean
   loadingText?: string
   emptyText?: string

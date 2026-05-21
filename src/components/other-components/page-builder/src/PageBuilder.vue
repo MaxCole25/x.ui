@@ -640,7 +640,7 @@ function handleDropToRoot(event: DragEvent) {
           :vertical-width="38"
           :vertical-label-min-height="96"
           :border-radius="6"
-          content-border="1px solid #d8e2ec"
+          border="1px solid #d8e2ec"
           content-background-color="transparent"
         >
           <template #pane="{ item }">
@@ -788,7 +788,7 @@ function handleDropToRoot(event: DragEvent) {
           :tab-gap="4"
           :tab-min-width="64"
           :border-radius="6"
-          content-border="1px solid #d8e2ec"
+          border="1px solid #d8e2ec"
           content-background-color="transparent"
         >
           <template #pane="{ item }">

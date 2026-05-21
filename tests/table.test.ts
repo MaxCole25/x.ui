@@ -175,8 +175,10 @@ describe('XTable', () => {
     })
 
     const cells = wrapper.find('.x-table__row--summary').findAll('.x-table__cell')
+    const bodyRows = wrapper.findAll('.x-table__row--body')
 
     expect(cells.map((cell) => cell.text())).toEqual(['汇总', '2 项', '17 个', '平均 17 / 2 / visible'])
+    expect(bodyRows[bodyRows.length - 1].classes()).toContain('is-before-summary')
   })
 
   it('maps align width and minWidth to resolved grid and cell styles', () => {
@@ -760,11 +762,17 @@ describe('XTable', () => {
 
   it('pins fill height regions to stable grid rows', () => {
     const source = readTableSource()
+    const fillHeightBodyRule = getCssRule(source, '.x-table.is-fill-height .x-table__body')
+    const fillHeightSummaryRule = getCssRule(source, '.x-table.is-fill-height .x-table__row--summary')
 
     expect(source).toContain('.x-table.is-fill-height {\n  align-content: stretch;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__viewport {\n  grid-row: 2;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__bottom {\n  grid-row: 3;')
+    expect(fillHeightBodyRule).toContain('display: flex;')
+    expect(fillHeightBodyRule).toContain('flex-direction: column;')
+    expect(fillHeightBodyRule).toContain('min-height: 100%;')
+    expect(fillHeightSummaryRule).toContain('margin-top: auto;')
   })
 
   it('keeps table section spacing independent from component size', () => {
@@ -1904,6 +1912,7 @@ describe('XTable', () => {
 
     const input = wrapper.find('.x-base-input__inner')
     expect(input.exists()).toBe(true)
+    expect(wrapper.find('.x-table__row--body').classes()).toContain('is-editing')
 
     await input.setValue('控制台')
     await input.trigger('keydown.enter')

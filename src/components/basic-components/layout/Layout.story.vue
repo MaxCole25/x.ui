@@ -6,6 +6,7 @@ import '../../../styles/index.css'
 
 const state = reactive({
   mode: 'top-sidebar' as LayoutMode,
+  fillHeight: true,
   sidebarWidth: 280,
   sidebarCollapsed: false,
   gap: 0,
@@ -16,6 +17,7 @@ const previewCode = computed(() => {
   const edgeBorder = state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'
   const attrs = [
     state.mode !== 'top-sidebar' ? `mode="${state.mode}"` : '',
+    !state.fillHeight ? ':fill-height="false"' : '',
     state.sidebarWidth !== 280 ? `:sidebar-width="${state.sidebarWidth}"` : '',
     state.sidebarCollapsed ? 'sidebar-collapsed' : '',
     state.gap !== 0 ? `:gap="${state.gap}"` : '',
@@ -63,6 +65,11 @@ const previewCode = computed(() => {
           </label>
 
           <label class="layout-check">
+            <input v-model="state.fillHeight" type="checkbox" />
+            <span>占满余高</span>
+          </label>
+
+          <label class="layout-check">
             <input v-model="state.showBorders" type="checkbox" />
             <span>显示边框样例</span>
           </label>
@@ -70,6 +77,7 @@ const previewCode = computed(() => {
 
         <XLayout
           :mode="state.mode"
+          :fill-height="state.fillHeight"
           :sidebar-width="state.sidebarWidth"
           :sidebar-collapsed="state.sidebarCollapsed"
           :gap="state.gap"

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, ref, useAttrs, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { inputSizePreset } from '../../../_utils/inputSize'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { formContextKey } from '../../form/src/context'
 import type {
@@ -30,6 +31,10 @@ const props = withDefaults(defineProps<AutocompleteProps>(), {
   remoteMinLength: 0,
   dropdownMaxHeight: 260,
   dropdownMaxWidth: 360,
+  teleported: true,
+  teleportTo: 'body',
+  dropdownZIndex: overlayZIndex.popper,
+  dropdownBackgroundColor: '#ffffff',
   loading: false,
   loadingText: '加载中',
   emptyText: '暂无匹配数据',
@@ -52,13 +57,18 @@ const attrs = useAttrs()
 const form = inject(formContextKey, null)
 
 const open = ref(false)
+const autocompleteRef = ref<HTMLElement | null>(null)
+const dropdownRef = ref<HTMLElement | null>(null)
 const currentInputValue = ref('')
 const remoteOptions = ref<AutocompleteOption[]>([])
 const remoteLoading = ref(false)
 const queryTimer = ref<number>()
 const activeOptionIndex = ref(-1)
+const dropdownPlacement = ref<'top' | 'bottom'>('bottom')
+const teleportedDropdownStyle = ref<Record<string, string>>({})
 let queryRequestId = 0
 let skipNextEnterKeyup = false
+let isListeningForPositionChanges = false
 const maxVisibleOptionCount = 50
 const displayInputValue = computed(() => props.inputValue ?? props.modelValue ?? '')
 const keyword = computed(() => currentInputValue.value)
@@ -92,10 +102,27 @@ const autocompleteStyle = computed(() => ({
   '--x-autocomplete-option-font-size': toCssSize(optionFontSize.value),
   '--x-autocomplete-option-padding': toCssSize(optionPadding.value),
   '--x-autocomplete-dropdown-max-height': toCssSize(props.dropdownMaxHeight),
-  '--x-autocomplete-dropdown-max-width': toCssSize(props.dropdownMaxWidth)
+  '--x-autocomplete-dropdown-max-width': toCssSize(props.dropdownMaxWidth),
+  '--x-autocomplete-dropdown-z-index': props.dropdownZIndex,
+  '--x-autocomplete-dropdown-bg': props.dropdownBackgroundColor
 }))
 const rootClass = computed(() => attrs.class)
 const rootStyle = computed(() => attrs.style)
+const dropdownStyle = computed(() => ({
+  ...autocompleteStyle.value,
+  ...(props.teleported
+    ? teleportedDropdownStyle.value
+    : {
+        zIndex: String(props.dropdownZIndex)
+      })
+}))
+const dropdownClasses = computed(() => [
+  'x-autocomplete__dropdown',
+  `x-autocomplete__dropdown--${dropdownPlacement.value}`,
+  {
+    'is-teleported': props.teleported
+  }
+])
 const inputAttrs = computed(() => {
   const {
     class: _class,
@@ -137,6 +164,10 @@ const inputProps = computed(() => {
   delete next.remoteMinLength
   delete next.dropdownMaxHeight
   delete next.dropdownMaxWidth
+  delete next.teleported
+  delete next.teleportTo
+  delete next.dropdownZIndex
+  delete next.dropdownBackgroundColor
   delete next.loading
   delete next.loadingText
   delete next.emptyText
@@ -221,6 +252,75 @@ const readOptions = (options: AutocompleteOption[]) =>
     ...option
   }))
 
+const getCssPixelValue = (value: number | string | undefined, fallback: number) => {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value)
+    if (Number.isFinite(parsed) && parsed > 0 && value.trim().endsWith('px')) {
+      return parsed
+    }
+  }
+
+  return fallback
+}
+
+const getDropdownMaxWidth = (viewportWidth: number, gap: number) => {
+  const configuredMaxWidth = getCssPixelValue(props.dropdownMaxWidth, 360)
+  return Math.min(configuredMaxWidth, viewportWidth - gap * 2)
+}
+
+const updateDropdownPosition = () => {
+  if (!props.teleported || !open.value || !autocompleteRef.value) return
+
+  const gap = 8
+  const rect = autocompleteRef.value.getBoundingClientRect()
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth
+  const configuredMaxHeight = getCssPixelValue(props.dropdownMaxHeight, 260)
+  const dropdownHeight = dropdownRef.value?.offsetHeight || configuredMaxHeight
+  const spaceBelow = viewportHeight - rect.bottom - gap
+  const spaceAbove = rect.top - gap
+  const shouldOpenUp = spaceBelow < dropdownHeight && spaceAbove > spaceBelow
+  const availableHeight = Math.max(gap, Math.floor(shouldOpenUp ? spaceAbove : spaceBelow))
+  const maxHeight = Math.min(configuredMaxHeight, availableHeight)
+  const contentWidth = dropdownRef.value?.scrollWidth ?? 0
+  const dropdownMaxWidth = getDropdownMaxWidth(viewportWidth, gap)
+  const width = Math.max(1, Math.min(Math.max(rect.width, contentWidth), dropdownMaxWidth))
+  const left = Math.min(Math.max(rect.left, gap), Math.max(gap, viewportWidth - width - gap))
+  const top = shouldOpenUp
+    ? Math.max(gap, rect.top - gap - Math.min(dropdownHeight, maxHeight))
+    : Math.min(Math.max(gap, rect.bottom + gap), Math.max(gap, viewportHeight - maxHeight - gap))
+
+  dropdownPlacement.value = shouldOpenUp ? 'top' : 'bottom'
+  teleportedDropdownStyle.value = {
+    left: `${Math.round(left)}px`,
+    top: `${Math.round(top)}px`,
+    width: `${Math.round(width)}px`,
+    maxWidth: `${Math.round(dropdownMaxWidth)}px`,
+    maxHeight: `${Math.round(maxHeight)}px`,
+    zIndex: String(props.dropdownZIndex)
+  }
+}
+
+const addPositionListeners = () => {
+  if (!props.teleported || isListeningForPositionChanges) return
+
+  window.addEventListener('resize', updateDropdownPosition)
+  window.addEventListener('scroll', updateDropdownPosition, true)
+  isListeningForPositionChanges = true
+}
+
+const removePositionListeners = () => {
+  if (!isListeningForPositionChanges) return
+
+  window.removeEventListener('resize', updateDropdownPosition)
+  window.removeEventListener('scroll', updateDropdownPosition, true)
+  isListeningForPositionChanges = false
+}
+
 const runRemoteQuery = async (value: string) => {
   if (!props.remote) return
   if (value.length < props.remoteMinLength) {
@@ -241,6 +341,8 @@ const runRemoteQuery = async (value: string) => {
     if (requestId !== queryRequestId || !Array.isArray(result)) return
     remoteOptions.value = result.map(normalizeOption)
     activeOptionIndex.value = getFirstEnabledOptionIndex()
+    await nextTick()
+    updateDropdownPosition()
   } finally {
     if (requestId === queryRequestId) {
       remoteLoading.value = false
@@ -271,6 +373,7 @@ const handleUpdate = (value: string | number) => {
   }
   activeOptionIndex.value = -1
   open.value = canOpen.value
+  void nextTick().then(updateDropdownPosition)
 }
 
 const handleInput = (value: string | number) => {
@@ -278,6 +381,7 @@ const handleInput = (value: string | number) => {
   emit('input', value)
   scheduleRemoteQuery(String(value))
   open.value = canOpen.value
+  void nextTick().then(updateDropdownPosition)
 }
 
 const handleChange = (value: string | number) => {
@@ -300,6 +404,7 @@ const handleFocus = (event: FocusEvent) => {
   const target = event.target as HTMLInputElement | null
   currentInputValue.value = String(target?.value ?? displayInputValue.value)
   open.value = canOpen.value
+  void nextTick().then(updateDropdownPosition)
   emit('focus', event)
 }
 
@@ -408,6 +513,47 @@ watch(visibleOptions, (options) => {
 })
 
 watch(
+  () => open.value,
+  async (isOpen) => {
+    if (!isOpen) {
+      removePositionListeners()
+      return
+    }
+
+    await nextTick()
+    updateDropdownPosition()
+    addPositionListeners()
+  }
+)
+
+watch(
+  () => props.teleported,
+  async () => {
+    removePositionListeners()
+    await nextTick()
+    if (open.value) {
+      updateDropdownPosition()
+      addPositionListeners()
+    }
+  }
+)
+
+watch(
+  () => [
+    visibleOptions.value.map((option) => getOptionDisplayText(option)).join('\u0000'),
+    isLoading.value,
+    props.dropdownMaxHeight,
+    props.dropdownMaxWidth,
+    props.dropdownZIndex
+  ],
+  async () => {
+    if (!open.value) return
+    await nextTick()
+    updateDropdownPosition()
+  }
+)
+
+watch(
   displayInputValue,
   (value) => {
     currentInputValue.value = String(value)
@@ -421,6 +567,7 @@ defineExpose({
 })
 
 onBeforeUnmount(() => {
+  removePositionListeners()
   if (queryTimer.value) {
     window.clearTimeout(queryTimer.value)
   }
@@ -429,6 +576,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
+    ref="autocompleteRef"
     class="x-autocomplete"
     :class="[
       rootClass,
@@ -460,7 +608,30 @@ onBeforeUnmount(() => {
       </template>
     </XBaseInput>
 
-    <div v-show="open" class="x-autocomplete__dropdown" role="listbox">
+    <Teleport v-if="props.teleported" :to="props.teleportTo">
+      <div v-show="open" ref="dropdownRef" :class="dropdownClasses" :style="dropdownStyle" role="listbox">
+        <div v-if="isLoading" class="x-autocomplete__empty">{{ props.loadingText }}</div>
+        <template v-else>
+          <button
+            v-for="(suggestion, index) in visibleOptions"
+            :key="String(suggestion.value)"
+            class="x-autocomplete__option"
+            :class="{ 'is-disabled': suggestion.disabled, 'is-active': index === activeOptionIndex }"
+            type="button"
+            role="option"
+            :aria-selected="index === activeOptionIndex"
+            :disabled="suggestion.disabled"
+            @mousedown.prevent
+            @click="selectSuggestion(suggestion)"
+          >
+            {{ getOptionDisplayText(suggestion) }}
+          </button>
+        </template>
+        <div v-if="!isLoading && !visibleOptions.length" class="x-autocomplete__empty">{{ props.emptyText }}</div>
+      </div>
+    </Teleport>
+
+    <div v-else v-show="open" ref="dropdownRef" :class="dropdownClasses" :style="dropdownStyle" role="listbox">
       <div v-if="isLoading" class="x-autocomplete__empty">{{ props.loadingText }}</div>
       <template v-else>
         <button

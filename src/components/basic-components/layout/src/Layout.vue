@@ -8,6 +8,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<LayoutProps>(), {
   mode: 'top-sidebar',
+  fillHeight: true,
   sidebarWidth: 288,
   sidebarCollapsed: false,
   sidebarCollapsedWidth: 88,
@@ -22,7 +23,7 @@ const props = withDefaults(defineProps<LayoutProps>(), {
   sidebarColor: '#F9F9F9',
   sidebarBorderRadius: 0,
   sidebarBorder: 'none',
-  contentBackgroundColor: '#2A7F87',
+  contentBackgroundColor: 'transparent',
   contentColor: '#F9F9F9',
   contentBorderRadius: 0,
   footerBackgroundColor: '#124A50',
@@ -61,7 +62,11 @@ const shellStyle = computed(() => {
 </script>
 
 <template>
-  <div class="x-layout" :class="[`x-layout--${props.mode}`, { 'is-sidebar-collapsed': props.sidebarCollapsed }]" :style="shellStyle">
+  <div
+    class="x-layout"
+    :class="[`x-layout--${props.mode}`, { 'is-fill-height': props.fillHeight, 'is-sidebar-collapsed': props.sidebarCollapsed }]"
+    :style="shellStyle"
+  >
     <header class="x-layout__topbar">
       <slot name="topbar" />
     </header>
