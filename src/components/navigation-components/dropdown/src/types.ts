@@ -23,6 +23,7 @@ export interface DropdownProps extends ElementStyleProps {
   disabled?: boolean
   hideOnClick?: boolean
   showArrow?: boolean
+  appendToBody?: boolean
   offset?: number | string
   popperWidth?: number | string
   popperZIndex?: number

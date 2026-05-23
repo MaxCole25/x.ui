@@ -783,6 +783,10 @@
   z-index: var(--x-dropdown-z-index, var(--x-z-index-popper, 2000));
 }
 
+.x-dropdown__popper.is-teleported {
+  position: fixed;
+}
+
 .x-dropdown__popper--bottom-start {
   left: 0;
   top: calc(100% + var(--x-dropdown-offset, 6px));

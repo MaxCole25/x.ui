@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, provide, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { dropdownContextKey } from './context'
@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<DropdownProps>(), {
   disabled: false,
   hideOnClick: true,
   showArrow: true,
+  appendToBody: false,
   offset: 6,
   popperZIndex: overlayZIndex.popper
 })
@@ -26,6 +27,10 @@ const emit = defineEmits<{
 }>()
 
 const visible = ref(false)
+const triggerRef = ref<HTMLElement>()
+const popperRef = ref<HTMLElement>()
+const popperLeft = ref(0)
+const popperTop = ref(0)
 let timer: number | undefined
 const dropdownStyle = computed(() => ({
   ...createElementStyleVars(props),
@@ -39,12 +44,23 @@ const dropdownStyle = computed(() => ({
   '--x-dropdown-active-bg': props.activeBackgroundColor,
   '--x-dropdown-active-text': props.activeTextColor
 }))
+const teleportedPopperStyle = computed(() => ({
+  ...dropdownStyle.value,
+  left: `${popperLeft.value}px`,
+  top: `${popperTop.value}px`,
+  right: 'auto',
+  bottom: 'auto',
+  transform: 'none'
+}))
 
 function setVisible(value: boolean) {
   if (props.disabled) value = false
   if (visible.value === value) return
   visible.value = value
   emit('visible-change', value)
+  if (value) {
+    void nextTick(updatePopperPosition)
+  }
 }
 
 function schedule(value: boolean) {
@@ -53,7 +69,9 @@ function schedule(value: boolean) {
 }
 
 function toggle() {
-  if (props.trigger === 'click') setVisible(!visible.value)
+  if (props.trigger === 'click') {
+    setVisible(!visible.value)
+  }
 }
 
 function onMouseenter() {
@@ -70,6 +88,62 @@ provide(dropdownContextKey, {
     if (props.hideOnClick) setVisible(false)
   }
 })
+
+function toNumber(value: number | string | undefined, fallback: number) {
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') {
+    const next = Number.parseFloat(value)
+    return Number.isFinite(next) ? next : fallback
+  }
+  return fallback
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function updatePopperPosition() {
+  if (!props.appendToBody || !visible.value || !triggerRef.value || !popperRef.value) return
+
+  const gap = 8
+  const offset = toNumber(props.offset, 6)
+  const triggerRect = triggerRef.value.getBoundingClientRect()
+  const popperRect = popperRef.value.getBoundingClientRect()
+  const width = popperRect.width || toNumber(props.popperWidth, triggerRect.width)
+  const height = popperRect.height
+  const [side, align = 'center'] = props.placement.split('-') as [string, string?]
+
+  let left = triggerRect.left
+  let top = triggerRect.bottom + offset
+
+  if (side === 'top') top = triggerRect.top - height - offset
+  if (side === 'left') left = triggerRect.left - width - offset
+  if (side === 'right') left = triggerRect.right + offset
+
+  if (side === 'bottom' || side === 'top') {
+    if (align === 'end') left = triggerRect.right - width
+    else if (align !== 'start') left = triggerRect.left + (triggerRect.width - width) / 2
+  }
+
+  if (side === 'left' || side === 'right') {
+    if (align === 'end') top = triggerRect.bottom - height
+    else if (align !== 'start') top = triggerRect.top + (triggerRect.height - height) / 2
+  }
+
+  popperLeft.value = clamp(left, gap, window.innerWidth - width - gap)
+  popperTop.value = clamp(top, gap, window.innerHeight - height - gap)
+}
+
+onMounted(() => {
+  window.addEventListener('resize', updatePopperPosition)
+  window.addEventListener('scroll', updatePopperPosition, true)
+})
+
+onBeforeUnmount(() => {
+  window.clearTimeout(timer)
+  window.removeEventListener('resize', updatePopperPosition)
+  window.removeEventListener('scroll', updatePopperPosition, true)
+})
 </script>
 
 <template>
@@ -80,12 +154,22 @@ provide(dropdownContextKey, {
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
   >
-    <div class="x-dropdown__trigger" tabindex="0" @click="toggle">
+    <div ref="triggerRef" class="x-dropdown__trigger" tabindex="0" @click="toggle">
       <slot />
     </div>
-    <div v-show="visible" class="x-dropdown__popper" :class="`x-dropdown__popper--${props.placement}`">
-      <span v-if="props.showArrow" class="x-dropdown__arrow" aria-hidden="true"></span>
-      <slot name="dropdown" />
-    </div>
+    <Teleport to="body" :disabled="!props.appendToBody">
+      <div
+        v-show="visible"
+        ref="popperRef"
+        class="x-dropdown__popper"
+        :class="[`x-dropdown__popper--${props.placement}`, { 'is-teleported': props.appendToBody }]"
+        :style="props.appendToBody ? teleportedPopperStyle : undefined"
+        @mouseenter="onMouseenter"
+        @mouseleave="onMouseleave"
+      >
+        <span v-if="props.showArrow" class="x-dropdown__arrow" aria-hidden="true"></span>
+        <slot name="dropdown" />
+      </div>
+    </Teleport>
   </div>
 </template>

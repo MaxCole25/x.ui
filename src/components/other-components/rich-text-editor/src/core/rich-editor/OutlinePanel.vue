@@ -30,8 +30,8 @@
             </button>
             <span v-else class="xl-outline-panel__toggle xl-outline-panel__toggle--spacer"></span>
 
+            <span v-if="item.activePath" class="xl-outline-panel__active-bar"></span>
             <button type="button" class="xl-outline-panel__item" @click="jumpToHeading(item.pos)">
-              <span v-if="item.activePath" class="xl-outline-panel__active-bar"></span>
               <span class="xl-outline-panel__text">{{ item.text }}</span>
             </button>
           </div>
@@ -210,8 +210,42 @@ function toggleCollapse(key: string) {
   }
 }
 
+function getElementFromNodeDom(node: Node | null) {
+  if (node instanceof HTMLElement) {
+    return node
+  }
+
+  return node?.parentElement ?? null
+}
+
+function scrollHeadingIntoView(editor: Editor, pos: number) {
+  const viewport = editor.view.dom.closest('.xl-editor__viewport') as HTMLElement | null
+  const headingElement = getElementFromNodeDom(editor.view.nodeDOM(pos))
+
+  if (!viewport || !headingElement) {
+    editor.chain().focus().setTextSelection(pos).scrollIntoView().run()
+    return
+  }
+
+  const viewportRect = viewport.getBoundingClientRect()
+  const headingRect = headingElement.getBoundingClientRect()
+  const targetTop = viewport.scrollTop + headingRect.top - viewportRect.top - 12
+
+  viewport.scrollTo({
+    top: Math.max(0, targetTop),
+    left: viewport.scrollLeft,
+    behavior: 'auto'
+  })
+}
+
 function jumpToHeading(pos: number) {
-  props.editor?.chain().focus().setTextSelection(pos).scrollIntoView().run()
+  const editor = props.editor
+  if (!editor) {
+    return
+  }
+
+  editor.chain().focus().setTextSelection(pos).run()
+  window.requestAnimationFrame(() => scrollHeadingIntoView(editor, pos))
 }
 
 function flattenTree(nodes: OutlineNode[]): OutlineNode[] {
@@ -322,6 +356,7 @@ function markActivePath(nodes: OutlineNode[]): boolean {
 }
 
 .xl-outline-panel__row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -373,13 +408,14 @@ function markActivePath(nodes: OutlineNode[]): boolean {
 }
 
 .xl-outline-panel__active-bar {
-  flex: 0 0 auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -6px;
   width: 4px;
-  height: auto;
-  align-self: stretch;
-  margin-right: 8px;
   border-radius: 999px;
   background: #409EFF;
+  pointer-events: none;
 }
 
 .xl-outline-panel__text {
