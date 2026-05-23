@@ -15,7 +15,7 @@ const switchAppearance = reactive({
   activeText: '开',
   inactiveText: '关',
   labelPosition: 'outside' as SwitchLabelPosition,
-  color: '#409eff',
+  color: '#1264f4',
   inactiveColor: '#dcdfe6',
   thumbColor: '#ffffff',
   buttonSize: 20,

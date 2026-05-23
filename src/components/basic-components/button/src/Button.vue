@@ -22,14 +22,16 @@ const emit = defineEmits<{
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
 const usesExplicitSize = computed(() => props.size != null)
+const resolveSizeStyle = (customValue: number | string | undefined, presetValue: number | string) =>
+  toCssSize(usesExplicitSize.value ? presetValue : customValue ?? presetValue)
 
 const buttonStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-button-width': toCssSize(props.width),
-  '--x-button-height': toCssSize(usesExplicitSize.value ? sizePreset.value.height : props.height),
-  '--x-button-font-size': toCssSize(usesExplicitSize.value ? sizePreset.value.fontSize : props.fontSize),
-  '--x-button-padding': usesExplicitSize.value ? sizePreset.value.padding : toCssSize(props.padding),
-  '--x-button-radius': usesExplicitSize.value ? sizePreset.value.radius : toCssSize(props.radius),
+  '--x-button-height': resolveSizeStyle(props.height, sizePreset.value.height),
+  '--x-button-font-size': resolveSizeStyle(props.fontSize, sizePreset.value.fontSize),
+  '--x-button-padding': resolveSizeStyle(props.padding, sizePreset.value.padding),
+  '--x-button-radius': resolveSizeStyle(props.radius, sizePreset.value.radius),
   '--x-button-active-bg': props.activeBackgroundColor,
   '--x-button-active-border-color': props.activeBorderColor,
   '--x-button-active-text': props.activeTextColor

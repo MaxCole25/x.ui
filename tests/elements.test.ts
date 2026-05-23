@@ -294,10 +294,8 @@ describe('元素组件', () => {
     expect(input.attributes('type')).toBe('text')
     expect(input.attributes('readonly')).toBeDefined()
     const clearButton = wrapper.find('.x-base-input__clear')
-    expect(clearButton.exists()).toBe(true)
-    expect(clearButton.attributes('disabled')).toBeDefined()
-    expect(clearButton.attributes('aria-hidden')).toBe('true')
-    expect(clearButton.attributes('tabindex')).toBe('-1')
+    expect(clearButton.exists()).toBe(false)
+    expect(wrapper.find('.x-autocomplete__arrow').exists()).toBe(true)
   })
 
   it('applies autocomplete class and style to the root instead of the native input', () => {
@@ -326,7 +324,8 @@ describe('元素组件', () => {
       }
     })
 
-    expect(wrapper.find('.x-base-input__suffix').exists()).toBe(false)
+    expect(wrapper.find('.x-autocomplete__suffix').exists()).toBe(false)
+    expect(wrapper.find('.x-autocomplete__arrow').exists()).toBe(true)
   })
 
   it('exposes select input-like appearance and readonly interfaces', async () => {
@@ -379,6 +378,7 @@ describe('元素组件', () => {
     })
 
     expect(wrapper.find('.x-base-input__clear').exists()).toBe(true)
+    expect(wrapper.find('.x-autocomplete__arrow').exists()).toBe(true)
   })
 
   it('exposes readonly autocomplete option lists', async () => {

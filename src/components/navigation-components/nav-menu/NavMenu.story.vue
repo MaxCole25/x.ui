@@ -65,6 +65,7 @@ const navItems: NavMenuItem[] = [
 
 const state = reactive({
   mode: 'vertical' as NavMenuMode,
+  hidden: false,
   collapsed: false,
   activeKey: 'dashboard',
   textColor: '#334e68',
@@ -95,6 +96,11 @@ function handleSelect(key: string) {
               <option value="vertical">纵向菜单</option>
               <option value="horizontal">横向菜单</option>
             </select>
+          </label>
+
+          <label class="menu-check">
+            <input v-model="state.hidden" type="checkbox" />
+            <span>隐藏侧边栏</span>
           </label>
 
           <label class="menu-check">
@@ -153,6 +159,7 @@ function handleSelect(key: string) {
             :items="navItems"
             :active-key="state.activeKey"
             :mode="state.mode"
+            :hidden="state.hidden"
             :collapsed="state.collapsed"
             :allow-collapse="true"
             :scrollable="state.scrollable"

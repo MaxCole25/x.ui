@@ -8,6 +8,8 @@ export interface ButtonProps extends ElementStyleProps {
   size?: XSize
   width?: number | string
   height?: number | string
+  borderWidth?: number | string
+  borderColor?: string
   fontSize?: number | string
   padding?: number | string
   radius?: number | string

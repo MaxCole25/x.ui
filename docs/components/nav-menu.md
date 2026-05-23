@@ -1,6 +1,6 @@
 # 菜单 NavMenu
 
-`XNavMenu` 是从 NexMod `DashboardNavMenu` 抽离出的独立菜单组件，支持纵向/横向两种菜单模式，并支持多级菜单与收起态。
+`XNavMenu` 是从 NexMod `DashboardNavMenu` 抽离出的独立菜单组件，支持纵向/横向两种菜单模式，并支持多级菜单、收起态与侧边栏隐藏态。
 
 ## 基础用法
 
@@ -81,6 +81,21 @@ const items: NavMenuItem[] = [
 </style>
 ```
 
+## 隐藏侧边栏
+
+当外层布局需要完全隐藏侧边栏时，可以传入 `hidden`。它会保留组件实例和受控状态，但让菜单根节点 `display: none`，适合移动端抽屉关闭或后台布局切换。
+
+```vue
+<template>
+  <XNavMenu
+    :items="items"
+    :active-key="activeKey"
+    mode="vertical"
+    hidden
+  />
+</template>
+```
+
 ## 手风琴展开
 
 开启 `accordion` 后，纵向菜单同一层级内只会保留一个父菜单展开。`activeKey` 对应的父级路径会默认展开，并在 `activeKey` 变化时自动展开到当前激活项。
@@ -106,6 +121,7 @@ const items: NavMenuItem[] = [
 | mode | 菜单模式 | `'vertical' \| 'horizontal'` | `'vertical'` |
 | collapsed | 是否收起（仅纵向有效） | `boolean` | `false` |
 | allowCollapse | 是否启用收起能力 | `boolean` | `false` |
+| hidden | 是否隐藏菜单侧边栏区域 | `boolean` | `false` |
 | scrollable | 是否启用菜单自身滚动（仅纵向有效） | `boolean` | `false` |
 | maxHeight | 菜单最大高度，传入数字时按 px 处理 | `number \| string` | `undefined` |
 | accordion | 是否启用同级仅展开一个子菜单（仅纵向非收起态有效） | `boolean` | `false` |
@@ -141,10 +157,11 @@ const items: NavMenuItem[] = [
 ## 手动验收建议
 
 1. 在 Histoire 中切换 `vertical/horizontal`，确认菜单布局变化正确。
-2. 在 `vertical` 模式下开启 `collapsed`，确认一级菜单仅显示图标并保留 `title` 提示。
-3. 在收起的纵向菜单中点击或悬停带子菜单的一级项，确认子菜单从右侧弹出，且更深层级继续向右级联弹出。
-4. 点击多级菜单叶子项，确认 `select` 事件能正确返回 `key`。
-5. 调整字体大小、字重和字体族，确认一级菜单、子菜单和激活态文本样式同步生效。
-6. 开启 `scrollable` 并设置 `maxHeight=300`，确认滚动条只出现在菜单内部。
-7. 开启 `accordion`，依次展开同级父菜单，确认前一个父菜单会自动折叠。
-8. 设置 `activeKey="/security/roles"`，确认“系统设置”和“权限管理”等父级路径默认展开。
+2. 在 `vertical` 模式下开启 `hidden`，确认侧边栏菜单区域被隐藏；关闭后状态仍保留。
+3. 在 `vertical` 模式下开启 `collapsed`，确认一级菜单仅显示图标并保留 `title` 提示。
+4. 在收起的纵向菜单中点击或悬停带子菜单的一级项，确认子菜单从右侧弹出，且更深层级继续向右级联弹出。
+5. 点击多级菜单叶子项，确认 `select` 事件能正确返回 `key`。
+6. 调整字体大小、字重和字体族，确认一级菜单、子菜单和激活态文本样式同步生效。
+7. 开启 `scrollable` 并设置 `maxHeight=300`，确认滚动条只出现在菜单内部。
+8. 开启 `accordion`，依次展开同级父菜单，确认前一个父菜单会自动折叠。
+9. 设置 `activeKey="/security/roles"`，确认“系统设置”和“权限管理”等父级路径默认展开。

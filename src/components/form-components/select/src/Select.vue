@@ -160,12 +160,12 @@ const baseInputProps = computed(() => ({
   placeholder: props.placeholder,
   disabled: mergedDisabled.value,
   readonly: props.readonly,
-  clearable: props.clearable,
-  hideClearButton: props.hideClearButton,
+  clearable: false,
+  hideClearButton: true,
   size: mergedSize.value,
   status: props.status,
   prefix: props.prefix,
-  suffix: props.suffix,
+  suffix: undefined,
   activeBorderColor: props.activeBorderColor ?? props.color,
   color: props.color ?? props.activeBorderColor,
   clearIconColor: props.clearIconColor,
@@ -453,13 +453,27 @@ onBeforeUnmount(() => {
             {{ selectedText }}
           </span>
           <span v-else class="x-select__placeholder">{{ props.placeholder }}</span>
+        </button>
+      </template>
+      <template #suffix>
+        <span v-if="$slots.suffix || props.suffix !== undefined" class="x-select__suffix">
+          <slot name="suffix">{{ props.suffix }}</slot>
+        </span>
+        <span class="x-select__indicator" @mousedown.prevent @click.stop="toggle">
+          <button
+            v-if="showClear"
+            class="x-base-input__clear x-select__clear is-visible"
+            type="button"
+            aria-label="清空"
+            @mousedown.prevent
+            @click.stop="clear"
+          >
+            <i class="ri-close-circle-line" aria-hidden="true"></i>
+          </button>
           <span class="x-select__arrow" aria-hidden="true">
             <i class="ri-arrow-down-s-line"></i>
           </span>
-        </button>
-      </template>
-      <template v-if="$slots.suffix" #suffix>
-        <slot name="suffix"></slot>
+        </span>
       </template>
     </XBaseInput>
     <Teleport v-if="props.teleported" :to="props.teleportTo">

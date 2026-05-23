@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { XTabs } from './index'
-import type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsReorderPayload, TabsSize } from './src/types'
+import type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsReorderPayload, TabsSize, TabsType } from './src/types'
 import '../../../styles/index.css'
 
 const active = ref<TabName>('dashboard')
+const type = ref<TabsType>('card')
 const position = ref<TabPosition>('top')
 const labelDirection = ref<TabsLabelDirection>('horizontal')
 const size = ref<TabsSize>('md')
@@ -82,6 +83,12 @@ function handleReorder(payload: TabsReorderPayload) {
           <label><input v-model="config.stretch" type="checkbox" />拉伸</label>
           <label><input v-model="config.showAvatar" type="checkbox" />头像</label>
           <label><input v-model="config.showContextMenu" type="checkbox" />右键菜单</label>
+          <select v-model="type">
+            <option value="">线条默认</option>
+            <option value="line">线条</option>
+            <option value="card">卡片</option>
+            <option value="border-card">边框卡片</option>
+          </select>
           <label>
             圆角
             <input v-model.number="config.borderRadius" type="number" min="0" max="24" style="width: 64px" />
@@ -134,6 +141,7 @@ function handleReorder(payload: TabsReorderPayload) {
           <XTabs
             v-model="active"
             :items="tabs"
+            :type="type"
             :size="size"
             :tab-position="position"
             :label-direction="labelDirection"

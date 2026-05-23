@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import type { DividerProps } from './types'
 
@@ -13,6 +13,9 @@ const props = withDefaults(defineProps<DividerProps>(), {
   borderStyle: 'solid'
 })
 
+const slots = useSlots()
+const hasDividerText = computed(() => props.direction === 'horizontal' && Boolean(slots.default))
+
 const dividerStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-divider-spacing': toCssSize(props.spacing),
@@ -23,11 +26,11 @@ const dividerStyle = computed(() => ({
 <template>
   <div
     class="x-divider"
-    :class="[`x-divider--${props.direction}`, `x-divider--${props.contentPosition}`]"
+    :class="[`x-divider--${props.direction}`, hasDividerText ? `x-divider--${props.contentPosition}` : undefined]"
     :style="dividerStyle"
     role="separator"
   >
-    <span v-if="$slots.default && props.direction === 'horizontal'" class="x-divider__text">
+    <span v-if="hasDividerText" class="x-divider__text">
       <slot />
     </span>
   </div>

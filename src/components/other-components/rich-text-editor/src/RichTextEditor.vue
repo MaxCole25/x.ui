@@ -20,7 +20,8 @@ const props = withDefaults(defineProps<RichTextEditorProps>(), {
   showOutline: true,
   pasteImages: true,
   contentBackground: 'var(--x-color-surface, #ffffff)',
-  contentTextColor: 'var(--x-color-text, #111827)'
+  contentTextColor: 'var(--x-color-text, #111827)',
+  contentFontSize: 14
 })
 
 const emit = defineEmits<{
@@ -162,6 +163,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
       :size="props.size"
       :content-background="props.contentBackground"
       :content-text-color="props.contentTextColor"
+      :content-font-size="props.contentFontSize"
       :theme="props.theme"
       :upload-image="props.uploadImage"
       :upload-file="props.uploadFile"

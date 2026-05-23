@@ -107,7 +107,7 @@ const previewCode = computed(() => {
           <template #footer>
             <div class="layout-block layout-footer">
               <span>Footer</span>
-              <small>footerBorder 只显示下边框</small>
+              <small>footerBorder 只显示上边框</small>
             </div>
           </template>
         </XLayout>

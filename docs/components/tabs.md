@@ -26,6 +26,16 @@ const items: TabItem[] = [
 </template>
 ```
 
+## 页签类型
+
+```vue
+<XTabs v-model="active" :items="items" type="line" />
+<XTabs v-model="active" :items="items" type="card" />
+<XTabs v-model="active" :items="items" type="border-card" />
+```
+
+`type=""` 与 `type="line"` 都会使用线条页签。`card` 为默认卡片页签，`border-card` 会给整体容器增加边框并弱化内容区内边框，适合需要完整外框的页面模块。
+
 ## 新增与关闭
 
 ```vue

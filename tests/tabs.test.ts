@@ -67,6 +67,51 @@ describe('XTabs', () => {
     expect(small.attributes('style')).toContain('--x-tabs-item-padding-x: 8px')
   })
 
+  it('applies different tab type classes', () => {
+    const line = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        type: 'line'
+      }
+    })
+    const emptyLine = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        type: ''
+      }
+    })
+    const card = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        type: 'card'
+      }
+    })
+    const borderCard = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        type: 'border-card'
+      }
+    })
+
+    expect(line.classes()).toContain('x-tabs--line')
+    expect(emptyLine.classes()).toContain('x-tabs--line')
+    expect(card.classes()).toContain('x-tabs--card')
+    expect(borderCard.classes()).toContain('x-tabs--border-card')
+  })
+
+  it('keeps visual styles for every tab type', () => {
+    const css = readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+
+    expect(css).toContain('.x-tabs--line .x-tabs__item-frame {\n  background: transparent;\n  border: 0;')
+    expect(css).toContain('.x-tabs--line .x-tabs__item-frame.is-active {\n  background: transparent;\n  border-bottom: 2px solid var(--x-tabs-tab-active-text);')
+    expect(css).toContain('.x-tabs--border-card {\n  border: var(--x-tabs-border);')
+    expect(css).toContain('.x-tabs--border-card .x-tabs__content {\n  border: 0;')
+  })
+
   it('keeps horizontal tab item frames at the md height for every size', () => {
     const css = readFileSync('src/styles/index.css', 'utf8')
 
@@ -74,6 +119,13 @@ describe('XTabs', () => {
     expect(css).toContain('height: var(--x-tabs-item-frame-height, 30px)')
     expect(css).toContain('line-height: var(--x-tabs-item-frame-height, 30px)')
     expect(css).not.toContain('padding: 0 12px 12px;')
+  })
+
+  it('keeps horizontal scroll buttons from changing the tab row height', () => {
+    const css = readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+
+    expect(css).toContain('.x-tabs__scroll {\n  background: transparent;\n  border: 0;\n  color: var(--x-color-muted);\n  height: var(--x-tabs-item-frame-height, 30px);')
+    expect(css).toContain('margin-bottom: 0;')
   })
 
   it('keeps the tab head background transparent while tab items use tab background variable', () => {

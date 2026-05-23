@@ -316,7 +316,7 @@ describe('form controls', () => {
   it('exposes switch appearance variables', () => {
     const wrapper = mount(XSwitch, {
       props: {
-        color: '#409eff',
+        color: '#1264f4',
         inactiveColor: '#dcdfe6',
         thumbColor: '#ffffff',
         buttonSize: 20,
@@ -326,7 +326,7 @@ describe('form controls', () => {
     })
 
     const style = wrapper.find('.x-switch').attributes('style')
-    expect(style).toContain('--x-switch-color: #409eff')
+    expect(style).toContain('--x-switch-color: #1264f4')
     expect(style).toContain('--x-switch-inactive-color: #dcdfe6')
     expect(style).toContain('--x-switch-thumb-color: #ffffff')
     expect(style).toContain('--x-switch-button-size: 20px')
@@ -385,6 +385,7 @@ describe('form controls', () => {
     expect(css).toContain('--x-switch-default-size: 17.6px')
     expect(css).toContain('--x-switch-default-size: 24px')
     expect(css).toContain('--x-switch-default-size: 30.4px')
+    expect(css).toContain('--x-switch-color: var(--x-color-primary, #1264f4)')
     expect(css).toContain('width: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) * 2)')
   })
 

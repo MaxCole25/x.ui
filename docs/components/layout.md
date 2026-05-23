@@ -56,9 +56,9 @@ import 'x.ui/style.css'
 | footerBackgroundColor | 底部栏背景色 | `string` | `'#124A50'` |
 | footerColor | 底部栏前景色 | `string` | `'#F9F9F9'` |
 | footerBorderRadius | 底部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
-| footerBorder | 底部栏下边框 | `string` | `'none'` |
+| footerBorder | 底部栏上边框 | `string` | `'none'` |
 
-边框属性只作用于对应区域的指定边：`topbarBorder` 对应 Topbar 下边框，`sidebarBorder` 对应 Sidebar 右边框，`footerBorder` 对应 Footer 下边框。Content 不提供边框属性。
+边框属性只作用于对应区域的指定边：`topbarBorder` 对应 Topbar 下边框，`sidebarBorder` 对应 Sidebar 右边框，`footerBorder` 对应 Footer 上边框。Content 不提供边框属性。
 
 ## Slots
 

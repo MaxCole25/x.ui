@@ -17,6 +17,7 @@ export interface NavMenuProps {
   mode?: NavMenuMode
   collapsed?: boolean
   allowCollapse?: boolean
+  hidden?: boolean
   scrollable?: boolean
   maxHeight?: string | number
   accordion?: boolean

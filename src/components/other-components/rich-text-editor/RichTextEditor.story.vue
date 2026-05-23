@@ -29,7 +29,8 @@ const state = reactive({
   canSave: true,
   pasteImages: true,
   fillHeight: false,
-  minHeight: 420
+  minHeight: 420,
+  contentFontSize: 14
 })
 
 const visibleTools = ref([...RICH_TEXT_EDITOR_TOOLBAR_BUTTONS])
@@ -51,6 +52,7 @@ function handleSave() {
           <label><input v-model="state.pasteImages" type="checkbox" />允许粘贴图片</label>
           <label><input v-model="state.fillHeight" type="checkbox" />填满父容器高度</label>
           <label>最小高度 <input v-model.number="state.minHeight" type="number" min="240" step="20" /></label>
+          <label>正文字号 <input v-model.number="state.contentFontSize" type="number" min="12" max="32" /></label>
         </div>
 
         <details>
@@ -72,6 +74,7 @@ function handleSave() {
             :show-outline="state.showOutline"
             :can-save="state.canSave"
             :paste-images="state.pasteImages"
+            :content-font-size="state.contentFontSize"
             :toolbar-buttons="visibleTools"
             @save-doc="handleSave"
             @html-change="latestHtml = $event"

@@ -131,6 +131,8 @@ const queryStatus = async () => {
 
 ## 可清空和禁用
 
+设置 `clearable` 后，已选中内容时鼠标悬停在组件上会在后缀图标位置显示清除图标；未悬停、无内容、只读或禁用时仍显示下拉图标。
+
 <div class="x-demo-block">
   <div class="x-demo-column">
     <XSelect v-model="selectClear" :options="statusOptions" clearable />

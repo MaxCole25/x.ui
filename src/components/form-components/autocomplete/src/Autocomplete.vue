@@ -141,13 +141,15 @@ const inputProps = computed(() => {
     ...props,
     modelValue: currentInputValue.value,
     type: 'text',
+    clearable: false,
+    hideClearButton: true,
     disabled: mergedDisabled.value,
     size: mergedSize.value,
     fontSize: usesExplicitSize ? preset.fontSize : props.fontSize ?? preset.fontSize,
     height: usesExplicitSize ? preset.height : props.height ?? preset.height,
     padding: usesExplicitSize ? preset.padding : props.padding ?? preset.padding,
     radius: usesExplicitSize ? preset.radius : props.radius ?? preset.radius,
-    suffix: inputSuffix.value
+    suffix: undefined
   }
 
   delete next.inputValue
@@ -240,6 +242,14 @@ const visibleOptions = computed(() => filteredOptions.value.slice(0, maxVisibleO
 const canOpen = computed(() => !mergedDisabled.value && !props.readonly)
 const isLoading = computed(() => props.loading || remoteLoading.value)
 const activeSuggestion = computed(() => visibleOptions.value[activeOptionIndex.value])
+const showClear = computed(
+  () =>
+    Boolean(currentInputValue.value) &&
+    Boolean(props.clearable) &&
+    !props.hideClearButton &&
+    !mergedDisabled.value &&
+    !props.readonly
+)
 const inputSuffix = computed(() => {
   if (props.suffix === undefined || props.suffix === '') return undefined
   if (props.loading && String(props.suffix) === props.loadingText) return undefined
@@ -406,6 +416,12 @@ const handleFocus = (event: FocusEvent) => {
   open.value = canOpen.value
   void nextTick().then(updateDropdownPosition)
   emit('focus', event)
+}
+
+const openDropdown = () => {
+  if (!canOpen.value) return
+  open.value = true
+  void nextTick().then(updateDropdownPosition)
 }
 
 const handleBlur = (event: FocusEvent) => {
@@ -603,8 +619,25 @@ onBeforeUnmount(() => {
       <template v-if="$slots.prefix" #prefix>
         <slot name="prefix"></slot>
       </template>
-      <template v-if="$slots.suffix" #suffix>
-        <slot name="suffix"></slot>
+      <template #suffix>
+        <span v-if="$slots.suffix || inputSuffix !== undefined" class="x-autocomplete__suffix">
+          <slot name="suffix">{{ inputSuffix }}</slot>
+        </span>
+        <span class="x-autocomplete__indicator" @mousedown.prevent @click.stop="openDropdown">
+          <button
+            v-if="showClear"
+            class="x-base-input__clear x-autocomplete__clear is-visible"
+            type="button"
+            aria-label="清空"
+            @mousedown.prevent
+            @click.stop="handleClear"
+          >
+            <i class="ri-close-circle-line" aria-hidden="true"></i>
+          </button>
+          <span class="x-autocomplete__arrow" aria-hidden="true">
+            <i class="ri-arrow-down-s-line"></i>
+          </span>
+        </span>
       </template>
     </XBaseInput>
 

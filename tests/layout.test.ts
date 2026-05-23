@@ -84,6 +84,16 @@ describe('XLayout', () => {
     }
   })
 
+  it('renders footerBorder on the footer top edge', () => {
+    const style = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
+    const footerRule = [...style.matchAll(/\.x-layout__footer \{[\s\S]*?\}/g)]
+      .map((match) => match[0])
+      .find((rule) => rule.includes('grid-area: footer')) ?? ''
+
+    expect(footerRule).toContain('border-top: var(--x-layout-footer-border)')
+    expect(footerRule).not.toContain('border-bottom: var(--x-layout-footer-border)')
+  })
+
   it('applies custom region colors, edge borders and heights', () => {
     const wrapper = mount(XLayout, {
       props: {

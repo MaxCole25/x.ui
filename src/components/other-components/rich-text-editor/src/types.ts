@@ -68,6 +68,7 @@ export interface RichTextEditorProps {
   pasteImages?: boolean
   contentBackground?: string
   contentTextColor?: string
+  contentFontSize?: number | string
   theme?: RichTextEditorTheme
   uploadImage?: (file: File) => Promise<UploadResult>
   uploadFile?: (file: File) => Promise<UploadResult>

@@ -56,6 +56,27 @@ describe('XDataTableSettings', () => {
     return wrapper
   }
 
+  async function openSelectDropdown(select: ReturnType<ReturnType<typeof mount>['findComponent']>) {
+    await select.find('.x-select__control').trigger('click')
+    await nextTick()
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
+    await nextTick()
+
+    const dropdown = Array.from(document.body.querySelectorAll<HTMLElement>('.x-select__dropdown.is-teleported'))
+      .find((item) => item.style.display !== 'none')
+
+    expect(dropdown).toBeDefined()
+    return dropdown as HTMLElement
+  }
+
+  function findSelectByValue(wrapper: Awaited<ReturnType<typeof mountSettings>>, value: string) {
+    const select = wrapper.findAllComponents({ name: 'XSelect' })
+      .find((item) => item.props('modelValue') === value)
+
+    expect(select).toBeDefined()
+    return select!
+  }
+
   it('loads tables then selects the first table and loads its settings', async () => {
     const adapter = createAdapter()
     const wrapper = await mountSettings(adapter)
@@ -137,6 +158,25 @@ describe('XDataTableSettings', () => {
       activeBorderColor: '#0f56d9',
       activeTextColor: '#ffffff'
     })
+  })
+
+  it('teleports table cell dropdowns so they are not clipped by the table viewport', async () => {
+    const wrapper = await mountSettings()
+
+    const editTypeDropdown = await openSelectDropdown(findSelectByValue(wrapper, 'input'))
+    expect(editTypeDropdown.classList.contains('is-teleported')).toBe(true)
+    expect(wrapper.element.contains(editTypeDropdown)).toBe(false)
+    expect(editTypeDropdown.textContent).toContain('输入框')
+
+    await findSelectByValue(wrapper, 'input').find('.x-select__control').trigger('click')
+    await nextTick()
+
+    const dataSourceDropdown = await openSelectDropdown(findSelectByValue(wrapper, 'customers'))
+    expect(dataSourceDropdown.classList.contains('is-teleported')).toBe(true)
+    expect(wrapper.element.contains(dataSourceDropdown)).toBe(false)
+    expect(dataSourceDropdown.textContent).toContain('客户字典（12项）')
+
+    wrapper.unmount()
   })
 
   it('loads another table when selected programmatically', async () => {

@@ -4,6 +4,7 @@ import { XAvatar } from './components/display-components/avatar'
 import { XBaseInput } from './components/basic-components/base-input'
 import { XButton } from './components/basic-components/button'
 import { XButtonGroup } from './components/basic-components/button-group'
+import { XBrick, XBrickItem } from './components/basic-components/brick'
 import { XCard } from './components/basic-components/card'
 import { XChart } from './components/display-components/chart'
 import { XCascader } from './components/form-components/cascader'
@@ -59,6 +60,8 @@ export { XAutocomplete }
 export { XAvatar }
 export { XButton }
 export { XButtonGroup }
+export { XBrick }
+export { XBrickItem }
 export { XCard }
 export { XChart }
 export { XCascader }
@@ -130,6 +133,7 @@ export type {
 } from './components/form-components/autocomplete'
 export type { AvatarProps, AvatarShape, AvatarSize } from './components/display-components/avatar'
 export type { BaseInputProps, BaseInputSize, BaseInputStatus, BaseInputTextAlign, BaseInputType } from './components/basic-components/base-input'
+export type { BrickDirection, BrickItemOverflow, BrickItemProps, BrickProps, BrickSize } from './components/basic-components/brick'
 export type { ButtonProps, ButtonVariant } from './components/basic-components/button'
 export type { ButtonGroupDirection, ButtonGroupProps } from './components/basic-components/button-group'
 export type { CardProps, CardShadow } from './components/basic-components/card'
@@ -248,6 +252,8 @@ export type { TreeContextAction, TreeNodeData, TreeProps } from './components/di
 const components = [
   XButton,
   XButtonGroup,
+  XBrick,
+  XBrickItem,
   XCard,
   XChart,
   XText,

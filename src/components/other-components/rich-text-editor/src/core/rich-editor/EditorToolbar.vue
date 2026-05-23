@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="xl-toolbar">
+  <div ref="toolbarRef" class="xl-toolbar">
     <div v-if="showSaveGroup" class="xl-toolbar__group xl-toolbar__group--save">
       <button
         v-if="hasTool('save')"
@@ -68,62 +68,95 @@
 
     <div v-if="showFontGroup" class="xl-toolbar__group">
       <div v-if="hasTool('font-family')" class="xl-toolbar__menu">
-        <button type="button" class="xl-toolbar__menu-trigger" title="字体" :disabled="readonly" @click="toggleMenu('fontFamily')">
+        <button type="button" class="xl-toolbar__menu-trigger xl-toolbar__menu-trigger--select" title="字体" :disabled="readonly" @click="toggleMenu('fontFamily')">
           <i class="ri-font-family"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
         <div v-if="openMenu === 'fontFamily'" class="xl-toolbar__menu-dropdown">
-          <button type="button" @click="selectFontFamily('')">默认字体</button>
-          <button type="button" @click="selectFontFamily('Inter')">Inter</button>
-          <button type="button" @click="selectFontFamily('Arial')">Arial</button>
-          <button type="button" @click="selectFontFamily('Georgia')">Georgia</button>
-          <button type="button" @click="selectFontFamily('Times New Roman')">Times New Roman</button>
-          <button type="button" @click="selectFontFamily('Microsoft YaHei')">Microsoft YaHei</button>
-          <button type="button" @click="selectFontFamily('PingFang SC')">PingFang SC</button>
+          <button
+            v-for="font in fontFamilyOptions"
+            :key="font.value || 'default'"
+            type="button"
+            :class="{ active: currentFontFamily === font.value }"
+            :style="font.style"
+            @click="selectFontFamily(font.value)"
+          >
+            {{ font.label }}
+          </button>
         </div>
       </div>
 
       <div v-if="hasTool('font-size')" class="xl-toolbar__menu">
-        <button type="button" class="xl-toolbar__menu-trigger" title="字号" :disabled="readonly" @click="toggleMenu('fontSize')">
+        <button type="button" class="xl-toolbar__menu-trigger xl-toolbar__menu-trigger--select" title="字号" :disabled="readonly" @click="toggleMenu('fontSize')">
           <i class="ri-font-size"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
         <div v-if="openMenu === 'fontSize'" class="xl-toolbar__menu-dropdown">
-          <button type="button" @click="selectFontSize('')">默认字号</button>
-          <button type="button" @click="selectFontSize('12px')">12</button>
-          <button type="button" @click="selectFontSize('14px')">14</button>
-          <button type="button" @click="selectFontSize('16px')">16</button>
-          <button type="button" @click="selectFontSize('18px')">18</button>
-          <button type="button" @click="selectFontSize('24px')">24</button>
-          <button type="button" @click="selectFontSize('32px')">32</button>
+          <button
+            v-for="size in fontSizeOptions"
+            :key="size.value || 'default'"
+            type="button"
+            :class="{ active: currentFontSize === size.value }"
+            :style="size.style"
+            @click="selectFontSize(size.value)"
+          >
+            {{ size.label }}
+          </button>
         </div>
       </div>
 
-      <button v-if="hasTool('text-color')" type="button" title="文字颜色" :disabled="readonly" @click="openTextColorPicker">
-        <i class="ri-palette-line"></i>
-      </button>
+      <span v-if="hasTool('text-color')" class="xl-toolbar__color-picker" :class="{ 'is-disabled': readonly }" title="文字颜色">
+        <button type="button" tabindex="-1" :disabled="readonly" aria-hidden="true">
+          <i class="ri-palette-line"></i>
+        </button>
+        <input
+          ref="textColorInput"
+          type="color"
+          class="xl-toolbar__color-input"
+          :disabled="readonly"
+          aria-label="文字颜色"
+          @click="closeOpenMenu"
+          @focus="closeOpenMenu"
+          @input="setTextColor"
+        />
+      </span>
 
-      <button v-if="hasTool('highlight')" type="button" title="高亮颜色" :disabled="readonly" @click="openHighlightColorPicker">
-        <i class="ri-mark-pen-line"></i>
-      </button>
-
-      <input ref="textColorInput" type="color" class="xl-toolbar__color-input" @input="setTextColor" />
-      <input ref="highlightColorInput" type="color" class="xl-toolbar__color-input" @input="setHighlight" />
+      <span v-if="hasTool('highlight')" class="xl-toolbar__color-picker" :class="{ 'is-disabled': readonly }" title="高亮颜色">
+        <button type="button" tabindex="-1" :disabled="readonly" aria-hidden="true">
+          <i class="ri-mark-pen-line"></i>
+        </button>
+        <input
+          ref="highlightColorInput"
+          type="color"
+          class="xl-toolbar__color-input"
+          :disabled="readonly"
+          aria-label="高亮颜色"
+          @click="closeOpenMenu"
+          @focus="closeOpenMenu"
+          @input="setHighlight"
+        />
+      </span>
     </div>
 
     <span v-if="showFontGroup && showBlockGroup" class="xl-toolbar__divider"></span>
 
     <div v-if="showBlockGroup" class="xl-toolbar__group">
       <div v-if="hasTool('heading')" class="xl-toolbar__menu">
-        <button type="button" class="xl-toolbar__menu-trigger" title="标题" :disabled="readonly" @click="toggleMenu('heading')">
+        <button type="button" class="xl-toolbar__menu-trigger xl-toolbar__menu-trigger--select" title="标题" :disabled="readonly" @click="toggleMenu('heading')">
           <i class="ri-heading"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
         <div v-if="openMenu === 'heading'" class="xl-toolbar__menu-dropdown">
-          <button type="button" @click="selectHeading('paragraph')">正文</button>
-          <button type="button" @click="selectHeading('1')">一级标题</button>
-          <button type="button" @click="selectHeading('2')">二级标题</button>
-          <button type="button" @click="selectHeading('3')">三级标题</button>
+          <button
+            v-for="heading in headingOptions"
+            :key="heading.value"
+            type="button"
+            :class="{ active: currentHeading === heading.value }"
+            :style="heading.style"
+            @click="selectHeading(heading.value)"
+          >
+            {{ heading.label }}
+          </button>
         </div>
       </div>
 
@@ -211,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import { RICH_TEXT_EDITOR_TOOLBAR_BUTTONS } from '../../types'
 
@@ -244,8 +277,36 @@ const emit = defineEmits<{
 const toolbarButtonSet = computed(() => new Set(props.toolbarButtons ?? RICH_TEXT_EDITOR_TOOLBAR_BUTTONS))
 const textColorInput = ref<HTMLInputElement | null>(null)
 const highlightColorInput = ref<HTMLInputElement | null>(null)
+const toolbarRef = ref<HTMLElement | null>(null)
 const openMenu = ref<null | 'fontFamily' | 'fontSize' | 'heading' | 'table'>(null)
 const readonly = computed(() => props.readonly)
+
+const fontFamilyOptions = [
+  { label: '默认字体', value: '', style: {} },
+  { label: 'Inter', value: 'Inter', style: { fontFamily: 'Inter, sans-serif' } },
+  { label: 'Arial', value: 'Arial', style: { fontFamily: 'Arial, sans-serif' } },
+  { label: 'Georgia', value: 'Georgia', style: { fontFamily: 'Georgia, serif' } },
+  { label: 'Times New Roman', value: 'Times New Roman', style: { fontFamily: '"Times New Roman", serif' } },
+  { label: 'Microsoft YaHei', value: 'Microsoft YaHei', style: { fontFamily: '"Microsoft YaHei", sans-serif' } },
+  { label: 'PingFang SC', value: 'PingFang SC', style: { fontFamily: '"PingFang SC", sans-serif' } }
+] as const
+
+const fontSizeOptions = [
+  { label: '默认字号', value: '', style: {} },
+  { label: '12', value: '12px', style: { fontSize: '12px' } },
+  { label: '14', value: '14px', style: { fontSize: '14px' } },
+  { label: '16', value: '16px', style: { fontSize: '16px' } },
+  { label: '18', value: '18px', style: { fontSize: '18px' } },
+  { label: '24', value: '24px', style: { fontSize: '24px' } },
+  { label: '32', value: '32px', style: { fontSize: '32px' } }
+] as const
+
+const headingOptions = [
+  { label: '正文', value: 'paragraph', style: { fontSize: '14px', fontWeight: '400', lineHeight: '1.5' } },
+  { label: '一级标题', value: '1', style: { fontSize: '22px', fontWeight: '700', lineHeight: '1.25' } },
+  { label: '二级标题', value: '2', style: { fontSize: '18px', fontWeight: '700', lineHeight: '1.3' } },
+  { label: '三级标题', value: '3', style: { fontSize: '16px', fontWeight: '700', lineHeight: '1.35' } }
+] as const
 
 const canUndo = computed(() => !readonly.value && (props.editor?.can().chain().focus().undo().run() ?? false))
 const canRedo = computed(() => !readonly.value && (props.editor?.can().chain().focus().redo().run() ?? false))
@@ -257,6 +318,15 @@ const showBlockGroup = computed(() => hasAnyTools(['heading', 'bullet-list', 'or
 const showOutlineGroup = computed(() => props.showOutline && hasTool('outline'))
 const showAlignGroup = computed(() => hasTool('align'))
 const showInsertGroup = computed(() => hasAnyTools(['horizontal-rule', 'link', 'image', 'attachment', 'table']))
+const currentFontFamily = computed(() => String(props.editor?.getAttributes('textStyle').fontFamily || ''))
+const currentFontSize = computed(() => String(props.editor?.getAttributes('textStyle').fontSize || ''))
+const currentHeading = computed(() => {
+  if (!props.editor?.isActive('heading')) {
+    return 'paragraph'
+  }
+
+  return String(props.editor.getAttributes('heading').level || 'paragraph')
+})
 
 function hasTool(name: string) {
   return toolbarButtonSet.value.has(name)
@@ -354,6 +424,38 @@ function toggleMenu(name: 'fontFamily' | 'fontSize' | 'heading' | 'table') {
   openMenu.value = openMenu.value === name ? null : name
 }
 
+function handleDocumentPointerDown(event: PointerEvent) {
+  if (!openMenu.value) {
+    return
+  }
+
+  const target = event.target
+  if (target instanceof Node && toolbarRef.value?.contains(target)) {
+    return
+  }
+
+  openMenu.value = null
+}
+
+watch(openMenu, (value) => {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  if (value) {
+    document.addEventListener('pointerdown', handleDocumentPointerDown)
+    return
+  }
+
+  document.removeEventListener('pointerdown', handleDocumentPointerDown)
+})
+
+onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('pointerdown', handleDocumentPointerDown)
+  }
+})
+
 function selectFontFamily(font: string) {
   setFontFamily(font)
   openMenu.value = null
@@ -373,24 +475,18 @@ function selectHeading(value: 'paragraph' | '1' | '2' | '3') {
   openMenu.value = null
 }
 
-function openTextColorPicker() {
-  if (!readonly.value) {
-    textColorInput.value?.click()
-  }
-}
-
-function openHighlightColorPicker() {
-  if (!readonly.value) {
-    highlightColorInput.value?.click()
-  }
+function closeOpenMenu() {
+  openMenu.value = null
 }
 
 function setTextColor(event: Event) {
+  closeOpenMenu()
   const target = event.target as HTMLInputElement
   run(() => props.editor?.chain().focus().setColor(target.value).run())
 }
 
 function setHighlight(event: Event) {
+  closeOpenMenu()
   const target = event.target as HTMLInputElement
   run(() => props.editor?.chain().focus().setHighlight({ color: target.value }).run())
 }

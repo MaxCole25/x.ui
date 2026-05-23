@@ -79,6 +79,7 @@ const content = ref(JSON.stringify({
 | `pasteImages` | 是否允许从剪贴板粘贴图片，粘贴后复用 `uploadImage` 管线 | `boolean` | `true` |
 | `contentBackground` | 编辑区域背景 | `string` | `var(--x-color-surface, #ffffff)` |
 | `contentTextColor` | 编辑区域正文颜色，适合深色表单或自定义主题中直接覆盖 | `string` | `var(--x-color-text, #111827)` |
+| `contentFontSize` | 编辑区域正文字号，数字按 px 处理 | `number \| string` | `14` |
 | `theme` | 工具栏、内容区和浮层主题变量 | `RichTextEditorTheme` | `undefined` |
 | `uploadImage` | 自定义图片上传方法，按钮上传和复制粘贴图片都会调用 | `(file: File) => Promise<UploadResult>` | 本地 DataURL |
 | `uploadFile` | 自定义附件上传方法 | `(file: File) => Promise<UploadResult>` | 本地 ObjectURL |
@@ -156,7 +157,7 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 
 - 检查粗体、斜体、下划线、删除线、行内代码、上下标和清除格式。
 - 检查标题、无序列表、有序列表、任务列表、引用和代码块。
-- 检查字体、字号、文字颜色、高亮颜色和段落对齐。
+- 检查字体、字号、文字颜色、高亮颜色和段落对齐；文字颜色和高亮颜色的原生色卡应从图标按钮附近弹出。
 - 检查插入水平线、链接、图片、附件和表格操作。
 - 复制本地图片或截图后直接粘贴，确认图片能进入编辑器；关闭 `pasteImages` 后应不再拦截粘贴图片。
 - 检查引用段落是否有明显的左侧色条、背景色和引号装饰。

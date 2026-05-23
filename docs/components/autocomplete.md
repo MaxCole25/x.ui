@@ -7,6 +7,7 @@
 ## 基础用法
 
 简单输入模式下直接使用 `v-model` 即可，输入内容会同步到 `modelValue`，保持旧版本行为。
+设置 `clearable` 后，有输入内容时鼠标悬停在组件上会在后缀图标位置显示清除图标；其它时候显示下拉图标。
 
 ```vue
 <XAutocomplete v-model="keyword" placeholder="请输入关键词" clearable />

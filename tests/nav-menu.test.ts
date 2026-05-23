@@ -92,6 +92,18 @@ describe('XNavMenu', () => {
     expect(wrapper.classes()).toContain('is-collapsed')
   })
 
+  it('applies hidden class for sidebar hiding', () => {
+    const wrapper = mount(XNavMenu, {
+      props: {
+        items,
+        hidden: true
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-hidden')
+    expect(wrapper.text()).toContain('控制台')
+  })
+
   it('uses arrow drop icons for submenu state', async () => {
     const wrapper = mount(XNavMenu, {
       props: {

@@ -501,7 +501,6 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :teleported="false"
             :dropdown-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'displayType', normalizeTextValue($event))"
           />
@@ -520,7 +519,6 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :teleported="false"
             :dropdown-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'editType', normalizeTextValue($event))"
           />
@@ -544,7 +542,6 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :teleported="false"
             :dropdown-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'dataSourceKey', normalizeTextValue($event))"
           />
@@ -564,7 +561,6 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :teleported="false"
             :dropdown-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateKeyType(asSettingsRow(row), normalizeOptionValue($event, keyTypeOptions, ''))"
           />
@@ -603,7 +599,6 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :teleported="false"
             :dropdown-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'align', normalizeAlign($event))"
           />

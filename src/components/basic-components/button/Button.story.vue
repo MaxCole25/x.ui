@@ -16,6 +16,7 @@ const appearance = reactive({
   variant: 'solid' as ButtonVariant,
   width: 180,
   height: 40,
+  radius: 10,
   activeBackgroundColor: '#0f54d6',
   activeBorderColor: '#0b3d91',
   activeTextColor: '#ffffff',
@@ -50,6 +51,7 @@ function handleClick() {
             :variant="appearance.variant"
             :width="appearance.width"
             :height="appearance.height"
+            :radius="appearance.radius"
             :active-background-color="appearance.activeBackgroundColor"
             :active-border-color="appearance.activeBorderColor"
             :active-text-color="appearance.activeTextColor"
@@ -72,6 +74,10 @@ function handleClick() {
           <label>
             <span>高度</span>
             <input v-model.number="appearance.height" type="number" min="0" />
+          </label>
+          <label>
+            <span>圆角</span>
+            <input v-model.number="appearance.radius" type="number" min="0" />
           </label>
         </template>
         <template #column-3>

@@ -100,6 +100,7 @@ const props = withDefaults(
     size?: XSize
     contentBackground?: string
     contentTextColor?: string
+    contentFontSize?: number | string
     theme?: RichTextEditorTheme
     uploadImage?: (file: File) => Promise<UploadResult>
     uploadFile?: (file: File) => Promise<UploadResult>
@@ -117,6 +118,7 @@ const props = withDefaults(
     size: undefined,
     contentBackground: 'var(--x-color-surface, #ffffff)',
     contentTextColor: 'var(--x-color-text, #111827)',
+    contentFontSize: 14,
   },
 )
 
@@ -162,6 +164,7 @@ const editorStyle = computed(() => {
     '--xl-editor-radius': preset.radius,
     '--xl-editor-content-bg': theme.contentBackground || props.contentBackground,
     '--xl-editor-content-text': theme.contentTextColor || props.contentTextColor,
+    '--xl-editor-content-font-size': typeof props.contentFontSize === 'number' ? `${props.contentFontSize}px` : props.contentFontSize,
     '--xl-editor-placeholder': theme.placeholderColor || '',
     '--xl-toolbar-bg': theme.toolbarBackground || '',
     '--xl-toolbar-border': theme.toolbarBorderColor || '',

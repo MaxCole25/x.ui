@@ -1,10 +1,10 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import * as XLSX from 'xlsx'
-import { XTable } from '../src'
+import { XAutocomplete, XSelect, XTable } from '../src'
 import type { TableColumn } from '../src'
 
 describe('XTable', () => {
@@ -73,6 +73,18 @@ describe('XTable', () => {
         }
       }
     }
+  }
+
+  async function waitForPositionedDropdown(selector: string) {
+    await nextTick()
+    await new Promise((resolve) => window.requestAnimationFrame(resolve))
+    await nextTick()
+
+    const dropdown = Array.from(document.body.querySelectorAll<HTMLElement>(selector))
+      .find((item) => item.style.display !== 'none')
+
+    expect(dropdown).toBeDefined()
+    return dropdown as HTMLElement
   }
 
   it('renders headers and rows', () => {
@@ -538,6 +550,64 @@ describe('XTable', () => {
     expect(wrapper.findAll('.row-action')).toHaveLength(2)
     expect(wrapper.find('.row-action').text()).toBe('查看 1')
     expect(wrapper.find('.x-table__row--body').attributes('style')).toContain('180px')
+  })
+
+  it('keeps XSelect dropdown teleported when rendered in a cell slot', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data
+      },
+      slots: {
+        'cell-status': ({ row }: { row: Record<string, unknown> }) => h(XSelect, {
+          modelValue: row.status as string,
+          options: [
+            { label: '启用', value: '启用' },
+            { label: '停用', value: '停用' }
+          ]
+        })
+      }
+    })
+
+    try {
+      await wrapper.findComponent(XSelect).find('.x-select__control').trigger('click')
+      const dropdown = await waitForPositionedDropdown('.x-select__dropdown.is-teleported')
+
+      expect(dropdown.classList.contains('is-teleported')).toBe(true)
+      expect(wrapper.element.contains(dropdown)).toBe(false)
+      expect(dropdown.textContent).toContain('启用')
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('keeps XAutocomplete dropdown teleported when rendered in a cell slot', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data
+      },
+      slots: {
+        'cell-name': ({ row }: { row: Record<string, unknown> }) => h(XAutocomplete, {
+          modelValue: row.name as string,
+          options: [
+            { label: '工作台', value: '工作台' },
+            { label: '成员管理', value: '成员管理' }
+          ]
+        })
+      }
+    })
+
+    try {
+      await wrapper.findComponent(XAutocomplete).find('input').trigger('focus')
+      const dropdown = await waitForPositionedDropdown('.x-autocomplete__dropdown.is-teleported')
+
+      expect(dropdown.classList.contains('is-teleported')).toBe(true)
+      expect(wrapper.element.contains(dropdown)).toBe(false)
+      expect(dropdown.textContent).toContain('工作台')
+    } finally {
+      cleanup()
+    }
   })
 
   it('adds fill height class when fillHeight is enabled', () => {

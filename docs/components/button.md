@@ -4,7 +4,7 @@
 
 ## 交互式预览
 
-你可以在这里手动切换按钮类型、宽高、加载状态和禁用状态，并点击按钮确认事件是否正常触发。
+你可以在这里手动切换按钮类型、宽高、圆角、加载状态和禁用状态，并点击按钮确认事件是否正常触发。
 
 <ButtonPlayground />
 
@@ -22,18 +22,20 @@
 <XButton variant="ghost">文本按钮</XButton>
 ```
 
-## 宽高
+## 宽高、圆角和边框
 
-按钮默认宽度撑满父元素，可以通过 `width` 和 `height` 调整宽高。
+按钮默认宽度撑满父元素，可以通过 `width` 和 `height` 调整宽高，通过 `radius` 调整圆角，通过 `borderWidth` 和 `borderColor` 调整边框。
 
 <div class="x-demo-row">
   <XButton>默认撑满父元素</XButton>
-  <XButton width="160px" height="40px">固定宽高</XButton>
+  <XButton width="160px" height="40px" radius="12px">固定宽高</XButton>
+  <XButton variant="outline" width="160px" :border-width="2" border-color="#16a34a">自定义边框</XButton>
 </div>
 
 ```vue
 <XButton>默认撑满父元素</XButton>
-<XButton width="160px" height="40px">固定宽高</XButton>
+<XButton width="160px" height="40px" radius="12px">固定宽高</XButton>
+<XButton variant="outline" width="160px" :border-width="2" border-color="#16a34a">自定义边框</XButton>
 ```
 
 ## 状态
@@ -85,6 +87,9 @@
 | `variant` | 按钮类型 | `'solid' \| 'outline' \| 'ghost'` | `'solid'` |
 | `width` | 按钮宽度，数字按 px 处理 | `number \| string` | `'100%'` |
 | `height` | 按钮高度，数字按 px 处理 | `number \| string` | `'36px'` |
+| `borderWidth` | 按钮边框粗细，数字按 px 处理 | `number \| string` | `1px` |
+| `borderColor` | 按钮边框颜色 | `string` | 按按钮类型决定 |
+| `radius` | 按钮圆角，数字按 px 处理；设置 `size` 时由尺寸规格接管 | `number \| string` | `6px` |
 | `activeBackgroundColor` | 按下激活时的背景色 | `string` | 按按钮类型决定 |
 | `activeBorderColor` | 按下激活时的边框色 | `string` | 按按钮类型决定 |
 | `activeTextColor` | 按下激活时的文字色 | `string` | 当前文字色 |
@@ -102,7 +107,7 @@
 ## 手动验收建议
 
 - 切换 `类型`，确认主要、描边、文本按钮的颜色层级是否符合预期。
-- 修改 `宽度` 和 `高度`，确认按钮在父元素内的占位符合预期。
+- 修改 `宽度`、`高度`、`边框粗细` 和 `边框颜色`，确认按钮在父元素内的占位和边框样式符合预期。
 - 修改激活背景色、边框色、文字色，确认按下按钮时颜色符合预期。
 - 添加前缀和后缀内容，确认文字顺序和间距符合预期。
 - 勾选 `加载中`，确认按钮不可重复点击，并出现加载图标。

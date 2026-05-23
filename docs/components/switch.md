@@ -94,7 +94,7 @@ const enabled = ref(true)
   <div class="x-demo-row">
     <XSwitch
       model-value
-      color="#409eff"
+      color="#1264f4"
       inactive-color="#dcdfe6"
       thumb-color="#ffffff"
       button-size="20"
@@ -107,7 +107,7 @@ const enabled = ref(true)
 ```vue
 <XSwitch
   model-value
-  color="#409eff"
+  color="#1264f4"
   inactive-color="#dcdfe6"
   thumb-color="#ffffff"
   button-size="20"

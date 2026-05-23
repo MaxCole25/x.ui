@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<NavMenuProps>(), {
   mode: 'vertical',
   collapsed: false,
   allowCollapse: false,
+  hidden: false,
   scrollable: false,
   accordion: false,
   textColor: 'var(--x-color-text)',
@@ -250,6 +251,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
       `x-nav-menu--${props.mode}`,
       {
         'is-collapsed': isCollapsed,
+        'is-hidden': props.hidden,
         'is-scrollable': props.scrollable
       }
     ]"
