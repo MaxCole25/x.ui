@@ -27,6 +27,7 @@ const emit = defineEmits<{
 }>()
 
 const visible = ref(false)
+const dropdownRef = ref<HTMLElement>()
 const triggerRef = ref<HTMLElement>()
 const popperRef = ref<HTMLElement>()
 const popperLeft = ref(0)
@@ -134,13 +135,26 @@ function updatePopperPosition() {
   popperTop.value = clamp(top, gap, window.innerHeight - height - gap)
 }
 
+function handleDocumentPointerdown(event: PointerEvent) {
+  if (!visible.value || props.disabled) return
+
+  const target = event.target
+  if (!(target instanceof Node)) return
+  if (dropdownRef.value?.contains(target)) return
+  if (popperRef.value?.contains(target)) return
+
+  setVisible(false)
+}
+
 onMounted(() => {
+  document.addEventListener('pointerdown', handleDocumentPointerdown, true)
   window.addEventListener('resize', updatePopperPosition)
   window.addEventListener('scroll', updatePopperPosition, true)
 })
 
 onBeforeUnmount(() => {
   window.clearTimeout(timer)
+  document.removeEventListener('pointerdown', handleDocumentPointerdown, true)
   window.removeEventListener('resize', updatePopperPosition)
   window.removeEventListener('scroll', updatePopperPosition, true)
 })
@@ -148,6 +162,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
+    ref="dropdownRef"
     class="x-dropdown"
     :class="[`x-dropdown--${props.size}`, { 'is-open': visible, 'is-disabled': props.disabled }]"
     :style="dropdownStyle"

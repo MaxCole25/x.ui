@@ -344,4 +344,65 @@ describe('new element components', () => {
 
     expect(wrapper.emitted('command')?.[0]).toEqual(['edit'])
   })
+
+  it('closes click-trigger dropdown when pointerdown happens outside trigger and popper', async () => {
+    const wrapper = mount(XDropdown, {
+      props: {
+        trigger: 'click',
+        appendToBody: true
+      },
+      slots: {
+        default: '<button>管理员</button>',
+        dropdown: () =>
+          h(XDropdownMenu, null, {
+            default: () => h(XDropdownItem, { command: 'profile' }, { default: () => '用户信息' })
+          })
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('.x-dropdown__trigger').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const popper = document.body.querySelector<HTMLElement>('.x-dropdown__popper')
+    expect(popper).not.toBeNull()
+    expect(popper?.style.display).not.toBe('none')
+
+    const outside = document.createElement('button')
+    document.body.appendChild(outside)
+    outside.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    await wrapper.vm.$nextTick()
+
+    expect(popper?.style.display).toBe('none')
+    outside.remove()
+    wrapper.unmount()
+  })
+
+  it('keeps click-trigger dropdown open when pointerdown happens inside a teleported popper', async () => {
+    const wrapper = mount(XDropdown, {
+      props: {
+        trigger: 'click',
+        appendToBody: true
+      },
+      slots: {
+        default: '<button>管理员</button>',
+        dropdown: '<div class="inside-dropdown">用户信息</div>'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('.x-dropdown__trigger').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const popper = document.body.querySelector<HTMLElement>('.x-dropdown__popper')
+    const inside = document.body.querySelector<HTMLElement>('.inside-dropdown')
+    expect(popper).not.toBeNull()
+    expect(inside).not.toBeNull()
+
+    inside?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    await wrapper.vm.$nextTick()
+
+    expect(popper?.style.display).not.toBe('none')
+    wrapper.unmount()
+  })
 })
