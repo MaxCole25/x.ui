@@ -99,3 +99,17 @@
 - 修改 `radius`，确认只有按钮组最外侧四个角出现圆角。
 - 放入不同 `variant`、`disabled`、`loading` 的按钮，确认按钮自身状态仍正常。
 - 设置较窄父容器，确认长文本不会溢出到相邻按钮外。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XButtonGroup / `ButtonGroupProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

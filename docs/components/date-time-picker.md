@@ -50,3 +50,100 @@
 | --- | --- |
 | prefix | 输入框前缀内容，未传入时显示默认日期时间图标 |
 | suffix | 输入框后缀内容 |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XDateTimePicker / `DateTimePickerProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `formatter` | 显示值格式化函数 | `BaseInputFormatter` | — |
+| `parser` | 输入值解析函数 | `BaseInputParser` | — |
+| `formatOnBlur` | 是否在失焦时格式化显示值 | `boolean` | — |
+| `activeBorderColor` | 激活状态边框颜色 | `string` | — |
+| `color` | 主题色或文字颜色 | `string` | — |
+| `clearIconColor` | clear图标颜色 | `string` | — |
+| `clearIconSize` | 公开属性，详见类型定义 | `string \| number` | — |
+| `disabledBackgroundColor` | 禁用背景色 | `string` | — |
+| `disabledTextColor` | 禁用文字颜色 | `string` | — |
+| `fontFamily` | 字体族 | `string` | — |
+| `fontSize` | 字号，数字按 px 处理 | `string \| number` | — |
+| `height` | 高度，数字按 px 处理 | `string \| number` | — |
+| `autoHeight` | 是否自动高度 | `boolean` | — |
+| `padding` | 内边距 | `string \| number` | — |
+| `radius` | 圆角，数字按 px 处理 | `string` | — |
+| `background` | 输入区域背景色 | `string` | — |
+| `name` | 原生 name 属性 | `string` | — |
+| `id` | 原生 id 属性 | `string` | — |
+| `maxlength` | 最大输入长度 | `number` | — |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `borderColor` | 边框颜色 | `string` | — |
+| `backgroundColor` | 背景色 | `string` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `panelBackgroundColor` | 面板背景色 | `string` | — |
+| `panelTextColor` | 面板文字颜色 | `string` | — |
+| `panelMutedTextColor` | 面板弱化文字颜色 | `string` | — |
+| `panelBorderColor` | 面板边框颜色 | `string` | — |
+| `panelHeaderTextColor` | 面板头部文字颜色 | `string` | — |
+| `panelShadow` | 公开属性，详见类型定义 | `string` | — |
+| `panelCloseIconColor` | 面板关闭图标颜色 | `string` | — |
+| `panelCloseIconHoverColor` | 面板关闭图标悬浮颜色 | `string` | — |
+| `panelToolBackgroundColor` | 面板工具栏背景色 | `string` | — |
+| `panelToolTextColor` | 面板工具栏文字颜色 | `string` | — |
+| `panelToolBorderColor` | 面板工具栏边框颜色 | `string` | — |
+| `panelToolHoverBackgroundColor` | 面板工具栏悬浮背景色 | `string` | — |
+| `panelToolHoverTextColor` | 面板工具栏悬浮文字颜色 | `string` | — |
+| `panelToolHoverBorderColor` | 面板工具栏悬浮边框颜色 | `string` | — |
+| `panelCurrentTextColor` | 面板当前文字颜色 | `string` | — |
+| `panelWeekTextColor` | 面板Week文字颜色 | `string` | — |
+| `panelDayTextColor` | 面板日期文字颜色 | `string` | — |
+| `panelDayHoverBackgroundColor` | 面板日期悬浮背景色 | `string` | — |
+| `panelDayHoverTextColor` | 面板日期悬浮文字颜色 | `string` | — |
+| `panelDayActiveBackgroundColor` | 面板日期激活背景色 | `string` | — |
+| `panelDayActiveTextColor` | 面板日期激活文字颜色 | `string` | — |
+| `panelDayDisabledTextColor` | 面板日期禁用文字颜色 | `string` | — |
+| `panelDayRadius` | 面板日期圆角 | `string \| number` | — |
+| `festivalBackgroundColor` | 节日背景色 | `string` | — |
+| `festivalTextColor` | 节日文字颜色 | `string` | — |
+| `festivalBadgeBackgroundColor` | 节日徽标背景色 | `string` | — |
+| `festivalBadgeTextColor` | 节日徽标文字颜色 | `string` | — |
+| `solarTermBackgroundColor` | 节气背景色 | `string` | — |
+| `solarTermTextColor` | 节气文字颜色 | `string` | — |
+| `solarTermBadgeBackgroundColor` | 节气徽标背景色 | `string` | — |
+| `solarTermBadgeTextColor` | 节气徽标文字颜色 | `string` | — |
+| `customFestivalBackgroundColor` | 自定义节日背景色 | `string` | — |
+| `customFestivalTextColor` | 自定义节日文字颜色 | `string` | — |
+| `customFestivalBadgeBackgroundColor` | 自定义节日徽标背景色 | `string` | — |
+| `customFestivalBadgeTextColor` | 自定义节日徽标文字颜色 | `string` | — |
+| `panelDayMarkedHoverBackgroundColor` | 面板标记日期悬浮背景色 | `string` | — |
+| `panelDayMarkedHoverTextColor` | 面板标记日期悬浮文字颜色 | `string` | — |
+| `panelDayMarkedActiveBackgroundColor` | 面板标记日期激活背景色 | `string` | — |
+| `panelDayMarkedActiveTextColor` | 面板标记日期激活文字颜色 | `string` | — |
+| `panelDayMarkedBadgeHoverBackgroundColor` | 面板标记日期徽标悬浮背景色 | `string` | — |
+| `panelDayMarkedBadgeHoverTextColor` | 面板标记日期徽标悬浮文字颜色 | `string` | — |
+| `panelPrimaryButtonBackgroundColor` | 面板主要按钮背景色 | `string` | — |
+| `panelPrimaryButtonTextColor` | 面板主要按钮文字颜色 | `string` | — |
+| `panelPrimaryButtonHoverBackgroundColor` | 面板主要按钮悬浮背景色 | `string` | — |
+| `panelSecondaryButtonBackgroundColor` | 面板次要按钮背景色 | `string` | — |
+| `panelSecondaryButtonTextColor` | 面板次要按钮文字颜色 | `string` | — |
+| `panelSecondaryButtonBorderColor` | 面板次要按钮边框颜色 | `string` | — |
+| `panelSecondaryButtonHoverBackgroundColor` | 面板次要按钮悬浮背景色 | `string` | — |
+| `panelSecondaryButtonHoverTextColor` | 面板次要按钮悬浮文字颜色 | `string` | — |
+| `panelSecondaryButtonHoverBorderColor` | 面板次要按钮悬浮边框颜色 | `string` | — |
+| `timePanelBackgroundColor` | 时间面板背景色 | `string` | — |
+| `timePanelBorderColor` | 时间面板边框颜色 | `string` | — |
+| `timeColumnLabelColor` | 时间列标签颜色 | `string` | — |
+| `timeOptionTextColor` | 时间选项文字颜色 | `string` | — |
+| `timeOptionHoverTextColor` | 时间选项悬浮文字颜色 | `string` | — |
+| `timeOptionActiveTextColor` | 时间选项激活文字颜色 | `string` | — |
+| `timeOptionActiveBackgroundColor` | 时间选项激活背景色 | `string` | — |
+| `timeOptionSelectionBackgroundColor` | 时间选项选中背景色 | `string` | — |
+| `timeOptionSelectionBorderColor` | 时间选项选中边框颜色 | `string` | — |
+| `timeColumnMaskTopColor` | 时间列遮罩顶部颜色 | `string` | — |
+| `timeColumnMaskMiddleColor` | 时间列遮罩中部颜色 | `string` | — |
+| `timeColumnMaskBottomColor` | 时间列遮罩底部颜色 | `string` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

@@ -157,3 +157,19 @@ const queryArea = async (option, path) => {
 - 在 Histoire 的“外观接口”中检查四列交互器是否覆盖所有公开属性。
 - 检查禁用、只读、可清空、父级可选、空数据和长路径文本。
 - 检查 `sm`、`md`、`lg` 三种尺寸是否符合统一尺寸约束。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XCascader / `CascaderProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `formatter` | 显示值格式化函数 | `BaseInputFormatter` | — |
+| `parser` | 输入值解析函数 | `BaseInputParser` | — |
+| `formatOnBlur` | 是否在失焦时格式化显示值 | `boolean` | — |
+| `color` | 主题色或文字颜色 | `string` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

@@ -264,3 +264,16 @@ const adapter: FileDiskAdapter = {
 - 右键单个文件或目录，确认可以重命名；未选择或多选时重命名应禁用。
 - 文件名被截断时悬停查看完整名称提示。
 - 图片文件显示缩略图，双击后确认可全屏预览，并能在当前目录图片中滚轮切换。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XFileDisk / `FileDiskProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `modelValue` | 绑定值 | `string` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

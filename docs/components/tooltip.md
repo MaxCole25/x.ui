@@ -71,3 +71,16 @@ Tooltip 支持两种外观定制方式：单个实例可以通过 `backgroundCol
 | update:modelValue | 显示状态变化 |
 | show | 显示时触发 |
 | hide | 隐藏时触发 |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XTooltip / `TooltipProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

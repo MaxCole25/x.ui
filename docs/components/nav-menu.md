@@ -169,3 +169,16 @@ const items: NavMenuItem[] = [
 7. 开启 `scrollable` 并设置 `maxHeight=300`，确认滚动条只出现在菜单内部。
 8. 开启 `accordion`，依次展开同级父菜单，确认前一个父菜单会自动折叠。
 9. 设置 `activeKey="/security/roles"`，确认“系统设置”和“权限管理”等父级路径默认展开。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XNavMenu / `NavMenuProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

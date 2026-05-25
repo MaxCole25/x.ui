@@ -212,3 +212,24 @@ function handleLogin(payload) {
 - 修改主题色相关 props，确认卡片、按钮、边框和文字色能跟随业务主题变化。
 - 切换 `logoPosition` 为 `top`、`left`、`right`，确认标题和介绍区域自动撑满可用宽度。
 - 在移动端窄屏下检查验证码输入框和按钮是否自动换行，不出现遮挡。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XLogin / `LoginProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `usernameLabel` | 公开属性，详见类型定义 | `string` | — |
+| `passwordLabel` | 公开属性，详见类型定义 | `string` | — |
+| `usernamePlaceholder` | 公开属性，详见类型定义 | `string` | — |
+| `passwordPlaceholder` | 公开属性，详见类型定义 | `string` | — |
+| `imageCodePlaceholder` | 公开属性，详见类型定义 | `string` | — |
+| `letterCodePlaceholder` | 公开属性，详见类型定义 | `string` | — |
+| `phonePlaceholder` | 公开属性，详见类型定义 | `string` | — |
+| `smsCodePlaceholder` | 公开属性，详见类型定义 | `string` | — |
+| `imageCaptchaAlt` | 公开属性，详见类型定义 | `string` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

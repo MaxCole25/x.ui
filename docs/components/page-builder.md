@@ -104,3 +104,16 @@ interface PageBuilderSchema {
 - 修改画布列数、行高、节点位置和尺寸，确认右侧 JSON 同步更新。
 - 修改组件通用属性、特性 Props JSON 或 Slots JSON，确认画布预览和 `v-model` 数据同步。
 - 使用只读模式确认组件库按钮、复制、删除和 JSON 应用操作被禁用。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XPageBuilder / `PageBuilderProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

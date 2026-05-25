@@ -370,3 +370,20 @@ const submit = async () => {
 - 检查 `validate`、`validateField`、`resetFields`、`clearValidate` 和 `scrollToField` 是否可通过 `ref` 调用。
 - 检查错误提示、帮助文本、自定义插槽和加载状态是否符合业务视觉规范。
 - 在固定高度父容器内检查 `content-fill-height` 搭配 `label-position="top"` 和 `XRichTextEditor fill-height` 时，内容区是否填满标签下方剩余高度且不遮挡下一项。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XForm / `FormProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `color` | 主题色或文字颜色 | `string` | — |
+| `radius` | 圆角，数字按 px 处理 | `string` | — |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

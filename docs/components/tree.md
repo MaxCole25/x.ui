@@ -131,3 +131,17 @@ function deleteNode(node: TreeNodeData, treeData: TreeNodeData[]) {
 - 右键空白树区域，确认可以通过 `增加根节点` 创建根级节点。
 - 传入 `createRootNode`、`createNode`、`deleteNode` 后，确认新增和删除逻辑由业务方法接管。
 - 传入 `contextMenuItems` 后，确认菜单文案、禁用态、危险色和自定义动作符合预期。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XTree / `TreeProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `canManageMembersByNode` | canManageMembersByNode 判断回调 | `(node: TreeNodeData) => boolean` | — |
+| `canMigrateNode` | canMigrateNode 判断回调 | `(node: TreeNodeData) => boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

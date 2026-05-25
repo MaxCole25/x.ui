@@ -29,3 +29,20 @@
 | default | 卡片内容 |
 | header | 自定义头部 |
 | footer | 自定义底部 |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XCard / `CardProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `borderColor` | 边框颜色 | `string` | — |
+| `backgroundColor` | 背景色 | `string` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

@@ -16,6 +16,7 @@ export interface ButtonProps extends ElementStyleProps {
   activeBackgroundColor?: string
   activeBorderColor?: string
   activeTextColor?: string
+  liftOnHover?: boolean
   disabled?: boolean
   loading?: boolean
 }

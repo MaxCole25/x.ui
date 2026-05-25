@@ -205,3 +205,17 @@ function parseCurrency(value) {
 | change | 原生 change 时触发 |
 | clear | 点击清空时触发 |
 | focus / blur | 聚焦和失焦时触发 |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XBaseInput / `BaseInputProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `background` | 输入区域背景色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

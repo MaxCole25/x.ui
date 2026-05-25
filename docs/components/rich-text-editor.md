@@ -171,3 +171,15 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 - `fillHeight` 依赖父容器具有明确高度；普通场景继续使用 `minHeight` 即可。
 - 组件内部已包含从 `XlEdit` 迁移来的富文本内核、扩展、节点视图、Markdown 适配器和样式。
 
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XRichTextEditor / `RichTextEditorProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

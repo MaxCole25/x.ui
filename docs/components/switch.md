@@ -143,3 +143,20 @@ const enabled = ref(true)
 | --- | --- | --- |
 | update:modelValue | 绑定值更新时触发 | `(value: boolean)` |
 | change | 用户切换状态时触发 | `(value: boolean)` |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XSwitch / `SwitchProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `name` | 原生 name 属性 | `string` | — |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `backgroundColor` | 背景色 | `string` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

@@ -461,3 +461,20 @@ body,
 - 在数据单元格右键菜单中分别检查 `适合宽度` 和 `适应宽度`，并用 `Ctrl+W` 检查 `适合宽度` 快捷键；确认后者会把表头文字宽度也纳入列宽计算；分别导出默认表格数据和格式化文字，确认 `formatter` 列导出内容符合预期；开启 `editable` 后导入 Excel，确认菜单可用且 `v-model:data` 得到更新。
 - 在窄容器中检查横向滚动和文本截断效果。
 - 开启 `fill-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XTable / `TableProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+| `sorter` | 公开属性，详见类型定义 | `TableSorter` | — |
+| `defaultSorter` | 公开属性，详见类型定义 | `TableSorter` | — |
+| `summaryRow` | 公开属性，详见类型定义 | `false \| TableSummaryRow<Row>` | — |
+| `summaryScope` | 公开属性，详见类型定义 | `TableSummaryScope` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

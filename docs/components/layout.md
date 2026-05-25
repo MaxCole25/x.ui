@@ -74,3 +74,16 @@ import 'x.ui/style.css'
 1. 在 Histoire 中切换 `mode`，确认网格区域位置变化符合预期。
 2. 切换 `sidebarCollapsed`，确认侧栏宽度变窄且内容可正常显示。
 3. 缩小浏览器到 `1200px` 以下，确认布局自动改为纵向堆叠。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XLayout / `LayoutProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

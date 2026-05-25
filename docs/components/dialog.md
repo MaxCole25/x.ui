@@ -72,3 +72,32 @@ const visible = ref(false)
 1. 分别检查 `draggable`、`resizable` 开关，确认拖拽与缩放行为符合预期。
 2. 验证 `closeOnMaskClick` 在 `true/false` 两种状态下的关闭行为。
 3. 在默认、`header`、`footer` 三个插槽中放入长文本和复杂表单，确认内容不溢出且移动端可滚动。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XDialog / `DialogProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `maskColor` | 遮罩颜色 | `string` | — |
+| `titleColor` | 标题颜色 | `string` | — |
+| `headerBackgroundColor` | 头部背景色 | `string` | — |
+| `bodyBackgroundColor` | 主体背景色 | `string` | — |
+| `footerBackgroundColor` | 底部背景色 | `string` | — |
+| `headerBorderColor` | 头部边框颜色 | `string` | — |
+| `footerBorderColor` | 底部边框颜色 | `string` | — |
+| `closeIconColor` | 关闭图标颜色 | `string` | — |
+| `closeIconHoverColor` | 关闭图标悬浮颜色 | `string` | — |
+| `closeIconHoverBackgroundColor` | 关闭图标悬浮背景色 | `string` | — |
+| `shadow` | 阴影样式 | `string` | — |
+| `resizerColor` | resizer颜色 | `string` | — |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `borderColor` | 边框颜色 | `string` | — |
+| `backgroundColor` | 背景色 | `string` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

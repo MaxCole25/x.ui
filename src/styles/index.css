@@ -230,8 +230,12 @@
   width: var(--x-button-width, 100%);
 }
 
-.x-button:hover:not(:disabled) {
+.x-button:hover:not(:disabled):not(.is-hover-lift-disabled) {
   transform: translateY(-1px);
+}
+
+.x-button.is-hover-lift-disabled:hover:not(:disabled) {
+  transform: none;
 }
 
 .x-button:focus-visible {

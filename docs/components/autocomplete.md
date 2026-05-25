@@ -179,3 +179,31 @@ const cityFieldNames = { label: 'name', value: 'id' }
 | --- | --- | --- |
 | getOptions | 读取当前候选列表内容，返回拷贝后的只读数组 | `() => readonly AutocompleteOption[]` |
 | getVisibleOptions | 读取当前弹层可见候选列表内容，返回拷贝后的只读数组 | `() => readonly AutocompleteOption[]` |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XAutocomplete / `AutocompleteProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `formatter` | 显示值格式化函数 | `BaseInputFormatter` | — |
+| `parser` | 输入值解析函数 | `BaseInputParser` | — |
+| `formatOnBlur` | 是否在失焦时格式化显示值 | `boolean` | — |
+| `prefix` | 前缀内容 | `string` | — |
+| `suffix` | 后缀内容 | `string` | — |
+| `fontFamily` | 字体族 | `string` | — |
+| `autoHeight` | 是否自动高度 | `boolean` | — |
+| `radius` | 圆角，数字按 px 处理 | `string` | — |
+| `background` | 输入区域背景色 | `string` | — |
+| `name` | 原生 name 属性 | `string` | — |
+| `maxlength` | 最大输入长度 | `number` | — |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `borderColor` | 边框颜色 | `string` | — |
+| `backgroundColor` | 背景色 | `string` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

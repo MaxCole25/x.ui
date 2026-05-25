@@ -272,3 +272,18 @@ const queryStatus = async () => {
 | label | 选项文本 | `string` | - |
 | value | 选项值 | `string \| number \| boolean` | - |
 | disabled | 是否禁用 | `boolean` | `false` |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XSelect / `SelectProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `formatter` | 显示值格式化函数 | `BaseInputFormatter` | — |
+| `parser` | 输入值解析函数 | `BaseInputParser` | — |
+| `formatOnBlur` | 是否在失焦时格式化显示值 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

@@ -23,3 +23,16 @@
 | --- | --- |
 | `update:modelValue` | 内容变化 |
 | `blur` | 失焦触发 |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XJsonEditor / `JsonEditorProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `size` | 尺寸规格 | `XSize` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

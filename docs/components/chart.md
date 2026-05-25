@@ -147,3 +147,16 @@ function refresh(option) {
 - 调整父容器宽高，确认开启 `autoresize` 后图表会重新计算尺寸。
 - 通过 `events` 绑定 click 或 mouseover，确认事件可以触发业务回调。
 - 切换 `theme` 或 `initOptions` 引用，确认图表会重建并应用当前 option。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XChart / `ChartProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

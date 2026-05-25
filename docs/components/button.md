@@ -30,12 +30,14 @@
   <XButton>默认撑满父元素</XButton>
   <XButton width="160px" height="40px" radius="12px">固定宽高</XButton>
   <XButton variant="outline" width="160px" :border-width="2" border-color="#16a34a">自定义边框</XButton>
+  <XButton variant="outline" width="32px" height="32px" padding="0" radius="999px" :lift-on-hover="false">+</XButton>
 </div>
 
 ```vue
 <XButton>默认撑满父元素</XButton>
 <XButton width="160px" height="40px" radius="12px">固定宽高</XButton>
 <XButton variant="outline" width="160px" :border-width="2" border-color="#16a34a">自定义边框</XButton>
+<XButton variant="outline" width="32px" height="32px" padding="0" radius="999px" :lift-on-hover="false">+</XButton>
 ```
 
 ## 状态
@@ -95,6 +97,7 @@
 | `activeBackgroundColor` | 按下激活时的背景色 | `string` | 按按钮类型决定 |
 | `activeBorderColor` | 按下激活时的边框色 | `string` | 按按钮类型决定 |
 | `activeTextColor` | 按下激活时的文字色 | `string` | 当前文字色 |
+| `liftOnHover` | 是否在悬浮时轻微上移；紧凑工具栏或可能被裁剪的容器内可设为 `false` | `boolean` | `true` |
 | `disabled` | 是否禁用 | `boolean` | `false` |
 | `loading` | 是否加载中 | `boolean` | `false` |
 
@@ -112,6 +115,22 @@
 - 修改 `宽度`、`高度`、`边框粗细`、`边框颜色`、`背景色` 和 `文字色`，确认按钮在父元素内的占位和颜色样式符合预期。
 - 修改激活背景色、边框色、文字色，确认按下按钮时颜色符合预期。
 - 添加前缀和后缀内容，确认文字顺序和间距符合预期。
+- 设置 `:lift-on-hover="false"`，确认悬浮颜色反馈保留但按钮不再上移。
 - 勾选 `加载中`，确认按钮不可重复点击，并出现加载图标。
 - 勾选 `禁用`，确认按钮不可点击，视觉上有明确禁用态。
 - 在桌面和移动端宽度下检查按钮文本是否溢出。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XButton / `ButtonProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `fontSize` | 字号，数字按 px 处理 | `string \| number` | — |
+| `padding` | 内边距 | `string \| number` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

@@ -11,6 +11,7 @@ defineOptions({
 const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'solid',
   size: undefined,
+  liftOnHover: true,
   disabled: false,
   loading: false
 })
@@ -48,7 +49,11 @@ function handleClick(event: MouseEvent) {
 <template>
   <button
     class="x-button"
-    :class="[`x-button--${props.variant}`, `x-button--${mergedSize}`, { 'is-loading': props.loading }]"
+    :class="[
+      `x-button--${props.variant}`,
+      `x-button--${mergedSize}`,
+      { 'is-loading': props.loading, 'is-hover-lift-disabled': !props.liftOnHover }
+    ]"
     :disabled="props.disabled || props.loading"
     type="button"
     :style="buttonStyle"

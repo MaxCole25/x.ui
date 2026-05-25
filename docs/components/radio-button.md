@@ -163,3 +163,20 @@ const mode = ref('washington')
 | 名称 | 说明 |
 | --- | --- |
 | default | 按钮文案 |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XRadioButton / `RadioButtonProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
+| `borderColor` | 边框颜色 | `string` | — |
+| `backgroundColor` | 背景色 | `string` | — |
+| `textColor` | 文字颜色 | `string` | — |
+| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

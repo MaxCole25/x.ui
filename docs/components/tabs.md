@@ -144,3 +144,19 @@ const items: TabItem[] = [
 - 为系统首页等固定页签设置 `locked: true`，确认关闭、拖拽、刷新和锁图标都遵循锁定语义。
 - 使用右键菜单锁定、解锁、刷新、关闭其它和关闭全部，确认锁定页签不会被关闭或刷新。
 - 分别检查 `top`、`bottom`、`left`、`right` 方向，确认长文本不会溢出遮挡。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XTabs / `TabsProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `tabGap` | 公开属性，详见类型定义 | `string \| number` | — |
+| `verticalWidth` | vertical宽度 | `string \| number` | — |
+| `verticalLabelMinHeight` | vertical标签Min高度 | `string \| number` | — |
+| `fillHeight` | 是否填满父容器高度 | `boolean` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

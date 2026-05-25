@@ -63,3 +63,16 @@ import { XMessageComponent } from 'x.ui'
 - 检查四种类型、六个位置、自动关闭和手动关闭。
 - 检查长文本是否自动换行，不应撑破视口。
 - 检查自定义背景色、文字色、边框色、图标色是否生效。
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
+## 公开属性补充
+
+以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+
+### XMessage / `MessageProps`
+
+| 属性名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `id` | 原生 id 属性 | `string` | — |
+
+<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->
