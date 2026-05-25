@@ -2788,9 +2788,9 @@
 
 .x-nav-menu-submenu.is-teleported-right::before {
   bottom: 0;
-  left: -8px;
+  left: -14px;
   top: 0;
-  width: 8px;
+  width: 14px;
 }
 
 .x-nav-menu-submenu.is-teleported-below::before {
@@ -2859,7 +2859,7 @@
   padding: 8px;
   position: absolute;
   top: calc(100% + 2px);
-  z-index: 30;
+  z-index: var(--x-z-index-popper, 2000);
 }
 
 .x-nav-menu--horizontal .x-nav-menu-item.has-children.is-open > .x-nav-menu-submenu,
@@ -2880,6 +2880,15 @@
 .x-nav-menu--horizontal .x-nav-menu-submenu .x-nav-menu-submenu {
   left: calc(100% + 8px);
   top: 0;
+}
+
+.x-nav-menu--horizontal .x-nav-menu-submenu .x-nav-menu-submenu::before {
+  bottom: 0;
+  height: auto;
+  left: -8px;
+  right: auto;
+  top: 0;
+  width: 8px;
 }
 
 .x-tree {

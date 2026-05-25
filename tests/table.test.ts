@@ -585,6 +585,35 @@ describe('XTable', () => {
     expect(wrapper.find('.x-table__row--body').attributes('style')).toContain('180px')
   })
 
+  it('freezes the actions column on the right without adding it to column settings', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showActions: true,
+        actionsFixed: true,
+        actionsWidth: 180,
+        showColumnSettings: true
+      },
+      slots: {
+        'row-actions': '<button class="row-action">查看</button>'
+      }
+    })
+
+    const headerActions = wrapper.find('.x-table__cell--header.x-table__cell--actions')
+    const bodyActionCells = wrapper.findAll('.x-table__row--body .x-table__cell--actions')
+    const bodyActions = bodyActionCells[0]
+
+    expect(headerActions.attributes('style')).toContain('position: sticky')
+    expect(headerActions.attributes('style')).toContain('right: 0px')
+    expect(bodyActions.attributes('style')).toContain('position: sticky')
+    expect(bodyActions.attributes('style')).toContain('right: 0px')
+    expect(bodyActionCells[0].attributes('style')).toContain('var(--x-table-body-background, #fff)')
+    expect(bodyActionCells[1].attributes('style')).toContain('var(--x-table-body-stripe-background, transparent)')
+    expect(bodyActionCells[1].attributes('style')).toContain('var(--x-table-body-background, #fff)')
+    expect(wrapper.vm.getColumnSettings().map((setting) => setting.key)).toEqual(columns.map((column) => column.key))
+  })
+
   it('keeps XSelect dropdown teleported when rendered in a cell slot', async () => {
     const { wrapper, cleanup } = mountWithHost({
       props: {

@@ -176,10 +176,10 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 ## 自定义单元格和操作列
 
-通过 `cell-[key]` 覆盖某一列的单元格内容。开启 `show-actions` 后，可以使用 `row-actions` 插槽渲染操作列。
+通过 `cell-[key]` 覆盖某一列的单元格内容。开启 `show-actions` 后，可以使用 `row-actions` 插槽渲染操作列。需要操作列始终停靠在右侧时，设置 `actions-fixed`；操作列不会出现在内置列设置里。
 
 ```vue
-<XTable :columns="columns" :data="rows" show-actions :actions-width="180">
+<XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="180">
   <template #cell-name="{ value }">
     <strong>{{ value }}</strong>
   </template>
@@ -318,6 +318,7 @@ body,
 | emptyText | 空数据文案 | `string` | `'暂无数据'` |
 | showHeader | 是否显示表头 | `boolean` | `true` |
 | showActions | 是否显示操作列 | `boolean` | `false` |
+| actionsFixed | 是否将操作列冻结在右侧；操作列不参与列设置 | `boolean` | `false` |
 | showSelection | 表格是否可选 | `boolean` | `false` |
 | showSelectionColumn | 是否显示左侧选择行列，可和单元格选择同时使用 | `boolean` | `true` |
 | editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |

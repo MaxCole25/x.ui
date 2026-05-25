@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
-import type { NavMenuItem, NavMenuMode } from './types'
 import type { CSSProperties } from 'vue'
+import type { NavMenuItem, NavMenuMode } from './types'
 
 type KeepPopupPathAlive = () => void
+type PopupPathContext = {
+  keepAlive: KeepPopupPathAlive
+  closePath: () => void
+  setDescendantPopupHovering: (hovering: boolean) => void
+}
 
-const keepPopupPathAliveKey = Symbol('x-nav-menu-keep-popup-path-alive')
+const popupPathKey = Symbol('x-nav-menu-popup-path')
+const popupCloseDelay = 420
 
 const props = withDefaults(
   defineProps<{
@@ -34,7 +40,8 @@ const submenuRef = ref<HTMLElement>()
 const submenuLeft = ref(0)
 const submenuTop = ref(0)
 let closeTimer: ReturnType<typeof setTimeout> | null = null
-const keepParentPopupPathAlive = inject<KeepPopupPathAlive | null>(keepPopupPathAliveKey, null)
+let descendantPopupHoverCount = 0
+const parentPopupPath = inject<PopupPathContext | null>(popupPathKey, null)
 const hasChildren = computed(() => (props.item.children?.length ?? 0) > 0)
 const isActive = computed(() => props.item.key === props.activeKey)
 const isActiveAncestor = computed(() => hasChildren.value && containsActiveKey(props.item.children ?? [], props.activeKey))
@@ -80,6 +87,7 @@ function containsActiveKey(items: NavMenuItem[], activeKey: string): boolean {
 function handleSelect() {
   if (!hasChildren.value) {
     emit('select', props.item.key)
+    parentPopupPath?.closePath()
     return
   }
 
@@ -100,13 +108,42 @@ function clearCloseTimer() {
   }
 }
 
+function handleChildSelect(key: string) {
+  emit('select', key)
+
+  if (usesPopupSubmenu.value) {
+    closePopupPath()
+  }
+}
+
 function keepPopupPathAlive() {
   clearCloseTimer()
-  keepParentPopupPathAlive?.()
+  parentPopupPath?.keepAlive()
+}
+
+function closePopupPath() {
+  clearCloseTimer()
+  descendantPopupHoverCount = 0
+  submenuOpen.value = false
+  parentPopupPath?.closePath()
+}
+
+function setDescendantPopupHovering(hovering: boolean) {
+  descendantPopupHoverCount = Math.max(0, descendantPopupHoverCount + (hovering ? 1 : -1))
+
+  if (hovering) {
+    clearCloseTimer()
+  }
+
+  parentPopupPath?.setDescendantPopupHovering(hovering)
+
+  if (!hovering && descendantPopupHoverCount === 0) {
+    closePopupSubmenu()
+  }
 }
 
 function openPopupSubmenu() {
-  keepParentPopupPathAlive?.()
+  parentPopupPath?.keepAlive()
 
   if (usesPopupSubmenu.value && hasChildren.value) {
     clearCloseTimer()
@@ -115,14 +152,45 @@ function openPopupSubmenu() {
   }
 }
 
-function closePopupSubmenu() {
+function isPointerStillInPopupPath(target: EventTarget | null) {
+  if (!(target instanceof Element)) {
+    return false
+  }
+
+  return Boolean(
+    itemRef.value?.contains(target) ||
+      submenuRef.value?.contains(target) ||
+      target.closest('.x-nav-menu-submenu')
+  )
+}
+
+function closePopupSubmenu(event?: MouseEvent) {
   if (usesPopupSubmenu.value && hasChildren.value) {
+    if (event && isPointerStillInPopupPath(event.relatedTarget)) {
+      return
+    }
+
     clearCloseTimer()
     closeTimer = setTimeout(() => {
+      if (descendantPopupHoverCount > 0) {
+        closeTimer = null
+        return
+      }
+
       submenuOpen.value = false
       closeTimer = null
-    }, 180)
+    }, popupCloseDelay)
   }
+}
+
+function handleSubmenuMouseEnter() {
+  parentPopupPath?.setDescendantPopupHovering(true)
+  openPopupSubmenu()
+}
+
+function handleSubmenuMouseLeave(event: MouseEvent) {
+  parentPopupPath?.setDescendantPopupHovering(false)
+  closePopupSubmenu(event)
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -165,7 +233,11 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', updateSubmenuPosition, true)
 })
 
-provide(keepPopupPathAliveKey, keepPopupPathAlive)
+provide(popupPathKey, {
+  keepAlive: keepPopupPathAlive,
+  closePath: closePopupPath,
+  setDescendantPopupHovering
+})
 </script>
 
 <template>
@@ -183,7 +255,7 @@ provide(keepPopupPathAliveKey, keepPopupPathAlive)
       }
     ]"
     @mouseenter="openPopupSubmenu"
-    @mouseleave="closePopupSubmenu"
+    @mouseleave="closePopupSubmenu($event)"
   >
     <button
       class="x-nav-menu-item__trigger"
@@ -208,8 +280,8 @@ provide(keepPopupPathAliveKey, keepPopupPathAlive)
         class="x-nav-menu-submenu"
         :class="teleportedSubmenuClasses"
         :style="shouldTeleportSubmenu ? teleportedSubmenuStyle : undefined"
-        @mouseenter="openPopupSubmenu"
-        @mouseleave="closePopupSubmenu"
+        @mouseenter="handleSubmenuMouseEnter"
+        @mouseleave="handleSubmenuMouseLeave"
       >
         <NavMenuItem
           v-for="child in props.item.children"
@@ -222,7 +294,7 @@ provide(keepPopupPathAliveKey, keepPopupPathAlive)
           :menu-style-vars="props.menuStyleVars"
           :open-keys="props.openKeys"
           :depth="props.depth + 1"
-          @select="emit('select', $event)"
+          @select="handleChildSelect"
           @toggle-open="emit('toggle-open', $event)"
         />
       </ul>

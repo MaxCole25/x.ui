@@ -42,6 +42,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   summaryRow: undefined,
   summaryScope: 'visible',
   showActions: false,
+  actionsFixed: false,
   showSelection: false,
   showSelectionColumn: true,
   editable: false,
@@ -2791,9 +2792,33 @@ function getSummaryUtilityCellStyle(kind: 'drag' | 'selection'): CSSProperties {
   return style
 }
 
+function getActionsCellStyle(type: 'header' | 'body' | 'summary' = 'body', rowIndex = 0): CSSProperties {
+  if (!props.actionsFixed) {
+    return {}
+  }
+
+  const style: CSSProperties = {
+    position: 'sticky',
+    right: '0px',
+    zIndex: type === 'summary' ? 4 : type === 'header' ? 3 : 2,
+    background:
+      type === 'header'
+        ? 'var(--x-table-header-background, #f3f6fa)'
+        : type === 'summary'
+          ? 'var(--x-table-summary-background, #f8fafc)'
+          : getBodyRowLayeredBackground(rowIndex)
+  }
+
+  if (!firstRightFixedColumnKey.value) {
+    style.boxShadow = rightFrozenBoundaryShadow
+  }
+
+  return style
+}
+
 function getBodyRowBackground(rowIndex: number) {
   return rowIndex % 2 === 1
-    ? 'var(--x-table-body-stripe-background, transparent)'
+    ? 'linear-gradient(var(--x-table-body-stripe-background, transparent), var(--x-table-body-stripe-background, transparent)), var(--x-table-body-background, #fff)'
     : 'var(--x-table-body-background, #fff)'
 }
 
@@ -3093,6 +3118,7 @@ defineExpose({
             v-if="showActions"
             class="x-table__cell x-table__cell--header x-table__cell--actions"
             role="columnheader"
+            :style="getActionsCellStyle('header')"
           >
             操作
           </div>
@@ -3209,7 +3235,12 @@ defineExpose({
                   @mousedown="startCellSelectionResize"
                 />
               </div>
-              <div v-if="showActions" class="x-table__cell x-table__cell--actions" role="cell">
+              <div
+                v-if="showActions"
+                class="x-table__cell x-table__cell--actions"
+                role="cell"
+                :style="getActionsCellStyle('body', rowIndex)"
+              >
                 <slot name="row-actions" :row="row" :row-index="rowIndex" />
               </div>
             </div>
@@ -3250,7 +3281,12 @@ defineExpose({
                   {{ formatSummaryCellValue(column.column) }}
                 </slot>
               </div>
-              <div v-if="showActions" class="x-table__cell x-table__cell--actions x-table__cell--summary" role="cell" />
+              <div
+                v-if="showActions"
+                class="x-table__cell x-table__cell--actions x-table__cell--summary"
+                role="cell"
+                :style="getActionsCellStyle('summary')"
+              />
             </div>
           </div>
 

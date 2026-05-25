@@ -165,6 +165,7 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   summaryRow?: TableSummaryRow<Row> | false
   summaryScope?: TableSummaryScope
   showActions?: boolean
+  actionsFixed?: boolean
   showSelection?: boolean
   showSelectionColumn?: boolean
   editable?: boolean

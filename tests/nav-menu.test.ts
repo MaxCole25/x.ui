@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
+import { describe, expect, it, vi } from 'vitest'
 import { XNavMenu } from '../src'
 import type { NavMenuItem } from '../src'
 
@@ -53,6 +54,48 @@ function findTriggerByText(wrapper: ReturnType<typeof mount>, text: string) {
   }
 
   return trigger
+}
+
+function findMenuItemByTriggerText(wrapper: ReturnType<typeof mount>, text: string) {
+  const item = wrapper.findAll('.x-nav-menu-item').find((menuItem) => {
+    const trigger = menuItem.element.querySelector(':scope > .x-nav-menu-item__trigger')
+    return trigger?.textContent?.includes(text) || trigger?.getAttribute('title')?.includes(text)
+  })
+
+  if (!item) {
+    throw new Error(`找不到菜单项：${text}`)
+  }
+
+  return item
+}
+
+function findBodyMenuItemByTriggerText(text: string) {
+  const item = Array.from(document.body.querySelectorAll<HTMLElement>('.x-nav-menu-item')).find((menuItem) => {
+    const trigger = menuItem.querySelector(':scope > .x-nav-menu-item__trigger')
+    return trigger?.textContent?.includes(text) || trigger?.getAttribute('title')?.includes(text)
+  })
+
+  if (!item) {
+    throw new Error(`找不到 body 菜单项：${text}`)
+  }
+
+  return item
+}
+
+function findBodySubmenuByText(text: string) {
+  const submenu = Array.from(document.body.querySelectorAll<HTMLElement>('.x-nav-menu-submenu')).find((item) =>
+    item.textContent?.includes(text)
+  )
+
+  if (!submenu) {
+    throw new Error(`找不到 body 子菜单：${text}`)
+  }
+
+  return submenu
+}
+
+function dispatchMouseEvent(element: HTMLElement, type: string, relatedTarget?: HTMLElement) {
+  element.dispatchEvent(new MouseEvent(type, { cancelable: true, relatedTarget }))
 }
 
 describe('XNavMenu', () => {
@@ -193,6 +236,156 @@ describe('XNavMenu', () => {
     expect(wrapper.classes()).toContain('x-nav-menu--horizontal')
     expect(wrapper.classes()).toContain('is-scrollable')
     expect(wrapper.attributes('style')).toContain('--x-nav-menu-max-height: 20rem')
+  })
+
+  it('keeps horizontal nested popup submenu alive when pointer enters child submenu', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const wrapper = mount(XNavMenu, {
+        props: {
+          items,
+          mode: 'horizontal'
+        }
+      })
+
+      await findMenuItemByTriggerText(wrapper, '系统管理').trigger('mouseenter')
+      await nextTick()
+      await findMenuItemByTriggerText(wrapper, '角色管理').trigger('mouseenter')
+      await nextTick()
+
+      const roleItem = findMenuItemByTriggerText(wrapper, '角色管理')
+      const roleSubmenu = roleItem.find('.x-nav-menu-submenu')
+
+      expect(wrapper.text()).toContain('角色列表')
+
+      await roleItem.trigger('mouseleave')
+      await roleSubmenu.trigger('mouseenter')
+      await vi.advanceTimersByTimeAsync(200)
+      await nextTick()
+
+      expect(wrapper.text()).toContain('角色列表')
+      expect(findMenuItemByTriggerText(wrapper, '角色管理').classes()).toContain('is-open')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps collapsed vertical nested popup submenu alive when pointer enters child submenu', async () => {
+    vi.useFakeTimers()
+
+    try {
+      const wrapper = mount(XNavMenu, {
+        props: {
+          items,
+          mode: 'vertical',
+          collapsed: true,
+          allowCollapse: true
+        }
+      })
+
+      await findMenuItemByTriggerText(wrapper, '系统管理').trigger('mouseenter')
+      await nextTick()
+      await findMenuItemByTriggerText(wrapper, '角色管理').trigger('mouseenter')
+      await nextTick()
+
+      const roleItem = findMenuItemByTriggerText(wrapper, '角色管理')
+      const roleSubmenu = roleItem.find('.x-nav-menu-submenu')
+
+      expect(wrapper.text()).toContain('角色列表')
+
+      await roleItem.trigger('mouseleave')
+      await roleSubmenu.trigger('mouseenter')
+      await vi.advanceTimersByTimeAsync(200)
+      await nextTick()
+
+      expect(wrapper.text()).toContain('角色列表')
+      expect(findMenuItemByTriggerText(wrapper, '角色管理').classes()).toContain('is-open')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps teleported collapsed vertical nested popup submenu alive while pointer crosses the gap', async () => {
+    vi.useFakeTimers()
+
+    const wrapper = mount(XNavMenu, {
+      attachTo: document.body,
+      props: {
+        items,
+        mode: 'vertical',
+        collapsed: true,
+        allowCollapse: true,
+        appendToBody: true
+      }
+    })
+
+    try {
+      await findMenuItemByTriggerText(wrapper, '系统管理').trigger('mouseenter')
+      await nextTick()
+
+      const roleItem = findBodyMenuItemByTriggerText('角色管理')
+      dispatchMouseEvent(roleItem, 'mouseenter')
+      await nextTick()
+
+      const systemSubmenu = findBodySubmenuByText('角色管理')
+      const roleSubmenu = findBodySubmenuByText('角色列表')
+
+      expect(document.body.textContent).toContain('角色列表')
+
+      dispatchMouseEvent(roleSubmenu, 'mouseenter')
+      dispatchMouseEvent(systemSubmenu, 'mouseleave', roleSubmenu)
+      await vi.advanceTimersByTimeAsync(500)
+      await nextTick()
+
+      expect(document.body.textContent).toContain('角色列表')
+
+      dispatchMouseEvent(roleSubmenu, 'mouseleave')
+      await vi.advanceTimersByTimeAsync(500)
+      await nextTick()
+
+      expect(document.body.textContent).not.toContain('角色列表')
+    } finally {
+      wrapper.unmount()
+      document.body.innerHTML = ''
+      vi.useRealTimers()
+    }
+  })
+
+  it('closes teleported collapsed vertical popup path after selecting a leaf item', async () => {
+    const wrapper = mount(XNavMenu, {
+      attachTo: document.body,
+      props: {
+        items,
+        mode: 'vertical',
+        collapsed: true,
+        allowCollapse: true,
+        appendToBody: true
+      }
+    })
+
+    try {
+      await findMenuItemByTriggerText(wrapper, '系统管理').trigger('mouseenter')
+      await nextTick()
+
+      dispatchMouseEvent(findBodyMenuItemByTriggerText('角色管理'), 'mouseenter')
+      await nextTick()
+
+      expect(document.body.textContent).toContain('角色列表')
+
+      findBodyMenuItemByTriggerText('角色列表')
+        .querySelector<HTMLElement>(':scope > .x-nav-menu-item__trigger')
+        ?.click()
+      await nextTick()
+
+      const selectEvents = wrapper.emitted('select') ?? []
+      expect(selectEvents[selectEvents.length - 1]).toEqual(['role-list'])
+      expect(document.body.textContent).not.toContain('角色列表')
+      expect(document.body.textContent).not.toContain('角色管理')
+    } finally {
+      wrapper.unmount()
+      document.body.innerHTML = ''
+    }
   })
 
   it('collapses sibling submenus when accordion is enabled', async () => {

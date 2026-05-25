@@ -61,6 +61,9 @@ const parentState = reactive({
   autoHeight: false,
   fillHeight: true,
   selectable: true,
+  showActions: true,
+  actionsFixed: true,
+  actionsWidth: 160,
   showSelectionColumn: true,
   editable: false,
   columnResizable: true,
@@ -232,6 +235,25 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
             <span>表格可选</span>
             <XSwitch v-model="parentState.selectable" size="sm" />
           </div>
+          <div class="table-story__control-item">
+            <span>操作列</span>
+            <XSwitch v-model="parentState.showActions" size="sm" />
+          </div>
+          <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.showActions }">
+            <span>操作列冻结</span>
+            <XSwitch v-model="parentState.actionsFixed" size="sm" :disabled="!parentState.showActions" />
+          </div>
+          <label>
+            <span>操作列宽度</span>
+            <input
+              v-model.number="parentState.actionsWidth"
+              type="number"
+              min="96"
+              max="260"
+              step="8"
+              :disabled="!parentState.showActions"
+            />
+          </label>
           <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.selectable }">
             <span>选择模式</span>
             <XRadio
@@ -434,6 +456,9 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
             :columns="columns"
             row-key="id"
             :fill-height="parentState.fillHeight"
+            :show-actions="parentState.showActions"
+            :actions-fixed="parentState.actionsFixed"
+            :actions-width="parentState.actionsWidth"
             :show-selection="parentState.selectable"
             :show-selection-column="parentState.showSelectionColumn"
             :editable="parentState.editable"
@@ -504,6 +529,13 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
                 @update:model-value="updateModelValue"
                 @change="commitValue"
               />
+            </template>
+
+            <template #row-actions="{ row }">
+              <div class="table-story__actions">
+                <button type="button" @click.stop="rowEventText = `查看 ${row.component}`">查看</button>
+                <button type="button" @click.stop="rowEventText = `编辑 ${row.component}`">编辑</button>
+              </div>
             </template>
 
             <template #bottom="{ data, visibleData, pagination }">
@@ -666,6 +698,23 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
 .table-story__event {
   color: #64748b;
   font-size: 13px;
+}
+
+.table-story__actions {
+  display: inline-flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.table-story__actions button {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 4px;
+  color: #1d4ed8;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 8px;
 }
 
 .table-story__count-editor {
