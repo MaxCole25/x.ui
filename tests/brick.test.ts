@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { XBrick, XBrickItem } from '../src'
+import { XBrick, XBrickItem, XButton } from '../src'
 
 describe('XBrick', () => {
   it('uses horizontal direction by default', () => {
@@ -38,7 +38,7 @@ describe('XBrick', () => {
     expect(wrapper.classes()).toContain('is-wrap')
   })
 
-  it('uses a transparent brick background by default and allows overriding it', () => {
+  it('uses a private brick background variable without writing element background by default', () => {
     const defaultWrapper = mount(XBrick)
     const customWrapper = mount(XBrick, {
       props: {
@@ -46,8 +46,10 @@ describe('XBrick', () => {
       }
     })
 
-    expect(defaultWrapper.attributes('style')).toContain('--x-element-bg: transparent')
-    expect(customWrapper.attributes('style')).toContain('--x-element-bg: #f0fdf4')
+    expect(defaultWrapper.attributes('style')).not.toContain('--x-element-bg')
+    expect(defaultWrapper.attributes('style')).not.toContain('--x-brick-bg')
+    expect(customWrapper.attributes('style')).toContain('--x-brick-bg: #f0fdf4')
+    expect(customWrapper.attributes('style')).not.toContain('--x-element-bg')
   })
 
   it('renders count placeholders when default slot is empty', () => {
@@ -289,8 +291,32 @@ describe('XBrick', () => {
       `
     })
 
-    expect(wrapper.find('.x-brick').attributes('style')).toContain('--x-element-bg: #123456')
+    expect(wrapper.find('.x-brick').attributes('style')).toContain('--x-brick-bg: #123456')
+    expect(wrapper.find('.x-brick').attributes('style')).not.toContain('--x-element-bg')
     expect(wrapper.find('.x-brick-item').attributes('style')).toContain('background-color: transparent')
+  })
+
+  it('does not pass brick background variables into slotted buttons', () => {
+    const wrapper = mount({
+      components: {
+        XBrick,
+        XButton
+      },
+      template: `
+        <XBrick background-color="transparent">
+          <XButton>进入</XButton>
+        </XBrick>
+      `
+    })
+
+    const brickStyle = wrapper.find('.x-brick').attributes('style')
+    const button = wrapper.find('.x-button')
+    const buttonStyle = button.attributes('style')
+
+    expect(button.classes()).toContain('x-button--solid')
+    expect(brickStyle).toContain('--x-brick-bg: transparent')
+    expect(brickStyle).not.toContain('--x-element-bg')
+    expect(buttonStyle).not.toContain('--x-element-bg')
   })
 
   it('lets brick item alignment and padding override brick defaults', () => {

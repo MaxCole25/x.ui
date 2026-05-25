@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Comment, computed, inject, provide, useSlots } from 'vue'
-import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { toCssSize } from '../../../_utils/elementStyle'
 import { brickContentLayoutKey, brickDirectionKey, brickGroupLayoutKey } from './types'
 import type { CSSProperties, VNode } from 'vue'
 import type { BrickProps } from './types'
@@ -13,7 +13,6 @@ const props = withDefaults(defineProps<BrickProps>(), {
   direction: 'horizontal',
   count: 0,
   gap: 0,
-  backgroundColor: 'transparent',
   wrap: false,
   verticalCenter: undefined,
   horizontalCenter: undefined,
@@ -62,7 +61,10 @@ const hasDefaultContent = computed(() => visibleSlotNodes.value.length > 0)
 const placeholderCount = computed(() => Math.max(0, Math.floor(Number(props.count) || 0)))
 
 const brickStyle = computed(() => ({
-  ...createElementStyleVars(props),
+  '--x-element-border-width': toCssSize(props.borderWidth),
+  '--x-element-border-color': props.borderColor,
+  '--x-element-text': props.textColor,
+  '--x-brick-bg': props.backgroundColor,
   '--x-brick-gap': toCssSize(props.gap),
   '--x-brick-width': toCssSize(props.width),
   '--x-brick-height': toCssSize(props.height),

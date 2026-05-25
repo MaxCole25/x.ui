@@ -424,17 +424,18 @@ describe('XTable', () => {
     expect(controlRules).toContain('background: var(--x-table-control-bg, #fff);')
     expect(controlRules).toContain('border: 1px solid var(--x-table-control-border-color, #cbd5e1);')
     expect(controlRules).toContain('color: var(--x-table-control-text-color, #334155);')
-    expect(controlRules).toContain('background: var(--x-table-control-hover-bg, #f8fafc);')
-    expect(controlRules).toContain('border-color: var(--x-table-control-hover-border-color, #94a3b8);')
-    expect(controlRules).toContain('color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));')
-    expect(controlRules).toContain('background: var(--x-table-control-disabled-bg, #f1f5f9);')
-    expect(controlRules).toContain('color: var(--x-table-control-disabled-text-color, #94a3b8);')
+    expect(controlRules).toContain('background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));')
+    expect(controlRules).toContain('border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));')
+    expect(controlRules).toContain('color: var(--x-table-control-hover-text-color, var(--x-color-primary));')
+    expect(controlRules).toContain('background: var(--x-table-control-disabled-bg, var(--x-color-disabled-bg));')
+    expect(controlRules).toContain('color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));')
     expect(controlRules).toContain('color: var(--x-table-pagination-text-color, #475569);')
     expect(controlRules).toContain('color: var(--x-table-pagination-current-text-color, #334155);')
     expect(controlRules).not.toMatch(/(?:background|border|border-color|color):\s*(#fff|#cbd5e1|#334155|#475569|#f1f5f9|#94a3b8)\b/)
 
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #ffffff);')
     expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, #e0ecff);')
+    expect(globalStyles).toContain('--x-table-control-disabled-bg: var(--x-color-disabled-bg);')
     expect(globalStyles).toContain('--x-table-pagination-current-text-color: var(--x-color-text, #334155);')
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #0b1726);')
     expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, rgba(59, 130, 246, 0.16));')
@@ -474,6 +475,8 @@ describe('XTable', () => {
     expect(wrapper.text()).toContain('工作台')
     expect(wrapper.text()).not.toContain('权限中心')
     expect(wrapper.find('.page-scope').text()).toBe('1-2')
+    expect(wrapper.find('[aria-label="第 1 页"]').attributes('aria-current')).toBe('page')
+    expect(wrapper.find('[aria-label="第 2 页"]').exists()).toBe(true)
 
     await wrapper.find('[aria-label="下一页"]').trigger('click')
     await nextTick()
@@ -488,6 +491,36 @@ describe('XTable', () => {
     })
     expect(wrapper.findAll('.x-table__row--body')).toHaveLength(1)
     expect(wrapper.text()).toContain('权限中心')
+  })
+
+  it('renders numeric pagination items with ellipsis and supports direct page jumps', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showPagination: true,
+        paginationMode: 'server',
+        currentPage: 5,
+        pageSize: 10,
+        total: 200
+      }
+    })
+
+    expect(wrapper.find('[aria-label="第 1 页"]').exists()).toBe(true)
+    expect(wrapper.find('[aria-label="第 5 页"]').attributes('aria-current')).toBe('page')
+    expect(wrapper.find('[aria-label="第 20 页"]').exists()).toBe(true)
+    expect(wrapper.find('.x-table__page-ellipsis').exists()).toBe(true)
+
+    await wrapper.find('[aria-label="第 6 页"]').trigger('click')
+
+    expect(wrapper.emitted('update:currentPage')?.[0]?.[0]).toBe(6)
+    expect(wrapper.emitted('pagination-change')?.[0]?.[0]).toMatchObject({
+      currentPage: 6,
+      pageSize: 10,
+      total: 200,
+      pageCount: 20,
+      mode: 'server'
+    })
   })
 
   it('supports server pagination without slicing the provided page data', async () => {
@@ -836,6 +869,7 @@ describe('XTable', () => {
     const fillHeightSummaryRule = getCssRule(source, '.x-table.is-fill-height .x-table__row--summary')
 
     expect(source).toContain('.x-table.is-fill-height {\n  align-content: stretch;')
+    expect(source).toContain('  min-height: 0;\n}\n\n.x-table.is-fill-height > .x-table__top {')
     expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__viewport {\n  grid-row: 2;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__bottom {\n  grid-row: 3;')

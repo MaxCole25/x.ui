@@ -247,7 +247,17 @@ export type { TextProps, TextSize, TextType } from './components/basic-component
 export type { TooltipPlacement, TooltipProps, TooltipTrigger } from './components/feedback-components/tooltip'
 export type { TimePickerProps } from './components/form-components/time-picker'
 export type { TimeSelectProps } from './components/form-components/time-select'
-export type { TreeContextAction, TreeNodeData, TreeProps } from './components/display-components/tree'
+export type {
+  TreeContextAction,
+  TreeContextMenuContext,
+  TreeContextMenuItem,
+  TreeContextMenuItems,
+  TreeCreateNode,
+  TreeCreateRootNode,
+  TreeDeleteNode,
+  TreeNodeData,
+  TreeProps
+} from './components/display-components/tree'
 
 const components = [
   XButton,

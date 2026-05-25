@@ -67,6 +67,7 @@ const state = reactive({
   mode: 'vertical' as NavMenuMode,
   hidden: false,
   collapsed: false,
+  appendToBody: false,
   activeKey: 'dashboard',
   textColor: '#334e68',
   activeTextColor: '#ffffff',
@@ -106,6 +107,11 @@ function handleSelect(key: string) {
           <label class="menu-check">
             <input v-model="state.collapsed" type="checkbox" />
             <span>收起纵向菜单</span>
+          </label>
+
+          <label class="menu-check">
+            <input v-model="state.appendToBody" type="checkbox" />
+            <span>挂载到 body</span>
           </label>
 
           <label class="menu-check">
@@ -161,6 +167,7 @@ function handleSelect(key: string) {
             :mode="state.mode"
             :hidden="state.hidden"
             :collapsed="state.collapsed"
+            :append-to-body="state.appendToBody"
             :allow-collapse="true"
             :scrollable="state.scrollable"
             :max-height="state.maxHeight"

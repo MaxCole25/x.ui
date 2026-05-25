@@ -82,9 +82,9 @@
 | `width` | 按钮组宽度，数字按 px 处理 | `number \| string` | 自适应内容 |
 | `height` | 按钮组高度，数字按 px 处理 | `number \| string` | 自适应内容 |
 | `radius` | 按钮组外侧圆角，数字按 px 处理 | `number \| string` | `6px` |
-| `borderColor` | 传递给组内按钮的边框色 | `string` | 按按钮类型决定 |
-| `backgroundColor` | 传递给组内按钮的背景色 | `string` | 按按钮类型决定 |
-| `textColor` | 传递给组内按钮的文字色 | `string` | 按按钮类型决定 |
+| `borderColor` | 通过按钮级变量传递给组内按钮的边框色 | `string` | 按按钮类型决定 |
+| `backgroundColor` | 通过按钮级变量传递给组内按钮的背景色 | `string` | 按按钮类型决定 |
+| `textColor` | 通过按钮级变量传递给组内按钮的文字色 | `string` | 按按钮类型决定 |
 | `borderWidth` | 传递给组内按钮的边框宽度，数字按 px 处理 | `number \| string` | `1px` |
 
 ## Slots

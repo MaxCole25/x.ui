@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { toCssSize } from '../../../_utils/elementStyle'
 import type { ButtonGroupProps } from './types'
 
 defineOptions({
@@ -12,7 +12,10 @@ const props = withDefaults(defineProps<ButtonGroupProps>(), {
 })
 
 const groupStyle = computed(() => ({
-  ...createElementStyleVars(props),
+  '--x-element-border-width': toCssSize(props.borderWidth),
+  '--x-button-border-color': props.borderColor,
+  '--x-button-bg': props.backgroundColor,
+  '--x-button-text': props.textColor,
   '--x-button-group-width': toCssSize(props.width),
   '--x-button-group-height': toCssSize(props.height),
   '--x-button-group-radius': toCssSize(props.radius)

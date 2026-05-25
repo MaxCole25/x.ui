@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { toCssSize } from '../../../_utils/elementStyle'
 import { componentSizePreset } from '../../../_utils/size'
 import type { ButtonProps } from './types'
 
@@ -26,12 +26,15 @@ const resolveSizeStyle = (customValue: number | string | undefined, presetValue:
   toCssSize(usesExplicitSize.value ? presetValue : customValue ?? presetValue)
 
 const buttonStyle = computed(() => ({
-  ...createElementStyleVars(props),
+  '--x-element-border-width': toCssSize(props.borderWidth),
   '--x-button-width': toCssSize(props.width),
   '--x-button-height': resolveSizeStyle(props.height, sizePreset.value.height),
   '--x-button-font-size': resolveSizeStyle(props.fontSize, sizePreset.value.fontSize),
   '--x-button-padding': resolveSizeStyle(props.padding, sizePreset.value.padding),
   '--x-button-radius': resolveSizeStyle(props.radius, sizePreset.value.radius),
+  '--x-button-bg': props.backgroundColor,
+  '--x-button-text': props.textColor,
+  '--x-button-border-color': props.borderColor,
   '--x-button-active-bg': props.activeBackgroundColor,
   '--x-button-active-border-color': props.activeBorderColor,
   '--x-button-active-text': props.activeTextColor

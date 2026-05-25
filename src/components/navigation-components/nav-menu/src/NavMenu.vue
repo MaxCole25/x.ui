@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<NavMenuProps>(), {
   collapsed: false,
   allowCollapse: false,
   hidden: false,
+  appendToBody: false,
   scrollable: false,
   accordion: false,
   textColor: 'var(--x-color-text)',
@@ -265,6 +266,8 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
         :active-key="props.activeKey"
         :mode="props.mode"
         :collapsed="isCollapsed"
+        :append-to-body="props.appendToBody"
+        :menu-style-vars="navMenuStyleVars"
         :open-keys="currentOpenKeys"
         @select="handleSelect"
         @toggle-open="handleToggleOpen"

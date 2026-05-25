@@ -173,6 +173,7 @@ const paginationState = computed<TablePaginationState>(() => ({
   pageCount: paginationPageCount.value,
   mode: normalizedPaginationMode.value
 }))
+const paginationPageItems = computed(() => createPaginationPageItems(normalizedCurrentPage.value, paginationPageCount.value))
 const isPaginationVisible = computed(() => props.showPagination)
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
@@ -2045,6 +2046,39 @@ function clampPage(page: number) {
   return Math.min(next, paginationPageCount.value)
 }
 
+function createPaginationPageItems(currentPage: number, pageCount: number) {
+  if (pageCount <= 7) {
+    return Array.from({ length: pageCount }, (_, index) => index + 1)
+  }
+
+  const pages: Array<number | 'ellipsis'> = [1]
+  let start = currentPage - 1
+  let end = currentPage + 1
+
+  if (currentPage <= 4) {
+    start = 2
+    end = 5
+  } else if (currentPage >= pageCount - 3) {
+    start = pageCount - 4
+    end = pageCount - 1
+  }
+
+  if (start > 2) {
+    pages.push('ellipsis')
+  }
+
+  for (let page = Math.max(2, start); page <= Math.min(pageCount - 1, end); page += 1) {
+    pages.push(page)
+  }
+
+  if (end < pageCount - 1) {
+    pages.push('ellipsis')
+  }
+
+  pages.push(pageCount)
+  return pages
+}
+
 function emitPaginationChange(page: number, pageSize: number, pageSizeChanged = false) {
   const payload: TablePaginationChangePayload = {
     currentPage: page,
@@ -3276,6 +3310,22 @@ defineExpose({
         >
           上一页
         </button>
+        <div class="x-table__page-numbers" aria-label="页码">
+          <template v-for="(item, index) in paginationPageItems" :key="`${item}-${index}`">
+            <span v-if="item === 'ellipsis'" class="x-table__page-ellipsis">...</span>
+            <button
+              v-else
+              class="x-table__page-button x-table__page-number"
+              :class="{ 'is-active': item === paginationState.currentPage }"
+              type="button"
+              :aria-current="item === paginationState.currentPage ? 'page' : undefined"
+              :aria-label="`第 ${item} 页`"
+              @click="setPage(item)"
+            >
+              {{ item }}
+            </button>
+          </template>
+        </div>
         <span class="x-table__page-current">
           {{ paginationState.currentPage }} / {{ paginationState.pageCount }}
         </span>
@@ -3589,6 +3639,7 @@ defineExpose({
   align-content: stretch;
   grid-template-rows: auto minmax(0, 1fr) auto;
   height: 100%;
+  min-height: 0;
 }
 
 .x-table.is-fill-height > .x-table__top {
@@ -3664,9 +3715,9 @@ defineExpose({
 
 .x-table__column-settings-button:hover,
 .x-table__toolbar-icon-button:hover:not(:disabled) {
-  background: var(--x-table-control-hover-bg, #f8fafc);
-  border-color: var(--x-table-control-hover-border-color, #94a3b8);
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
+  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
+  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
 }
 
 .x-table__toolbar-icon-button--danger:hover:not(:disabled) {
@@ -3883,9 +3934,9 @@ defineExpose({
 }
 
 .x-table__column-settings-footer-button:hover {
-  background: var(--x-table-control-hover-bg, #f8fafc);
-  border-color: var(--x-table-control-hover-border-color, #94a3b8);
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
+  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
+  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
 }
 
 .x-table__column-settings-footer-button.is-primary {
@@ -3947,16 +3998,39 @@ defineExpose({
   padding: var(--x-table-cell-padding, 0 8px);
 }
 
+.x-table__page-numbers {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.x-table__page-number {
+  min-width: var(--x-table-row-height, 30px);
+}
+
+.x-table__page-number.is-active {
+  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
+  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
+  font-weight: 700;
+}
+
+.x-table__page-ellipsis {
+  color: var(--x-table-pagination-text-color, #475569);
+  padding: 0 2px;
+}
+
 .x-table__page-size-select:hover,
 .x-table__page-button:hover:not(:disabled) {
-  background: var(--x-table-control-hover-bg, #f8fafc);
-  border-color: var(--x-table-control-hover-border-color, #94a3b8);
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
+  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
+  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
 }
 
 .x-table__page-button:disabled {
-  background: var(--x-table-control-disabled-bg, #f1f5f9);
-  color: var(--x-table-control-disabled-text-color, #94a3b8);
+  background: var(--x-table-control-disabled-bg, var(--x-color-disabled-bg));
+  color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));
   cursor: not-allowed;
 }
 
@@ -4239,7 +4313,7 @@ defineExpose({
 .x-table__context-menu-shortcut {
   background: transparent;
   border: 0;
-  color: var(--x-table-control-disabled-text-color, #94a3b8);
+  color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));
   flex: 0 0 auto;
   font: inherit;
   font-size: calc(var(--x-table-font-size, 12px) - 1px);
@@ -4249,14 +4323,14 @@ defineExpose({
 
 .x-table__context-menu-item:hover,
 .x-table__context-menu-item:focus-visible {
-  background: var(--x-table-control-hover-bg, #f8fafc);
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary, #155e75));
+  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
+  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
   outline: none;
 }
 
 .x-table__context-menu-item:disabled {
   background: transparent;
-  color: var(--x-table-control-disabled-text-color, #94a3b8);
+  color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));
   cursor: not-allowed;
 }
 

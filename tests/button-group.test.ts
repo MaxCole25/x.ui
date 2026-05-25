@@ -30,7 +30,7 @@ describe('XButtonGroup', () => {
     expect(wrapper.classes()).toContain('x-button-group--vertical')
   })
 
-  it('maps width, height, radius and element styles to style variables', () => {
+  it('maps width, height, radius and button styles to style variables', () => {
     const wrapper = mount(XButtonGroup, {
       props: {
         width: 320,
@@ -47,9 +47,11 @@ describe('XButtonGroup', () => {
     expect(style).toContain('--x-button-group-width: 320px')
     expect(style).toContain('--x-button-group-height: 96px')
     expect(style).toContain('--x-button-group-radius: 10px')
-    expect(style).toContain('--x-element-border-color: #123456')
-    expect(style).toContain('--x-element-bg: #ffffff')
-    expect(style).toContain('--x-element-text: #1264f4')
+    expect(style).toContain('--x-button-border-color: #123456')
+    expect(style).toContain('--x-button-bg: #ffffff')
+    expect(style).toContain('--x-button-text: #1264f4')
+    expect(style).not.toContain('--x-element-bg')
+    expect(style).not.toContain('--x-element-text')
   })
 
   it('keeps slotted button click events working', async () => {

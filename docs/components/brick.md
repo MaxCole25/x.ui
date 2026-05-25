@@ -89,7 +89,7 @@ import 'x.ui/style.css'
 | horizontalCenter | 是否让内部容器内容水平居中 | `boolean` | `false` |
 | bottomAlign | 是否让内部容器内容下对齐，优先级高于 `verticalCenter` | `boolean` | `false` |
 | rightAlign | 是否让直接子区块整体靠右排列；横向分隔时未设置主轴尺寸的子区块会按内容收缩 | `boolean` | `false` |
-| backgroundColor | 外层背景色，会通过 CSS 变量写到 `XBrick` 自身 | `string` | `'transparent'` |
+| backgroundColor | 外层背景色，会通过 `--x-brick-bg` 写到 `XBrick` 自身，不会向子组件写入通用背景变量 | `string` | `undefined`，默认显示为透明 |
 | textColor | 内部容器文字颜色，会通过 CSS 变量传递给 `XBrickItem` | `string` | `undefined` |
 | padding | 内部容器默认内边距，支持数字像素或 CSS 长度 | `number \| string` | `undefined` |
 

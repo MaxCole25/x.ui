@@ -26,6 +26,7 @@
 | disabled | 是否禁用 | `boolean` | `false` |
 | hideOnClick | 点击菜单项后是否隐藏 | `boolean` | `true` |
 | showArrow | 是否显示箭头 | `boolean` | `true` |
+| appendToBody | 是否将弹层挂载到 `body`，模板中使用 `append-to-body` | `boolean` | `false` |
 | offset | 弹层偏移长度 | `number \| string` | `6` |
 | popperWidth | 弹层宽度 | `number \| string` | `max-content` |
 | popperZIndex | 弹层层级 | `number` | `2000` |

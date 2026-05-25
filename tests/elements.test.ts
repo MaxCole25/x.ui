@@ -123,8 +123,21 @@ describe('元素组件', () => {
       backgroundColor: '#ecfeff',
       textColor: '#164e63'
     }
+    const buttonWrapper = mount(XButton, {
+      props: appearanceProps,
+      slots: {
+        default: '按钮'
+      }
+    })
+    const buttonStyle = buttonWrapper.attributes('style')
+
+    expect(buttonStyle).toContain('--x-element-border-width: 3px')
+    expect(buttonStyle).toContain('--x-button-border-color: #155e75')
+    expect(buttonStyle).toContain('--x-button-bg: #ecfeff')
+    expect(buttonStyle).toContain('--x-button-text: #164e63')
+    expect(buttonStyle).not.toContain('--x-element-bg')
+
     const cases = [
-      [XButton, { slots: { default: '按钮' } }],
       [XInput, { props: { modelValue: '输入' } }],
       [XSelect, { props: { modelValue: 'vue', options: [{ label: 'Vue', value: 'vue' }] } }],
       [XCheckbox, { props: { modelValue: true }, slots: { default: '复选' } }],

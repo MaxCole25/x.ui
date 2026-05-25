@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import TreeNode from './TreeNode.vue'
 import { componentSizePreset } from '../../../_utils/size'
-import type { TreeContextAction, TreeNodeData, TreeNodeIcon, TreeProps } from './types'
+import type { TreeContextAction, TreeContextMenuItem, TreeNodeData, TreeNodeIcon, TreeProps } from './types'
 
 defineOptions({ name: 'XTree' })
 
 const props = withDefaults(defineProps<TreeProps>(), {
-    currentTreeKey: '',
-    currentUserId: null,
-    activeColor: '#2f66cf',
-    textColor: 'var(--x-color-text, #121826)',
-    mutedColor: 'var(--x-color-muted, #606b7d)',
-    hoverBgColor: 'var(--x-color-primary-soft, #f5f8fb)',
-    activeBgColor: 'rgba(14, 116, 144, 0.12)',
-    activeTextColor: 'var(--x-color-text, #121826)',
-    allowDrag: () => true,
+  currentTreeKey: '',
+  currentUserId: null,
+  activeColor: '#2f66cf',
+  textColor: 'var(--x-color-text, #121826)',
+  mutedColor: 'var(--x-color-muted, #606b7d)',
+  hoverBgColor: 'var(--x-color-primary-soft, #f5f8fb)',
+  activeBgColor: 'rgba(14, 116, 144, 0.12)',
+  activeTextColor: 'var(--x-color-text, #121826)',
+  allowDrag: () => true,
   allowDrop: () => true,
   canCreateChildByNode: () => true,
   canDeleteNodeById: () => true,
@@ -34,6 +34,24 @@ const draggingNode = ref<TreeNodeData | null>(null)
 const expandedState = ref<Record<string, boolean>>({})
 const contextMenu = reactive({ visible: false, x: 0, y: 0, node: null as TreeNodeData | null })
 const localIdSeed = ref(100000)
+const defaultContextMenuItems = computed<TreeContextMenuItem[]>(() => {
+  const items: TreeContextMenuItem[] = [{ action: 'new-root', label: '增加根节点' }]
+  if (contextMenu.node && props.canCreateChildByNode(contextMenu.node)) {
+    items.push({ action: 'new-child', label: '新建节点' })
+  }
+  if (contextMenu.node && canDeleteCurrentNode()) {
+    items.push({ action: 'delete-node', label: '删除节点', tone: 'danger' })
+  }
+  return items
+})
+const resolvedContextMenuItems = computed(() => {
+  const context = { node: contextMenu.node, treeData: props.treeData }
+  const items = typeof props.contextMenuItems === 'function'
+    ? props.contextMenuItems(context)
+    : props.contextMenuItems ?? defaultContextMenuItems.value
+
+  return items.filter((item) => item.visible !== false)
+})
 
 watch(
   () => props.currentTreeKey,
@@ -76,37 +94,86 @@ function closeContextMenu() {
   contextMenu.visible = false
   contextMenu.node = null
 }
+function createDraftNode(label: string): TreeNodeData {
+  const rawId = localIdSeed.value
+  localIdSeed.value += 1
+  return {
+    id: `new-${rawId}`,
+    rawId,
+    label,
+    type: 'document',
+    isEditing: true
+  }
+}
+
+function createDefaultRootNode() {
+  const newNode = createDraftNode('新建节点')
+  props.treeData.push(newNode)
+  return newNode
+}
+
+function createDefaultChildNode(parent: TreeNodeData) {
+  const newNode = createDraftNode('新建节点')
+  parent.children = parent.children || []
+  parent.children.push(newNode)
+  setExpanded(String(parent.id), true)
+  return newNode
+}
+
+function deleteDefaultNode(target: TreeNodeData) {
+  return removeNode(props.treeData, target)
+}
+
+function removeNode(nodes: TreeNodeData[], target: TreeNodeData): TreeNodeData | null {
+  for (let index = 0; index < nodes.length; index += 1) {
+    const node = nodes[index]
+    if (node === target || node.id === target.id) {
+      return nodes.splice(index, 1)[0]
+    }
+    if (node.children?.length) {
+      const removed = removeNode(node.children, target)
+      if (removed) return removed
+    }
+  }
+  return null
+}
+
 function handleContextAction(action: TreeContextAction) {
   if (action === 'new-root') {
-    const newNode: TreeNodeData = {
-      id: `new-${localIdSeed.value}`,
-      rawId: localIdSeed.value,
-      label: '新建节点',
-      type: 'document',
-      isEditing: true
+    const newNode = props.createRootNode ? props.createRootNode(props.treeData) : createDefaultRootNode()
+    if (!newNode) {
+      closeContextMenu()
+      return
     }
-    localIdSeed.value += 1
-    props.treeData.push(newNode)
     emit('contextAction', action, newNode)
     closeContextMenu()
     return
   }
 
-  if (!contextMenu.node) return
+  if (!contextMenu.node) {
+    closeContextMenu()
+    return
+  }
 
-  if (action === 'new-child') {
-    const parent = contextMenu.node
-    parent.children = parent.children || []
-    const newNode: TreeNodeData = {
-      id: `new-${localIdSeed.value}`,
-      rawId: localIdSeed.value,
-      label: '新建子节点',
-      type: 'document',
-      isEditing: true
+  if (action === 'new-node' || action === 'new-child') {
+    const newNode = props.createNode ? props.createNode(contextMenu.node) : createDefaultChildNode(contextMenu.node)
+    if (!newNode) {
+      closeContextMenu()
+      return
     }
-    localIdSeed.value += 1
-    parent.children.push(newNode)
     emit('contextAction', action, newNode)
+    closeContextMenu()
+    return
+  }
+
+  if (action === 'delete-node') {
+    const target = contextMenu.node
+    if (props.deleteNode) {
+      props.deleteNode(target, props.treeData)
+    } else {
+      deleteDefaultNode(target)
+    }
+    emit('contextAction', action, target)
     closeContextMenu()
     return
   }
@@ -126,6 +193,17 @@ function handleRename(node: TreeNodeData, label: string) {
 
 function canDeleteCurrentNode() {
   return props.canDeleteNodeById(contextMenu.node?.rawId ?? null)
+}
+
+function openContextMenu(event: MouseEvent, node: TreeNodeData | null = null) {
+  contextMenu.visible = true
+  contextMenu.x = event.clientX
+  contextMenu.y = event.clientY
+  contextMenu.node = node
+}
+
+function handleRootContextMenu(event: MouseEvent) {
+  openContextMenu(event)
 }
 
 function resolveNodeIcon(node: TreeNodeData): TreeNodeIcon {
@@ -160,7 +238,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
 </script>
 
 <template>
-  <div class="x-tree" :class="`x-tree--${props.size ?? 'md'}`" :style="resolveTreeStyle()">
+  <div class="x-tree" :class="`x-tree--${props.size ?? 'md'}`" :style="resolveTreeStyle()" @contextmenu.prevent.stop="handleRootContextMenu">
     <div v-if="!props.treeData.length" class="x-tree__empty">还没有数据</div>
     <TreeNode
       v-for="node in props.treeData"
@@ -176,14 +254,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
       :allow-drop="props.allowDrop"
       @node-click="emit('nodeClick', $event)"
       @node-drop="handleNodeDrop"
-      @node-contextmenu="
-        (event, nodeData) => {
-          contextMenu.visible = true
-          contextMenu.x = event.clientX
-          contextMenu.y = event.clientY
-          contextMenu.node = nodeData
-        }
-      "
+      @node-contextmenu="(event, nodeData) => openContextMenu(event, nodeData)"
       @drag-start="draggingNode = $event"
       @drag-end="draggingNode = null"
       @toggle="setExpanded"
@@ -192,30 +263,16 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
 
     <teleport to="body">
       <ul v-if="contextMenu.visible" class="x-tree-menu" :style="{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }">
-        <li class="x-tree-menu__item" @click.stop="handleContextAction('open')">打开</li>
-        <li class="x-tree-menu__item" @click.stop="handleContextAction('new-root')">增加根节点</li>
         <li
-          v-if="contextMenu.node && props.canCreateChildByNode(contextMenu.node)"
+          v-for="item in resolvedContextMenuItems"
+          :key="item.action"
           class="x-tree-menu__item"
-          @click.stop="handleContextAction('new-child')"
+          :class="{ 'is-danger': item.tone === 'danger', 'is-disabled': item.disabled }"
+          :aria-disabled="item.disabled ? 'true' : undefined"
+          @click.stop="!item.disabled && handleContextAction(item.action)"
         >
-          新建子节点
+          {{ item.label }}
         </li>
-        <li
-          v-if="contextMenu.node && props.canMigrateNode(contextMenu.node)"
-          class="x-tree-menu__item"
-          @click.stop="handleContextAction('migrate-node')"
-        >
-          节点迁移
-        </li>
-        <li
-          v-if="contextMenu.node && props.canManageMembersByNode(contextMenu.node)"
-          class="x-tree-menu__item"
-          @click.stop="handleContextAction('manage-members')"
-        >
-          管理成员
-        </li>
-        <li v-if="canDeleteCurrentNode()" class="x-tree-menu__item is-danger" @click.stop="handleContextAction('delete-node')">删除节点</li>
       </ul>
     </teleport>
   </div>

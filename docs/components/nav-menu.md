@@ -34,6 +34,8 @@ const items: NavMenuItem[] = [
 
 `scrollable` 只影响纵向菜单。传入 `max-height` 后，滚动条会出现在菜单自身区域，适合菜单项较多且外层容器高度受限的场景。
 
+纵向菜单收起后如果还需要弹出多级子菜单，建议同时开启 `append-to-body`。这样弹出层会挂载到 `body`，避免被菜单自身或外层滚动容器裁剪。
+
 ```vue
 <template>
   <XNavMenu
@@ -41,6 +43,7 @@ const items: NavMenuItem[] = [
     active-key="/security/roles"
     mode="vertical"
     scrollable
+    append-to-body
     :max-height="300"
   />
 </template>
@@ -122,6 +125,7 @@ const items: NavMenuItem[] = [
 | collapsed | 是否收起（仅纵向有效） | `boolean` | `false` |
 | allowCollapse | 是否启用收起能力 | `boolean` | `false` |
 | hidden | 是否隐藏菜单侧边栏区域 | `boolean` | `false` |
+| appendToBody | 是否将弹出子菜单挂载到 `body`，模板中使用 `append-to-body` | `boolean` | `false` |
 | scrollable | 是否启用菜单自身滚动（仅纵向有效） | `boolean` | `false` |
 | maxHeight | 菜单最大高度，传入数字时按 px 处理 | `number \| string` | `undefined` |
 | accordion | 是否启用同级仅展开一个子菜单（仅纵向非收起态有效） | `boolean` | `false` |

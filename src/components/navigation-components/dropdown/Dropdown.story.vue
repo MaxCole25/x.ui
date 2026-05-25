@@ -16,6 +16,7 @@ const appearance = reactive({
   disabled: false,
   hideOnClick: true,
   showArrow: true,
+  appendToBody: false,
   offset: 6,
   popperWidth: 160,
   popperZIndex: overlayZIndex.popper,
@@ -46,6 +47,7 @@ const appearance = reactive({
             :disabled="appearance.disabled"
             :hide-on-click="appearance.hideOnClick"
             :show-arrow="appearance.showArrow"
+            :append-to-body="appearance.appendToBody"
             :offset="appearance.offset"
             :popper-width="appearance.popperWidth"
             :popper-z-index="appearance.popperZIndex"
@@ -90,6 +92,7 @@ const appearance = reactive({
           <label class="story-check"><input v-model="appearance.disabled" type="checkbox" /><span>禁用</span></label>
           <label class="story-check"><input v-model="appearance.hideOnClick" type="checkbox" /><span>点击后隐藏</span></label>
           <label class="story-check"><input v-model="appearance.showArrow" type="checkbox" /><span>显示箭头</span></label>
+          <label class="story-check"><input v-model="appearance.appendToBody" type="checkbox" /><span>挂载到 body</span></label>
         </template>
         <template #events>
           <label><span>command 事件</span><input :value="appearance.command" type="text" readonly /></label>

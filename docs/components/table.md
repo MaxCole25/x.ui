@@ -278,12 +278,30 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 
 ## 撑满父元素
 
-父容器有明确高度时，可以开启 `fill-height`，让表格高度撑满父元素，表头、表底保持固定，数据区域在内部滚动。
+父容器有明确高度时，可以开启 `fill-height`，让表格高度撑满父元素，表头、表底保持固定，数据区域在内部滚动。`fill-height` 只负责表格填满已有高度容器；应用根节点和页面容器也需要形成完整高度链，否则滚动条可能落到 `body`、页签面板或页面 wrapper 上。
 
 ```vue
 <div style="height: 520px">
   <XTable :columns="columns" :data="rows" fill-height />
 </div>
+```
+
+后台壳应用常见写法：
+
+```css
+html,
+body,
+#app {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table-page {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
 ```
 
 ## Props
