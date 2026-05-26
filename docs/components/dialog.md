@@ -41,6 +41,7 @@ const visible = ref(false)
 | zIndex | 遮罩层级 | `number` | `1900` |
 | draggable | 是否允许拖拽 | `boolean` | `true` |
 | resizable | 是否允许右下角缩放 | `boolean` | `true` |
+| showFullscreen | 是否显示全屏切换图标按钮，点击后弹窗在当前浏览器页面视口内铺满显示 | `boolean` | `false` |
 | closeOnMaskClick | 点击遮罩是否关闭 | `boolean` | `true` |
 
 ## Events
@@ -69,7 +70,7 @@ const visible = ref(false)
 
 ## 手动验收建议
 
-1. 分别检查 `draggable`、`resizable` 开关，确认拖拽与缩放行为符合预期。
+1. 分别检查 `draggable`、`resizable`、`showFullscreen` 开关，确认拖拽、缩放和全屏切换行为符合预期。
 2. 验证 `closeOnMaskClick` 在 `true/false` 两种状态下的关闭行为。
 3. 在默认、`header`、`footer` 三个插槽中放入长文本和复杂表单，确认内容不溢出且移动端可滚动。
 

@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   maxHeight: 0,
   draggable: true,
   resizable: true,
+  showFullscreen: false,
   closeOnMaskClick: true,
   zIndex: overlayZIndex.dialog
 })
@@ -39,6 +40,7 @@ const popupWidth = ref(toPixelNumber(props.width, 920))
 const popupHeight = ref(toPixelNumber(props.height, 760))
 const popupLeft = ref(0)
 const popupTop = ref(0)
+const isFullscreen = ref(false)
 
 const dragState = reactive({
   active: false,
@@ -113,8 +115,12 @@ function onMaskClick() {
   }
 }
 
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value
+}
+
 function startDrag(event: MouseEvent) {
-  if (!props.draggable) {
+  if (!props.draggable || isFullscreen.value) {
     return
   }
   event.preventDefault()
@@ -140,7 +146,7 @@ function stopDrag() {
 }
 
 function startResize(event: MouseEvent) {
-  if (!props.resizable) {
+  if (!props.resizable || isFullscreen.value) {
     return
   }
   event.preventDefault()
@@ -188,6 +194,7 @@ watch(
       window.addEventListener('mouseup', stopResize)
       return
     }
+    isFullscreen.value = false
     stopDrag()
     stopResize()
     window.removeEventListener('mousemove', moveDrag)
@@ -196,6 +203,15 @@ watch(
     window.removeEventListener('mouseup', stopResize)
   },
   { immediate: true }
+)
+
+watch(
+  () => props.showFullscreen,
+  (value) => {
+    if (!value) {
+      isFullscreen.value = false
+    }
+  }
 )
 
 onBeforeUnmount(() => {
@@ -207,10 +223,10 @@ onBeforeUnmount(() => {
 
 const popupStyle = computed(() => ({
   ...createElementStyleVars(props),
-  width: `${popupWidth.value}px`,
-  height: `${popupHeight.value}px`,
-  left: `${popupLeft.value}px`,
-  top: `${popupTop.value}px`,
+  width: isFullscreen.value ? '100vw' : `${popupWidth.value}px`,
+  height: isFullscreen.value ? '100vh' : `${popupHeight.value}px`,
+  left: isFullscreen.value ? '0px' : `${popupLeft.value}px`,
+  top: isFullscreen.value ? '0px' : `${popupTop.value}px`,
   '--x-dialog-bg': props.backgroundColor,
   '--x-dialog-text': props.textColor,
   '--x-dialog-border-color': props.borderColor,
@@ -234,17 +250,25 @@ const maskStyle = computed(() => ({
   '--x-dialog-mask': props.maskColor,
   '--x-dialog-z-index': props.zIndex
 }))
+
+const fullscreenIconClass = computed(() => (isFullscreen.value ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line'))
+const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '全屏显示'))
 </script>
 
 <template>
   <Teleport to="body">
     <div v-if="visible" class="x-dialog__mask" :style="maskStyle" @click.self="onMaskClick">
-      <div class="x-dialog" v-bind="$attrs" :class="`x-dialog--${props.size ?? 'md'}`" :style="popupStyle">
+      <div class="x-dialog" v-bind="$attrs" :class="[`x-dialog--${props.size ?? 'md'}`, { 'is-fullscreen': isFullscreen }]" :style="popupStyle">
         <header class="x-dialog__header" @mousedown="startDrag">
           <slot name="header">
             <div class="x-dialog__title">{{ title }}</div>
           </slot>
-          <button type="button" class="x-dialog__close" aria-label="关闭弹窗" @click="close">×</button>
+          <div class="x-dialog__actions" @mousedown.stop>
+            <button v-if="showFullscreen" type="button" class="x-dialog__fullscreen" :aria-label="fullscreenLabel" :title="fullscreenLabel" @click="toggleFullscreen">
+              <i :class="fullscreenIconClass" aria-hidden="true" />
+            </button>
+            <button type="button" class="x-dialog__close" aria-label="关闭弹窗" @click="close">×</button>
+          </div>
         </header>
 
         <section class="x-dialog__body">
@@ -255,7 +279,7 @@ const maskStyle = computed(() => ({
           <slot name="footer" />
         </footer>
 
-        <div v-if="resizable" class="x-dialog__resizer" title="拖拽调整大小" @mousedown="startResize" />
+        <div v-if="resizable && !isFullscreen" class="x-dialog__resizer" title="拖拽调整大小" @mousedown="startResize" />
       </div>
     </div>
   </Teleport>
@@ -273,12 +297,17 @@ const maskStyle = computed(() => ({
   position: absolute;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
   overflow: hidden;
   border: var(--x-element-border-width, var(--x-dialog-border-width, 1px)) solid var(--x-element-border-color, var(--x-dialog-border-color, var(--x-color-border, #d8d9df)));
   border-radius: var(--x-dialog-radius, 8px);
   background: var(--x-element-bg, var(--x-dialog-bg, var(--x-color-surface, #fff)));
   box-shadow: var(--x-dialog-shadow, 0 24px 80px rgba(15, 23, 42, 0.22));
   color: var(--x-element-text, var(--x-dialog-text, var(--x-color-text, #2f3445)));
+}
+
+.x-dialog.is-fullscreen {
+  border-radius: 0;
 }
 
 .x-dialog__header {
@@ -296,24 +325,44 @@ const maskStyle = computed(() => ({
 
 .x-dialog__title {
   min-width: 0;
+  flex: 1 1 auto;
   font-size: calc(var(--x-dialog-font-size, 12px) + 4px);
   font-weight: 700;
   color: inherit;
 }
 
-.x-dialog__close {
+.x-dialog__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.x-dialog__close,
+.x-dialog__fullscreen {
   width: var(--x-dialog-control-height, 28px);
   height: var(--x-dialog-control-height, 28px);
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--x-dialog-close-icon, var(--x-color-text-muted, #8c93a6));
-  font-size: 20px;
   line-height: 1;
   cursor: pointer;
 }
 
-.x-dialog__close:hover {
+.x-dialog__close {
+  font-size: 20px;
+}
+
+.x-dialog__fullscreen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--x-dialog-font-size, 12px) + 4px);
+}
+
+.x-dialog__close:hover,
+.x-dialog__fullscreen:hover {
   background: var(--x-dialog-close-hover-bg, var(--x-color-surface-soft, #f7f8fb));
   color: var(--x-dialog-close-icon-hover, var(--x-color-text, #2f3445));
 }

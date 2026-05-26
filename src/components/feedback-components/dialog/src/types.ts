@@ -13,6 +13,7 @@ export interface DialogProps extends ElementStyleProps {
   maxHeight?: number | string
   draggable?: boolean
   resizable?: boolean
+  showFullscreen?: boolean
   closeOnMaskClick?: boolean
   zIndex?: number
   maskColor?: string

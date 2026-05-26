@@ -55,6 +55,46 @@ describe('XDialog', () => {
     wrapper.unmount()
   })
 
+  it('shows a fullscreen button and toggles browser-page fullscreen state', async () => {
+    const wrapper = mount(XDialog, {
+      props: {
+        modelValue: true,
+        showFullscreen: true,
+        width: 640,
+        height: 360,
+        minWidth: 320,
+        minHeight: 240
+      },
+      attachTo: document.body
+    })
+
+    const fullscreenButton = document.body.querySelector('.x-dialog__fullscreen') as HTMLButtonElement
+    const dialog = document.body.querySelector('.x-dialog') as HTMLElement
+
+    expect(fullscreenButton).not.toBeNull()
+    expect(fullscreenButton.getAttribute('aria-label')).toBe('全屏显示')
+
+    fullscreenButton.click()
+    await wrapper.vm.$nextTick()
+
+    expect(fullscreenButton.getAttribute('aria-label')).toBe('退出全屏')
+    expect(dialog.classList.contains('is-fullscreen')).toBe(true)
+    expect(dialog.getAttribute('style')).toContain('width: 100vw')
+    expect(dialog.getAttribute('style')).toContain('height: 100vh')
+    expect(dialog.getAttribute('style')).toContain('left: 0px')
+    expect(dialog.getAttribute('style')).toContain('top: 0px')
+    expect(document.body.querySelector('.x-dialog__resizer')).toBeNull()
+
+    fullscreenButton.click()
+    await wrapper.vm.$nextTick()
+
+    expect(fullscreenButton.getAttribute('aria-label')).toBe('全屏显示')
+    expect(dialog.classList.contains('is-fullscreen')).toBe(false)
+    expect(dialog.getAttribute('style')).toContain('width: 640px')
+    expect(dialog.getAttribute('style')).toContain('height: 360px')
+    wrapper.unmount()
+  })
+
   it('keeps dialog shell spacing and radius independent from size preset', () => {
     const wrapper = mount(XDialog, {
       props: {

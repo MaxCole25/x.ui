@@ -733,6 +733,50 @@ describe('XTable', () => {
     }
   })
 
+  it('opens the built-in column settings dialog through the exposed method', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        showColumnSettings: false
+      }
+    })
+
+    try {
+      expect(wrapper.find('.x-table__column-settings-button').exists()).toBe(false)
+
+      const opened = wrapper.vm.openColumnSettings()
+      await nextTick()
+
+      expect(opened).toBe(true)
+      expect(wrapper.emitted('column-settings-click')).toBeUndefined()
+      expect(document.body.querySelector('.x-table__column-settings-dialog')).not.toBeNull()
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('does not open column settings through the exposed method when the built-in dialog is disabled', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        columnSettingsDialog: false
+      }
+    })
+
+    try {
+      const opened = wrapper.vm.openColumnSettings()
+      await nextTick()
+
+      expect(opened).toBe(false)
+      expect(wrapper.emitted('column-settings-click')).toBeUndefined()
+      expect(document.body.querySelector('.x-table__column-settings-dialog')).toBeNull()
+    } finally {
+      cleanup()
+    }
+  })
+
   it('does not open the auto dialog when a custom column-settings-click listener is registered', async () => {
     const onColumnSettingsClick = vi.fn()
     const { wrapper, cleanup } = mountWithHost({

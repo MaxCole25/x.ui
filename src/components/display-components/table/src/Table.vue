@@ -2505,6 +2505,15 @@ function resetColumnSettings() {
   setColumnSettings(createDefaultColumnSettings())
 }
 
+function openColumnSettings() {
+  if (props.columnSettingsDialog === false) {
+    return false
+  }
+
+  columnSettingsDialogVisible.value = true
+  return true
+}
+
 function handleColumnSettingsClick() {
   emit('column-settings-click', getOrderedSettings().map((setting) => ({ ...setting })))
   if (shouldOpenBuiltInColumnSettingsDialog()) {
@@ -2997,6 +3006,7 @@ defineExpose({
   getColumnSettings: () => internalColumnSettings.value.map((setting) => ({ ...setting })),
   setColumnSettings,
   resetColumnSettings,
+  openColumnSettings,
   getPagination: () => ({ ...paginationState.value }),
   setPage,
   setPageSize,
@@ -3500,7 +3510,7 @@ defineExpose({
       </div>
     </div>
     <XDialog
-      v-if="showColumnSettings && columnSettingsDialog !== false"
+      v-if="columnSettingsDialog !== false"
       v-model="columnSettingsDialogVisible"
       class="x-table__column-settings-dialog"
       :title="columnSettingsDialogTitle"

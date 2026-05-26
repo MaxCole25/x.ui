@@ -15,6 +15,7 @@ const state = reactive({
   zIndex: overlayZIndex.dialog,
   draggable: true,
   resizable: true,
+  showFullscreen: true,
   closeOnMaskClick: true
 })
 const logs = ref<string[]>([])
@@ -39,6 +40,7 @@ function onClose() {
           <label>层级 <input v-model.number="state.zIndex" type="number" min="1" step="10" style="width: 90px" /></label>
           <label><input v-model="state.draggable" type="checkbox" />可拖拽</label>
           <label><input v-model="state.resizable" type="checkbox" />可缩放</label>
+          <label><input v-model="state.showFullscreen" type="checkbox" />全屏按钮</label>
           <label><input v-model="state.closeOnMaskClick" type="checkbox" />遮罩关闭</label>
         </div>
 
@@ -57,6 +59,7 @@ function onClose() {
         :z-index="state.zIndex"
         :draggable="state.draggable"
         :resizable="state.resizable"
+        :show-fullscreen="state.showFullscreen"
         :close-on-mask-click="state.closeOnMaskClick"
         @close="onClose"
       >
