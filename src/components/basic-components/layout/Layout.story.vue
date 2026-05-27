@@ -8,6 +8,7 @@ const state = reactive({
   mode: 'top-sidebar' as LayoutMode,
   fillHeight: true,
   sidebarWidth: 280,
+  sidebarPadding: '12px',
   sidebarCollapsed: false,
   gap: 0,
   showBorders: true
@@ -19,6 +20,7 @@ const previewCode = computed(() => {
     state.mode !== 'top-sidebar' ? `mode="${state.mode}"` : '',
     !state.fillHeight ? ':fill-height="false"' : '',
     state.sidebarWidth !== 280 ? `:sidebar-width="${state.sidebarWidth}"` : '',
+    state.sidebarPadding !== '12px' ? `sidebar-padding="${state.sidebarPadding}"` : '',
     state.sidebarCollapsed ? 'sidebar-collapsed' : '',
     state.gap !== 0 ? `:gap="${state.gap}"` : '',
     state.showBorders ? `topbar-border="${edgeBorder}"` : '',
@@ -59,6 +61,11 @@ const previewCode = computed(() => {
             <input v-model.number="state.gap" type="number" min="0" max="24" step="1" />
           </label>
 
+          <label>
+            <span>侧栏内边距</span>
+            <input v-model="state.sidebarPadding" type="text" />
+          </label>
+
           <label class="layout-check">
             <input v-model="state.sidebarCollapsed" type="checkbox" />
             <span>收起侧栏</span>
@@ -79,6 +86,7 @@ const previewCode = computed(() => {
           :mode="state.mode"
           :fill-height="state.fillHeight"
           :sidebar-width="state.sidebarWidth"
+          :sidebar-padding="state.sidebarPadding"
           :sidebar-collapsed="state.sidebarCollapsed"
           :gap="state.gap"
           :topbar-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"

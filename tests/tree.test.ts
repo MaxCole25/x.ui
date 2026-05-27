@@ -81,6 +81,40 @@ describe('XTree', () => {
     expect(style).toContain('--x-tree-icon-size: 16px')
   })
 
+  it('clears drag drop indicators after drag leave and drag end', async () => {
+    const wrapper = mount(XTree, {
+      props: {
+        treeData: [
+          { id: '1', label: '节点A' },
+          { id: '2', label: '节点B' },
+          { id: '3', label: '节点C' }
+        ]
+      },
+      attachTo: document.body
+    })
+
+    const rows = wrapper.findAll('.x-tree-node__row')
+    await rows[0].trigger('dragstart')
+
+    await rows[1].trigger('dragover', { clientY: 0 })
+    expect(rows[1].classes()).toContain('is-drop-before')
+
+    await rows[1].trigger('dragleave', { relatedTarget: document.body })
+    expect(rows[1].classes()).not.toContain('is-drop-before')
+    expect(rows[1].classes()).not.toContain('is-drop-after')
+    expect(rows[1].classes()).not.toContain('is-drop-inner')
+
+    await rows[1].trigger('dragover', { clientY: 1 })
+    expect(rows[1].classes()).toContain('is-drop-after')
+
+    await rows[0].trigger('dragend')
+    wrapper.findAll('.x-tree-node__row').forEach((row) => {
+      expect(row.classes()).not.toContain('is-drop-before')
+      expect(row.classes()).not.toContain('is-drop-after')
+      expect(row.classes()).not.toContain('is-drop-inner')
+    })
+  })
+
   it('shows only root create, node create and delete in the default context menu', async () => {
     const wrapper = mount(XTree, {
       props: {

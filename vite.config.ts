@@ -13,7 +13,8 @@ export default defineConfig(() => {
         dts({
           entryRoot: 'src',
           include: ['src'],
-          insertTypesEntry: true
+          insertTypesEntry: true,
+          rollupTypes: true
         })
     ],
     build: isHistoire
@@ -36,7 +37,8 @@ export default defineConfig(() => {
               exports: 'named'
             }
           },
-          cssCodeSplit: false
+          cssCodeSplit: false,
+          sourcemap: false
         }
   }
 })

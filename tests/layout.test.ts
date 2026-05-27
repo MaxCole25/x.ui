@@ -38,6 +38,7 @@ describe('XLayout', () => {
     expect(style).toContain('--x-layout-topbar-radius: 0px')
     expect(style).toContain('--x-layout-topbar-border: none')
     expect(style).toContain('--x-layout-footer-border: none')
+    expect(style).toContain('--x-layout-sidebar-padding: 12px')
     expect(style).not.toContain('--x-layout-content-border')
   })
 
@@ -73,15 +74,18 @@ describe('XLayout', () => {
     expect(style).toContain('--x-layout-content-bg: transparent')
   })
 
-  it('sets horizontal padding for shell slot regions', () => {
+  it('sets documented region padding for shell slot regions', () => {
     const style = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
 
-    for (const selector of ['topbar', 'sidebar', 'footer']) {
+    for (const selector of ['topbar', 'footer']) {
       const rule = style.match(new RegExp(`\\.x-layout__${selector} \\{[\\s\\S]*?grid-area: ${selector};[\\s\\S]*?\\}`))?.[0] ?? ''
 
       expect(rule).toContain('padding-left: 12px')
       expect(rule).toContain('padding-right: 12px')
     }
+
+    const sidebarRule = style.match(/\.x-layout__sidebar \{[\s\S]*?\}/)?.[0] ?? ''
+    expect(sidebarRule).toContain('padding: var(--x-layout-sidebar-padding)')
   })
 
   it('renders footerBorder on the footer top edge', () => {
@@ -149,5 +153,15 @@ describe('XLayout', () => {
     })
 
     expect(wrapper.attributes('style')).toContain('--x-layout-sidebar-width: 96px')
+  })
+
+  it('supports custom sidebar padding', () => {
+    const wrapper = mount(XLayout, {
+      props: {
+        sidebarPadding: '8px 12px 10px 6px'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-layout-sidebar-padding: 8px 12px 10px 6px')
   })
 })

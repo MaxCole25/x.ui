@@ -13,11 +13,12 @@
     "jsx": "preserve",
     "strict": true,
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "declarationMap": false,
+    "sourceMap": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@x-soft88/x-ui": ["src"],
       "x.ui": ["src"]
     }
   },

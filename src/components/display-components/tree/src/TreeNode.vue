@@ -61,6 +61,18 @@ watch(
   { immediate: true }
 )
 
+watch(
+  () => props.draggingNode,
+  (value) => {
+    if (value) return
+    clearDropPosition()
+  }
+)
+
+function clearDropPosition() {
+  dropPosition.value = null
+}
+
 function forwardNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, dropType: 'before' | 'after' | 'inner') {
   emit('node-drop', draggingNode, dropNode, dropType)
 }
@@ -75,6 +87,11 @@ function forwardToggle(key: string, expanded: boolean) {
 
 function forwardRename(node: TreeNodeData, label: string) {
   emit('rename', node, label)
+}
+
+function forwardDragEnd() {
+  clearDropPosition()
+  emit('drag-end')
 }
 
 function handleClick() {
@@ -111,11 +128,18 @@ function handleDragOver(event: DragEvent) {
   if (!props.draggingNode) return
   const type = resolveDropType(event)
   if (!props.allowDrop(props.draggingNode, props.node, type)) {
-    dropPosition.value = null
+    clearDropPosition()
     return
   }
   event.preventDefault()
   dropPosition.value = type
+}
+
+function handleDragLeave(event: DragEvent) {
+  const target = event.currentTarget as HTMLElement | null
+  const nextTarget = event.relatedTarget as Node | null
+  if (target && nextTarget && target.contains(nextTarget)) return
+  clearDropPosition()
 }
 
 function handleDrop(event: DragEvent) {
@@ -123,12 +147,12 @@ function handleDrop(event: DragEvent) {
   const type = resolveDropType(event)
   if (!props.allowDrop(props.draggingNode, props.node, type)) return
   event.preventDefault()
-  dropPosition.value = null
+  clearDropPosition()
   emit('node-drop', props.draggingNode, props.node, type)
 }
 
 function handleDragEnd() {
-  dropPosition.value = null
+  clearDropPosition()
   emit('drag-end')
 }
 
@@ -156,6 +180,7 @@ function submitRename() {
       @contextmenu.prevent.stop="handleContextMenu"
       @dragstart="handleDragStart"
       @dragover="handleDragOver"
+      @dragleave="handleDragLeave"
       @drop="handleDrop"
       @dragend="handleDragEnd"
     >
@@ -208,7 +233,7 @@ function submitRename() {
         @node-drop="forwardNodeDrop"
         @node-contextmenu="forwardNodeContextMenu"
         @drag-start="emit('drag-start', $event)"
-        @drag-end="emit('drag-end')"
+        @drag-end="forwardDragEnd"
         @toggle="forwardToggle"
         @rename="forwardRename"
       />

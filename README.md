@@ -13,10 +13,14 @@ pnpm test
 
 ## Usage
 
+```bash
+pnpm add @x-soft88/x-ui
+```
+
 ```ts
 import { createApp } from 'vue'
-import XUi from 'x.ui'
-import 'x.ui/style.css'
+import XUi from '@x-soft88/x-ui'
+import '@x-soft88/x-ui/style.css'
 
 import App from './App.vue'
 

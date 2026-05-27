@@ -178,6 +178,31 @@ describe('form controls', () => {
     wrapper.unmount()
   })
 
+  it('closes XSelect teleported dropdown when pointerdown happens outside', async () => {
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: '',
+        options: [
+          { label: '待处理', value: 'todo' },
+          { label: '完成', value: 'done' }
+        ]
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('.x-select__control').trigger('click')
+    await nextTick()
+    expect(wrapper.classes()).toContain('is-open')
+    expect(document.body.querySelector<HTMLElement>('.x-select__dropdown')?.style.display).not.toBe('none')
+
+    document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    await nextTick()
+    expect(wrapper.classes()).not.toContain('is-open')
+    expect(document.body.querySelector<HTMLElement>('.x-select__dropdown')?.style.display).toBe('none')
+
+    wrapper.unmount()
+  })
+
   it('expands XSelect teleported dropdown only up to the max width for long options', async () => {
     const wrapper = mount(XSelect, {
       props: {

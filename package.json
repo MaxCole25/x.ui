@@ -1,11 +1,14 @@
 {
-  "name": "x.ui",
+  "name": "@x-soft88/x-ui",
   "version": "0.1.0",
   "description": "A Vue 3 UI component library.",
   "type": "module",
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "restricted"
+  },
   "main": "./dist/x-ui.umd.cjs",
   "module": "./dist/x-ui.js",
   "types": "./dist/index.d.ts",
@@ -29,6 +32,7 @@
     "docs:preview": "vitepress preview docs",
     "build": "vue-tsc --noEmit && vite build",
     "build:watch": "vite build --watch",
+    "prepublishOnly": "pnpm test && pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"

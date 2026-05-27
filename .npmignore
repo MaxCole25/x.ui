@@ -1,0 +1,26 @@
+# Source and local development files are intentionally excluded from packages.
+src/
+docs/
+tests/
+templates/
+legacy/
+.codex/
+.git/
+.histoire/
+coverage/
+node_modules/
+
+# Build and debug leftovers that should never be published.
+*.log
+*.png
+*.svg
+*.xlsx
+*.tgz
+*.timestamp-*.mjs
+.tmp-*
+histoire-*.log
+histoire-*.err.log
+
+# Source maps expose source paths and are not part of the private package.
+*.map
+dist/**/*.map

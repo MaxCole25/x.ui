@@ -15,7 +15,7 @@ import 'x.ui/style.css'
 </script>
 
 <template>
-  <XLayout mode="top-sidebar" :sidebar-width="280">
+  <XLayout mode="top-sidebar" :sidebar-width="280" sidebar-padding="8px 12px 10px 6px">
     <template #topbar>顶部区域</template>
     <template #sidebar>侧栏区域</template>
     主内容区域
@@ -23,6 +23,8 @@ import 'x.ui/style.css'
   </XLayout>
 </template>
 ```
+
+`sidebarPadding` 支持标准 CSS padding 写法，例如：`12`、`'12px'`、`'8px 12px'`、`'8px 12px 10px 6px'`。
 
 ## 布局模式
 
@@ -50,6 +52,7 @@ import 'x.ui/style.css'
 | sidebarColor | 侧栏前景色 | `string` | `'#F9F9F9'` |
 | sidebarBorderRadius | 侧栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | sidebarBorder | 侧栏右边框 | `string` | `'none'` |
+| sidebarPadding | 侧栏内边距（支持数字像素或 CSS padding 写法） | `number \| string` | `12` |
 | contentBackgroundColor | 内容区背景色 | `string` | `'transparent'` |
 | contentColor | 内容区前景色 | `string` | `'#F9F9F9'` |
 | contentBorderRadius | 内容区圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |

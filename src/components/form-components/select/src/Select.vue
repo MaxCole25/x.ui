@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, onBeforeUnmount, provide, ref, useAttrs, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { inputSizePreset } from '../../../_utils/inputSize'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -348,6 +348,17 @@ const close = () => {
   isOpen.value = false
 }
 
+const handleDocumentPointerdown = (event: PointerEvent) => {
+  if (!isOpen.value) return
+
+  const target = event.target
+  if (!(target instanceof Node)) return
+  if (selectRef.value?.contains(target)) return
+  if (dropdownRef.value?.contains(target)) return
+
+  close()
+}
+
 watch(
   () => isOpen.value,
   async (open) => {
@@ -401,7 +412,12 @@ provide(selectContextKey, {
   selectOption
 })
 
+onMounted(() => {
+  document.addEventListener('pointerdown', handleDocumentPointerdown, true)
+})
+
 onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', handleDocumentPointerdown, true)
   removePositionListeners()
   close()
 })

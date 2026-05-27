@@ -2480,6 +2480,7 @@
   --x-layout-sidebar-color: #F9F9F9;
   --x-layout-sidebar-radius: 0px;
   --x-layout-sidebar-border: none;
+  --x-layout-sidebar-padding: 12px;
   --x-layout-content-bg: transparent;
   --x-layout-content-color: #F9F9F9;
   --x-layout-content-radius: 0px;
@@ -2560,8 +2561,7 @@
   color: var(--x-layout-sidebar-color);
   grid-area: sidebar;
   overflow: visible;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding: var(--x-layout-sidebar-padding);
   position: relative;
   z-index: 60;
 }
