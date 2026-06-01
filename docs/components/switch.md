@@ -128,7 +128,7 @@ const enabled = ref(true)
 | labelPosition | 文案位置，`outside` 为开关左右两侧，`inside` 为轨道内部 | `outside \| inside` | `outside` |
 | activeValue | 开启值 | `boolean` | `true` |
 | inactiveValue | 关闭值 | `boolean` | `false` |
-| color | 开启时背景色 | `string` | - |
+| checkedColor | 开启时背景色 | `string` | - |
 | inactiveColor | 关闭时背景色 | `string` | - |
 | thumbColor | 圆形按钮色 | `string` | - |
 | buttonSize | 开关按钮高度，未显式传入 `size` 时生效，宽度按 2:1 等比调整 | `number \| string` | - |

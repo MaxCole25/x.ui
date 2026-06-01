@@ -7,14 +7,14 @@ import '../../../styles/index.css'
 
 const appearance = reactive({
   label: '标签',
-  type: 'primary' as TagType,
+  variant: 'primary' as TagType,
   effect: 'light' as TagEffect,
   size: 'md' as TagSize,
   closable: true,
   round: false,
   hit: false,
   disabled: false,
-  color: '#1264f4',
+  accentColor: '#1264f4',
   closeCount: 0
 })
 </script>
@@ -28,14 +28,14 @@ const appearance = reactive({
         <template #default="styleProps">
           <XTag
             v-bind="styleProps"
-            :type="appearance.type"
+            :variant="appearance.variant"
             :effect="appearance.effect"
             :size="appearance.size"
             :closable="appearance.closable"
             :round="appearance.round"
             :hit="appearance.hit"
             :disabled="appearance.disabled"
-            :color="appearance.color"
+            :accent-color="appearance.accentColor"
             @close="appearance.closeCount += 1"
           >
             {{ appearance.label }} {{ appearance.closeCount ? `关闭 ${appearance.closeCount}` : '' }}
@@ -43,12 +43,12 @@ const appearance = reactive({
         </template>
         <template #column-1>
           <label><span>标签文案</span><input v-model="appearance.label" /></label>
-          <label><span>类型</span><select v-model="appearance.type"><option value="primary">primary</option><option value="success">success</option><option value="warning">warning</option><option value="danger">danger</option><option value="info">info</option></select></label>
+          <label><span>视觉形态</span><select v-model="appearance.variant"><option value="primary">primary</option><option value="success">success</option><option value="warning">warning</option><option value="danger">danger</option><option value="info">info</option></select></label>
           <label><span>效果</span><select v-model="appearance.effect"><option value="light">light</option><option value="dark">dark</option><option value="plain">plain</option></select></label>
           <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
         </template>
         <template #column-3>
-          <label><span>主题色</span><input v-model="appearance.color" type="color" /></label>
+          <label><span>主题色</span><input v-model="appearance.accentColor" type="color" /></label>
         </template>
         <template #column-4>
           <label class="story-check"><input v-model="appearance.closable" type="checkbox" /><span>可关闭</span></label>

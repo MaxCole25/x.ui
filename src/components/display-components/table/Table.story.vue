@@ -59,7 +59,7 @@ const parentState = reactive({
   height: 320,
   autoWidth: false,
   autoHeight: false,
-  fillHeight: true,
+  fullHeight: true,
   selectable: true,
   showActions: true,
   actionsFixed: true,
@@ -228,7 +228,7 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
             <span>父元素宽度自适应</span>
           </label>
           <label>
-            <input v-model="parentState.fillHeight" type="checkbox" />
+            <input v-model="parentState.fullHeight" type="checkbox" />
             <span>撑满父元素高度</span>
           </label>
           <div class="table-story__control-item">
@@ -455,7 +455,7 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
             v-model:selected-cell-keys="selectedCellKeys"
             :columns="columns"
             row-key="id"
-            :fill-height="parentState.fillHeight"
+            :full-height="parentState.fullHeight"
             :show-actions="parentState.showActions"
             :actions-fixed="parentState.actionsFixed"
             :actions-width="parentState.actionsWidth"
@@ -523,7 +523,7 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
                 class="table-story__count-editor"
                 :model-value="getEditorNumberValue(modelValue)"
                 :min="0"
-                :border-radius="0"
+                :radius="0"
                
                 :show-active-border="false"
                 @update:model-value="updateModelValue"

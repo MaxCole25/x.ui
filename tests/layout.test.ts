@@ -56,10 +56,20 @@ describe('XLayout', () => {
     expect(wrapper.attributes('style')).toContain('--x-layout-gap: 12px')
   })
 
-  it('can turn off fill height class', () => {
+  it('can turn off full height class', () => {
     const wrapper = mount(XLayout, {
       props: {
-        fillHeight: false
+        fullHeight: false
+      }
+    })
+
+    expect(wrapper.classes()).not.toContain('is-fill-height')
+  })
+
+  it('keeps fullHeight false from applying fill height class', () => {
+    const wrapper = mount(XLayout, {
+      props: {
+        fullHeight: false
       }
     })
 
@@ -105,12 +115,12 @@ describe('XLayout', () => {
         footerHeight: '2.5rem',
         topbarBackgroundColor: '#123456',
         topbarColor: '#ffffff',
-        topbarBorderRadius: 6,
+        topbarRadius: 6,
         topbarBorder: '1px solid #ffffff',
         sidebarBorder: '1px solid #0f172a',
         contentBackgroundColor: '#f8fafc',
         contentColor: '#102a43',
-        contentBorderRadius: '12px',
+        contentRadius: '12px',
         footerBorder: '1px solid #94a3b8'
       }
     })
@@ -128,6 +138,23 @@ describe('XLayout', () => {
     expect(style).toContain('--x-layout-content-radius: 12px')
     expect(style).toContain('--x-layout-footer-border: 1px solid #94a3b8')
     expect(style).not.toContain('--x-layout-content-border')
+  })
+
+  it('uses region radius props', () => {
+    const wrapper = mount(XLayout, {
+      props: {
+        topbarRadius: 4,
+        sidebarRadius: 5,
+        contentRadius: 6,
+        footerRadius: 7
+      }
+    })
+    const style = wrapper.attributes('style')
+
+    expect(style).toContain('--x-layout-topbar-radius: 4px')
+    expect(style).toContain('--x-layout-sidebar-radius: 5px')
+    expect(style).toContain('--x-layout-content-radius: 6px')
+    expect(style).toContain('--x-layout-footer-radius: 7px')
   })
 
   it('hides sidebar region in top-only mode', () => {

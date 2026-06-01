@@ -27,7 +27,7 @@ const sample = reactive({
   padding: '0 8px',
   radius: '6px',
   textAlign: 'center' as InputTextAlign,
-  background: '#ffffff',
+  inputBackgroundColor: '#ffffff',
   name: 'deliveryDate',
   id: 'date-picker-delivery-date',
   maxlength: 20,
@@ -249,7 +249,7 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>输入背景色</span>
-              <input v-model="sample.background" type="color" />
+              <input v-model="sample.inputBackgroundColor" type="color" />
             </label>
             <label>
               <span>文字色</span>

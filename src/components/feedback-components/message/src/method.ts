@@ -44,8 +44,8 @@ export type XMessageFn = {
 
 export const XMessage = createMessage as XMessageFn
 
-;(['success', 'warning', 'info', 'error'] as MessageType[]).forEach((type) => {
-  XMessage[type] = (options: string | MessageOptions) => createMessage({ ...normalizeOptions(options), type })
+;(['success', 'warning', 'info', 'error'] as MessageType[]).forEach((status) => {
+  XMessage[status] = (options: string | MessageOptions) => createMessage({ ...normalizeOptions(options), status })
 })
 
 export { Message }

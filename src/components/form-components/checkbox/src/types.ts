@@ -9,7 +9,7 @@ export interface CheckboxProps extends ElementStyleProps {
   disabled?: boolean
   indeterminate?: boolean
   size?: CheckboxSize
-  color?: string
+  checkedColor?: string
   radius?: string
   name?: string
 }

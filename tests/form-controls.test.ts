@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
 import { nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { overlayZIndex, XBaseInput, XCheckbox, XForm, XFormItem, XInput, XInputNumber, XRadio, XRadioButton, XSelect, XSwitch, XText, XTimePicker, XTimeSelect } from '../src'
+import { overlayZIndex, XBaseInput, XCascader, XCheckbox, XForm, XFormItem, XInput, XInputNumber, XRadio, XRadioButton, XSelect, XSwitch, XText, XTimePicker, XTimeSelect } from '../src'
 
 describe('form controls', () => {
   it('updates XInput model value and clears content', async () => {
@@ -35,6 +35,48 @@ describe('form controls', () => {
     })
 
     expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-height: auto')
+  })
+
+  it('uses inputBackgroundColor before backgroundColor on XBaseInput', () => {
+    const wrapper = mount(XBaseInput, {
+      props: {
+        modelValue: '规范背景色',
+        inputBackgroundColor: '#dcfce7',
+        backgroundColor: '#e0f2fe'
+      }
+    })
+
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-bg: #dcfce7')
+  })
+
+  it('uses accentColor on input-like controls', () => {
+    const baseInput = mount(XBaseInput, {
+      props: {
+        modelValue: '规范主题色',
+        accentColor: '#0f766e'
+      }
+    })
+    const select = mount(XSelect, {
+      props: {
+        modelValue: 'vue',
+        options: [{ label: 'Vue', value: 'vue' }],
+        teleported: false,
+        accentColor: '#0f766e'
+      }
+    })
+    const cascader = mount(XCascader, {
+      props: {
+        modelValue: [],
+        options: [],
+        accentColor: '#0f766e'
+      }
+    })
+
+    expect(baseInput.find('.x-base-input').attributes('style')).toContain('--x-base-input-color: #0f766e')
+    expect(baseInput.find('.x-base-input').attributes('style')).toContain('--x-base-input-active-border-color: #0f766e')
+    expect(select.attributes('style')).toContain('--x-select-color: #0f766e')
+    expect(select.find('.x-base-input').attributes('style')).toContain('--x-base-input-color: #0f766e')
+    expect(cascader.attributes('style')).toContain('--x-cascader-color: #0f766e')
   })
 
   it('keeps XBaseInput native input outline hidden when focused', async () => {
@@ -178,6 +220,49 @@ describe('form controls', () => {
     wrapper.unmount()
   })
 
+  it('uses XSelect zIndex for the dropdown layer', async () => {
+    const wrapper = mount(XSelect, {
+      props: {
+        modelValue: '',
+        zIndex: 2444,
+        options: [{ label: '待处理', value: 'todo' }]
+      }
+    })
+
+    await wrapper.find('.x-select__control').trigger('click')
+    await nextTick()
+
+    const dropdown = document.body.querySelector<HTMLElement>('.x-select__dropdown')
+    expect(dropdown?.style.zIndex).toBe('2444')
+    expect(dropdown?.getAttribute('style')).toContain('--x-select-dropdown-z-index: 2444')
+
+    wrapper.unmount()
+  })
+
+  it('uses inputBackgroundColor before backgroundColor on select-like controls', () => {
+    const selectWrapper = mount(XSelect, {
+      props: {
+        modelValue: 'vue',
+        options: [{ label: 'Vue', value: 'vue' }],
+        teleported: false,
+        inputBackgroundColor: '#dcfce7',
+        backgroundColor: '#e0f2fe'
+      }
+    })
+    const cascaderWrapper = mount(XCascader, {
+      props: {
+        modelValue: [],
+        options: [],
+        inputBackgroundColor: '#dcfce7',
+        backgroundColor: '#e0f2fe'
+      }
+    })
+
+    expect(selectWrapper.attributes('style')).toContain('--x-select-bg: #dcfce7')
+    expect(selectWrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-bg: #dcfce7')
+    expect(cascaderWrapper.attributes('style')).toContain('--x-cascader-bg: #dcfce7')
+  })
+
   it('closes XSelect teleported dropdown when pointerdown happens outside', async () => {
     const wrapper = mount(XSelect, {
       props: {
@@ -277,6 +362,17 @@ describe('form controls', () => {
     expect(wrapper.props('modelValue')).toEqual(['read', 'write'])
   })
 
+  it('uses XCheckbox checkedColor', () => {
+    const wrapper = mount(XCheckbox, {
+      props: {
+        modelValue: true,
+        checkedColor: '#0f766e'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-checkbox-color: #0f766e')
+  })
+
   it('updates radio and switch values', async () => {
     const radio = mount(XRadio, {
       props: {
@@ -341,6 +437,7 @@ describe('form controls', () => {
   it('exposes switch appearance variables', () => {
     const wrapper = mount(XSwitch, {
       props: {
+        checkedColor: '#0f766e',
         color: '#1264f4',
         inactiveColor: '#dcdfe6',
         thumbColor: '#ffffff',
@@ -351,7 +448,7 @@ describe('form controls', () => {
     })
 
     const style = wrapper.find('.x-switch').attributes('style')
-    expect(style).toContain('--x-switch-color: #1264f4')
+    expect(style).toContain('--x-switch-color: #0f766e')
     expect(style).toContain('--x-switch-inactive-color: #dcdfe6')
     expect(style).toContain('--x-switch-thumb-color: #ffffff')
     expect(style).toContain('--x-switch-button-size: 20px')
@@ -375,7 +472,7 @@ describe('form controls', () => {
         modelValue: 6,
         size: 'sm',
         fontSize: 24,
-        borderRadius: 12
+        radius: 12
       }
     })
     const switcher = mount(XSwitch, {
@@ -402,6 +499,17 @@ describe('form controls', () => {
     expect(switchStyle).not.toContain('--x-switch-button-size')
     expect(switchStyle).toContain('--x-switch-font-size: 14px')
     expect(switchStyle).toContain('--x-switch-radius: 999px')
+  })
+
+  it('uses XInputNumber radius when size is implicit', () => {
+    const wrapper = mount(XInputNumber, {
+      props: {
+        modelValue: 6,
+        radius: 10
+      }
+    })
+
+    expect(wrapper.find('.x-input-number').attributes('style')).toContain('--x-input-number-radius: 10px')
   })
 
   it('keeps switch size visual dimensions at 80 percent of the standard height', () => {

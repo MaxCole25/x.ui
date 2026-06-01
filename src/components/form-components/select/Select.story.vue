@@ -24,7 +24,7 @@ const sample = reactive({
   emptyText: '暂无数据',
   teleported: true,
   teleportTo: 'body',
-  dropdownZIndex: overlayZIndex.popper,
+  zIndex: overlayZIndex.popper,
   dropdownMaxWidth: 360,
   autoWidth: false,
   showActiveBorder: true,
@@ -45,7 +45,7 @@ const sample = reactive({
   padding: '0 8px',
   radius: '6px',
   textAlign: 'left' as SelectTextAlign,
-  background: '#ffffff',
+  inputBackgroundColor: '#ffffff',
   name: 'tech',
   id: 'select-tech',
   borderWidth: 1,
@@ -53,14 +53,14 @@ const sample = reactive({
   backgroundColor: '#ffffff',
   dropdownBackgroundColor: '#ffffff',
   textColor: '#0f172a',
-  color: '#1264f4'
+  accentColor: '#1264f4'
 })
 
 const parentState = reactive({
   width: 420,
   height: 160,
   fillWidth: false,
-  fillHeight: false
+  fullHeight: false
 })
 
 const selectOptions = [
@@ -77,7 +77,7 @@ const displayFieldOptions: SelectDisplayField[] = ['label', 'value']
 
 const parentStyle = computed(() => ({
   width: parentState.fillWidth ? '100%' : `${parentState.width}px`,
-  height: parentState.fillHeight ? '100%' : `${parentState.height}px`
+  height: parentState.fullHeight ? '100%' : `${parentState.height}px`
 }))
 
 const updateRadius = (event: Event) => {
@@ -232,7 +232,7 @@ const querySampleOptions = async () => selectOptions
             </label>
             <label>
               <span>弹层层级</span>
-              <input v-model.number="sample.dropdownZIndex" type="number" min="0" />
+              <input v-model.number="sample.zIndex" type="number" min="0" />
             </label>
             <label>
               <span>选项弹窗最大宽度</span>
@@ -243,7 +243,7 @@ const querySampleOptions = async () => selectOptions
           <div class="select-appearance__column">
             <label>
               <span>主题色</span>
-              <input v-model="sample.color" type="color" />
+              <input v-model="sample.accentColor" type="color" />
             </label>
             <label>
               <span>激活边框色</span>
@@ -259,7 +259,7 @@ const querySampleOptions = async () => selectOptions
             </label>
             <label>
               <span>输入背景色</span>
-              <input v-model="sample.background" type="color" />
+              <input v-model="sample.inputBackgroundColor" type="color" />
             </label>
             <label>
               <span>选项弹窗背景色</span>
@@ -333,7 +333,7 @@ const querySampleOptions = async () => selectOptions
               <span>父元素撑满宽度</span>
             </label>
             <label>
-              <input v-model="parentState.fillHeight" type="checkbox" />
+              <input v-model="parentState.fullHeight" type="checkbox" />
               <span>父元素撑满高度</span>
             </label>
           </div>

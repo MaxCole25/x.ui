@@ -10,6 +10,8 @@ const lastAction = ref('')
 const dropLog = ref('')
 const size = ref<'sm' | 'md' | 'lg'>('md')
 const activeColor = ref('#2f66cf')
+const hoverBackgroundColor = ref('#e0ecff')
+const activeBackgroundColor = ref('#dbeafe')
 const parentWidth = ref(420)
 const parentHeight = ref(280)
 const parentFullWidth = ref(false)
@@ -171,6 +173,14 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
                 <input v-model="activeColor" type="color" style="min-width: 0" />
               </label>
               <label style="display: grid; grid-template-columns: 72px 1fr; gap: 6px; align-items: center">
+                悬浮背景色
+                <input v-model="hoverBackgroundColor" type="color" style="min-width: 0" />
+              </label>
+              <label style="display: grid; grid-template-columns: 72px 1fr; gap: 6px; align-items: center">
+                激活背景色
+                <input v-model="activeBackgroundColor" type="color" style="min-width: 0" />
+              </label>
+              <label style="display: grid; grid-template-columns: 72px 1fr; gap: 6px; align-items: center">
                 父元素宽度
                 <input v-model.number="parentWidth" type="number" style="min-width: 0" />
               </label>
@@ -235,6 +245,8 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
             :current-user-id="currentUserId"
             :size="size"
             :active-color="activeColor"
+            :hover-background-color="hoverBackgroundColor"
+            :active-background-color="activeBackgroundColor"
             :can-create-child-by-node="() => flags.allowCreate"
             :can-delete-node-by-id="() => flags.allowDelete"
             :context-menu-items="flags.useCustomMenu ? customContextMenuItems : undefined"

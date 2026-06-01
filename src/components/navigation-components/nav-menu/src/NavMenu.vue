@@ -13,12 +13,13 @@ const props = withDefaults(defineProps<NavMenuProps>(), {
   collapsed: false,
   allowCollapse: false,
   hidden: false,
-  appendToBody: false,
+  teleported: false,
+  teleportTo: 'body',
   scrollable: false,
   accordion: false,
   textColor: 'var(--x-color-text)',
   activeTextColor: '#fff',
-  activeBgColor: 'var(--x-color-primary)',
+  activeBackgroundColor: 'var(--x-color-primary)',
   fontSize: 14,
   fontWeight: 400,
   activeFontWeight: 600,
@@ -241,7 +242,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
     '--x-nav-menu-text-color': props.textColor,
     '--x-nav-menu-active-text-color': props.activeTextColor,
     '--x-nav-menu-submenu-active-text-color': props.submenuActiveTextColor ?? props.activeTextColor,
-    '--x-nav-menu-active-bg-color': props.activeBgColor,
+    '--x-nav-menu-active-bg-color': props.activeBackgroundColor,
     '--x-nav-menu-font-size': toCssLength(props.fontSize),
     '--x-nav-menu-font-weight': String(props.fontWeight),
     '--x-nav-menu-active-font-weight': String(props.activeFontWeight),
@@ -286,7 +287,8 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
         :active-key="props.activeKey"
         :mode="props.mode"
         :collapsed="isCollapsed"
-        :append-to-body="props.appendToBody"
+        :teleported="props.teleported"
+        :teleport-to="props.teleportTo"
         :menu-style-vars="navMenuStyleVars"
         :open-keys="currentOpenKeys"
         :show-submenu-arrow="props.showSubmenuArrow"

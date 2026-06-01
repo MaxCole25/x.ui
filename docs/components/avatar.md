@@ -40,7 +40,7 @@ import 'x.ui/style.css'
 | iconSpin | 图标是否旋转 | `boolean` | `false` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
 | shape | 形状 | `circle \| square` | `circle` |
-| color | 背景色 | `string` | - |
+| avatarBackgroundColor | 头像背景色 | `string` | - |
 | borderWidth | 边框粗细，数字会按 px 处理 | `number \| string` | - |
 | borderColor | 边框颜色 | `string` | `#fff` |
 

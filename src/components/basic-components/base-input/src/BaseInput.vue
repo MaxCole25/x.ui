@@ -50,8 +50,8 @@ const effectiveType = computed(() => (hasFormatter.value && props.type === 'numb
 
 const inputStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-base-input-color': props.color,
-  '--x-base-input-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-base-input-color': props.accentColor,
+  '--x-base-input-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-base-input-border-color': props.borderColor,
   '--x-base-input-border-width': toCssSize(props.borderWidth),
   '--x-base-input-clear-icon-color': props.clearIconColor,
@@ -59,7 +59,7 @@ const inputStyle = computed(() => ({
   '--x-base-input-disabled-bg': props.disabledBackgroundColor,
   '--x-base-input-disabled-text-color': props.disabledTextColor,
   '--x-base-input-radius': props.radius,
-  '--x-base-input-bg': props.backgroundColor ?? props.background,
+  '--x-base-input-bg': props.inputBackgroundColor ?? props.backgroundColor,
   '--x-base-input-text-color': props.textColor,
   '--x-base-input-font-family': props.fontFamily,
   '--x-base-input-font-size': toCssSize(props.fontSize),

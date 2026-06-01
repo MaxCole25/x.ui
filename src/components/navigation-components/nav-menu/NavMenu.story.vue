@@ -92,12 +92,13 @@ const state = reactive({
   mode: 'vertical' as NavMenuMode,
   hidden: false,
   collapsed: false,
-  appendToBody: false,
+  teleported: false,
+  teleportTo: 'body',
   activeKey: 'dashboard',
   textColor: '#334e68',
   activeTextColor: '#ffffff',
   submenuActiveTextColor: '#ffffff',
-  activeBgColor: '#0e7490',
+  activeBackgroundColor: '#0e7490',
   scrollable: false,
   maxHeight: 300,
   accordion: false,
@@ -141,8 +142,12 @@ function handleSelect(key: string) {
           </label>
 
           <label class="menu-check">
-            <input v-model="state.appendToBody" type="checkbox" />
-            <span>挂载到 body</span>
+            <input v-model="state.teleported" type="checkbox" />
+            <span>挂载到外部</span>
+          </label>
+          <label>
+            <span>挂载目标</span>
+            <input v-model="state.teleportTo" type="text" />
           </label>
 
           <label class="menu-check">
@@ -175,7 +180,7 @@ function handleSelect(key: string) {
           </label>
           <label>
             <span>激活背景色</span>
-            <input v-model="state.activeBgColor" type="color" />
+            <input v-model="state.activeBackgroundColor" type="color" />
           </label>
           <label>
             <span>字号</span>
@@ -222,7 +227,8 @@ function handleSelect(key: string) {
             :mode="state.mode"
             :hidden="state.hidden"
             :collapsed="state.collapsed"
-            :append-to-body="state.appendToBody"
+            :teleported="state.teleported"
+            :teleport-to="state.teleportTo"
             :allow-collapse="true"
             :scrollable="state.scrollable"
             :max-height="state.maxHeight"
@@ -230,7 +236,7 @@ function handleSelect(key: string) {
             :text-color="state.textColor"
             :active-text-color="state.activeTextColor"
             :submenu-active-text-color="state.submenuActiveTextColor"
-            :active-bg-color="state.activeBgColor"
+            :active-background-color="state.activeBackgroundColor"
             :font-size="state.fontSize"
             :font-weight="state.fontWeight"
             :active-font-weight="state.activeFontWeight"

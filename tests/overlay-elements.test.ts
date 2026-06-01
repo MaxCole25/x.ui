@@ -345,6 +345,31 @@ describe('new element components', () => {
     expect(wrapper.emitted('command')?.[0]).toEqual(['edit'])
   })
 
+  it('uses XDropdown teleported and zIndex props', async () => {
+    const wrapper = mount(XDropdown, {
+      props: {
+        trigger: 'click',
+        teleported: true,
+        zIndex: 2446
+      },
+      slots: {
+        default: '<button>更多</button>',
+        dropdown: '<div>用户信息</div>'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('.x-dropdown__trigger').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    const popper = document.body.querySelector<HTMLElement>('.x-dropdown__popper')
+    expect(popper?.classList.contains('is-teleported')).toBe(true)
+    expect(wrapper.element.contains(popper)).toBe(false)
+    expect(popper?.getAttribute('style')).toContain('--x-dropdown-z-index: 2446')
+
+    wrapper.unmount()
+  })
+
   it('applies XDropdownMenu width style variable from prop', () => {
     const wrapper = mount(XDropdownMenu, {
       props: {
@@ -362,7 +387,7 @@ describe('new element components', () => {
     const wrapper = mount(XDropdown, {
       props: {
         trigger: 'click',
-        appendToBody: true
+        teleported: true
       },
       slots: {
         default: '<button>管理员</button>',
@@ -395,7 +420,7 @@ describe('new element components', () => {
     const wrapper = mount(XDropdown, {
       props: {
         trigger: 'click',
-        appendToBody: true
+        teleported: true
       },
       slots: {
         default: '<button>管理员</button>',

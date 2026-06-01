@@ -10,7 +10,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<MessageProps>(), {
   message: '',
-  type: 'info',
+  status: 'info',
   size: undefined,
   duration: 3000,
   showClose: false,
@@ -28,6 +28,7 @@ const emit = defineEmits<{
 
 let timer: number | undefined
 
+const mergedStatus = computed(() => props.status ?? 'info')
 const defaultIcon = computed(() => {
   const iconMap = {
     success: 'ri-checkbox-circle-fill',
@@ -35,7 +36,7 @@ const defaultIcon = computed(() => {
     info: 'ri-information-fill',
     error: 'ri-close-circle-fill'
   }
-  return props.icon || iconMap[props.type]
+  return props.icon || iconMap[mergedStatus.value]
 })
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
@@ -83,7 +84,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="x-message"
-    :class="[`x-message--${props.type}`, `x-message--${props.placement}`, `x-message--${mergedSize}`, { 'is-plain': props.plain, 'is-round': props.round, 'is-center': props.center }]"
+    :class="[`x-message--${mergedStatus}`, `x-message--${props.placement}`, `x-message--${mergedSize}`, { 'is-plain': props.plain, 'is-round': props.round, 'is-center': props.center }]"
     :style="messageStyle"
     role="alert"
     @mouseenter="stopTimer"

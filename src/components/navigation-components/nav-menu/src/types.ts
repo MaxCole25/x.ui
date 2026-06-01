@@ -19,7 +19,8 @@ export interface NavMenuProps {
   collapsed?: boolean
   allowCollapse?: boolean
   hidden?: boolean
-  appendToBody?: boolean
+  teleported?: boolean
+  teleportTo?: string
   scrollable?: boolean
   maxHeight?: string | number
   accordion?: boolean
@@ -28,7 +29,7 @@ export interface NavMenuProps {
   textColor?: string
   activeTextColor?: string
   submenuActiveTextColor?: string
-  activeBgColor?: string
+  activeBackgroundColor?: string
   fontSize?: number | string
   fontWeight?: number | string
   activeFontWeight?: number | string

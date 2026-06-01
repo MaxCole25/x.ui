@@ -50,7 +50,7 @@ export interface SelectProps
   autoWidth?: boolean
   teleported?: boolean
   teleportTo?: string
-  dropdownZIndex?: number | string
+  zIndex?: number | string
   dropdownMaxWidth?: number | string
   dropdownBackgroundColor?: string
   textAlign?: SelectTextAlign

@@ -12,7 +12,7 @@ defineOptions({
 const props = withDefaults(defineProps<TextProps>(), {
   modelValue: '',
   size: 'md',
-  type: 'default',
+  variant: 'default',
   tag: 'span',
   truncated: false,
   disabled: false,
@@ -32,6 +32,7 @@ const displayValue = computed(() => {
   return formattedValue.value.slice(0, props.maxlength)
 })
 const hasValue = computed(() => textValue.value !== '')
+const mergedVariant = computed(() => props.variant ?? 'default')
 const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'size' in instance.vnode.props))
 const sizePreset = computed(() => props.size === 'title' ? null : componentSizePreset[props.size])
 
@@ -39,7 +40,7 @@ const textStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-text-border-color': props.borderColor,
   '--x-text-border-width': toCssSize(props.borderWidth),
-  '--x-text-bg': props.backgroundColor ?? props.background,
+  '--x-text-bg': props.backgroundColor,
   '--x-text-color': props.textColor,
   '--x-text-font-family': props.fontFamily,
   '--x-text-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value?.fontSize) : toCssSize(props.fontSize),
@@ -58,7 +59,7 @@ const textStyle = computed(() => ({
     class="x-text"
     :class="[
       `x-text--${props.size}`,
-      `x-text--${props.type}`,
+      `x-text--${mergedVariant}`,
       {
         'is-truncated': props.truncated,
         'is-disabled': props.disabled,

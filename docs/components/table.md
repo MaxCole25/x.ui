@@ -278,11 +278,11 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 
 ## 撑满父元素
 
-父容器有明确高度时，可以开启 `fill-height`，让表格高度撑满父元素，表头、表底保持固定，数据区域在内部滚动。`fill-height` 只负责表格填满已有高度容器；应用根节点和页面容器也需要形成完整高度链，否则滚动条可能落到 `body`、页签面板或页面 wrapper 上。
+父容器有明确高度时，可以开启 `full-height`，让表格高度撑满父元素，表头、表底保持固定，数据区域在内部滚动。`full-height` 只负责表格填满已有高度容器；应用根节点和页面容器也需要形成完整高度链，否则滚动条可能落到 `body`、页签面板或页面 wrapper 上。
 
 ```vue
 <div style="height: 520px">
-  <XTable :columns="columns" :data="rows" fill-height />
+  <XTable :columns="columns" :data="rows" full-height />
 </div>
 ```
 
@@ -361,7 +361,7 @@ body,
 | total | 总条数，服务器分页时用于计算页数；未设置时使用 `data.length` | `number` | - |
 | pageSizes | 每页条数选项 | `number[]` | `[10, 20, 50, 100]` |
 | actionsWidth | 操作列宽度 | `number \| string` | `160` |
-| fillHeight | 是否撑满父元素高度 | `boolean` | `false` |
+| fullHeight | 是否撑满父元素高度 | `boolean` | `false` |
 
 ## TableColumn
 
@@ -460,7 +460,7 @@ body,
 - 开启 `show-append-row-button` 和 `show-delete-selected-rows-button` 后，检查表顶图标按钮只在 `editable` 时显示；追加行应更新 `v-model:data`，删除选择行应根据左侧选择列勾选结果删除并清空选择。
 - 在数据单元格右键菜单中分别检查 `适合宽度` 和 `适应宽度`，并用 `Ctrl+W` 检查 `适合宽度` 快捷键；确认后者会把表头文字宽度也纳入列宽计算；分别导出默认表格数据和格式化文字，确认 `formatter` 列导出内容符合预期；开启 `editable` 后导入 Excel，确认菜单可用且 `v-model:data` 得到更新。
 - 在窄容器中检查横向滚动和文本截断效果。
-- 开启 `fill-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。
+- 开启 `full-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充

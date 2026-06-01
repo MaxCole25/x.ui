@@ -60,7 +60,7 @@ export interface RichTextEditorProps {
   fallbackHtml?: string
   readonly?: boolean
   minHeight?: number | string
-  fillHeight?: boolean
+  fullHeight?: boolean
   canSave?: boolean
   showToolbar?: boolean
   toolbarButtons?: RichTextEditorToolbarButton[]

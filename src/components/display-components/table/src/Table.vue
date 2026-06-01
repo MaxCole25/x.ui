@@ -34,6 +34,8 @@ import type {
 
 defineOptions({ name: 'XTable', inheritAttrs: false })
 
+const instance = getCurrentInstance()
+
 const props = withDefaults(defineProps<TableProps>(), {
   rowKey: 'id',
   emptyText: '暂无数据',
@@ -64,7 +66,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   size: undefined,
   selectionMode: 'row',
   actionsWidth: 160,
-  fillHeight: false
+  fullHeight: false
 })
 
 const emit = defineEmits<{
@@ -123,7 +125,6 @@ const internalSorter = ref<TableSorter | null>(null)
 const tableWidth = ref(0)
 const internalCurrentPage = ref(1)
 const internalPageSize = ref(10)
-const instance = getCurrentInstance()
 const attrs = useAttrs()
 
 const normalizedPaginationMode = computed<TablePaginationMode>(() => props.paginationMode ?? 'client')
@@ -3019,7 +3020,7 @@ defineExpose({
     v-bind="rootAttrs"
     ref="tableRootRef"
     class="x-table"
-    :class="[`x-table--${mergedSize}`, { 'is-fill-height': fillHeight }]"
+    :class="[`x-table--${mergedSize}`, { 'is-fill-height': props.fullHeight }]"
     :style="mergedTableStyle"
     tabindex="0"
     @keydown.capture="handleTableKeydown"

@@ -17,7 +17,7 @@ const count = ref(12)
 
 ## 尺寸规则
 
-当显式传入 `size` 时，`XInputNumber` 会按统一尺寸预设接管控件高度、字号、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`。未显式传入 `size` 时，仍可通过 `fontSize` 和 `borderRadius` 做局部外观调整。
+当显式传入 `size` 时，`XInputNumber` 会按统一尺寸预设接管控件高度、字号、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`。未显式传入 `size` 时，仍可通过 `fontSize` 和 `radius` 做局部外观调整。
 
 ## Props
 
@@ -33,11 +33,11 @@ const count = ref(12)
 | placeholder | 占位文本 | `string` | `'请输入数字'` |
 | fullWidth | 是否撑满父元素宽度 | `boolean` | `false` |
 | fullHeight | 是否撑满父元素高度 | `boolean` | `false` |
-| color | 激活边框颜色 | `string` | - |
-| activeBorderColor | 激活边框颜色，优先级高于 `color` | `string` | - |
+| accentColor | 主题色，未设置 `activeBorderColor` 时作为激活边框色 | `string` | - |
+| activeBorderColor | 激活边框颜色，优先级高于 `accentColor` 和 `color` | `string` | - |
 | fontFamily | 字体 | `string` | - |
 | fontSize | 字体大小，未显式传入 `size` 时生效，同时影响输入值和加减按钮文字 | `number \| string` | - |
-| borderRadius | 圆角，未显式传入 `size` 时生效 | `number \| string` | - |
+| radius | 圆角，未显式传入 `size` 时生效 | `number \| string` | - |
 | decreaseButtonBackgroundColor | 减号按钮背景色 | `string` | - |
 | increaseButtonBackgroundColor | 加号按钮背景色 | `string` | - |
 | borderWidth | 边框粗细 | `number \| string` | - |

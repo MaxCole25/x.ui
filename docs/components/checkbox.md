@@ -84,12 +84,12 @@ const checked = ref(true)
 
 <div class="x-demo-block">
   <div class="x-demo-row">
-    <XCheckbox model-value color="#7c3aed" border-color="#c4b5fd" radius="6px">主题覆盖</XCheckbox>
+    <XCheckbox model-value checked-color="#7c3aed" border-color="#c4b5fd" radius="6px">主题覆盖</XCheckbox>
   </div>
 </div>
 
 ```vue
-<XCheckbox model-value color="#7c3aed" border-color="#c4b5fd" radius="6px">
+<XCheckbox model-value checked-color="#7c3aed" border-color="#c4b5fd" radius="6px">
   主题覆盖
 </XCheckbox>
 ```
@@ -104,7 +104,7 @@ const checked = ref(true)
 | disabled | 是否禁用 | `boolean` | `false` |
 | indeterminate | 是否半选 | `boolean` | `false` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
-| color | 选中色 | `string` | - |
+| checkedColor | 选中色 | `string` | - |
 | borderColor | 边框色 | `string` | - |
 | radius | 圆角 | `string` | - |
 

@@ -208,7 +208,7 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   total?: number
   pageSizes?: number[]
   actionsWidth?: number | string
-  fillHeight?: boolean
+  fullHeight?: boolean
 }
 
 export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>

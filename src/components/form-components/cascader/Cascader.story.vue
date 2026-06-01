@@ -59,7 +59,7 @@ const sample = reactive({
   padding: '0 8px',
   radius: '6px',
   textAlign: 'left' as CascaderTextAlign,
-  background: '#ffffff',
+  inputBackgroundColor: '#ffffff',
   name: 'area',
   id: 'cascader-area',
   borderWidth: 1,
@@ -203,7 +203,7 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>输入背景色</span>
-              <input v-model="sample.background" type="color" />
+              <input v-model="sample.inputBackgroundColor" type="color" />
             </label>
             <label>
               <span>文字色</span>

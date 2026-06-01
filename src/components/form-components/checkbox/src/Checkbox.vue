@@ -26,7 +26,7 @@ const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
 const checked = computed(() => (Array.isArray(props.modelValue) ? props.modelValue.includes(props.value) : Boolean(props.modelValue)))
 const checkboxStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-checkbox-color': props.color,
+  '--x-checkbox-color': props.checkedColor,
   '--x-checkbox-border-color': props.borderColor,
   '--x-checkbox-border-width': toCssSize(props.borderWidth),
   '--x-checkbox-bg': props.backgroundColor,

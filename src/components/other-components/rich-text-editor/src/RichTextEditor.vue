@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<RichTextEditorProps>(), {
   fallbackHtml: '',
   readonly: false,
   minHeight: 520,
-  fillHeight: false,
+  fullHeight: false,
   canSave: false,
   showToolbar: true,
   toolbarTooltipPlacement: 'bottom',
@@ -146,7 +146,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
 <template>
   <div
     class="x-rich-text-editor"
-    :class="{ 'x-rich-text-editor--fill-height': props.fillHeight }"
+    :class="{ 'x-rich-text-editor--fill-height': props.fullHeight }"
     :style="{ '--xl-editor-min-height': editorMinHeight }"
   >
     <RichEditor
@@ -167,7 +167,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
       :upload-image="props.uploadImage"
       :upload-file="props.uploadFile"
       :min-height="props.minHeight"
-      :fill-height="props.fillHeight"
+      :full-height="props.fullHeight"
       @update:model-value="handleUpdate"
       @change="handleChange"
       @save-doc="$emit('save-doc')"

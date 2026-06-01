@@ -19,7 +19,7 @@ const sample = reactive({
   prefix: '预约时间',
   suffix: '',
   activeBorderColor: '#1264f4',
-  color: '#0f172a',
+  accentColor: '#1264f4',
   clearIconColor: '#64748b',
   clearIconSize: 16,
   disabledBackgroundColor: '#f5f7fa',
@@ -31,7 +31,7 @@ const sample = reactive({
   padding: '0 8px',
   radius: '6px',
   textAlign: 'center' as InputTextAlign,
-  background: '#ffffff',
+  inputBackgroundColor: '#ffffff',
   name: 'bookingTime',
   id: 'time-select-booking-time',
   maxlength: 5,
@@ -238,6 +238,10 @@ const updateRadius = (event: Event) => {
 
           <div class="time-select-appearance__column">
             <label>
+              <span>主题色</span>
+              <input v-model="sample.accentColor" type="color" />
+            </label>
+            <label>
               <span>激活边框色</span>
               <input v-model="sample.activeBorderColor" type="color" />
             </label>
@@ -251,15 +255,11 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>输入背景色</span>
-              <input v-model="sample.background" type="color" />
+              <input v-model="sample.inputBackgroundColor" type="color" />
             </label>
             <label>
               <span>文字色</span>
               <input v-model="sample.textColor" type="color" />
-            </label>
-            <label>
-              <span>输入文字色</span>
-              <input v-model="sample.color" type="color" />
             </label>
             <label>
               <span>清除色</span>

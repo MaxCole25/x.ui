@@ -18,7 +18,7 @@ describe('feedback components', () => {
     const wrapper = mount(XMessageComponent, {
       props: {
         message: '保存成功',
-        type: 'success',
+        status: 'success',
         showClose: true,
         duration: 0
       }
@@ -27,6 +27,19 @@ describe('feedback components', () => {
     expect(wrapper.text()).toContain('保存成功')
     await wrapper.find('.x-message__close').trigger('click')
     expect(wrapper.emitted('close')?.length).toBe(1)
+  })
+
+  it('uses message status class', () => {
+    const wrapper = mount(XMessageComponent, {
+      props: {
+        message: '状态提示',
+        status: 'warning',
+        duration: 0
+      }
+    })
+
+    expect(wrapper.find('.x-message').classes()).toContain('x-message--warning')
+    expect(wrapper.find('.x-message').classes()).not.toContain('x-message--success')
   })
 
   it('keeps message size from owning padding and radius', () => {
@@ -75,6 +88,22 @@ describe('feedback components', () => {
 
     expect(wrapper.emitted('action')?.[0]).toEqual(['confirm'])
     expect(wrapper.emitted('confirm')?.length).toBe(1)
+    wrapper.unmount()
+  })
+
+  it('uses message box status class', () => {
+    const wrapper = mount(XMessageBoxComponent, {
+      props: {
+        modelValue: true,
+        message: '确认删除',
+        status: 'error'
+      },
+      attachTo: document.body
+    })
+
+    const icon = document.body.querySelector('.x-message-box__icon') as HTMLElement
+    expect(icon.classList.contains('x-message-box__icon--error')).toBe(true)
+    expect(icon.classList.contains('x-message-box__icon--success')).toBe(false)
     wrapper.unmount()
   })
 

@@ -105,7 +105,7 @@ describe('XLogin', () => {
         accentColor: '#8a4b12',
         backgroundColor: '#fffaf1',
         borderWidth: '2px',
-        borderRadius: '12px',
+        radius: '12px',
         width: '420px'
       }
     })
@@ -126,5 +126,15 @@ describe('XLogin', () => {
     await wrapper.find('.x-login__eye').trigger('pointerup')
 
     expect(wrapper.find('input[autocomplete="current-password"]').attributes('type')).toBe('password')
+  })
+
+  it('uses radius variable', () => {
+    const wrapper = mount(XLogin, {
+      props: {
+        radius: '10px'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-login-radius: 10px')
   })
 })

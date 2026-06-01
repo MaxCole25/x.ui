@@ -69,7 +69,7 @@ const items: NavMenuItem[] = [
 
 `scrollable` 只影响纵向菜单。传入 `max-height` 后，滚动条会出现在菜单自身区域，适合菜单项较多且外层容器高度受限的场景。
 
-纵向菜单收起后如果还需要弹出多级子菜单，建议同时开启 `append-to-body`。这样弹出层会挂载到 `body`，避免被菜单自身或外层滚动容器裁剪。
+纵向菜单收起后如果还需要弹出多级子菜单，建议同时开启 `teleported`。这样弹出层会挂载到 `teleport-to` 指定目标，避免被菜单自身或外层滚动容器裁剪。
 
 ```vue
 <template>
@@ -78,7 +78,7 @@ const items: NavMenuItem[] = [
     active-key="/security/roles"
     mode="vertical"
     scrollable
-    append-to-body
+    teleported
     :max-height="300"
   />
 </template>
@@ -160,7 +160,8 @@ const items: NavMenuItem[] = [
 | collapsed | 是否收起（仅纵向有效） | `boolean` | `false` |
 | allowCollapse | 是否启用收起能力 | `boolean` | `false` |
 | hidden | 是否隐藏菜单侧边栏区域 | `boolean` | `false` |
-| appendToBody | 是否将弹出子菜单挂载到 `body`，模板中使用 `append-to-body` | `boolean` | `false` |
+| teleported | 是否将弹出子菜单挂载到 `teleportTo`，用于避免被父级裁剪 | `boolean` | `false` |
+| teleportTo | 弹出子菜单挂载目标 | `string` | `body` |
 | scrollable | 是否启用菜单自身滚动（仅纵向有效） | `boolean` | `false` |
 | maxHeight | 菜单最大高度，传入数字时按 px 处理 | `number \| string` | `undefined` |
 | itemGap | 竖向菜单项间距 | `number \| string` | `4` |
@@ -170,7 +171,7 @@ const items: NavMenuItem[] = [
 | textColor | 菜单文字默认色 | `string` | `'var(--x-color-text)'` |
 | activeTextColor | 菜单文字激活色 | `string` | `'#fff'` |
 | submenuActiveTextColor | 弹出子菜单 active 项文字色，只控制弹出子菜单中的激活项；未传时回退使用 `activeTextColor` | `string` | `undefined` |
-| activeBgColor | 菜单激活背景色 | `string` | `'var(--x-color-primary)'` |
+| activeBackgroundColor | 菜单激活背景色 | `string` | `'var(--x-color-primary)'` |
 | fontSize | 菜单文字大小，传入数字时按 px 处理 | `number \| string` | `14` |
 | fontWeight | 菜单文字默认字重 | `number \| string` | `400` |
 | activeFontWeight | 菜单文字激活字重 | `number \| string` | `600` |

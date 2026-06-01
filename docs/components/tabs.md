@@ -29,12 +29,12 @@ const items: TabItem[] = [
 ## 页签类型
 
 ```vue
-<XTabs v-model="active" :items="items" type="line" />
-<XTabs v-model="active" :items="items" type="card" />
-<XTabs v-model="active" :items="items" type="border-card" />
+<XTabs v-model="active" :items="items" variant="line" />
+<XTabs v-model="active" :items="items" variant="card" />
+<XTabs v-model="active" :items="items" variant="border-card" />
 ```
 
-`type=""` 与 `type="line"` 都会使用线条页签。`card` 为默认卡片页签，`border-card` 会给整体容器增加边框并弱化内容区内边框，适合需要完整外框的页面模块。
+`variant=""` 与 `variant="line"` 都会使用线条页签。`card` 为默认卡片页签，`border-card` 会给整体容器增加边框并弱化内容区内边框，适合需要完整外框的页面模块。
 
 ## 新增与关闭
 
@@ -68,11 +68,11 @@ const items: TabItem[] = [
 | --- | --- | --- | --- |
 | modelValue | 当前激活页签值 | `TabName` | `undefined` |
 | items | 页签列表 | `TabItem[]` | `[]` |
-| type | 页签类型 | `'' \| 'line' \| 'card' \| 'border-card'` | `'card'` |
+| variant | 页签视觉形态 | `'' \| 'line' \| 'card' \| 'border-card'` | `'card'` |
 | size | 标签尺寸 | `'sm' \| 'md' \| 'lg'` | `'md'` |
 | tabPosition | 页签位置 | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` |
 | labelDirection | 标签文字方向 | `'horizontal' \| 'vertical'` | `'horizontal'` |
-| stretch | 是否拉伸页签 | `boolean` | `false` |
+| tabStretch | 是否拉伸页签 | `boolean` | `false` |
 | closable | 是否默认允许关闭 | `boolean` | `false` |
 | addable | 是否显示新增按钮 | `boolean` | `false` |
 | editable | 是否进入编辑态，效果同新增按钮 | `boolean` | `false` |
@@ -83,18 +83,19 @@ const items: TabItem[] = [
 | showContextMenu | 是否启用页签右键菜单 | `boolean` | `true` |
 | draggable | 是否默认允许拖拽排序 | `boolean` | `false` |
 | activeTabTextColor | 激活页签文字色 | `string` | `'var(--x-color-primary)'` |
-| tabBgColor | 普通页签背景色，不影响透明的标签头容器 | `string` | `'transparent'` |
+| tabBackgroundColor | 普通页签背景色，不影响透明的标签头容器 | `string` | `'transparent'` |
 | tabTextColor | 普通页签文字色 | `string` | `'var(--x-color-text-muted)'` |
 | tabFontSize | 标签文字大小（支持数字像素或 CSS 长度） | `number \| string` | `undefined` |
 | tabMinWidth | 单个页签最小宽度（支持数字像素或 CSS 长度） | `number \| string` | `undefined` |
-| borderRadius | 页签整体圆角（支持数字像素或 CSS 长度） | `number \| string` | `4` |
+| radius | 页签整体圆角（支持数字像素或 CSS 长度） | `number \| string` | `4` |
 | border | 标签头和内容页边框 | `string` | `'1px solid var(--x-color-border)'` |
 | contentBackgroundColor | 内容页和激活页签背景色 | `string` | `'var(--x-color-surface)'` |
 | contextMenuBackgroundColor | 右键菜单背景色 | `string` | `'var(--x-color-surface)'` |
 | contextMenuTextColor | 右键菜单文字色 | `string` | `'var(--x-color-text)'` |
+| fullHeight | 是否填满父容器高度 | `boolean` | `false` |
 | beforeLeave | 切换前守卫，返回 `false` 阻止切换 | `(next, prev) => boolean \| Promise<boolean>` | `undefined` |
 
-默认尺寸为中尺寸 `md`，也可以通过 `size="lg"` 或 `size="sm"` 调整标签内部高度变量、文字和图标尺寸。三档内部高度变量和字号遵循统一尺寸预设：`sm` 为 `22px / 10px`，`md` 为 `30px / 12px`，`lg` 为 `38px / 14px`。`XTabs` 是尺寸特例：`.x-tabs__item-frame` 高度、标签内边距和默认最小宽度不随 `size` 切换，外层框高度始终保持 `30px`，标签内边距和默认最小宽度始终保持 md 规格 `0 8px / 140px`，避免页签在不同 UI 尺寸下整体高度和左右留白跳变。若只需要调整标签文字大小，可使用 `tab-font-size` 覆盖尺寸预设中的字号；若只需要调整单个页签最小宽度，可使用 `tab-min-width` 覆盖默认最小宽度。`label-direction="vertical"` 可让标签文字上下排列，适合配合 `tab-position="left"` 或 `tab-position="right"` 做侧向标签栏。默认圆角为 `4px`，可通过 `border-radius="8px"` 或 `:border-radius="8"` 调整。`XTabs` 最外层和页签头容器不显示外侧边框，页签头容器背景固定透明，普通页签背景色通过 `tab-bg-color` 调整；标签和内容页边框统一通过 `border` 调整，内容页和激活页签背景色统一通过 `content-background-color` 调整。右键菜单默认启用，可通过 `show-context-menu="false"` 关闭，也可通过 `context-menu-background-color` 和 `context-menu-text-color` 调整背景与文字颜色。标签头不会绘制贴近内容页的一侧边框，内容页保留完整边框；激活标签会向内容页方向溢出 `2px`，用与内容页一致的背景覆盖交界处边框，避免标签和内容之间出现重叠线。图标颜色跟随当前页签文字颜色：激活态默认使用 `var(--x-color-primary)`，未激活态默认使用 `var(--x-color-text-muted)`，业务项目可通过主题基础色统一覆盖。
+默认尺寸为中尺寸 `md`，也可以通过 `size="lg"` 或 `size="sm"` 调整标签内部高度变量、文字和图标尺寸。三档内部高度变量和字号遵循统一尺寸预设：`sm` 为 `22px / 10px`，`md` 为 `30px / 12px`，`lg` 为 `38px / 14px`。`XTabs` 是尺寸特例：`.x-tabs__item-frame` 高度、标签内边距和默认最小宽度不随 `size` 切换，外层框高度始终保持 `30px`，标签内边距和默认最小宽度始终保持 md 规格 `0 8px / 140px`，避免页签在不同 UI 尺寸下整体高度和左右留白跳变。若只需要调整标签文字大小，可使用 `tab-font-size` 覆盖尺寸预设中的字号；若只需要调整单个页签最小宽度，可使用 `tab-min-width` 覆盖默认最小宽度。`label-direction="vertical"` 可让标签文字上下排列，适合配合 `tab-position="left"` 或 `tab-position="right"` 做侧向标签栏。默认圆角为 `4px`，可通过 `radius="8px"` 或 `:radius="8"` 调整。`XTabs` 最外层和页签头容器不显示外侧边框，页签头容器背景固定透明，普通页签背景色通过 `tab-background-color` 调整；标签和内容页边框统一通过 `border` 调整，内容页和激活页签背景色统一通过 `content-background-color` 调整。右键菜单默认启用，可通过 `show-context-menu="false"` 关闭，也可通过 `context-menu-background-color` 和 `context-menu-text-color` 调整背景与文字颜色。标签头不会绘制贴近内容页的一侧边框，内容页保留完整边框；激活标签会向内容页方向溢出 `2px`，用与内容页一致的背景覆盖交界处边框，避免标签和内容之间出现重叠线。图标颜色跟随当前页签文字颜色：激活态默认使用 `var(--x-color-primary)`，未激活态默认使用 `var(--x-color-text-muted)`，业务项目可通过主题基础色统一覆盖。
 
 ## TabItem
 
@@ -157,6 +158,5 @@ const items: TabItem[] = [
 | `tabGap` | 公开属性，详见类型定义 | `string \| number` | — |
 | `verticalWidth` | vertical宽度 | `string \| number` | — |
 | `verticalLabelMinHeight` | vertical标签Min高度 | `string \| number` | — |
-| `fillHeight` | 是否填满父容器高度 | `boolean` | — |
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

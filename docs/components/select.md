@@ -181,7 +181,7 @@ const queryStatus = async () => {
 
 <div class="x-demo-block">
   <div class="x-demo-column">
-    <XSelect color="#7c3aed" border-color="#c4b5fd" radius="12px" background="#faf5ff" :options="statusOptions" placeholder="单组件主题覆盖" />
+    <XSelect color="#7c3aed" border-color="#c4b5fd" radius="12px" input-background-color="#faf5ff" :options="statusOptions" placeholder="单组件主题覆盖" />
   </div>
 </div>
 
@@ -190,7 +190,7 @@ const queryStatus = async () => {
   color="#7c3aed"
   border-color="#c4b5fd"
   radius="12px"
-  background="#faf5ff"
+  input-background-color="#faf5ff"
   :options="options"
 />
 ```
@@ -223,15 +223,15 @@ const queryStatus = async () => {
 | autoHeight | 是否自动高度 | `boolean` | `false` |
 | teleported | 是否将下拉弹层挂载到 `teleportTo`，用于避免被表格、滚动容器等父级裁剪 | `boolean` | `true` |
 | teleportTo | 下拉弹层挂载目标 | `string` | `body` |
-| dropdownZIndex | 下拉弹层层级 | `string \| number` | `2000` |
+| zIndex | 下拉弹层层级 | `string \| number` | `2000` |
 | dropdownMaxWidth | 下拉弹层最大宽度，选项文本较长时会在该宽度内扩展 | `string \| number` | `360` |
-| color | 主题色 | `string` | - |
+| accentColor | 主题色，未设置激活边框色时作为激活边框色 | `string` | - |
 | activeBorderColor | 激活边框色 | `string` | - |
 | borderColor | 边框色 | `string` | - |
 | borderWidth | 边框宽度 | `string \| number` | - |
 | radius | 圆角 | `string` | - |
-| background | 背景色 | `string` | - |
-| backgroundColor | 背景色，优先级高于 `background` | `string` | - |
+| inputBackgroundColor | 输入区域背景色，优先级高于 `backgroundColor` | `string` | - |
+| backgroundColor | 背景色，优先级低于 `inputBackgroundColor` | `string` | - |
 | dropdownBackgroundColor | 选项弹窗背景色 | `string` | `#ffffff` |
 | textColor | 文字色 | `string` | - |
 | disabledBackgroundColor | 禁用背景色 | `string` | - |

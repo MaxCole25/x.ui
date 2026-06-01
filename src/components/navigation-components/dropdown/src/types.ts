@@ -23,10 +23,11 @@ export interface DropdownProps extends ElementStyleProps {
   disabled?: boolean
   hideOnClick?: boolean
   showArrow?: boolean
-  appendToBody?: boolean
+  teleported?: boolean
+  teleportTo?: string
   offset?: number | string
   popperWidth?: number | string
-  popperZIndex?: number
+  zIndex?: number | string
   radius?: number | string
   shadow?: string
   hoverBackgroundColor?: string

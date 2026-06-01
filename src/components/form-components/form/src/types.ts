@@ -37,7 +37,7 @@ export interface FormProps extends ElementStyleProps {
   labelWidth?: string | number
   labelPosition?: FormLabelPosition
   loading?: boolean
-  color?: string
+  accentColor?: string
   radius?: string
 }
 
@@ -52,7 +52,7 @@ export interface FormItemProps {
   disabled?: boolean
   labelWidth?: string | number
   labelPosition?: FormLabelPosition
-  contentFillHeight?: boolean
+  contentFullHeight?: boolean
   align?: FormItemAlign
   labelAlign?: FormItemHorizontalAlign
   contentAlign?: FormItemHorizontalAlign | 'stretch'

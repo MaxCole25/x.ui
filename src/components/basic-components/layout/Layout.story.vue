@@ -6,11 +6,15 @@ import '../../../styles/index.css'
 
 const state = reactive({
   mode: 'top-sidebar' as LayoutMode,
-  fillHeight: true,
+  fullHeight: true,
   sidebarWidth: 280,
   sidebarPadding: '12px',
   sidebarCollapsed: false,
   gap: 0,
+  topbarRadius: 0,
+  sidebarRadius: 0,
+  contentRadius: 0,
+  footerRadius: 0,
   showBorders: true
 })
 
@@ -18,11 +22,15 @@ const previewCode = computed(() => {
   const edgeBorder = state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'
   const attrs = [
     state.mode !== 'top-sidebar' ? `mode="${state.mode}"` : '',
-    !state.fillHeight ? ':fill-height="false"' : '',
+    !state.fullHeight ? ':full-height="false"' : '',
     state.sidebarWidth !== 280 ? `:sidebar-width="${state.sidebarWidth}"` : '',
     state.sidebarPadding !== '12px' ? `sidebar-padding="${state.sidebarPadding}"` : '',
     state.sidebarCollapsed ? 'sidebar-collapsed' : '',
     state.gap !== 0 ? `:gap="${state.gap}"` : '',
+    state.topbarRadius !== 0 ? `:topbar-radius="${state.topbarRadius}"` : '',
+    state.sidebarRadius !== 0 ? `:sidebar-radius="${state.sidebarRadius}"` : '',
+    state.contentRadius !== 0 ? `:content-radius="${state.contentRadius}"` : '',
+    state.footerRadius !== 0 ? `:footer-radius="${state.footerRadius}"` : '',
     state.showBorders ? `topbar-border="${edgeBorder}"` : '',
     state.showBorders ? `sidebar-border="${edgeBorder}"` : '',
     state.showBorders ? `footer-border="${edgeBorder}"` : ''
@@ -66,13 +74,33 @@ const previewCode = computed(() => {
             <input v-model="state.sidebarPadding" type="text" />
           </label>
 
+          <label>
+            <span>顶部圆角</span>
+            <input v-model.number="state.topbarRadius" type="number" min="0" max="32" step="1" />
+          </label>
+
+          <label>
+            <span>侧栏圆角</span>
+            <input v-model.number="state.sidebarRadius" type="number" min="0" max="32" step="1" />
+          </label>
+
+          <label>
+            <span>内容圆角</span>
+            <input v-model.number="state.contentRadius" type="number" min="0" max="32" step="1" />
+          </label>
+
+          <label>
+            <span>底部圆角</span>
+            <input v-model.number="state.footerRadius" type="number" min="0" max="32" step="1" />
+          </label>
+
           <label class="layout-check">
             <input v-model="state.sidebarCollapsed" type="checkbox" />
             <span>收起侧栏</span>
           </label>
 
           <label class="layout-check">
-            <input v-model="state.fillHeight" type="checkbox" />
+            <input v-model="state.fullHeight" type="checkbox" />
             <span>占满余高</span>
           </label>
 
@@ -84,11 +112,15 @@ const previewCode = computed(() => {
 
         <XLayout
           :mode="state.mode"
-          :fill-height="state.fillHeight"
+          :full-height="state.fullHeight"
           :sidebar-width="state.sidebarWidth"
           :sidebar-padding="state.sidebarPadding"
           :sidebar-collapsed="state.sidebarCollapsed"
           :gap="state.gap"
+          :topbar-radius="state.topbarRadius"
+          :sidebar-radius="state.sidebarRadius"
+          :content-radius="state.contentRadius"
+          :footer-radius="state.footerRadius"
           :topbar-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
           :sidebar-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
           :footer-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"

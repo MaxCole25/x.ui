@@ -80,11 +80,11 @@ describe('XRichTextEditor', () => {
     expect(wrapper.find('.xl-rich-editor').classes()).not.toContain('xl-rich-editor--fill-height')
   })
 
-  it('adds fill height classes when fillHeight is enabled', () => {
+  it('adds fill height classes when fullHeight is enabled', () => {
     const wrapper = mount(XRichTextEditor, {
       props: {
         modelValue: '<p>a</p>',
-        fillHeight: true
+        fullHeight: true
       }
     })
 
@@ -92,12 +92,24 @@ describe('XRichTextEditor', () => {
     expect(wrapper.find('.xl-rich-editor').classes()).toContain('xl-rich-editor--fill-height')
   })
 
+  it('keeps fullHeight false from applying fill height classes', () => {
+    const wrapper = mount(XRichTextEditor, {
+      props: {
+        modelValue: '<p>a</p>',
+        fullHeight: false
+      }
+    })
+
+    expect(wrapper.find('.x-rich-text-editor').classes()).not.toContain('x-rich-text-editor--fill-height')
+    expect(wrapper.find('.xl-rich-editor').classes()).not.toContain('xl-rich-editor--fill-height')
+  })
+
   it('keeps minHeight available as the editor CSS variable', () => {
     const wrapper = mount(XRichTextEditor, {
       props: {
         modelValue: '<p>a</p>',
         minHeight: 360,
-        fillHeight: true
+        fullHeight: true
       }
     })
 
@@ -190,11 +202,11 @@ describe('XRichTextEditor', () => {
     expect(wrapper.find('.xl-toolbar__menu-dropdown').exists()).toBe(false)
   })
 
-  it('keeps toolbar and scroll viewport present in fill height mode', () => {
+  it('keeps toolbar and scroll viewport present in full height mode', () => {
     const wrapper = mount(XRichTextEditor, {
       props: {
         modelValue: '<p>a</p>',
-        fillHeight: true,
+        fullHeight: true,
         showToolbar: true
       }
     })

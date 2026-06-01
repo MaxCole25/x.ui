@@ -8,7 +8,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<LayoutProps>(), {
   mode: 'top-sidebar',
-  fillHeight: true,
+  fullHeight: true,
   sidebarWidth: 288,
   sidebarCollapsed: false,
   sidebarCollapsedWidth: 88,
@@ -17,19 +17,19 @@ const props = withDefaults(defineProps<LayoutProps>(), {
   footerHeight: 30,
   topbarBackgroundColor: '#1E6B73',
   topbarColor: '#F9F9F9',
-  topbarBorderRadius: 0,
+  topbarRadius: 0,
   topbarBorder: 'none',
   sidebarBackgroundColor: '#185A61',
   sidebarColor: '#F9F9F9',
-  sidebarBorderRadius: 0,
+  sidebarRadius: 0,
   sidebarBorder: 'none',
   sidebarPadding: 12,
   contentBackgroundColor: 'transparent',
   contentColor: '#F9F9F9',
-  contentBorderRadius: 0,
+  contentRadius: 0,
   footerBackgroundColor: '#124A50',
   footerColor: '#F9F9F9',
-  footerBorderRadius: 0,
+  footerRadius: 0,
   footerBorder: 'none'
 })
 
@@ -45,28 +45,29 @@ const shellStyle = computed(() => {
     '--x-layout-footer-height': toCssLength(props.footerHeight),
     '--x-layout-topbar-bg': props.topbarBackgroundColor,
     '--x-layout-topbar-color': props.topbarColor,
-    '--x-layout-topbar-radius': toCssLength(props.topbarBorderRadius),
+    '--x-layout-topbar-radius': toCssLength(props.topbarRadius),
     '--x-layout-topbar-border': props.topbarBorder,
     '--x-layout-sidebar-bg': props.sidebarBackgroundColor,
     '--x-layout-sidebar-color': props.sidebarColor,
-    '--x-layout-sidebar-radius': toCssLength(props.sidebarBorderRadius),
+    '--x-layout-sidebar-radius': toCssLength(props.sidebarRadius),
     '--x-layout-sidebar-border': props.sidebarBorder,
     '--x-layout-sidebar-padding': toCssLength(props.sidebarPadding),
     '--x-layout-content-bg': props.contentBackgroundColor,
     '--x-layout-content-color': props.contentColor,
-    '--x-layout-content-radius': toCssLength(props.contentBorderRadius),
+    '--x-layout-content-radius': toCssLength(props.contentRadius),
     '--x-layout-footer-bg': props.footerBackgroundColor,
     '--x-layout-footer-color': props.footerColor,
-    '--x-layout-footer-radius': toCssLength(props.footerBorderRadius),
+    '--x-layout-footer-radius': toCssLength(props.footerRadius),
     '--x-layout-footer-border': props.footerBorder
   }
 })
+
 </script>
 
 <template>
   <div
     class="x-layout"
-    :class="[`x-layout--${props.mode}`, { 'is-fill-height': props.fillHeight, 'is-sidebar-collapsed': props.sidebarCollapsed }]"
+    :class="[`x-layout--${props.mode}`, { 'is-fill-height': props.fullHeight, 'is-sidebar-collapsed': props.sidebarCollapsed }]"
     :style="shellStyle"
   >
     <header class="x-layout__topbar">

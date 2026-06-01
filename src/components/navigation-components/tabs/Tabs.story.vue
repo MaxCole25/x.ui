@@ -5,7 +5,7 @@ import type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsReorderPayl
 import '../../../styles/index.css'
 
 const active = ref<TabName>('dashboard')
-const type = ref<TabsType>('card')
+const variant = ref<TabsType>('card')
 const position = ref<TabPosition>('top')
 const labelDirection = ref<TabsLabelDirection>('horizontal')
 const size = ref<TabsSize>('md')
@@ -22,13 +22,14 @@ const config = reactive({
   addable: true,
   draggable: true,
   lazy: false,
-  stretch: false,
+  tabStretch: false,
   showAvatar: true,
   showRefreshIcon: true,
   showContextMenu: true,
-  borderRadius: 4,
+  radius: 4,
   tabFontSize: 14,
   tabMinWidth: 140,
+  tabBackgroundColor: 'transparent',
   border: '1px solid #C7D7E8',
   contentBackgroundColor: '#ffffff',
   contextMenuBackgroundColor: '#ffffff',
@@ -80,10 +81,10 @@ function handleReorder(payload: TabsReorderPayload) {
           <label><input v-model="config.addable" type="checkbox" />可新增</label>
           <label><input v-model="config.draggable" type="checkbox" />可拖拽</label>
           <label><input v-model="config.lazy" type="checkbox" />懒渲染</label>
-          <label><input v-model="config.stretch" type="checkbox" />拉伸</label>
+          <label><input v-model="config.tabStretch" type="checkbox" />拉伸</label>
           <label><input v-model="config.showAvatar" type="checkbox" />头像</label>
           <label><input v-model="config.showContextMenu" type="checkbox" />右键菜单</label>
-          <select v-model="type">
+          <select v-model="variant">
             <option value="">线条默认</option>
             <option value="line">线条</option>
             <option value="card">卡片</option>
@@ -91,7 +92,7 @@ function handleReorder(payload: TabsReorderPayload) {
           </select>
           <label>
             圆角
-            <input v-model.number="config.borderRadius" type="number" min="0" max="24" style="width: 64px" />
+            <input v-model.number="config.radius" type="number" min="0" max="24" style="width: 64px" />
             px
           </label>
           <label>
@@ -103,6 +104,10 @@ function handleReorder(payload: TabsReorderPayload) {
             最小宽度
             <input v-model.number="config.tabMinWidth" type="number" min="72" max="240" style="width: 64px" />
             px
+          </label>
+          <label>
+            页签背景
+            <input v-model="config.tabBackgroundColor" type="text" style="width: 120px" />
           </label>
           <label>
             边框
@@ -141,7 +146,7 @@ function handleReorder(payload: TabsReorderPayload) {
           <XTabs
             v-model="active"
             :items="tabs"
-            :type="type"
+            :variant="variant"
             :size="size"
             :tab-position="position"
             :label-direction="labelDirection"
@@ -149,13 +154,14 @@ function handleReorder(payload: TabsReorderPayload) {
             :addable="config.addable"
             :draggable="config.draggable"
             :lazy="config.lazy"
-            :stretch="config.stretch"
+            :tab-stretch="config.tabStretch"
             :show-avatar="config.showAvatar"
             :show-refresh-icon="config.showRefreshIcon"
             :show-context-menu="config.showContextMenu"
-            :border-radius="config.borderRadius"
+            :radius="config.radius"
             :tab-font-size="config.tabFontSize"
             :tab-min-width="config.tabMinWidth"
+            :tab-background-color="config.tabBackgroundColor"
             :border="config.border"
             :content-background-color="config.contentBackgroundColor"
             :context-menu-background-color="config.contextMenuBackgroundColor"

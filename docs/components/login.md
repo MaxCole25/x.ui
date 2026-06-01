@@ -109,7 +109,7 @@ function handleLogin(payload) {
   background-color="#fffaf1"
   border-color="#e7c892"
   border-width="2px"
-  border-radius="16px"
+  radius="16px"
   width="420px"
   text-color="#3f2d1b"
   muted-color="#806b55"
@@ -158,7 +158,7 @@ function handleLogin(payload) {
 | `backgroundColor` | 卡片背景色 | `string` | `'#ffffff'` |
 | `borderColor` | 边框色 | `string` | `'#cfe0e6'` |
 | `borderWidth` | 边框粗细 | `string` | `'1px'` |
-| `borderRadius` | 外边框圆角大小 | `string` | `'18px'` |
+| `radius` | 外边框圆角大小 | `string` | `'18px'` |
 | `width` | 组件宽度 | `string` | `'100%'` |
 | `textColor` | 主文字色 | `string` | `'#12323a'` |
 | `mutedColor` | 次级文字色 | `string` | `'#6b7c93'` |

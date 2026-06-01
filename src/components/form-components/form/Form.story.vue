@@ -64,8 +64,8 @@ const sample = reactive({
             </XFormItem>
           </XForm>
           <div class="x-form-story-fill-panel">
-            <XFormItem label="备注" label-position="top" content-fill-height>
-              <XRichTextEditor v-model="sample.remark" fill-height :show-outline="false" />
+            <XFormItem label="备注" label-position="top" content-full-height>
+              <XRichTextEditor v-model="sample.remark" full-height :show-outline="false" />
             </XFormItem>
           </div>
           <div class="x-form-story-inline-controls">

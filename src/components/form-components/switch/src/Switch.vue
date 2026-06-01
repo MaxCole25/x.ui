@@ -31,7 +31,7 @@ const sizeVisualHeight = computed(() => `${Number((sizePreset.value.height * 0.8
 const checked = computed(() => props.modelValue === props.activeValue)
 const switchStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-switch-color': props.color,
+  '--x-switch-color': props.checkedColor,
   '--x-switch-inactive-color': props.inactiveColor,
   '--x-switch-thumb-color': props.thumbColor,
   '--x-switch-size': hasSizeOverride.value ? sizeVisualHeight.value : toCssSize(props.buttonSize),

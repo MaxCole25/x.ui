@@ -5,7 +5,7 @@
       'xl-rich-editor--toolbar-hidden': !props.showToolbar,
       'xl-rich-editor--readonly': props.readonly,
       'xl-rich-editor--editable': !props.readonly,
-      'xl-rich-editor--fill-height': props.fillHeight,
+      'xl-rich-editor--fill-height': props.fullHeight,
       [`xl-rich-editor--${mergedSize}`]: true,
     }"
     :style="editorStyle"
@@ -91,7 +91,7 @@ const props = withDefaults(
     modelValue?: JSONContent | string | null
     readonly?: boolean
     minHeight?: number | string
-    fillHeight?: boolean
+    fullHeight?: boolean
     canSave?: boolean
     toolbarButtons?: string[]
     toolbarTooltipPlacement?: 'top' | 'bottom'
@@ -109,7 +109,7 @@ const props = withDefaults(
   {
     readonly: false,
     minHeight: 520,
-    fillHeight: false,
+    fullHeight: false,
     modelValue: null,
     canSave: false,
     toolbarTooltipPlacement: 'bottom',

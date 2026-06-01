@@ -43,9 +43,12 @@
     "story:preview": "set VITE_CJS_IGNORE_WARNING=true&& histoire preview",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "api:naming:audit": "node scripts/audit-api-naming.mjs",
+    "api:naming:audit:write": "node scripts/audit-api-naming.mjs --write",
+    "api:naming:audit:check": "node scripts/audit-api-naming.mjs --check --max-legacy=0 --max-review=0",
     "build": "vue-tsc --noEmit && vite build",
     "build:watch": "vite build --watch",
-    "prepublishOnly": "pnpm test && pnpm build",
+    "prepublishOnly": "pnpm api:naming:audit:check && pnpm test && pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"

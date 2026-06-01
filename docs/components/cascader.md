@@ -118,6 +118,7 @@ const queryArea = async (option, path) => {
 | showActiveBorder | 是否显示激活边框 | `boolean` | `true` |
 | id | 控件 id | `string` | - |
 | name | 控件 name | `string` | - |
+| accentColor | 主题色，未设置 `activeBorderColor` 时作为激活边框色 | `string` | - |
 | activeBorderColor | 激活边框色 | `string` | - |
 | clearIconColor | 清空图标颜色 | `string` | - |
 | clearIconSize | 清空图标尺寸 | `number \| string` | - |
@@ -128,10 +129,10 @@ const queryArea = async (option, path) => {
 | height | 高度 | `number \| string` | - |
 | padding | 内边距 | `number \| string` | - |
 | radius | 圆角 | `string` | - |
-| background | 输入背景色 | `string` | - |
+| inputBackgroundColor | 输入区域背景色，优先级高于 `backgroundColor` | `string` | - |
 | borderWidth | 边框粗细 | `number \| string` | - |
 | borderColor | 边框色 | `string` | - |
-| backgroundColor | 背景色 | `string` | - |
+| backgroundColor | 背景色，优先级低于 `inputBackgroundColor` | `string` | - |
 | textColor | 文字色 | `string` | - |
 
 ## Events
@@ -170,6 +171,5 @@ const queryArea = async (option, path) => {
 | `formatter` | 显示值格式化函数 | `BaseInputFormatter` | — |
 | `parser` | 输入值解析函数 | `BaseInputParser` | — |
 | `formatOnBlur` | 是否在失焦时格式化显示值 | `boolean` | — |
-| `color` | 主题色或文字颜色 | `string` | — |
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

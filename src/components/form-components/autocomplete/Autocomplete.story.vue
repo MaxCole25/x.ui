@@ -30,7 +30,7 @@ const sample = reactive({
   prefix: '城市',
   suffix: 'CN',
   activeBorderColor: '#1264f4',
-  color: '#1264f4',
+  accentColor: '#1264f4',
   clearIconColor: '#64748b',
   clearIconSize: 16,
   disabledBackgroundColor: '#f5f7fa',
@@ -42,7 +42,7 @@ const sample = reactive({
   padding: '0 8px',
   radius: '6px',
   textAlign: 'left' as InputTextAlign,
-  background: '#ffffff',
+  inputBackgroundColor: '#ffffff',
   name: 'city',
   id: 'autocomplete-city',
   maxlength: 20,
@@ -60,7 +60,7 @@ const sample = reactive({
   dropdownMaxWidth: 360,
   teleported: true,
   teleportTo: 'body',
-  dropdownZIndex: overlayZIndex.popper,
+  zIndex: overlayZIndex.popper,
   dropdownBackgroundColor: '#ffffff',
   loading: false,
   loadingText: '加载中',
@@ -253,14 +253,14 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>下拉层级</span>
-              <input v-model.number="sample.dropdownZIndex" type="number" min="0" />
+              <input v-model.number="sample.zIndex" type="number" min="0" />
             </label>
           </div>
 
           <div class="autocomplete-appearance__column">
             <label>
               <span>主题色</span>
-              <input v-model="sample.color" type="color" />
+              <input v-model="sample.accentColor" type="color" />
             </label>
             <label>
               <span>激活边框色</span>
@@ -276,7 +276,7 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>输入背景色</span>
-              <input v-model="sample.background" type="color" />
+              <input v-model="sample.inputBackgroundColor" type="color" />
             </label>
             <label>
               <span>文字色</span>

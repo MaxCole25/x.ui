@@ -10,7 +10,7 @@ import '../../../styles/index.css'
 
 const appearance = reactive({
   message: '这是一条可配置的消息提示',
-  type: 'info' as MessageType,
+  status: 'info' as MessageType,
   size: 'md' as XSize,
   placement: 'top' as MessagePlacement,
   duration: 0,
@@ -36,7 +36,7 @@ const appearance = reactive({
 function openService() {
   XMessage({
     message: appearance.message,
-    type: appearance.type,
+    status: appearance.status,
     size: appearance.size,
     placement: appearance.placement,
     zIndex: appearance.zIndex,
@@ -61,7 +61,7 @@ function openService() {
           <div class="story-message-preview">
             <XMessageComponent
               :message="appearance.message"
-              :type="appearance.type"
+              :status="appearance.status"
               :size="appearance.size"
               :placement="appearance.placement"
               :duration="appearance.duration"
@@ -110,7 +110,7 @@ function openService() {
           <label class="story-check"><input v-model="appearance.center" type="checkbox" /><span>居中</span></label>
         </template>
         <template #types>
-          <label><span>MessageType</span><select v-model="appearance.type"><option value="success">success</option><option value="warning">warning</option><option value="info">info</option><option value="error">error</option></select></label>
+          <label><span>MessageType</span><select v-model="appearance.status"><option value="success">success</option><option value="warning">warning</option><option value="info">info</option><option value="error">error</option></select></label>
           <label><span>内边距</span><input v-model="appearance.padding" type="text" /></label>
         </template>
         <template #interfaces>

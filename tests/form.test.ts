@@ -82,6 +82,19 @@ describe('form', () => {
     expect(getCssRule('.x-form--sm,\n.x-form-item--sm')).toContain('--x-form-item-label-font-size: 10px')
   })
 
+  it('uses XForm accentColor variable', () => {
+    const wrapper = mount(XForm, {
+      props: {
+        accentColor: '#0f766e'
+      },
+      slots: {
+        default: '表单内容'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-form-color: #0f766e')
+  })
+
   it('renders custom label, help and error slots', () => {
     const wrapper = mount({
       components: { XForm, XFormItem, XInput },
@@ -228,7 +241,7 @@ describe('form', () => {
     const fillWrapper = mount({
       components: { XFormItem },
       template: `
-        <XFormItem label="备注" label-position="top" content-fill-height>
+        <XFormItem label="备注" label-position="top" content-full-height>
           <div class="fill-child" style="height: 100%">填满内容</div>
         </XFormItem>
       `
@@ -256,6 +269,13 @@ describe('form', () => {
     expect(fieldRule).toContain('height: 100%')
     expect(fieldRule).toContain('overflow: hidden')
     expect(topFieldRule).toContain('grid-template-rows: minmax(0, 1fr)')
+
+    const disabledWrapper = mount(XFormItem, {
+      props: {
+        contentFullHeight: false
+      }
+    })
+    expect(disabledWrapper.classes()).not.toContain('x-form-item--content-fill-height')
   })
 
   it('maps form item theme props to public CSS variables', () => {

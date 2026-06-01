@@ -62,7 +62,7 @@
 | `parser` | 输入值解析函数 | `BaseInputParser` | — |
 | `formatOnBlur` | 是否在失焦时格式化显示值 | `boolean` | — |
 | `activeBorderColor` | 激活状态边框颜色 | `string` | — |
-| `color` | 主题色或文字颜色 | `string` | — |
+| `accentColor` | 主题色，未设置激活边框色时作为激活边框色 | `string` | — |
 | `clearIconColor` | clear图标颜色 | `string` | — |
 | `clearIconSize` | 公开属性，详见类型定义 | `string \| number` | — |
 | `disabledBackgroundColor` | 禁用背景色 | `string` | — |
@@ -73,13 +73,13 @@
 | `autoHeight` | 是否自动高度 | `boolean` | — |
 | `padding` | 内边距 | `string \| number` | — |
 | `radius` | 圆角，数字按 px 处理 | `string` | — |
-| `background` | 输入区域背景色 | `string` | — |
+| `inputBackgroundColor` | 输入区域背景色，优先级高于 `backgroundColor` | `string` | — |
 | `name` | 原生 name 属性 | `string` | — |
 | `id` | 原生 id 属性 | `string` | — |
 | `maxlength` | 最大输入长度 | `number` | — |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
 | `borderColor` | 边框颜色 | `string` | — |
-| `backgroundColor` | 背景色 | `string` | — |
+| `backgroundColor` | 背景色，优先级低于 `inputBackgroundColor` | `string` | — |
 | `textColor` | 文字颜色 | `string` | — |
 | `panelBackgroundColor` | 面板背景色 | `string` | — |
 | `panelTextColor` | 面板文字颜色 | `string` | — |

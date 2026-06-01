@@ -90,7 +90,7 @@ provide(formContextKey, {
 
 const formStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-form-color': props.color,
+  '--x-form-color': props.accentColor,
   '--x-form-border-color': props.borderColor,
   '--x-form-border-width': toCssSize(props.borderWidth),
   '--x-form-bg': props.backgroundColor,

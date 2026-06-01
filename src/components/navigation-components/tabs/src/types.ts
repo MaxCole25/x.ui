@@ -46,11 +46,11 @@ export interface TabsCloseOthersPayload {
 export interface TabsProps {
   modelValue?: TabName
   items?: TabItem[]
-  type?: TabsType
+  variant?: TabsType
   size?: TabsSize
   tabPosition?: TabPosition
   labelDirection?: TabsLabelDirection
-  stretch?: boolean
+  tabStretch?: boolean
   closable?: boolean
   addable?: boolean
   editable?: boolean
@@ -61,18 +61,18 @@ export interface TabsProps {
   showContextMenu?: boolean
   draggable?: boolean
   activeTabTextColor?: string
-  tabBgColor?: string
+  tabBackgroundColor?: string
   tabTextColor?: string
   tabFontSize?: number | string
   tabMinWidth?: number | string
   tabGap?: number | string
   verticalWidth?: number | string
   verticalLabelMinHeight?: number | string
-  borderRadius?: number | string
+  radius?: number | string
   border?: string
   contentBackgroundColor?: string
   contextMenuBackgroundColor?: string
   contextMenuTextColor?: string
-  fillHeight?: boolean
+  fullHeight?: boolean
   beforeLeave?: (activeName: TabName, oldActiveName: TabName) => boolean | Promise<boolean>
 }

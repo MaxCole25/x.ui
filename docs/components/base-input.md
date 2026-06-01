@@ -173,11 +173,12 @@ function parseCurrency(value) {
 | hideClearButton | 是否隐藏清除按钮 | `boolean` | `false` |
 | size | 尺寸，可继承表单尺寸 | `sm \| md \| lg` | `md` |
 | status | 状态 | `default \| success \| warning \| error` | `default` |
+| accentColor | 主题色，未设置 `activeBorderColor` 时作为激活边框色 | `string` | - |
 | activeBorderColor | 激活边框色，聚焦时生效 | `string` | - |
-| color | 兼容旧写法，未设置 `activeBorderColor` 时作为激活边框色 | `string` | - |
 | borderColor | 边框色 | `string` | - |
 | borderWidth | 边框粗细 | `number \| string` | - |
-| backgroundColor | 背景色 | `string` | - |
+| inputBackgroundColor | 输入区域背景色，优先级高于 `backgroundColor` | `string` | - |
+| backgroundColor | 背景色，优先级低于 `inputBackgroundColor` | `string` | - |
 | textColor | 文字颜色 | `string` | - |
 | clearIconColor | 清除图标颜色 | `string` | - |
 | clearIconSize | 清除图标大小 | `number \| string` | - |
@@ -215,7 +216,7 @@ function parseCurrency(value) {
 
 | 属性名 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| `background` | 输入区域背景色 | `string` | — |
+| `inputBackgroundColor` | 输入区域背景色，优先级高于 `backgroundColor` | `string` | — |
 | `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

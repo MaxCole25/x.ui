@@ -8,7 +8,7 @@ export type TextFormatter = (value: string | number) => string
 export interface TextProps extends ElementStyleProps {
   modelValue?: string | number
   size?: TextSize
-  type?: TextType
+  variant?: TextType
   tag?: string
   truncated?: boolean
   formatter?: TextFormatter
@@ -20,7 +20,6 @@ export interface TextProps extends ElementStyleProps {
   padding?: number | string
   radius?: string
   textAlign?: TextAlign
-  background?: string
   name?: string
   id?: string
   maxlength?: number

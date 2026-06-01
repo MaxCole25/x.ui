@@ -31,13 +31,13 @@ const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'size' i
 const sizePreset = computed(() => componentSizePreset[props.size])
 const inputNumberStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-input-number-color': props.color,
-  '--x-input-number-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-input-number-color': props.accentColor,
+  '--x-input-number-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-input-number-border-color': props.borderColor,
   '--x-input-number-border-width': toCssSize(props.borderWidth),
   '--x-input-number-height': hasExplicitSize.value ? toCssSize(sizePreset.value.height) : undefined,
   '--x-input-number-padding': hasExplicitSize.value ? sizePreset.value.padding : undefined,
-  '--x-input-number-radius': hasExplicitSize.value ? sizePreset.value.radius : toCssSize(props.borderRadius),
+  '--x-input-number-radius': hasExplicitSize.value ? sizePreset.value.radius : toCssSize(props.radius),
   '--x-input-number-font-family': props.fontFamily,
   '--x-input-number-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value.fontSize) : toCssSize(props.fontSize),
   '--x-input-number-decrease-bg': props.decreaseButtonBackgroundColor,

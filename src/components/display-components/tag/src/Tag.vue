@@ -8,7 +8,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<TagProps>(), {
-  type: 'primary',
+  variant: 'primary',
   effect: 'light',
   size: 'md',
   closable: false,
@@ -22,9 +22,10 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
+const mergedVariant = computed(() => props.variant ?? 'primary')
 const tagStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-tag-color': props.color
+  '--x-tag-color': props.accentColor
 }))
 
 function handleClick(event: MouseEvent) {
@@ -41,7 +42,7 @@ function handleClose(event: MouseEvent) {
   <span
     class="x-tag"
     :class="[
-      `x-tag--${props.type}`,
+      `x-tag--${mergedVariant}`,
       `x-tag--${props.effect}`,
       `x-tag--${props.size}`,
       { 'is-round': props.round, 'is-hit': props.hit, 'is-disabled': props.disabled }

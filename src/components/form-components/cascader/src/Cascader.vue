@@ -157,13 +157,13 @@ const isLoading = computed(() => props.loading || remoteLoading.value)
 
 const cascaderStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-cascader-color': props.color ?? props.activeBorderColor,
-  '--x-cascader-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-cascader-color': props.accentColor ?? props.activeBorderColor,
+  '--x-cascader-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-cascader-border-color': props.borderColor,
   '--x-cascader-hover-border-color': props.borderColor,
   '--x-cascader-border-width': toCssSize(props.borderWidth),
   '--x-cascader-radius': props.radius ?? sizePreset[mergedSize.value].radius,
-  '--x-cascader-bg': props.backgroundColor ?? props.background,
+  '--x-cascader-bg': props.inputBackgroundColor ?? props.backgroundColor,
   '--x-cascader-text-color': props.textColor,
   '--x-cascader-disabled-bg': props.disabledBackgroundColor,
   '--x-cascader-disabled-text-color': props.disabledTextColor,

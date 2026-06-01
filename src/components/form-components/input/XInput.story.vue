@@ -13,8 +13,9 @@ const state = reactive({
   status: 'default' as InputStatus,
   prefix: '前缀',
   suffix: '后缀',
+  accentColor: '#1264f4',
   activeBorderColor: '#1264f4',
-  color: '#12323a',
+  textColor: '#12323a',
   clearIconColor: '#64748b',
   clearIconSize: 14,
   disabledBackgroundColor: '#f1f5f9',
@@ -28,7 +29,7 @@ const state = reactive({
   padding: '0 8px',
   radius: '6px',
   textAlign: 'left' as InputTextAlign,
-  background: '#ffffff',
+  inputBackgroundColor: '#ffffff',
   name: 'appearance-input',
   id: 'appearance-input',
   maxlength: 40,
@@ -61,8 +62,9 @@ const aligns: InputTextAlign[] = ['left', 'center', 'right']
             :status="state.status"
             :prefix="state.prefix"
             :suffix="state.suffix"
+            :accent-color="state.accentColor"
             :active-border-color="state.activeBorderColor"
-            :color="state.color"
+            :text-color="state.textColor"
             :clear-icon-color="state.clearIconColor"
             :clear-icon-size="state.clearIconSize"
             :disabled-background-color="state.disabledBackgroundColor"
@@ -75,7 +77,7 @@ const aligns: InputTextAlign[] = ['left', 'center', 'right']
             :padding="state.padding"
             :radius="state.radius"
             :text-align="state.textAlign"
-            :background="state.background"
+            :input-background-color="state.inputBackgroundColor"
             :name="state.name"
             :id="state.id"
             :maxlength="state.maxlength"
@@ -169,12 +171,16 @@ type in types" :key="type" :value="type">{{ type }}</option>
         </template>
         <template #column-3>
           <label>
+            <span>主题色</span>
+            <input v-model="state.accentColor" type="color" />
+          </label>
+          <label>
             <span>激活边框色</span>
             <input v-model="state.activeBorderColor" type="color" />
           </label>
           <label>
             <span>文字色</span>
-            <input v-model="state.color" type="color" />
+            <input v-model="state.textColor" type="color" />
           </label>
           <label>
             <span>清除按钮色</span>
@@ -190,7 +196,7 @@ type in types" :key="type" :value="type">{{ type }}</option>
           </label>
           <label>
             <span>背景色</span>
-            <input v-model="state.background" type="color" />
+            <input v-model="state.inputBackgroundColor" type="color" />
           </label>
         </template>
         <template #column-4>

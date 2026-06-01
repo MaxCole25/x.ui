@@ -148,7 +148,7 @@ const mode = ref('washington')
 | activeBackgroundColor | 选中态背景色，对齐按钮激活色接口 | `string` | `buttonColor` |
 | activeBorderColor | 选中态边框色，对齐按钮激活色接口 | `string` | `activeBackgroundColor` |
 | activeTextColor | 选中态文字色，对齐按钮激活色接口 | `string` | `#ffffff` |
-| buttonSize | 矩形按钮高度，兼容旧接口 | `number \| string` | - |
+| buttonSize | 矩形按钮高度 | `number \| string` | - |
 | name | 原生 name | `string` | - |
 
 ## Events

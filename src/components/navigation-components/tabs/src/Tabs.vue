@@ -7,11 +7,11 @@ defineOptions({ name: 'XTabs' })
 
 const props = withDefaults(defineProps<TabsProps>(), {
   items: () => [],
-  type: 'card',
+  variant: 'card',
   size: 'md',
   tabPosition: 'top',
   labelDirection: 'horizontal',
-  stretch: false,
+  tabStretch: false,
   closable: false,
   addable: false,
   editable: false,
@@ -22,19 +22,19 @@ const props = withDefaults(defineProps<TabsProps>(), {
   showContextMenu: true,
   draggable: false,
   activeTabTextColor: 'var(--x-color-primary)',
-  tabBgColor: 'transparent',
+  tabBackgroundColor: 'transparent',
   tabTextColor: 'var(--x-color-text-muted)',
   tabFontSize: undefined,
   tabMinWidth: undefined,
   tabGap: 4,
   verticalWidth: undefined,
   verticalLabelMinHeight: undefined,
-  borderRadius: 4,
+  radius: 4,
   border: '1px solid var(--x-color-border)',
   contentBackgroundColor: 'var(--x-color-surface)',
   contextMenuBackgroundColor: 'var(--x-color-surface)',
   contextMenuTextColor: 'var(--x-color-text)',
-  fillHeight: false,
+  fullHeight: false,
   beforeLeave: undefined
 })
 
@@ -86,6 +86,7 @@ const activeName = computed<TabName | undefined>(() => {
 
 const isVertical = computed(() => props.tabPosition === 'left' || props.tabPosition === 'right')
 const hasItems = computed(() => props.items.length > 0)
+const mergedVariant = computed(() => props.variant || 'line')
 const isContextTargetLocked = computed(() => {
   const targetName = contextMenu.value.targetName
   return targetName !== null && isTabLocked(targetName)
@@ -96,11 +97,11 @@ const isContextTargetInternalLocked = computed(() => {
 })
 
 const rootClasses = computed(() => ({
-  [`x-tabs--${props.type || 'line'}`]: true,
+  [`x-tabs--${mergedVariant.value}`]: true,
   [`x-tabs--${props.size}`]: true,
   [`x-tabs--${props.tabPosition}`]: true,
   [`x-tabs--label-${props.labelDirection}`]: true,
-  'is-fill-height': props.fillHeight,
+  'is-fill-height': props.fullHeight,
   'is-vertical': isVertical.value,
   'is-horizontal': !isVertical.value
 }))
@@ -110,11 +111,11 @@ function toCssLength(value: number | string) {
 }
 
 const tabsStyleVars = computed<Record<string, string>>(() => ({
-  '--x-tabs-tab-bg': props.tabBgColor,
+  '--x-tabs-tab-bg': props.tabBackgroundColor,
   '--x-tabs-tab-text': props.tabTextColor,
   '--x-tabs-item-gap': toCssLength(props.tabGap),
   '--x-tabs-tab-active-text': props.activeTabTextColor,
-  '--x-tabs-radius': toCssLength(props.borderRadius),
+  '--x-tabs-radius': toCssLength(props.radius),
   '--x-tabs-border': props.border,
   '--x-tabs-content-bg': props.contentBackgroundColor,
   '--x-tabs-context-menu-bg': props.contextMenuBackgroundColor,
@@ -547,7 +548,7 @@ onBeforeUnmount(() => {
           :class="{
             'is-active': item.name === activeName,
             'is-disabled': item.disabled,
-            'is-stretch': stretch,
+            'is-stretch': props.tabStretch,
             'is-dragging': item.name === draggingTabName,
             'is-drag-over-before': item.name === dragOverTargetName && dragOverPosition === 'before',
             'is-drag-over-after': item.name === dragOverTargetName && dragOverPosition === 'after'
@@ -559,7 +560,7 @@ onBeforeUnmount(() => {
             :class="{
               'is-active': item.name === activeName,
               'is-disabled': item.disabled,
-              'is-stretch': stretch
+              'is-stretch': props.tabStretch
             }"
             :disabled="item.disabled"
             @click="activateTab(item, $event)"

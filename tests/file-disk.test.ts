@@ -271,7 +271,7 @@ describe('XFileDisk', () => {
     expect(style).toContain('--x-file-disk-danger: #ef4444')
   })
 
-  it('keeps legacy color aliases available for existing consumers', () => {
+  it('supports concise color aliases in the colors object', () => {
     const wrapper = mount(XFileDisk, {
       props: {
         entries,

@@ -6,7 +6,7 @@ export type MessagePlacement = 'top' | 'top-left' | 'top-right' | 'bottom' | 'bo
 export interface MessageProps {
   id?: string
   message?: string
-  type?: MessageType
+  status?: MessageType
   size?: XSize
   duration?: number
   showClose?: boolean

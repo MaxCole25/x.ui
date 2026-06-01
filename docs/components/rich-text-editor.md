@@ -48,14 +48,14 @@ const content = ref(JSON.stringify({
 
 ## 填满父容器高度
 
-`minHeight` 用于普通表单、弹窗等场景，控制编辑区域的最小高度。若父容器已经有明确高度，并希望富文本整体占满剩余空间，请使用 `fillHeight`。开启后组件根节点、编辑器外壳、内容区和 ProseMirror 编辑面会沿父容器高度链填满，工具栏保持自身高度，滚动保留在内容 viewport 内。
+`minHeight` 用于普通表单、弹窗等场景，控制编辑区域的最小高度。若父容器已经有明确高度，并希望富文本整体占满剩余空间，请使用 `fullHeight`。开启后组件根节点、编辑器外壳、内容区和 ProseMirror 编辑面会沿父容器高度链填满，工具栏保持自身高度，滚动保留在内容 viewport 内。
 
 ```vue
 <template>
   <div style="height: 520px; min-height: 0">
     <XRichTextEditor
       v-model="content"
-      fill-height
+      full-height
       :show-outline="false"
     />
   </div>
@@ -70,7 +70,7 @@ const content = ref(JSON.stringify({
 | `fallbackHtml` | `modelValue` 为空或需要回退时使用的 HTML | `string` | `''` |
 | `readonly` | 只读模式 | `boolean` | `false` |
 | `minHeight` | 编辑区域最小高度 | `number \| string` | `520` |
-| `fillHeight` | 是否填满已有明确高度的父容器，并让内容区在工具栏下方内部滚动 | `boolean` | `false` |
+| `fullHeight` | 是否填满已有明确高度的父容器，并让内容区在工具栏下方内部滚动 | `boolean` | `false` |
 | `canSave` | 是否启用保存按钮和 `Ctrl/Cmd + S` 保存快捷键 | `boolean` | `false` |
 | `showToolbar` | 是否显示工具栏 | `boolean` | `true` |
 | `toolbarButtons` | 工具栏按钮白名单 | `RichTextEditorToolbarButton[]` | 完整工具栏 |
@@ -168,7 +168,7 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 
 - 默认图片上传会转成 DataURL，默认附件上传会使用 ObjectURL，适合本地预览；生产项目建议传入 `uploadImage` 和 `uploadFile` 对接后端文件服务。
 - 图片选择上传和复制粘贴图片都会调用 `uploadImage`，因此外部只需要实现一套图片上传逻辑。
-- `fillHeight` 依赖父容器具有明确高度；普通场景继续使用 `minHeight` 即可。
+- `fullHeight` 依赖父容器具有明确高度；普通场景继续使用 `minHeight` 即可。
 - 组件内部已包含从 `XlEdit` 迁移来的富文本内核、扩展、节点视图、Markdown 适配器和样式。
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->

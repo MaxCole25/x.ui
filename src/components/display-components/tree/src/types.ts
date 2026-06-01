@@ -58,8 +58,8 @@ export interface TreeProps {
   activeColor?: string
   textColor?: string
   mutedColor?: string
-  hoverBgColor?: string
-  activeBgColor?: string
+  hoverBackgroundColor?: string
+  activeBackgroundColor?: string
   activeTextColor?: string
   activeIconColor?: string
   nodeIcon?: (node: TreeNodeData) => TreeNodeIcon

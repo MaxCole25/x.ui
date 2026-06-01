@@ -4,7 +4,7 @@ export type LayoutMode = 'top-sidebar' | 'sidebar-top' | 'top-only'
 export interface LayoutProps {
   size?: XSize
   mode?: LayoutMode
-  fillHeight?: boolean
+  fullHeight?: boolean
   sidebarWidth?: number | string
   sidebarCollapsed?: boolean
   sidebarCollapsedWidth?: number | string
@@ -13,18 +13,18 @@ export interface LayoutProps {
   footerHeight?: number | string
   topbarBackgroundColor?: string
   topbarColor?: string
-  topbarBorderRadius?: number | string
+  topbarRadius?: number | string
   topbarBorder?: string
   sidebarBackgroundColor?: string
   sidebarColor?: string
-  sidebarBorderRadius?: number | string
+  sidebarRadius?: number | string
   sidebarBorder?: string
   sidebarPadding?: number | string
   contentBackgroundColor?: string
   contentColor?: string
-  contentBorderRadius?: number | string
+  contentRadius?: number | string
   footerBackgroundColor?: string
   footerColor?: string
-  footerBorderRadius?: number | string
+  footerRadius?: number | string
   footerBorder?: string
 }

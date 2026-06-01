@@ -8,7 +8,7 @@ const appearance = reactive({
   value: 'checked',
   name: 'appearance-checkbox',
   size: 'md' as CheckboxSize,
-  color: '#1264f4',
+  checkedColor: '#1264f4',
   radius: '6px',
   disabled: false,
   indeterminate: false
@@ -45,7 +45,7 @@ const sample = reactive({
             :value="appearance.value"
             :name="appearance.name"
             :size="appearance.size"
-            :color="appearance.color"
+            :checked-color="appearance.checkedColor"
             :radius="appearance.radius"
             :disabled="appearance.disabled"
             :indeterminate="appearance.indeterminate"
@@ -86,7 +86,7 @@ const sample = reactive({
         <template #column-3>
           <label>
             <span>主题色</span>
-            <input v-model="appearance.color" type="color" />
+            <input v-model="appearance.checkedColor" type="color" />
           </label>
         </template>
         <template #column-4>

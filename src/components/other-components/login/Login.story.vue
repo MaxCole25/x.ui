@@ -22,7 +22,7 @@ const state = reactive({
   backgroundColor: '#ffffff',
   borderColor: '#cfe0e6',
   borderWidth: '1px',
-  borderRadius: '18px',
+  radius: '18px',
   width: '100%',
   loading: false,
   enableImageCaptcha: true,
@@ -80,7 +80,7 @@ function handleLogin(payload: LoginSubmitPayload) {
             :background-color="state.backgroundColor"
             :border-color="state.borderColor"
             :border-width="state.borderWidth"
-            :border-radius="state.borderRadius"
+            :radius="state.radius"
             :width="state.width"
             :loading="state.loading"
             :enable-image-captcha="state.enableImageCaptcha"
@@ -155,7 +155,7 @@ function handleLogin(payload: LoginSubmitPayload) {
           </label>
           <label>
             <span>外边框圆角大小</span>
-            <input v-model="state.borderRadius" />
+            <input v-model="state.radius" />
           </label>
           <label>
             <span>宽度</span>

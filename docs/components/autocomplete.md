@@ -120,7 +120,7 @@ const cityFieldNames = { label: 'name', value: 'id' }
 | fontSize | 字号，传入 `size` 时由尺寸预设优先控制；候选项字号会与输入框保持一致 | `number \| string` | - |
 | padding | 输入框内边距，候选项内边距会与输入框保持一致 | `number \| string` | - |
 | textAlign | 文本对齐方式 | `'left' \| 'center' \| 'right'` | `'center'` |
-| color | 主题色，未设置聚焦边框色时作为聚焦边框色 | `string` | - |
+| accentColor | 主题色，未设置聚焦边框色时作为聚焦边框色 | `string` | - |
 | activeBorderColor | 聚焦边框色 | `string` | - |
 | clearIconColor | 清除按钮颜色 | `string` | - |
 | clearIconSize | 清除按钮尺寸 | `number \| string` | - |
@@ -140,7 +140,7 @@ const cityFieldNames = { label: 'name', value: 'id' }
 | dropdownMaxWidth | 候选项弹层最大宽度。弹层会按候选项内容自适应展开，但不会小于输入框宽度，也不会超过该最大宽度 | `number \| string` | `360` |
 | teleported | 是否将候选项弹层挂载到 `teleportTo`，用于避免被表格、滚动容器等父级裁剪 | `boolean` | `true` |
 | teleportTo | 候选项弹层挂载目标 | `string` | `body` |
-| dropdownZIndex | 候选项弹层层级 | `number \| string` | `2000` |
+| zIndex | 候选项弹层层级 | `number \| string` | `2000` |
 | dropdownBackgroundColor | 候选项弹层背景色 | `string` | `#ffffff` |
 | loading | 是否显示加载状态，可用于外部控制远程查询加载态 | `boolean` | `false` |
 | loadingText | 加载状态文案 | `string` | `'加载中'` |
@@ -197,12 +197,12 @@ const cityFieldNames = { label: 'name', value: 'id' }
 | `fontFamily` | 字体族 | `string` | — |
 | `autoHeight` | 是否自动高度 | `boolean` | — |
 | `radius` | 圆角，数字按 px 处理 | `string` | — |
-| `background` | 输入区域背景色 | `string` | — |
+| `inputBackgroundColor` | 输入区域背景色，优先级高于 `backgroundColor` | `string` | — |
 | `name` | 原生 name 属性 | `string` | — |
 | `maxlength` | 最大输入长度 | `number` | — |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
 | `borderColor` | 边框颜色 | `string` | — |
-| `backgroundColor` | 背景色 | `string` | — |
+| `backgroundColor` | 背景色，优先级低于 `inputBackgroundColor` | `string` | — |
 | `textColor` | 文字颜色 | `string` | — |
 | `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
 

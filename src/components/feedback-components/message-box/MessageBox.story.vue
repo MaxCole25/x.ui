@@ -12,7 +12,7 @@ const appearance = reactive({
   visible: true,
   title: '删除确认',
   message: '操作后数据不可恢复，请确认是否继续。',
-  type: 'warning' as MessageBoxType,
+  status: 'warning' as MessageBoxType,
   size: 'md' as XSize,
   width: 420,
   minWidth: 280,
@@ -40,7 +40,7 @@ const appearance = reactive({
 
 function openService() {
   XMessageBox.confirm(appearance.message, appearance.title, {
-    type: appearance.type,
+    status: appearance.status,
     size: appearance.size,
     zIndex: appearance.zIndex,
     confirmBackgroundColor: appearance.confirmBackgroundColor,
@@ -60,7 +60,7 @@ function openService() {
             v-model="appearance.visible"
             :title="appearance.title"
             :message="appearance.message"
-            :type="appearance.type"
+            :status="appearance.status"
             :size="appearance.size"
             :width="appearance.width"
             :min-width="appearance.minWidth"
@@ -111,7 +111,7 @@ function openService() {
           <label class="story-check"><input v-model="appearance.closeOnMaskClick" type="checkbox" /><span>遮罩关闭</span></label>
         </template>
         <template #types>
-          <label><span>MessageBoxType</span><select v-model="appearance.type"><option value="success">success</option><option value="warning">warning</option><option value="info">info</option><option value="error">error</option></select></label>
+          <label><span>MessageBoxType</span><select v-model="appearance.status"><option value="success">success</option><option value="warning">warning</option><option value="info">info</option><option value="error">error</option></select></label>
         </template>
         <template #interfaces>
           <XButton width="120px" @click="openService">服务确认框</XButton>

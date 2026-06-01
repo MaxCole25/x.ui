@@ -49,7 +49,7 @@ export interface AutocompleteProps
   dropdownMaxWidth?: number | string
   teleported?: boolean
   teleportTo?: string
-  dropdownZIndex?: number | string
+  zIndex?: number | string
   dropdownBackgroundColor?: string
   loading?: boolean
   loadingText?: string

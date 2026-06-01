@@ -672,16 +672,28 @@ describe('XTable', () => {
     }
   })
 
-  it('adds fill height class when fillHeight is enabled', () => {
+  it('adds fill height class when fullHeight is enabled', () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
         data,
-        fillHeight: true
+        fullHeight: true
       }
     })
 
     expect(wrapper.classes()).toContain('is-fill-height')
+  })
+
+  it('keeps fullHeight false from applying fill height class', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        fullHeight: false
+      }
+    })
+
+    expect(wrapper.classes()).not.toContain('is-fill-height')
   })
 
   it('renders built-in column settings as an icon button and opens the default dialog', async () => {
@@ -936,20 +948,20 @@ describe('XTable', () => {
     }
   })
 
-  it('pins fill height regions to stable grid rows', () => {
+  it('pins full height regions to stable grid rows', () => {
     const source = readTableSource()
-    const fillHeightBodyRule = getCssRule(source, '.x-table.is-fill-height .x-table__body')
-    const fillHeightSummaryRule = getCssRule(source, '.x-table.is-fill-height .x-table__row--summary')
+    const fullHeightBodyRule = getCssRule(source, '.x-table.is-fill-height .x-table__body')
+    const fullHeightSummaryRule = getCssRule(source, '.x-table.is-fill-height .x-table__row--summary')
 
     expect(source).toContain('.x-table.is-fill-height {\n  align-content: stretch;')
     expect(source).toContain('  min-height: 0;\n}\n\n.x-table.is-fill-height > .x-table__top {')
     expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__viewport {\n  grid-row: 2;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__bottom {\n  grid-row: 3;')
-    expect(fillHeightBodyRule).toContain('display: flex;')
-    expect(fillHeightBodyRule).toContain('flex-direction: column;')
-    expect(fillHeightBodyRule).toContain('min-height: 100%;')
-    expect(fillHeightSummaryRule).toContain('margin-top: auto;')
+    expect(fullHeightBodyRule).toContain('display: flex;')
+    expect(fullHeightBodyRule).toContain('flex-direction: column;')
+    expect(fullHeightBodyRule).toContain('min-height: 100%;')
+    expect(fullHeightSummaryRule).toContain('margin-top: auto;')
   })
 
   it('keeps table section spacing independent from component size', () => {

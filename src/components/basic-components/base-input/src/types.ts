@@ -21,8 +21,8 @@ export interface BaseInputProps extends ElementStyleProps {
   status?: BaseInputStatus
   prefix?: string
   suffix?: string
+  accentColor?: string
   activeBorderColor?: string
-  color?: string
   clearIconColor?: string
   clearIconSize?: number | string
   disabledBackgroundColor?: string
@@ -35,7 +35,7 @@ export interface BaseInputProps extends ElementStyleProps {
   padding?: number | string
   radius?: string
   textAlign?: BaseInputTextAlign
-  background?: string
+  inputBackgroundColor?: string
   name?: string
   id?: string
   maxlength?: number

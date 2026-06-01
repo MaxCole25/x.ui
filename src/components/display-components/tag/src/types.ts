@@ -5,12 +5,12 @@ export type TagEffect = 'light' | 'dark' | 'plain'
 export type TagSize = 'sm' | 'md' | 'lg'
 
 export interface TagProps extends ElementStyleProps {
-  type?: TagType
+  variant?: TagType
   effect?: TagEffect
   size?: TagSize
   closable?: boolean
   round?: boolean
   hit?: boolean
   disabled?: boolean
-  color?: string
+  accentColor?: string
 }

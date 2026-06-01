@@ -7,7 +7,7 @@ export interface MessageBoxProps {
   modelValue?: boolean
   title?: string
   message?: string
-  type?: MessageBoxType
+  status?: MessageBoxType
   size?: XSize
   showCancelButton?: boolean
   showConfirmButton?: boolean

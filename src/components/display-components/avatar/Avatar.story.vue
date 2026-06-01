@@ -17,7 +17,7 @@ const appearance = reactive({
   iconSpin: false,
   size: 'md' as AvatarSize,
   shape: 'circle' as AvatarShape,
-  color: '#1264f4'
+  avatarBackgroundColor: '#1264f4'
 })
 </script>
 
@@ -47,7 +47,7 @@ const appearance = reactive({
             :icon-spin="appearance.iconSpin"
             :size="appearance.size"
             :shape="appearance.shape"
-            :color="appearance.color"
+            :avatar-background-color="appearance.avatarBackgroundColor"
           />
         </template>
         <template #column-1>
@@ -106,8 +106,8 @@ const appearance = reactive({
         </template>
         <template #column-3>
           <label>
-            <span>主题色</span>
-            <input v-model="appearance.color" type="color" />
+            <span>头像背景色</span>
+            <input v-model="appearance.avatarBackgroundColor" type="color" />
           </label>
           <label>
             <span>图标色</span>

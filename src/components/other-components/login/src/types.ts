@@ -53,7 +53,7 @@ export interface LoginProps {
   backgroundColor?: string
   borderColor?: string
   borderWidth?: string
-  borderRadius?: string
+  radius?: string
   width?: string
   textColor?: string
   mutedColor?: string

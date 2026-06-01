@@ -16,7 +16,7 @@ import '../../../styles/index.css'
 const parentWidth = ref(980)
 const parentHeight = ref(560)
 const fillWidth = ref(true)
-const fillHeight = ref(false)
+const fullHeight = ref(false)
 const height = ref('100%')
 const saveButtonText = ref('保存配置')
 const showTableMeta = ref(true)
@@ -128,7 +128,7 @@ const adapter = computed<DataTableSettingsAdapter>(() => ({
 
 const parentStyle = computed(() => ({
   width: fillWidth.value ? '100%' : `${parentWidth.value}px`,
-  height: fillHeight.value ? '100%' : `${parentHeight.value}px`
+  height: fullHeight.value ? '100%' : `${parentHeight.value}px`
 }))
 </script>
 
@@ -177,7 +177,7 @@ const parentStyle = computed(() => ({
             <label><span>组件高度</span><XInput v-model="height" /></label>
             <label><span>保存按钮</span><XInput v-model="saveButtonText" /></label>
             <label><span>父元素撑满宽度</span><XCheckbox v-model="fillWidth" /></label>
-            <label><span>父元素撑满高度</span><XCheckbox v-model="fillHeight" /></label>
+            <label><span>父元素撑满高度</span><XCheckbox v-model="fullHeight" /></label>
             <label><span>显示表元信息</span><XSwitch v-model="showTableMeta" /></label>
             <label><span>背景色</span><input v-model="backgroundColor" type="color" /></label>
             <label><span>文字色</span><input v-model="textColor" type="color" /></label>

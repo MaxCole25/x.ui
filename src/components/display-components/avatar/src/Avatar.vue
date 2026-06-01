@@ -47,7 +47,7 @@ const avatarIconSize = computed(() => {
 })
 const avatarStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-avatar-bg': props.color,
+  '--x-avatar-bg': props.avatarBackgroundColor,
   '--x-avatar-border-width': normalizedBorderWidth.value,
   '--x-avatar-border-color': props.borderColor,
   '--x-avatar-text-color': props.textColor,

@@ -6,12 +6,12 @@
 
 <XText>正文文本</XText>
 <XText size="title">标题文本</XText>
-<XText type="muted">辅助文本</XText>
+<XText variant="muted">辅助文本</XText>
 
 ```vue
 <XText>正文文本</XText>
 <XText size="title">标题文本</XText>
-<XText type="muted">辅助文本</XText>
+<XText variant="muted">辅助文本</XText>
 ```
 
 ## 外观接口
@@ -71,7 +71,7 @@
 | --- | --- | --- | --- |
 | modelValue | 绑定文本值，无默认插槽时显示 | `string \| number` | `''` |
 | size | 文本尺寸 | `sm \| md \| lg \| title` | `md` |
-| type | 文本语义色 | `default \| muted \| primary \| success \| warning \| danger` | `default` |
+| variant | 文本视觉形态 | `default \| muted \| primary \| success \| warning \| danger` | `default` |
 | tag | 渲染标签 | `string` | `span` |
 | truncated | 是否单行省略 | `boolean` | `false` |
 | formatter | 自定义格式化函数 | `(value: string \| number) => string` | `undefined` |
@@ -79,7 +79,6 @@
 | borderWidth | 边框粗细 | `number \| string` | `undefined` |
 | borderColor | 边框颜色 | `string` | `undefined` |
 | backgroundColor | 背景色 | `string` | `undefined` |
-| background | 背景色别名，优先级低于 `backgroundColor` | `string` | `undefined` |
 | textColor | 文字颜色 | `string` | `undefined` |
 | fontFamily | 字体样式 | `string` | `undefined` |
 | fontSize | 字体大小，未显式传入 `size` 时生效 | `number \| string` | `undefined` |

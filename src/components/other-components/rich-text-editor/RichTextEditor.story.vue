@@ -28,7 +28,7 @@ const state = reactive({
   showOutline: true,
   canSave: true,
   pasteImages: true,
-  fillHeight: false,
+  fullHeight: false,
   minHeight: 420,
   contentFontSize: 14
 })
@@ -50,7 +50,7 @@ function handleSave() {
           <label><input v-model="state.showOutline" type="checkbox" />显示大纲</label>
           <label><input v-model="state.canSave" type="checkbox" />允许保存</label>
           <label><input v-model="state.pasteImages" type="checkbox" />允许粘贴图片</label>
-          <label><input v-model="state.fillHeight" type="checkbox" />填满父容器高度</label>
+          <label><input v-model="state.fullHeight" type="checkbox" />填满父容器高度</label>
           <label>最小高度 <input v-model.number="state.minHeight" type="number" min="240" step="20" /></label>
           <label>正文字号 <input v-model.number="state.contentFontSize" type="number" min="12" max="32" /></label>
         </div>
@@ -64,11 +64,11 @@ function handleSave() {
           </div>
         </details>
 
-        <div :style="{ height: state.fillHeight ? '520px' : 'auto', minHeight: 0 }">
+        <div :style="{ height: state.fullHeight ? '520px' : 'auto', minHeight: 0 }">
           <XRichTextEditor
             v-model="content"
             :min-height="state.minHeight"
-            :fill-height="state.fillHeight"
+            :full-height="state.fullHeight"
             :readonly="state.readonly"
             :show-toolbar="state.showToolbar"
             :show-outline="state.showOutline"

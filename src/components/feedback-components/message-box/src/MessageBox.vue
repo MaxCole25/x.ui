@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   modelValue: false,
   title: '提示',
   message: '',
-  type: 'info',
+  status: 'info',
   size: undefined,
   showCancelButton: false,
   showConfirmButton: true,
@@ -35,6 +35,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const mergedStatus = computed(() => props.status ?? 'info')
 const iconClass = computed(() => {
   const iconMap = {
     success: 'ri-checkbox-circle-fill',
@@ -42,7 +43,7 @@ const iconClass = computed(() => {
     info: 'ri-information-fill',
     error: 'ri-close-circle-fill'
   }
-  return iconMap[props.type]
+  return iconMap[mergedStatus.value]
 })
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
@@ -90,7 +91,7 @@ function onMaskClick() {
       <section class="x-message-box" :class="`x-message-box--${mergedSize}`" role="dialog" aria-modal="true" :aria-label="props.title">
         <header class="x-message-box__header">
           <div class="x-message-box__title">
-            <i class="x-message-box__icon" :class="[iconClass, `x-message-box__icon--${props.type}`]" aria-hidden="true"></i>
+            <i class="x-message-box__icon" :class="[iconClass, `x-message-box__icon--${mergedStatus}`]" aria-hidden="true"></i>
             <slot name="title">{{ props.title }}</slot>
           </div>
           <button v-if="props.showClose" class="x-message-box__close" type="button" aria-label="关闭弹窗" @click="finish('close')">×</button>

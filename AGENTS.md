@@ -58,6 +58,7 @@ pnpm dev
 pnpm story
 pnpm test
 pnpm test:coverage
+pnpm api:naming:audit:check
 pnpm build
 pnpm docs:build
 pnpm story:build
@@ -68,6 +69,7 @@ pnpm story:build
 - `pnpm dev`：启动 VitePress 中文文档站。
 - `pnpm story`：启动 Histoire 组件实验台，用于手动验收组件功能和样式。
 - `pnpm test`：运行自动化组件测试。
+- `pnpm api:naming:audit:check`：检查公开属性命名是否保持 legacy/review 命中数为 0。
 - `pnpm build`：构建组件库发布产物。
 - `pnpm docs:build`：验证中文文档可构建。
 - `pnpm story:build`：验证 Histoire 手动验收页面可构建。
@@ -96,6 +98,20 @@ docs/.vitepress/config.ts
 - Vue 组件文件使用 PascalCase，例如 `Button.vue`、`Input.vue`。
 - 对外组件名必须带 `X` 前缀，例如 `XButton`、`XInput`、`XDialog`。
 - 组件内部使用 `defineOptions({ name: 'XComponent' })` 固定组件名。
+
+## 公开接口命名规则
+
+新增或修改公开 Props、事件、插槽、类型和 `expose` 方法时，必须优先遵守 `docs/guide/api-naming.md`。
+
+- 基础属性统一使用 `modelValue`、`size`、`disabled`、`readonly`、`loading`、`clearable`。
+- 颜色属性统一使用 `xxxColor`、`xxxTextColor`、`xxxBackgroundColor`、`xxxBorderColor`，主题色用 `accentColor`，选中色用 `checkedColor`，头像背景用 `avatarBackgroundColor`，不要新增 `BgColor` 缩写或裸 `background` / `color`。
+- 整体圆角使用 `radius`，局部圆角使用 `partRadius`，不要为整体圆角新增 `borderRadius`。
+- 布尔属性按语义使用 `showXxx`、`hideXxx`、`enableXxx`、`allowXxx`、`canXxx`。
+- 新增浮层属性优先使用 `teleported`、`teleportTo`、`zIndex`，不要新增 `appendToBody`、`dropdownZIndex`、`popperZIndex` 这类并行命名。
+- 视觉形态属性优先使用 `variant`，反馈状态属性优先使用 `status`；原生输入 `type` 可保留，其它场景不要新增裸 `type`。
+- `color`、`background`、`value`、`label` 这类裸语义属性必须谨慎新增，语义不够明确时加业务前缀。
+
+x.ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props 时直接使用规范新名称，不新增旧命名别名、兼容 fallback 或 `@deprecated` Props；除非用户明确要求兼容迁移。
 
 ## 组件分类目录约束
 
@@ -236,6 +252,7 @@ Histoire 用于面向开发者的组件运行效果检查：
 
 ```bash
 pnpm test
+pnpm api:naming:audit:check
 pnpm build
 pnpm docs:build
 pnpm story:build

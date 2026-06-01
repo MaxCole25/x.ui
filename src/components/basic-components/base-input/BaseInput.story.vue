@@ -13,6 +13,7 @@ const state = reactive({
   clearable: true,
   prefix: '',
   suffix: '',
+  accentColor: '#1264f4',
   activeBorderColor: '#0000ff',
   borderWidth: '1px',
   borderColor: '#ff0000',
@@ -86,6 +87,7 @@ const parseCurrency = (value: string) => {
                 :clearable="state.clearable"
                 :prefix="state.prefix"
                 :suffix="state.suffix"
+                :accent-color="state.accentColor"
                 :active-border-color="state.activeBorderColor"
                 :border-width="state.borderWidth"
                 :border-color="state.borderColor"
@@ -212,6 +214,10 @@ const parseCurrency = (value: string) => {
             <label class="input-story__color-field">
               <span>边框颜色</span>
               <input v-model="state.borderColor" type="color" aria-label="边框颜色" />
+            </label>
+            <label class="input-story__color-field">
+              <span>主题色</span>
+              <input v-model="state.accentColor" type="color" aria-label="主题色" />
             </label>
             <label class="input-story__color-field">
               <span>激活边框色</span>

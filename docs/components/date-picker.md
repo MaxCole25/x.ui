@@ -49,8 +49,8 @@
 | status | 输入框状态 | `'default' \| 'success' \| 'warning' \| 'error'` | `default` |
 | prefix | 前缀文本，会显示在默认日历图标后 | `string` | - |
 | suffix | 后缀文本 | `string` | - |
+| accentColor | 主题色，未设置 `activeBorderColor` 时作为激活边框色 | `string` | - |
 | activeBorderColor | 激活边框色 | `string` | - |
-| color | 主色 | `string` | - |
 | clearIconColor | 清除图标颜色 | `string` | - |
 | clearIconSize | 清除图标尺寸 | `number \| string` | - |
 | disabledBackgroundColor | 禁用背景色 | `string` | - |
@@ -62,13 +62,13 @@
 | padding | 内边距 | `number \| string` | - |
 | radius | 圆角 | `string` | - |
 | textAlign | 文本对齐 | `'left' \| 'center' \| 'right'` | `'center'` |
-| background | 输入背景色 | `string` | - |
+| inputBackgroundColor | 输入区域背景色，优先级高于 `backgroundColor` | `string` | - |
 | name | 原生 name 属性 | `string` | - |
 | id | 原生 id 属性 | `string` | - |
 | maxlength | 最大长度 | `number` | - |
 | borderWidth | 共享边框宽度 | `number \| string` | - |
 | borderColor | 共享边框颜色 | `string` | - |
-| backgroundColor | 共享背景色 | `string` | - |
+| backgroundColor | 共享背景色，优先级低于 `inputBackgroundColor` | `string` | - |
 | textColor | 共享文字色 | `string` | - |
 | showChinaFestivals | 是否显示内置中国传统节日和二十四节气 | `boolean` | `true` |
 | festivals | 自定义日期标记映射，键为 `YYYY-MM-DD` | `Record<string, { name: string; type: 'festival' \| 'solar-term' \| 'custom' }>` | - |

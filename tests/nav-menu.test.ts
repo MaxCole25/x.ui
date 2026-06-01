@@ -323,7 +323,7 @@ describe('XNavMenu', () => {
         items,
         textColor: '#334155',
         activeTextColor: '#f8fafc',
-        activeBgColor: '#0f766e',
+        activeBackgroundColor: '#0f766e',
         fontSize: 16,
         fontWeight: 500,
         activeFontWeight: 700,
@@ -340,6 +340,17 @@ describe('XNavMenu', () => {
     expect(wrapper.attributes('style')).toContain('--x-nav-menu-font-family: Arial, sans-serif')
   })
 
+  it('uses activeBackgroundColor variable', () => {
+    const wrapper = mount(XNavMenu, {
+      props: {
+        items,
+        activeBackgroundColor: '#0f766e'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-nav-menu-active-bg-color: #0f766e')
+  })
+
   it('falls back to activeTextColor for teleported submenu active text color', async () => {
     const wrapper = mount(XNavMenu, {
       attachTo: document.body,
@@ -347,9 +358,9 @@ describe('XNavMenu', () => {
         items,
         activeKey: 'user',
         mode: 'horizontal',
-        appendToBody: true,
+        teleported: true,
         activeTextColor: '#ffffff',
-        activeBgColor: '#2563eb'
+        activeBackgroundColor: '#2563eb'
       }
     })
 
@@ -372,6 +383,30 @@ describe('XNavMenu', () => {
     }
   })
 
+  it('uses teleported for popup submenus', async () => {
+    const wrapper = mount(XNavMenu, {
+      attachTo: document.body,
+      props: {
+        items,
+        activeKey: 'user',
+        mode: 'horizontal',
+        teleported: true
+      }
+    })
+
+    try {
+      await findMenuItemByTriggerText(wrapper, '系统管理').trigger('mouseenter')
+      await nextTick()
+
+      const submenu = findBodySubmenuByText('用户管理')
+      expect(submenu.classList.contains('is-teleported')).toBe(true)
+      expect(wrapper.element.contains(submenu)).toBe(false)
+    } finally {
+      wrapper.unmount()
+      document.body.innerHTML = ''
+    }
+  })
+
   it('prioritizes submenuActiveTextColor for teleported submenu active text color', async () => {
     const wrapper = mount(XNavMenu, {
       attachTo: document.body,
@@ -379,7 +414,7 @@ describe('XNavMenu', () => {
         items,
         activeKey: 'user',
         mode: 'horizontal',
-        appendToBody: true,
+        teleported: true,
         activeTextColor: '#ffffff',
         submenuActiveTextColor: '#111827'
       }
@@ -508,7 +543,7 @@ describe('XNavMenu', () => {
         mode: 'vertical',
         collapsed: true,
         allowCollapse: true,
-        appendToBody: true
+        teleported: true
       }
     })
 
@@ -552,7 +587,7 @@ describe('XNavMenu', () => {
         mode: 'vertical',
         collapsed: true,
         allowCollapse: true,
-        appendToBody: true
+        teleported: true
       }
     })
 

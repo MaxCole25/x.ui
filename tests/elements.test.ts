@@ -22,6 +22,7 @@ import {
   XSelect,
   XSlider,
   XSwitch,
+  XTag,
   XText,
   XTimePicker,
   XTimeSelect
@@ -39,7 +40,7 @@ const mountAutocomplete = (options: any = {}) =>
 describe('元素组件', () => {
   it('renders text style classes', () => {
     const wrapper = mount(XText, {
-      props: { type: 'primary', size: 'title' },
+      props: { variant: 'primary', size: 'title' },
       slots: { default: '标题' }
     })
 
@@ -107,13 +108,41 @@ describe('元素组件', () => {
     const wrapper = mount(XAvatar, {
       props: {
         name: 'UX',
+        avatarBackgroundColor: '#0f766e',
         borderWidth: 2,
         borderColor: '#0f172a'
       }
     })
 
+    expect(wrapper.attributes('style')).toContain('--x-avatar-bg: #0f766e')
     expect(wrapper.attributes('style')).toContain('--x-avatar-border-width: 2px')
     expect(wrapper.attributes('style')).toContain('--x-avatar-border-color: #0f172a')
+  })
+
+  it('uses XTag accentColor as theme color', () => {
+    const wrapper = mount(XTag, {
+      props: {
+        accentColor: '#0f766e'
+      },
+      slots: {
+        default: '规范标签'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-tag-color: #0f766e')
+  })
+
+  it('uses XTag variant class', () => {
+    const wrapper = mount(XTag, {
+      props: {
+        variant: 'warning'
+      },
+      slots: {
+        default: '规范标签'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-tag--warning')
   })
 
   it('renders XIcon inside avatar from icon props', () => {
@@ -272,11 +301,11 @@ describe('元素组件', () => {
         modelValue: 1,
         fullWidth: true,
         fullHeight: true,
-        color: '#2563eb',
+        accentColor: '#0f766e',
         activeBorderColor: '#1d4ed8',
         borderWidth: 2,
         borderColor: '#94a3b8',
-        borderRadius: 10,
+        radius: 10,
         fontFamily: 'Georgia',
         fontSize: 18,
         decreaseButtonBackgroundColor: '#e2e8f0',
@@ -287,7 +316,7 @@ describe('元素组件', () => {
     expect(wrapper.classes()).toContain('is-full-width')
     expect(wrapper.classes()).toContain('is-full-height')
     const style = wrapper.attributes('style')
-    expect(style).toContain('--x-input-number-color: #2563eb')
+    expect(style).toContain('--x-input-number-color: #0f766e')
     expect(style).toContain('--x-input-number-active-border-color: #1d4ed8')
     expect(style).toContain('--x-input-number-border-color: #94a3b8')
     expect(style).toContain('--x-input-number-border-width: 2px')
@@ -320,14 +349,13 @@ describe('元素组件', () => {
     expect(wrapper.emitted('input')?.[0]).toEqual(['上海'])
   })
 
-  it('keeps autocomplete type fixed while preserving input clearable and readonly interfaces', () => {
+  it('keeps autocomplete native input type fixed while preserving clearable and readonly interfaces', () => {
     const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
-        type: 'search',
         readonly: true,
         clearable: true
-      } as any
+      }
     })
 
     const input = wrapper.find('input')
@@ -563,6 +591,39 @@ describe('元素组件', () => {
     await nextTick()
     await new Promise((resolve) => window.setTimeout(resolve, 0))
     expect(dropdown?.style.left).toBe('72px')
+
+    wrapper.unmount()
+  })
+
+  it('uses autocomplete zIndex for the dropdown layer', async () => {
+    const wrapper = mount(XAutocomplete, {
+      props: {
+        modelValue: '南',
+        zIndex: 2445,
+        options: [{ label: '南京', value: 'nanjing' }]
+      }
+    })
+
+    wrapper.element.getBoundingClientRect = () => ({
+      bottom: 70,
+      height: 30,
+      left: 24,
+      right: 224,
+      top: 40,
+      width: 200,
+      x: 24,
+      y: 40,
+      toJSON: () => ({})
+    })
+
+    await wrapper.find('input').trigger('focus')
+    await nextTick()
+    await nextTick()
+
+    const dropdowns = Array.from(document.body.querySelectorAll<HTMLElement>('.x-autocomplete__dropdown'))
+    const dropdown = dropdowns[dropdowns.length - 1]
+    expect(dropdown?.style.zIndex).toBe('2445')
+    expect(dropdown?.getAttribute('style')).toContain('--x-autocomplete-dropdown-z-index: 2445')
 
     wrapper.unmount()
   })

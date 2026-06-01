@@ -13,7 +13,7 @@ export interface SwitchProps extends ElementStyleProps {
   labelPosition?: SwitchLabelPosition
   activeValue?: SwitchValue
   inactiveValue?: SwitchValue
-  color?: string
+  checkedColor?: string
   inactiveColor?: string
   thumbColor?: string
   buttonSize?: number | string

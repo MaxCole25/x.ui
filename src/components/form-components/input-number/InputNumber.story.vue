@@ -10,10 +10,10 @@ const inputNumberAppearance = reactive({
   step: 1,
   fullWidth: false,
   fullHeight: false,
-  color: '#1264f4',
+  accentColor: '#1264f4',
   borderColor: '#cbd5e1',
   activeBorderColor: '#1264f4',
-  borderRadius: 8,
+  radius: 8,
   fontFamily: 'Arial',
   fontSize: 16,
   decreaseButtonBackgroundColor: '#e2e8f0',
@@ -93,7 +93,7 @@ const sample = reactive({
               </label>
               <label>
                 <span>圆角</span>
-                <input v-model.number="inputNumberAppearance.borderRadius" type="number" min="0" max="40" step="1" />
+                <input v-model.number="inputNumberAppearance.radius" type="number" min="0" max="40" step="1" />
               </label>
               <label>
                 <span>字体大小</span>
@@ -115,7 +115,7 @@ const sample = reactive({
               </label>
               <label>
                 <span>主题色</span>
-                <input v-model="inputNumberAppearance.color" type="color" />
+                <input v-model="inputNumberAppearance.accentColor" type="color" />
               </label>
               <label>
                 <span>激活边框色</span>

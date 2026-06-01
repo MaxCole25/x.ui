@@ -213,12 +213,12 @@ const submit = async () => {
 
 ## 内容区填满高度
 
-父容器有明确高度时，可在 `label-position="top"` 的 `XFormItem` 上开启 `content-fill-height`。标签保持自然高度，内容区和字段容器会填满剩余高度，适合放置已经支持 `fill-height` 的富文本、表格等复杂控件。
+父容器有明确高度时，可在 `label-position="top"` 的 `XFormItem` 上开启 `content-full-height`。标签保持自然高度，内容区和字段容器会填满剩余高度，适合放置已经支持 `full-height` 的富文本、表格等复杂控件。
 
 <div class="x-demo-block">
   <div style="height: 320px; min-height: 0; max-width: 640px">
-    <XFormItem label="备注" label-position="top" content-fill-height>
-      <XRichTextEditor v-model="form.remark" fill-height :show-outline="false" />
+    <XFormItem label="备注" label-position="top" content-full-height>
+      <XRichTextEditor v-model="form.remark" full-height :show-outline="false" />
     </XFormItem>
   </div>
 </div>
@@ -229,9 +229,9 @@ const submit = async () => {
     <XFormItem
       label="备注"
       label-position="top"
-      content-fill-height
+      content-full-height
     >
-      <XRichTextEditor v-model="form.remark" fill-height :show-outline="false" />
+      <XRichTextEditor v-model="form.remark" full-height :show-outline="false" />
     </XFormItem>
   </div>
 </template>
@@ -343,7 +343,7 @@ const submit = async () => {
 | size | 覆盖当前项尺寸 | `sm \| md \| lg` | - |
 | disabled | 覆盖当前项禁用状态 | `boolean` | - |
 | help | 帮助文本 | `string` | - |
-| contentFillHeight | 内容区是否填满表单项扣除标签后的剩余高度 | `boolean` | `false` |
+| contentFullHeight | 内容区是否填满表单项扣除标签后的剩余高度 | `boolean` | `false` |
 | align | 标签和内容的垂直对齐方式 | `start \| center` | `start` |
 | labelAlign | 标签文本横向对齐方式 | `left \| center \| right` | - |
 | contentAlign | 内容区文本横向对齐方式 | `left \| center \| right \| stretch` | - |
@@ -369,7 +369,7 @@ const submit = async () => {
 - 检查 `disabled`、`labelWidth`、`labelPosition` 是否能从 `XForm` 自动继承到内部表单项。
 - 检查 `validate`、`validateField`、`resetFields`、`clearValidate` 和 `scrollToField` 是否可通过 `ref` 调用。
 - 检查错误提示、帮助文本、自定义插槽和加载状态是否符合业务视觉规范。
-- 在固定高度父容器内检查 `content-fill-height` 搭配 `label-position="top"` 和 `XRichTextEditor fill-height` 时，内容区是否填满标签下方剩余高度且不遮挡下一项。
+- 在固定高度父容器内检查 `content-full-height` 搭配 `label-position="top"` 和 `XRichTextEditor full-height` 时，内容区是否填满标签下方剩余高度且不遮挡下一项。
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充
@@ -380,7 +380,7 @@ const submit = async () => {
 
 | 属性名 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| `color` | 主题色或文字颜色 | `string` | — |
+| `accentColor` | 表单主题色，会作为子表单控件的主题色默认值 | `string` | — |
 | `radius` | 圆角，数字按 px 处理 | `string` | — |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
 | `textColor` | 文字颜色 | `string` | — |

@@ -74,8 +74,8 @@ function deleteNode(node: TreeNodeData, treeData: TreeNodeData[]) {
 | activeColor | 当前用户节点高亮色 | `string` | `'#2f66cf'` |
 | textColor | 节点文字色 | `string` | 主题文字色 |
 | mutedColor | 次要文字和图标色 | `string` | 主题次要色 |
-| hoverBgColor | 节点悬浮背景色 | `string` | 主题主色浅底 |
-| activeBgColor | 当前节点背景色 | `string` | `'rgba(14, 116, 144, 0.12)'` |
+| hoverBackgroundColor | 节点悬浮背景色 | `string` | 主题主色浅底 |
+| activeBackgroundColor | 当前节点背景色 | `string` | `'rgba(14, 116, 144, 0.12)'` |
 | activeTextColor | 当前节点文字色 | `string` | 主题文字色 |
 | activeIconColor | 当前节点图标色 | `string` | `activeColor` |
 | nodeIcon | 自定义节点图标 | `(node) => TreeNodeIcon` | `undefined` |

@@ -17,6 +17,8 @@ export default defineConfig({
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
           { text: '主题基础色', link: '/guide/theme' },
+          { text: '接口命名规范', link: '/guide/api-naming' },
+          { text: '接口命名审计', link: '/guide/api-naming-audit' },
           { text: '组件测试', link: '/guide/testing' }
         ]
       },
@@ -77,8 +79,6 @@ export default defineConfig({
             text: '导航组件',
             items: [
               { text: '下拉菜单 Dropdown', link: '/components/dropdown' },
-              { text: '下拉菜单容器 DropdownMenu', link: '/components/dropdown-menu' },
-              { text: '下拉菜单项 DropdownItem', link: '/components/dropdown-item' },
               { text: '菜单 NavMenu', link: '/components/nav-menu' },
               { text: '标签页 Tabs', link: '/components/tabs' }
             ]

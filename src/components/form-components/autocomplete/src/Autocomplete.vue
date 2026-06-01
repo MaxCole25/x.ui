@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<AutocompleteProps>(), {
   dropdownMaxWidth: 360,
   teleported: true,
   teleportTo: 'body',
-  dropdownZIndex: overlayZIndex.popper,
+  zIndex: overlayZIndex.popper,
   dropdownBackgroundColor: '#ffffff',
   loading: false,
   loadingText: '加载中',
@@ -87,6 +87,7 @@ const optionPadding = computed(() => {
 
   return inputSizePreset[mergedSize.value].padding
 })
+const resolvedDropdownZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 
 const autocompleteHeight = computed(() => {
   if (props.size) return inputSizePreset[props.size].height
@@ -96,14 +97,14 @@ const autocompleteHeight = computed(() => {
 
 const autocompleteStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-autocomplete-color': props.color ?? props.activeBorderColor,
-  '--x-autocomplete-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-autocomplete-color': props.accentColor ?? props.activeBorderColor,
+  '--x-autocomplete-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-autocomplete-height': toCssSize(autocompleteHeight.value),
   '--x-autocomplete-option-font-size': toCssSize(optionFontSize.value),
   '--x-autocomplete-option-padding': toCssSize(optionPadding.value),
   '--x-autocomplete-dropdown-max-height': toCssSize(props.dropdownMaxHeight),
   '--x-autocomplete-dropdown-max-width': toCssSize(props.dropdownMaxWidth),
-  '--x-autocomplete-dropdown-z-index': props.dropdownZIndex,
+  '--x-autocomplete-dropdown-z-index': resolvedDropdownZIndex.value,
   '--x-autocomplete-dropdown-bg': props.dropdownBackgroundColor
 }))
 const rootClass = computed(() => attrs.class)
@@ -113,7 +114,7 @@ const dropdownStyle = computed(() => ({
   ...(props.teleported
     ? teleportedDropdownStyle.value
     : {
-        zIndex: String(props.dropdownZIndex)
+        zIndex: String(resolvedDropdownZIndex.value)
       })
 }))
 const dropdownClasses = computed(() => [
@@ -168,7 +169,7 @@ const inputProps = computed(() => {
   delete next.dropdownMaxWidth
   delete next.teleported
   delete next.teleportTo
-  delete next.dropdownZIndex
+  delete next.zIndex
   delete next.dropdownBackgroundColor
   delete next.loading
   delete next.loadingText
@@ -311,7 +312,7 @@ const updateDropdownPosition = () => {
     width: `${Math.round(width)}px`,
     maxWidth: `${Math.round(dropdownMaxWidth)}px`,
     maxHeight: `${Math.round(maxHeight)}px`,
-    zIndex: String(props.dropdownZIndex)
+    zIndex: String(resolvedDropdownZIndex.value)
   }
 }
 
@@ -560,7 +561,7 @@ watch(
     isLoading.value,
     props.dropdownMaxHeight,
     props.dropdownMaxWidth,
-    props.dropdownZIndex
+    resolvedDropdownZIndex.value
   ],
   async () => {
     if (!open.value) return

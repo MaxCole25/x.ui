@@ -50,8 +50,8 @@ describe('XTree', () => {
         currentTreeKey: '1',
         textColor: '#f8fafc',
         mutedColor: '#94a3b8',
-        hoverBgColor: '#1e293b',
-        activeBgColor: '#0f172a',
+        hoverBackgroundColor: '#1e293b',
+        activeBackgroundColor: '#0f172a',
         activeTextColor: '#ffffff',
         activeIconColor: '#38bdf8',
       }
@@ -64,6 +64,20 @@ describe('XTree', () => {
     expect(style).toContain('--x-tree-active-bg-color: #0f172a')
     expect(style).toContain('--x-tree-active-text-color: #ffffff')
     expect(style).toContain('--x-tree-active-icon-color: #38bdf8')
+  })
+
+  it('uses full background color prop names', () => {
+    const wrapper = mount(XTree, {
+      props: {
+        treeData: [{ id: '1', label: '节点A' }],
+        hoverBackgroundColor: '#dbeafe',
+        activeBackgroundColor: '#bfdbfe',
+      }
+    })
+
+    const style = wrapper.attributes('style')
+    expect(style).toContain('--x-tree-hover-bg-color: #dbeafe')
+    expect(style).toContain('--x-tree-active-bg-color: #bfdbfe')
   })
 
   it('maps size prop to tree css variables', () => {

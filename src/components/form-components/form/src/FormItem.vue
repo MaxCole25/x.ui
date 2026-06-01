@@ -10,7 +10,7 @@ defineOptions({
 const props = withDefaults(defineProps<FormItemProps>(), {
   required: false,
   loading: false,
-  contentFillHeight: false,
+  contentFullHeight: false,
   align: 'start'
 })
 
@@ -36,6 +36,7 @@ const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.v
 const mergedLabelPosition = computed<FormLabelPosition>(() => props.labelPosition ?? form?.labelPosition.value ?? 'right')
 const mergedAlign = computed<FormItemAlign>(() => props.align)
 const displayError = computed(() => props.error ?? validateMessage.value)
+const mergedContentFullHeight = computed(() => props.contentFullHeight)
 
 const fieldJustifyMap: Record<NonNullable<FormItemProps['contentJustify']>, string> = {
   start: 'flex-start',
@@ -243,7 +244,7 @@ onBeforeUnmount(() => {
       `x-form-item--label-${mergedLabelPosition}`,
       {
         'x-form-item--align-center': mergedAlign === 'center',
-        'x-form-item--content-fill-height': props.contentFillHeight,
+        'x-form-item--content-fill-height': mergedContentFullHeight,
         'is-required': isRequired,
         'is-error': Boolean(displayError),
         'is-disabled': mergedDisabled,

@@ -15,7 +15,7 @@ const switchAppearance = reactive({
   activeText: '开',
   inactiveText: '关',
   labelPosition: 'outside' as SwitchLabelPosition,
-  color: '#1264f4',
+  checkedColor: '#1264f4',
   inactiveColor: '#dcdfe6',
   thumbColor: '#ffffff',
   buttonSize: 20,
@@ -44,7 +44,7 @@ const switchAppearance = reactive({
             :active-text="switchAppearance.activeText"
             :inactive-text="switchAppearance.inactiveText"
             :label-position="switchAppearance.labelPosition"
-            :color="switchAppearance.color"
+            :checked-color="switchAppearance.checkedColor"
             :inactive-color="switchAppearance.inactiveColor"
             :thumb-color="switchAppearance.thumbColor"
             :button-size="switchAppearance.buttonSize"
@@ -109,7 +109,7 @@ const switchAppearance = reactive({
         <template #column-3>
           <label>
             <span>开启背景色</span>
-            <input v-model="switchAppearance.color" type="color" />
+            <input v-model="switchAppearance.checkedColor" type="color" />
           </label>
           <label>
             <span>关闭背景色</span>

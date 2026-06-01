@@ -39,6 +39,20 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 - 使用 Vitest 和 Vue Test Utils 验证组件行为。
 - Vue 必须保持为 peer dependency。
 
+## 公开接口命名规则
+
+新增或修改公开 Props、事件、插槽、类型和 `expose` 方法时，必须优先遵守 `docs/guide/api-naming.md`。
+
+- 基础属性统一使用 `modelValue`、`size`、`disabled`、`readonly`、`loading`、`clearable`。
+- 颜色属性统一使用 `xxxColor`、`xxxTextColor`、`xxxBackgroundColor`、`xxxBorderColor`，主题色用 `accentColor`，选中色用 `checkedColor`，头像背景用 `avatarBackgroundColor`，不要新增 `BgColor` 缩写或裸 `background` / `color`。
+- 整体圆角使用 `radius`，局部圆角使用 `partRadius`，不要为整体圆角新增 `borderRadius`。
+- 布尔属性按语义使用 `showXxx`、`hideXxx`、`enableXxx`、`allowXxx`、`canXxx`。
+- 新增浮层属性优先使用 `teleported`、`teleportTo`、`zIndex`，不要新增 `appendToBody`、`dropdownZIndex`、`popperZIndex` 这类并行命名。
+- 视觉形态属性优先使用 `variant`，反馈状态属性优先使用 `status`；原生输入 `type` 可保留，其它场景不要新增裸 `type`。
+- `color`、`background`、`value`、`label` 这类裸语义属性必须谨慎新增，语义不够明确时加业务前缀。
+
+x.ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props 时直接使用规范新名称，不新增旧命名别名、兼容 fallback 或 `@deprecated` Props；除非用户明确要求兼容迁移。
+
 ## 组件分类目录约束
 
 所有公开组件必须放在 `src/components` 下的分类目录中，不允许新增散落在 `src/components/<component>` 一级的公开组件目录。分类目录固定为：
@@ -126,6 +140,7 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 
 ```bash
 pnpm test
+pnpm api:naming:audit:check
 pnpm build
 pnpm docs:build
 pnpm story:build

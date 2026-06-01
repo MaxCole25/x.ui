@@ -16,10 +16,11 @@ const appearance = reactive({
   disabled: false,
   hideOnClick: true,
   showArrow: true,
-  appendToBody: false,
+  teleported: false,
+  teleportTo: 'body',
   offset: 6,
   popperWidth: 160,
-  popperZIndex: overlayZIndex.popper,
+  zIndex: overlayZIndex.popper,
   radius: 8,
   backgroundColor: '#ffffff',
   borderColor: '#e4e7ed',
@@ -47,10 +48,11 @@ const appearance = reactive({
             :disabled="appearance.disabled"
             :hide-on-click="appearance.hideOnClick"
             :show-arrow="appearance.showArrow"
-            :append-to-body="appearance.appendToBody"
+            :teleported="appearance.teleported"
+            :teleport-to="appearance.teleportTo"
             :offset="appearance.offset"
             :popper-width="appearance.popperWidth"
-            :popper-z-index="appearance.popperZIndex"
+            :z-index="appearance.zIndex"
             :radius="appearance.radius"
             :background-color="appearance.backgroundColor"
             :border-color="appearance.borderColor"
@@ -79,8 +81,9 @@ const appearance = reactive({
         <template #column-2>
           <label><span>偏移长度</span><input v-model.number="appearance.offset" type="number" /></label>
           <label><span>弹层宽度</span><input v-model.number="appearance.popperWidth" type="number" /></label>
-          <label><span>弹层层级</span><input v-model.number="appearance.popperZIndex" type="number" /></label>
+          <label><span>弹层层级</span><input v-model.number="appearance.zIndex" type="number" /></label>
           <label><span>圆角</span><input v-model.number="appearance.radius" type="number" /></label>
+          <label><span>挂载目标</span><input v-model="appearance.teleportTo" /></label>
         </template>
         <template #column-3>
           <label><span>背景色</span><input v-model="appearance.backgroundColor" type="color" /></label>
@@ -92,7 +95,7 @@ const appearance = reactive({
           <label class="story-check"><input v-model="appearance.disabled" type="checkbox" /><span>禁用</span></label>
           <label class="story-check"><input v-model="appearance.hideOnClick" type="checkbox" /><span>点击后隐藏</span></label>
           <label class="story-check"><input v-model="appearance.showArrow" type="checkbox" /><span>显示箭头</span></label>
-          <label class="story-check"><input v-model="appearance.appendToBody" type="checkbox" /><span>挂载到 body</span></label>
+          <label class="story-check"><input v-model="appearance.teleported" type="checkbox" /><span>挂载到外部</span></label>
         </template>
         <template #events>
           <label><span>command 事件</span><input :value="appearance.command" type="text" readonly /></label>

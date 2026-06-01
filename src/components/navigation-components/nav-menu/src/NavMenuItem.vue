@@ -20,7 +20,8 @@ const props = withDefaults(
     activeKey: string
     mode: NavMenuMode
     collapsed: boolean
-    appendToBody: boolean
+    teleported: boolean
+    teleportTo: string
     menuStyleVars: CSSProperties
     openKeys: Set<string>
     showSubmenuArrow: boolean
@@ -53,7 +54,7 @@ const shouldHideLabel = computed(() => props.mode === 'vertical' && props.collap
 const isCollapsedVerticalPopup = computed(() => props.mode === 'vertical' && props.collapsed)
 const usesPopupSubmenu = computed(() => props.mode === 'horizontal' || isCollapsedVerticalPopup.value)
 const isSubmenuOpen = computed(() => (usesPopupSubmenu.value ? submenuOpen.value : props.openKeys.has(props.item.key)))
-const shouldTeleportSubmenu = computed(() => props.appendToBody && usesPopupSubmenu.value && hasChildren.value)
+const shouldTeleportSubmenu = computed(() => props.teleported && usesPopupSubmenu.value && hasChildren.value)
 const iconText = computed(() => props.item.label.slice(0, 1).toUpperCase())
 const componentIcon = computed(() => {
   if (!props.item.icon || typeof props.item.icon === 'string') {
@@ -295,7 +296,7 @@ provide(popupPathKey, {
       </span>
     </button>
 
-    <Teleport to="body" :disabled="!shouldTeleportSubmenu">
+    <Teleport :to="props.teleportTo" :disabled="!shouldTeleportSubmenu">
       <ul
         v-if="hasChildren && isSubmenuOpen"
         ref="submenuRef"
@@ -312,7 +313,8 @@ provide(popupPathKey, {
           :active-key="props.activeKey"
           :mode="props.mode"
           :collapsed="props.collapsed"
-          :append-to-body="props.appendToBody"
+          :teleported="props.teleported"
+          :teleport-to="props.teleportTo"
           :menu-style-vars="props.menuStyleVars"
           :open-keys="props.openKeys"
           :show-submenu-arrow="props.showSubmenuArrow"

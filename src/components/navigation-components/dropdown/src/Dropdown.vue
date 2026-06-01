@@ -16,9 +16,10 @@ const props = withDefaults(defineProps<DropdownProps>(), {
   disabled: false,
   hideOnClick: true,
   showArrow: true,
-  appendToBody: false,
+  teleported: false,
+  teleportTo: 'body',
   offset: 6,
-  popperZIndex: overlayZIndex.popper
+  zIndex: overlayZIndex.popper
 })
 
 const emit = defineEmits<{
@@ -33,11 +34,12 @@ const popperRef = ref<HTMLElement>()
 const popperLeft = ref(0)
 const popperTop = ref(0)
 let timer: number | undefined
+const resolvedZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 const dropdownStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-dropdown-offset': typeof props.offset === 'number' ? `${props.offset}px` : props.offset,
   '--x-dropdown-popper-width': typeof props.popperWidth === 'number' ? `${props.popperWidth}px` : props.popperWidth,
-  '--x-dropdown-z-index': props.popperZIndex,
+  '--x-dropdown-z-index': resolvedZIndex.value,
   '--x-dropdown-radius': typeof props.radius === 'number' ? `${props.radius}px` : props.radius,
   '--x-dropdown-shadow': props.shadow,
   '--x-dropdown-hover-bg': props.hoverBackgroundColor,
@@ -104,7 +106,7 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function updatePopperPosition() {
-  if (!props.appendToBody || !visible.value || !triggerRef.value || !popperRef.value) return
+  if (!props.teleported || !visible.value || !triggerRef.value || !popperRef.value) return
 
   const gap = 8
   const offset = toNumber(props.offset, 6)
@@ -172,13 +174,13 @@ onBeforeUnmount(() => {
     <div ref="triggerRef" class="x-dropdown__trigger" tabindex="0" @click="toggle">
       <slot />
     </div>
-    <Teleport to="body" :disabled="!props.appendToBody">
+    <Teleport :to="props.teleportTo" :disabled="!props.teleported">
       <div
         v-show="visible"
         ref="popperRef"
         class="x-dropdown__popper"
-        :class="[`x-dropdown__popper--${props.placement}`, { 'is-teleported': props.appendToBody }]"
-        :style="props.appendToBody ? teleportedPopperStyle : undefined"
+        :class="[`x-dropdown__popper--${props.placement}`, { 'is-teleported': props.teleported }]"
+        :style="props.teleported ? teleportedPopperStyle : undefined"
         @mouseenter="onMouseenter"
         @mouseleave="onMouseleave"
       >

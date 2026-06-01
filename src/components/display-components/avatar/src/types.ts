@@ -18,5 +18,5 @@ export interface AvatarProps extends ElementStyleProps {
   size?: AvatarSize
   avatarSize?: number | string
   shape?: AvatarShape
-  color?: string
+  avatarBackgroundColor?: string
 }

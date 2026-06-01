@@ -4,7 +4,7 @@
 
 属性不传时会全部使用默认值。布局容器默认撑满父容器，并至少占满视口高度，组件本身不额外设置内容滚动逻辑。
 
-`fillHeight` 默认开启。组件会通过 `min-height: 100vh` 适配 Vue 常见的 `#app { min-height: 100vh; display: block; }` 场景；当布局处在纵向 `flex` 或 `grid` 页面容器内时，也会尽量吃掉顶部工具栏、筛选区之外的剩余高度。如果 `XLayout` 放在弹窗、卡片、局部容器里，应传 `:fill-height="false"` 或由外层显式控制高度，避免局部区域默认占满视口。
+`fullHeight` 默认开启。组件会通过 `min-height: 100vh` 适配 Vue 常见的 `#app { min-height: 100vh; display: block; }` 场景；当布局处在纵向 `flex` 或 `grid` 页面容器内时，也会尽量吃掉顶部工具栏、筛选区之外的剩余高度。如果 `XLayout` 放在弹窗、卡片、局部容器里，应传 `:full-height="false"` 或由外层显式控制高度，避免局部区域默认占满视口。
 
 ## 基础用法
 
@@ -37,7 +37,7 @@ import 'x.ui/style.css'
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | mode | 布局模式 | `'top-sidebar' \| 'sidebar-top' \| 'top-only'` | `'top-sidebar'` |
-| fillHeight | 是否占满父级 flex/grid 容器的剩余高度 | `boolean` | `true` |
+| fullHeight | 是否占满父级 flex/grid 容器的剩余高度 | `boolean` | `true` |
 | sidebarWidth | 侧栏宽度（支持数字像素或 CSS 长度） | `number \| string` | `288` |
 | sidebarCollapsed | 是否收起侧栏 | `boolean` | `false` |
 | sidebarCollapsedWidth | 收起侧栏后的宽度（支持数字像素或 CSS 长度） | `number \| string` | `88` |
@@ -46,19 +46,19 @@ import 'x.ui/style.css'
 | footerHeight | 底部栏高度（支持数字像素或 CSS 长度） | `number \| string` | `30` |
 | topbarBackgroundColor | 顶部栏背景色 | `string` | `'#1E6B73'` |
 | topbarColor | 顶部栏前景色 | `string` | `'#F9F9F9'` |
-| topbarBorderRadius | 顶部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
+| topbarRadius | 顶部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | topbarBorder | 顶部栏下边框 | `string` | `'none'` |
 | sidebarBackgroundColor | 侧栏背景色 | `string` | `'#185A61'` |
 | sidebarColor | 侧栏前景色 | `string` | `'#F9F9F9'` |
-| sidebarBorderRadius | 侧栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
+| sidebarRadius | 侧栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | sidebarBorder | 侧栏右边框 | `string` | `'none'` |
 | sidebarPadding | 侧栏内边距（支持数字像素或 CSS padding 写法） | `number \| string` | `12` |
 | contentBackgroundColor | 内容区背景色 | `string` | `'transparent'` |
 | contentColor | 内容区前景色 | `string` | `'#F9F9F9'` |
-| contentBorderRadius | 内容区圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
+| contentRadius | 内容区圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | footerBackgroundColor | 底部栏背景色 | `string` | `'#124A50'` |
 | footerColor | 底部栏前景色 | `string` | `'#F9F9F9'` |
-| footerBorderRadius | 底部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
+| footerRadius | 底部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | footerBorder | 底部栏上边框 | `string` | `'none'` |
 
 边框属性只作用于对应区域的指定边：`topbarBorder` 对应 Topbar 下边框，`sidebarBorder` 对应 Sidebar 右边框，`footerBorder` 对应 Footer 上边框。Content 不提供边框属性。

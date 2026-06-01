@@ -39,6 +39,21 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-width: 48px')
   })
 
+  it('uses tabStretch and fullHeight classes', () => {
+    const wrapper = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        tabStretch: true,
+        fullHeight: true
+      }
+    })
+
+    expect(wrapper.classes()).toContain('is-fill-height')
+    expect(wrapper.find('.x-tabs__item-frame').classes()).toContain('is-stretch')
+    expect(wrapper.find('.x-tabs__item').classes()).toContain('is-stretch')
+  })
+
   it('supports lg and sm tab sizes', () => {
     const large = mount(XTabs, {
       props: {
@@ -67,33 +82,33 @@ describe('XTabs', () => {
     expect(small.attributes('style')).toContain('--x-tabs-item-padding-x: 8px')
   })
 
-  it('applies different tab type classes', () => {
+  it('applies different tab variant classes', () => {
     const line = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        type: 'line'
+        variant: 'line'
       }
     })
     const emptyLine = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        type: ''
+        variant: ''
       }
     })
     const card = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        type: 'card'
+        variant: 'card'
       }
     })
     const borderCard = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        type: 'border-card'
+        variant: 'border-card'
       }
     })
 
@@ -101,6 +116,18 @@ describe('XTabs', () => {
     expect(emptyLine.classes()).toContain('x-tabs--line')
     expect(card.classes()).toContain('x-tabs--card')
     expect(borderCard.classes()).toContain('x-tabs--border-card')
+  })
+
+  it('uses explicit variant class', () => {
+    const wrapper = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        variant: 'line'
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-tabs--line')
   })
 
   it('keeps visual styles for every tab type', () => {
@@ -133,6 +160,18 @@ describe('XTabs', () => {
 
     expect(css).toContain('.x-tabs__head {\n  align-items: flex-end;\n  background: transparent;')
     expect(css).toContain('.x-tabs__item-frame {\n  align-items: center;\n  background: var(--x-tabs-tab-bg);')
+  })
+
+  it('uses tabBackgroundColor variable', () => {
+    const wrapper = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        tabBackgroundColor: '#dbeafe'
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-tabs-tab-bg: #dbeafe')
   })
 
   it('exposes tab label font size variable', () => {
@@ -184,7 +223,7 @@ describe('XTabs', () => {
       props: {
         modelValue: 'a',
         items,
-        borderRadius: '10px',
+        radius: '10px',
         border: '1px solid #7FD6F6',
         contentBackgroundColor: '#f8fafc'
       }
@@ -196,6 +235,18 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).not.toContain('--x-tabs-tab-border')
     expect(wrapper.attributes('style')).not.toContain('--x-tabs-content-border')
     expect(wrapper.attributes('style')).not.toContain('--x-tabs-tab-active-bg')
+  })
+
+  it('uses radius variable', () => {
+    const wrapper = mount(XTabs, {
+      props: {
+        modelValue: 'a',
+        items,
+        radius: 10
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-tabs-radius: 10px')
   })
 
   it('exposes context menu color variables', async () => {

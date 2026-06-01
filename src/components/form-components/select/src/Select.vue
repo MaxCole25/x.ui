@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
   size: undefined,
   teleported: true,
   teleportTo: 'body',
-  dropdownZIndex: overlayZIndex.popper,
+  zIndex: overlayZIndex.popper,
   dropdownMaxWidth: 360,
   dropdownBackgroundColor: '#ffffff',
   textAlign: 'left',
@@ -63,6 +63,7 @@ let isListeningForPositionChanges = false
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
 const canInteract = computed(() => !mergedDisabled.value && !props.readonly)
+const resolvedDropdownZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 const selectedValues = computed<SelectOptionValue[]>(() => {
   if (Array.isArray(props.modelValue)) return props.modelValue
   return props.modelValue == null || props.modelValue === '' ? [] : [props.modelValue]
@@ -134,13 +135,13 @@ const resolvedInputRadius = computed(() => selectedSizePreset.value?.radius ?? p
 
 const selectStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-select-color': props.color ?? props.activeBorderColor,
-  '--x-select-active-border-color': props.activeBorderColor ?? props.color,
+  '--x-select-color': props.accentColor ?? props.activeBorderColor,
+  '--x-select-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-select-border-color': props.borderColor,
   '--x-select-hover-border-color': props.borderColor,
   '--x-select-border-width': toCssSize(props.borderWidth),
   '--x-select-radius': resolvedInputRadius.value,
-  '--x-select-bg': props.backgroundColor ?? props.background,
+  '--x-select-bg': props.inputBackgroundColor ?? props.backgroundColor,
   '--x-select-dropdown-bg': props.dropdownBackgroundColor,
   '--x-select-text-color': props.textColor,
   '--x-select-disabled-bg': props.disabledBackgroundColor,
@@ -150,7 +151,7 @@ const selectStyle = computed(() => ({
   '--x-select-height': props.autoHeight ? 'auto' : toCssSize(resolvedInputHeight.value),
   '--x-select-padding': toCssSize(resolvedInputPadding.value),
   '--x-select-text-align': props.textAlign,
-  '--x-select-dropdown-z-index': props.dropdownZIndex,
+  '--x-select-dropdown-z-index': resolvedDropdownZIndex.value,
   '--x-select-clear-icon-color': props.clearIconColor,
   '--x-select-clear-icon-size': toCssSize(props.clearIconSize)
 }))
@@ -166,8 +167,8 @@ const baseInputProps = computed(() => ({
   status: props.status,
   prefix: props.prefix,
   suffix: undefined,
-  activeBorderColor: props.activeBorderColor ?? props.color,
-  color: props.color ?? props.activeBorderColor,
+  accentColor: props.accentColor,
+  activeBorderColor: props.activeBorderColor ?? props.accentColor,
   clearIconColor: props.clearIconColor,
   clearIconSize: props.clearIconSize,
   disabledBackgroundColor: props.disabledBackgroundColor,
@@ -179,7 +180,7 @@ const baseInputProps = computed(() => ({
   padding: resolvedInputPadding.value,
   radius: resolvedInputRadius.value,
   textAlign: props.textAlign,
-  background: props.background,
+  inputBackgroundColor: props.inputBackgroundColor,
   backgroundColor: props.backgroundColor,
   textColor: props.textColor,
   borderWidth: props.borderWidth,
@@ -193,7 +194,7 @@ const dropdownStyle = computed(() => ({
     ? teleportedDropdownStyle.value
     : {
         maxWidth: toCssSize(props.dropdownMaxWidth),
-        zIndex: String(props.dropdownZIndex)
+        zIndex: String(resolvedDropdownZIndex.value)
       })
 }))
 
@@ -313,7 +314,7 @@ const updateDropdownPosition = () => {
     width: `${Math.round(width)}px`,
     maxWidth: toCssSize(props.dropdownMaxWidth) ?? '360px',
     maxHeight: `${maxHeight}px`,
-    zIndex: String(props.dropdownZIndex)
+    zIndex: String(resolvedDropdownZIndex.value)
   }
 }
 
@@ -386,7 +387,7 @@ watch(
 )
 
 watch(
-  () => [props.dropdownMaxWidth, props.dropdownZIndex],
+  () => [props.dropdownMaxWidth, resolvedDropdownZIndex.value],
   async () => {
     if (!isOpen.value) return
     await nextTick()

@@ -10,7 +10,7 @@ import { XMessageBox } from 'x.ui'
 XMessageBox.alert('操作成功', '提示')
 
 XMessageBox.confirm('删除后不可恢复，是否继续？', '删除确认', {
-  type: 'warning',
+  status: 'warning',
   confirmButtonText: '删除',
   cancelButtonText: '取消'
 })
@@ -38,7 +38,7 @@ const visible = ref(false)
 | modelValue | 是否显示，仅组件模式使用 | `boolean` | `false` |
 | title | 标题 | `string` | `'提示'` |
 | message | 内容 | `string` | `''` |
-| type | 类型 | `'success' \| 'warning' \| 'info' \| 'error'` | `'info'` |
+| status | 反馈状态 | `'success' \| 'warning' \| 'info' \| 'error'` | `'info'` |
 | size | 尺寸规格，仅影响字号和按钮高度，不影响弹框内边距与圆角 | `sm \| md \| lg` | `md` |
 | showCancelButton | 是否显示取消按钮 | `boolean` | `false` |
 | showConfirmButton | 是否显示确认按钮 | `boolean` | `true` |

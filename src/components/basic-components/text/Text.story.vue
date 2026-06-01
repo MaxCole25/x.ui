@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { XText } from './index'
-import type { TextAlign } from './src/types'
+import type { TextAlign, TextType } from './src/types'
 import '../../../styles/index.css'
 
 const sample = reactive({
   modelValue: '12.5',
+  variant: 'default' as TextType,
   disabled: false,
   borderWidth: '3px',
   borderColor: '#ff0000',
@@ -59,9 +60,10 @@ const textAlignOptions: Array<{ label: string; value: TextAlign }> = [
               height: `${sample.previewHeight}px`
             }"
           >
-            <XText
+              <XText
               v-model="sample.modelValue"
               tag="span"
+              :variant="sample.variant"
               :disabled="sample.disabled"
               :border-width="sample.borderWidth"
               :border-color="sample.borderColor"
@@ -95,6 +97,17 @@ const textAlignOptions: Array<{ label: string; value: TextAlign }> = [
             <label>
               <span>id</span>
               <input v-model="sample.id" />
+            </label>
+            <label>
+              <span>视觉形态</span>
+              <select v-model="sample.variant">
+                <option value="default">default</option>
+                <option value="muted">muted</option>
+                <option value="primary">primary</option>
+                <option value="success">success</option>
+                <option value="warning">warning</option>
+                <option value="danger">danger</option>
+              </select>
             </label>
             <label>
               <span>字体样式</span>
