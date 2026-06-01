@@ -8,7 +8,6 @@ export default defineConfig({
     logo: '/logo.svg',
     nav: [
       { text: '指南', link: '/guide/getting-started' },
-      { text: 'BaseX 封装', link: '/guide/base-xui' },
       { text: '组件', link: '/components/button' },
       { text: '图标', link: '/components/icon' }
     ],
@@ -18,7 +17,6 @@ export default defineConfig({
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
           { text: '主题基础色', link: '/guide/theme' },
-          { text: 'BaseX 可复制封装', link: '/guide/base-xui' },
           { text: '组件测试', link: '/guide/testing' }
         ]
       },
@@ -34,6 +32,7 @@ export default defineConfig({
               { text: '砖格 Brick', link: '/components/brick' },
               { text: '卡片 Card', link: '/components/card' },
               { text: '分割线 Divider', link: '/components/divider' },
+              { text: '宫格 Grid', link: '/components/grid' },
               { text: '图标 Icon', link: '/components/icon' },
               { text: '布局 Layout', link: '/components/layout' },
               { text: '滚动条 Scrollbar', link: '/components/scrollbar' },

@@ -5,7 +5,7 @@
 ## 基础用法
 
 ```vue
-<XDropdownMenu max-height="180px">
+<XDropdownMenu width="180px" max-height="180px">
   <XDropdownItem>编辑</XDropdownItem>
   <XDropdownItem divided>删除</XDropdownItem>
 </XDropdownMenu>
@@ -15,6 +15,7 @@
 
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
+| width | 弹窗宽度 | `number \| string` | `max-content` |
 | maxHeight | 最大高度 | `number \| string` | `260px` |
 | minWidth | 最小宽度 | `number \| string` | `136px` |
 | padding | 内边距 | `number \| string` | `6px` |

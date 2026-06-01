@@ -51,6 +51,7 @@ export interface RichTextEditorTheme {
   overlayBackground?: string
   overlayBorderColor?: string
   overlayTextColor?: string
+  outlineActiveColor?: string
 }
 
 export interface RichTextEditorProps {

@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 
 type OutlineHeading = {
@@ -85,6 +85,7 @@ const props = withDefaults(
 
 const revision = ref(0)
 const collapsedMap = ref<Record<string, boolean>>({})
+const activeHeadingKey = ref<string | null>(null)
 
 const headings = computed<OutlineHeading[]>(() => {
   revision.value
@@ -110,10 +111,12 @@ const headings = computed<OutlineHeading[]>(() => {
 
     const end = pos + node.nodeSize
     const text = node.textContent.trim() || '未命名标题'
-    const active = selectionFrom >= pos && selectionTo <= end
+    const key = getHeadingKey(pos, level, text)
+    const activeBySelection = selectionFrom >= pos && selectionTo <= end
+    const active = activeHeadingKey.value ? activeHeadingKey.value === key : activeBySelection
 
     items.push({
-      key: `${pos}-${level}-${text}`,
+      key,
       pos,
       level,
       text,
@@ -162,6 +165,8 @@ const tree = computed<OutlineNode[]>(() => {
 const visibleNodes = computed(() => flattenTree(tree.value))
 
 let detach: (() => void) | null = null
+let scrollFrame = 0
+let scrollViewport: HTMLElement | null = null
 
 function refresh() {
   revision.value += 1
@@ -170,24 +175,53 @@ function refresh() {
 function bindEditor(editor?: Editor) {
   detach?.()
   detach = null
+  activeHeadingKey.value = null
+  scrollViewport = null
 
   if (!editor) {
     refresh()
     return
   }
 
-  const update = () => refresh()
+  const handleScroll = () => queueScrollActiveRefresh(editor)
+  const bindViewport = () => {
+    const viewport = getEditorViewport(editor)
+    if (viewport === scrollViewport) {
+      return
+    }
+
+    scrollViewport?.removeEventListener('scroll', handleScroll)
+    scrollViewport = viewport
+    scrollViewport?.addEventListener('scroll', handleScroll, { passive: true })
+  }
+  const update = () => {
+    refresh()
+    bindViewport()
+    queueScrollActiveRefresh(editor)
+  }
+
   editor.on('update', update)
   editor.on('selectionUpdate', update)
   editor.on('transaction', update)
+  bindViewport()
 
   detach = () => {
     editor.off('update', update)
     editor.off('selectionUpdate', update)
     editor.off('transaction', update)
+    scrollViewport?.removeEventListener('scroll', handleScroll)
+    scrollViewport = null
+    if (scrollFrame) {
+      window.cancelAnimationFrame(scrollFrame)
+      scrollFrame = 0
+    }
   }
 
   refresh()
+  void nextTick(() => {
+    bindViewport()
+    queueScrollActiveRefresh(editor)
+  })
 }
 
 watch(
@@ -218,8 +252,77 @@ function getElementFromNodeDom(node: Node | null) {
   return node?.parentElement ?? null
 }
 
+function getHeadingKey(pos: number, level: number, text: string) {
+  return `${pos}-${level}-${text}`
+}
+
+function getEditorViewport(editor: Editor) {
+  return editor.view.dom.closest('.xl-editor__viewport') as HTMLElement | null
+}
+
+function queueScrollActiveRefresh(editor: Editor) {
+  if (scrollFrame) {
+    window.cancelAnimationFrame(scrollFrame)
+  }
+
+  scrollFrame = window.requestAnimationFrame(() => {
+    scrollFrame = 0
+    updateScrollActiveHeading(editor)
+  })
+}
+
+function updateScrollActiveHeading(editor: Editor) {
+  const viewport = getEditorViewport(editor)
+  if (!viewport) {
+    return
+  }
+
+  const viewportRect = viewport.getBoundingClientRect()
+  const activationOffset = 80
+  let firstHeadingKey: string | null = null
+  let firstVisibleHeadingKey: string | null = null
+  let activeKey: string | null = null
+  let activeTop = Number.NEGATIVE_INFINITY
+
+  editor.state.doc.descendants((node, pos) => {
+    if (node.type.name !== 'heading') {
+      return
+    }
+
+    const level = Number(node.attrs.level ?? 1)
+    if (level < props.minLevel || level > props.maxLevel) {
+      return
+    }
+
+    const text = node.textContent.trim() || '未命名标题'
+    const key = getHeadingKey(pos, level, text)
+    const headingElement = getElementFromNodeDom(editor.view.nodeDOM(pos))
+    firstHeadingKey ??= key
+
+    if (!headingElement) {
+      return
+    }
+
+    const headingRect = headingElement.getBoundingClientRect()
+    const relativeTop = headingRect.top - viewportRect.top
+    const relativeBottom = headingRect.bottom - viewportRect.top
+
+    if (!firstVisibleHeadingKey && relativeBottom >= 0) {
+      firstVisibleHeadingKey = key
+    }
+
+    if (relativeTop <= activationOffset && relativeTop >= activeTop) {
+      activeKey = key
+      activeTop = relativeTop
+    }
+  })
+
+  activeHeadingKey.value = activeKey ?? firstVisibleHeadingKey ?? firstHeadingKey
+  refresh()
+}
+
 function scrollHeadingIntoView(editor: Editor, pos: number) {
-  const viewport = editor.view.dom.closest('.xl-editor__viewport') as HTMLElement | null
+  const viewport = getEditorViewport(editor)
   const headingElement = getElementFromNodeDom(editor.view.nodeDOM(pos))
 
   if (!viewport || !headingElement) {
@@ -245,7 +348,10 @@ function jumpToHeading(pos: number) {
   }
 
   editor.chain().focus().setTextSelection(pos).run()
-  window.requestAnimationFrame(() => scrollHeadingIntoView(editor, pos))
+  window.requestAnimationFrame(() => {
+    scrollHeadingIntoView(editor, pos)
+    queueScrollActiveRefresh(editor)
+  })
 }
 
 function flattenTree(nodes: OutlineNode[]): OutlineNode[] {
@@ -284,6 +390,7 @@ function markActivePath(nodes: OutlineNode[]): boolean {
   --xl-outline-panel-hover: var(--xl-outline-hover, #111827);
   --xl-outline-panel-empty: var(--xl-outline-empty, #64748b);
   --xl-outline-panel-separator: var(--xl-outline-separator, rgba(64, 158, 255, 0.18));
+  --xl-outline-panel-active: var(--xl-outline-active, #409EFF);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -414,7 +521,7 @@ function markActivePath(nodes: OutlineNode[]): boolean {
   left: -6px;
   width: 4px;
   border-radius: 999px;
-  background: #409EFF;
+  background: var(--xl-outline-panel-active);
   pointer-events: none;
 }
 

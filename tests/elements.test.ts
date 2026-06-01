@@ -116,6 +116,33 @@ describe('元素组件', () => {
     expect(wrapper.attributes('style')).toContain('--x-avatar-border-color: #0f172a')
   })
 
+  it('renders XIcon inside avatar from icon props', () => {
+    const wrapper = mount(XAvatar, {
+      props: {
+        icon: 'user',
+        iconVariant: 'fill',
+        iconColor: '#ffffff'
+      }
+    })
+
+    expect(wrapper.find('.x-icon').exists()).toBe(true)
+    expect(wrapper.find('.ri-user-fill').exists()).toBe(true)
+    expect(wrapper.attributes('style')).toContain('--x-icon-size: 17px')
+    expect(wrapper.find('.x-icon').attributes('style')).toContain('color: rgb(255, 255, 255)')
+  })
+
+  it('fills avatar icon size from avatar dimensions', () => {
+    const wrapper = mount(XAvatar, {
+      props: {
+        icon: 'user',
+        size: 'lg',
+        iconFull: true
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-icon-size: 38px')
+  })
+
   it('exposes shared element appearance style variables', () => {
     const appearanceProps = {
       borderWidth: 3,

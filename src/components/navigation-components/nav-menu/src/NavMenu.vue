@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, markRaw, ref, toRaw, watch } from 'vue'
 import type { NavMenuItem as NavMenuItemType, NavMenuProps } from './types'
 import NavMenuItem from './NavMenuItem.vue'
-import 'remixicon/fonts/remixicon.css'
 
 defineOptions({
   name: 'XNavMenu'
@@ -23,7 +22,9 @@ const props = withDefaults(defineProps<NavMenuProps>(), {
   fontSize: 14,
   fontWeight: 400,
   activeFontWeight: 600,
-  fontFamily: 'var(--x-font-family)'
+  fontFamily: 'var(--x-font-family)',
+  itemGap: 4,
+  showSubmenuArrow: true
 })
 
 const emit = defineEmits<{
@@ -36,6 +37,7 @@ const internalOpenKeys = ref<Set<string>>(new Set())
 
 const isCollapsed = computed(() => props.allowCollapse && props.collapsed)
 const isControlledOpenKeys = computed(() => props.openKeys !== undefined)
+const normalizedItems = computed(() => normalizeMenuItems(props.items))
 const parentKeyMap = computed(() => createParentKeyMap(props.items))
 const childrenKeyMap = computed(() => createChildrenKeyMap(props.items))
 const activePathKeys = computed(() => findActivePathKeys(props.items, props.activeKey))
@@ -73,6 +75,14 @@ watch(
 
 function handleSelect(key: string) {
   emit('select', key)
+}
+
+function normalizeMenuItems(items: NavMenuItemType[]): NavMenuItemType[] {
+  return items.map((item) => ({
+    ...item,
+    icon: item.icon && typeof item.icon !== 'string' ? markRaw(toRaw(item.icon)) : item.icon,
+    children: item.children ? normalizeMenuItems(item.children) : undefined
+  }))
 }
 
 function createParentKeyMap(items: NavMenuItemType[], parentKey = '', map = new Map<string, string>()) {
@@ -230,15 +240,25 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
   const styleVars: Record<string, string> = {
     '--x-nav-menu-text-color': props.textColor,
     '--x-nav-menu-active-text-color': props.activeTextColor,
+    '--x-nav-menu-submenu-active-text-color': props.submenuActiveTextColor ?? props.activeTextColor,
     '--x-nav-menu-active-bg-color': props.activeBgColor,
     '--x-nav-menu-font-size': toCssLength(props.fontSize),
     '--x-nav-menu-font-weight': String(props.fontWeight),
     '--x-nav-menu-active-font-weight': String(props.activeFontWeight),
-    '--x-nav-menu-font-family': props.fontFamily
+    '--x-nav-menu-font-family': props.fontFamily,
+    '--x-nav-menu-item-gap': toCssLength(props.itemGap)
   }
 
   if (props.maxHeight !== undefined) {
     styleVars['--x-nav-menu-max-height'] = toCssLength(props.maxHeight)
+  }
+
+  if (props.itemRadius !== undefined) {
+    styleVars['--x-nav-menu-item-radius'] = toCssLength(props.itemRadius)
+  }
+
+  if (props.submenuItemRadius !== undefined) {
+    styleVars['--x-nav-menu-submenu-item-radius'] = toCssLength(props.submenuItemRadius)
   }
 
   return styleVars
@@ -260,7 +280,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
   >
     <ul class="x-nav-menu__list">
       <NavMenuItem
-        v-for="item in props.items"
+        v-for="item in normalizedItems"
         :key="item.key"
         :item="item"
         :active-key="props.activeKey"
@@ -269,6 +289,8 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
         :append-to-body="props.appendToBody"
         :menu-style-vars="navMenuStyleVars"
         :open-keys="currentOpenKeys"
+        :show-submenu-arrow="props.showSubmenuArrow"
+        :submenu-arrow-icon="props.submenuArrowIcon"
         @select="handleSelect"
         @toggle-open="handleToggleOpen"
       />

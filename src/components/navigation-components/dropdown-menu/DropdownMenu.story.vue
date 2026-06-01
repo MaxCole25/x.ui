@@ -6,6 +6,7 @@ import { XDropdownMenu } from './index'
 import '../../../styles/index.css'
 
 const appearance = reactive({
+  width: 180,
   maxHeight: 160
 })
 </script>
@@ -15,13 +16,14 @@ const appearance = reactive({
     <Variant title="外观接口">
       <ElementStylePlayground>
         <template #default="styleProps">
-          <XDropdownMenu v-bind="styleProps" :max-height="appearance.maxHeight">
+          <XDropdownMenu v-bind="styleProps" :width="appearance.width" :max-height="appearance.maxHeight">
             <XDropdownItem>菜单一</XDropdownItem>
             <XDropdownItem>菜单二</XDropdownItem>
             <XDropdownItem divided>分割菜单</XDropdownItem>
           </XDropdownMenu>
         </template>
         <template #column-2>
+          <label><span>弹窗宽度</span><input v-model.number="appearance.width" type="number" min="80" /></label>
           <label><span>最大高度</span><input v-model.number="appearance.maxHeight" type="number" min="60" /></label>
         </template>
       </ElementStylePlayground>

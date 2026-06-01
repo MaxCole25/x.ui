@@ -11,6 +11,7 @@ const props = defineProps<DropdownMenuProps>()
 
 const menuStyle = computed(() => ({
   ...createElementStyleVars(props),
+  '--x-dropdown-menu-width': toCssSize(props.width),
   '--x-dropdown-menu-max-height': toCssSize(props.maxHeight),
   '--x-dropdown-menu-min-width': toCssSize(props.minWidth),
   '--x-dropdown-menu-padding': toCssSize(props.padding),

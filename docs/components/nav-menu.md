@@ -13,13 +13,14 @@ import 'x.ui/style.css'
 const activeKey = ref('dashboard')
 
 const items: NavMenuItem[] = [
-  { key: 'dashboard', label: '控制台' },
+  { key: 'dashboard', label: '控制台', icon: 'dashboard' },
   {
     key: 'system',
     label: '系统管理',
+    icon: 'settings-3',
     children: [
-      { key: 'user', label: '用户管理' },
-      { key: 'role', label: '角色管理' }
+      { key: 'user', label: '用户管理', icon: 'user' },
+      { key: 'role', label: '角色管理', icon: 'shield-user' }
     ]
   }
 ]
@@ -27,6 +28,40 @@ const items: NavMenuItem[] = [
 
 <template>
   <XNavMenu :items="items" :active-key="activeKey" mode="vertical" @select="(key) => (activeKey = key)" />
+</template>
+```
+
+## 菜单图标
+
+`NavMenuItem.icon` 支持两种写法：传字符串时会交给 `XIcon` 渲染，可以使用 `dashboard`、`settings-3` 这类语义名，也可以继续传完整 Remix Icon 名称，例如 `ri-dashboard-line`；传 Vue 组件时会通过动态组件渲染，适合接入 `lucide-vue-next`、`@element-plus/icons-vue`、`ant-design-vue` 等第三方图标组件。
+
+```vue
+<script setup lang="ts">
+import { Home, Settings } from 'lucide-vue-next'
+import type { NavMenuItem } from 'x.ui'
+
+const items: NavMenuItem[] = [
+  { key: 'dashboard', label: '控制台', icon: 'dashboard' },
+  { key: 'security', label: '权限管理', icon: 'ri-shield-keyhole-line' },
+  { key: 'home', label: '首页', icon: Home },
+  { key: 'settings', label: '设置', icon: Settings }
+]
+</script>
+```
+
+## 自定义菜单项圆角与子菜单箭头
+
+通过 `item-radius` 控制菜单项圆角，通过 `submenu-item-radius` 控制弹出子菜单项圆角。子菜单箭头默认跟随展开状态自动切换，也可以通过 `show-submenu-arrow` 隐藏，或通过 `submenu-arrow-icon` 统一替换为指定图标。
+
+```vue
+<template>
+  <XNavMenu
+    :items="items"
+    :item-radius="6"
+    :submenu-item-radius="4"
+    :show-submenu-arrow="true"
+    submenu-arrow-icon="ri-arrow-right-s-line"
+  />
 </template>
 ```
 
@@ -128,16 +163,22 @@ const items: NavMenuItem[] = [
 | appendToBody | 是否将弹出子菜单挂载到 `body`，模板中使用 `append-to-body` | `boolean` | `false` |
 | scrollable | 是否启用菜单自身滚动（仅纵向有效） | `boolean` | `false` |
 | maxHeight | 菜单最大高度，传入数字时按 px 处理 | `number \| string` | `undefined` |
+| itemGap | 竖向菜单项间距 | `number \| string` | `4` |
 | accordion | 是否启用同级仅展开一个子菜单（仅纵向非收起态有效） | `boolean` | `false` |
 | openKeys | 当前展开的父菜单 key，配合 `update:openKeys` 可受控使用 | `string[]` | `undefined` |
 | defaultOpenKeys | 默认展开的父菜单 key | `string[]` | `[]` |
 | textColor | 菜单文字默认色 | `string` | `'var(--x-color-text)'` |
 | activeTextColor | 菜单文字激活色 | `string` | `'#fff'` |
+| submenuActiveTextColor | 弹出子菜单 active 项文字色，只控制弹出子菜单中的激活项；未传时回退使用 `activeTextColor` | `string` | `undefined` |
 | activeBgColor | 菜单激活背景色 | `string` | `'var(--x-color-primary)'` |
 | fontSize | 菜单文字大小，传入数字时按 px 处理 | `number \| string` | `14` |
 | fontWeight | 菜单文字默认字重 | `number \| string` | `400` |
 | activeFontWeight | 菜单文字激活字重 | `number \| string` | `600` |
 | fontFamily | 菜单字体族 | `string` | `'var(--x-font-family)'` |
+| itemRadius | 菜单项圆角，传入数字时按 px 处理 | `number \| string` | `undefined` |
+| submenuItemRadius | 弹出子菜单项圆角，传入数字时按 px 处理 | `number \| string` | `undefined` |
+| showSubmenuArrow | 是否显示有子菜单项右侧箭头 | `boolean` | `true` |
+| submenuArrowIcon | 自定义子菜单箭头图标，字符串按 `XIcon` 名称渲染，Vue 组件按第三方图标组件渲染 | `string \| Component` | `undefined` |
 
 ## NavMenuItem 类型
 
@@ -145,7 +186,7 @@ const items: NavMenuItem[] = [
 | --- | --- | --- |
 | key | 菜单唯一标识 | `string` |
 | label | 菜单文本 | `string` |
-| icon | 菜单图标标记（可选） | `string` |
+| icon | 菜单图标，字符串按 `XIcon` 名称渲染，Vue 组件按第三方图标组件渲染（可选） | `string \| Component` |
 | routeName | 路由名（可选） | `string` |
 | permissionCode | 权限码（可选） | `string` |
 | children | 子菜单（可选） | `NavMenuItem[]` |
@@ -169,6 +210,7 @@ const items: NavMenuItem[] = [
 7. 开启 `scrollable` 并设置 `maxHeight=300`，确认滚动条只出现在菜单内部。
 8. 开启 `accordion`，依次展开同级父菜单，确认前一个父菜单会自动折叠。
 9. 设置 `activeKey="/security/roles"`，确认“系统设置”和“权限管理”等父级路径默认展开。
+10. 调整 `itemGap`、`itemRadius`、`submenuItemRadius`、`showSubmenuArrow`、`submenuArrowIcon`，确认间距、圆角和箭头显示符合配置。
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充

@@ -7,7 +7,6 @@ import { XCheckbox } from '../../../form-components/checkbox'
 import { XInputNumber } from '../../../form-components/input-number'
 import { XRadioButton } from '../../../form-components/radio'
 import { componentSizePreset } from '../../../_utils/size'
-import 'remixicon/fonts/remixicon.css'
 import type {
   TableAlign,
   TableAppendRowPayload,

@@ -1,64 +1,89 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { defineComponent, h, reactive } from 'vue'
 import { XNavMenu } from './index'
 import type { NavMenuItem, NavMenuMode } from './src/types'
 import '../../../styles/index.css'
 
+const ExternalReportIcon = defineComponent({
+  name: 'ExternalReportIcon',
+  setup() {
+    return () =>
+      h(
+        'svg',
+        {
+          viewBox: '0 0 24 24',
+          fill: 'none',
+          stroke: 'currentColor',
+          'stroke-width': '2',
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          focusable: 'false'
+        },
+        [
+          h('path', { d: 'M4 4h10v16H4z' }),
+          h('path', { d: 'M8 9h2' }),
+          h('path', { d: 'M8 13h6' }),
+          h('path', { d: 'M16 6h4v14h-4' })
+        ]
+      )
+  }
+})
+
 const navItems: NavMenuItem[] = [
-  { key: 'dashboard', label: '控制台', icon: 'D' },
+  { key: 'dashboard', label: '控制台', icon: 'dashboard' },
   {
     key: 'system',
     label: '系统管理',
-    icon: 'S',
+    icon: 'settings-3',
     children: [
-      { key: 'user', label: '用户管理', icon: 'U' },
+      { key: 'user', label: '用户管理', icon: 'user-settings' },
       {
         key: 'role',
         label: '角色管理',
-        icon: 'R',
+        icon: 'shield-user',
         children: [
-          { key: 'role-list', label: '角色列表', icon: 'L' },
-          { key: 'role-auth', label: '角色授权', icon: 'A' }
+          { key: 'role-list', label: '角色列表', icon: 'list-check' },
+          { key: 'role-auth', label: '角色授权', icon: 'verified-badge' }
         ]
       },
-      { key: 'permission', label: '权限配置', icon: 'P' }
+      { key: 'permission', label: '权限配置', icon: 'lock-password' }
     ]
   },
   {
     key: 'ops',
     label: '运维中心',
-    icon: 'O',
+    icon: 'tools',
     children: [
-      { key: 'logs', label: '日志检索', icon: 'L' },
-      { key: 'alerts', label: '告警管理', icon: 'A' }
+      { key: 'logs', label: '日志检索', icon: 'file-list-3' },
+      { key: 'alerts', label: '告警管理', icon: 'alarm-warning' }
     ]
   },
   {
     key: 'business',
     label: '商务部',
-    icon: 'B',
+    icon: 'briefcase-4',
     children: [
-      { key: 'contracts', label: '合同管理', icon: 'C' },
-      { key: 'orders', label: '订单管理', icon: 'O' },
-      { key: 'customers', label: '客户档案', icon: 'K' }
+      { key: 'contracts', label: '合同管理', icon: 'file-paper-2' },
+      { key: 'orders', label: '订单管理', icon: 'shopping-bag-3' },
+      { key: 'customers', label: '客户档案', icon: 'contacts-book-2' }
     ]
   },
   {
     key: 'security',
     label: '权限管理',
-    icon: 'P',
+    icon: 'ri-shield-keyhole-line',
     children: [
-      { key: '/security/roles', label: '角色管理', icon: 'R' },
-      { key: '/security/users', label: '用户管理', icon: 'U' }
+      { key: '/security/roles', label: '角色管理', icon: 'team' },
+      { key: '/security/users', label: '用户管理', icon: 'user' }
     ]
   },
   {
     key: 'reports',
     label: '报表中心',
-    icon: 'R',
+    icon: ExternalReportIcon,
     children: [
-      { key: 'daily-report', label: '日报汇总', icon: 'D' },
-      { key: 'monthly-report', label: '月报分析', icon: 'M' }
+      { key: 'daily-report', label: '日报汇总', icon: 'calendar-check' },
+      { key: 'monthly-report', label: '月报分析', icon: 'bar-chart-grouped' }
     ]
   }
 ]
@@ -71,6 +96,7 @@ const state = reactive({
   activeKey: 'dashboard',
   textColor: '#334e68',
   activeTextColor: '#ffffff',
+  submenuActiveTextColor: '#ffffff',
   activeBgColor: '#0e7490',
   scrollable: false,
   maxHeight: 300,
@@ -78,7 +104,12 @@ const state = reactive({
   fontSize: 14,
   fontWeight: 400,
   activeFontWeight: 600,
-  fontFamily: 'var(--x-font-family)'
+  fontFamily: 'var(--x-font-family)',
+  itemGap: 4 as number | string,
+  itemRadius: 10,
+  submenuItemRadius: 7,
+  showSubmenuArrow: true,
+  submenuArrowIcon: ''
 })
 
 function handleSelect(key: string) {
@@ -139,6 +170,10 @@ function handleSelect(key: string) {
             <input v-model="state.activeTextColor" type="color" />
           </label>
           <label>
+            <span>弹层激活文字色</span>
+            <input v-model="state.submenuActiveTextColor" type="color" />
+          </label>
+          <label>
             <span>激活背景色</span>
             <input v-model="state.activeBgColor" type="color" />
           </label>
@@ -158,6 +193,26 @@ function handleSelect(key: string) {
             <span>字体族</span>
             <input v-model="state.fontFamily" type="text" />
           </label>
+          <label>
+            <span>菜单项间距</span>
+            <input v-model="state.itemGap" type="text" placeholder="4 / 0.75rem" />
+          </label>
+          <label>
+            <span>菜单项圆角</span>
+            <input v-model.number="state.itemRadius" type="number" min="0" max="32" />
+          </label>
+          <label>
+            <span>子菜单项圆角</span>
+            <input v-model.number="state.submenuItemRadius" type="number" min="0" max="32" />
+          </label>
+          <label class="menu-check">
+            <input v-model="state.showSubmenuArrow" type="checkbox" />
+            <span>显示子菜单箭头</span>
+          </label>
+          <label>
+            <span>子菜单箭头图标</span>
+            <input v-model="state.submenuArrowIcon" type="text" placeholder="ri-arrow-right-s-line" />
+          </label>
         </div>
 
         <div class="menu-preview" :class="[`menu-preview--${state.mode}`, { 'is-collapsed': state.collapsed }]">
@@ -174,11 +229,17 @@ function handleSelect(key: string) {
             :accordion="state.accordion"
             :text-color="state.textColor"
             :active-text-color="state.activeTextColor"
+            :submenu-active-text-color="state.submenuActiveTextColor"
             :active-bg-color="state.activeBgColor"
             :font-size="state.fontSize"
             :font-weight="state.fontWeight"
             :active-font-weight="state.activeFontWeight"
             :font-family="state.fontFamily"
+            :item-gap="state.itemGap"
+            :item-radius="state.itemRadius"
+            :submenu-item-radius="state.submenuItemRadius"
+            :show-submenu-arrow="state.showSubmenuArrow"
+            :submenu-arrow-icon="state.submenuArrowIcon || undefined"
             @select="handleSelect"
           />
         </div>

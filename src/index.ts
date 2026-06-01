@@ -24,6 +24,7 @@ import { XDropdownMenu } from './components/navigation-components/dropdown-menu'
 import { XEmpty } from './components/display-components/empty'
 import { XFileDisk } from './components/other-components/file-disk'
 import { XForm, XFormItem } from './components/form-components/form'
+import { XGrid, XGridItem } from './components/basic-components/grid'
 import { XIcon } from './components/basic-components/icon'
 import { XInput } from './components/form-components/input'
 import { XInputNumber } from './components/form-components/input-number'
@@ -83,6 +84,8 @@ export { XFileDisk }
 export { XForm }
 export { XFormItem }
 export { XBaseInput }
+export { XGrid }
+export { XGridItem }
 export { XIcon }
 export { iconAliases } from './components/basic-components/icon'
 export { XInput }
@@ -215,6 +218,7 @@ export type {
   FormValidateMethod,
   FormValidateResult
 } from './components/form-components/form'
+export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridSize } from './components/basic-components/grid'
 export type { IconProps, IconSize, IconVariant } from './components/basic-components/icon'
 export type { InputNumberProps } from './components/form-components/input-number'
 export type { InputProps, InputSize, InputTextAlign, InputType } from './components/form-components/input'
@@ -299,6 +303,8 @@ const components = [
   XDivider,
   XForm,
   XFormItem,
+  XGrid,
+  XGridItem,
   XIcon,
   XDialog,
   XFileDisk,

@@ -4,7 +4,6 @@ import type { JSONContent } from '@tiptap/core'
 import type { RichEditorExpose, UploadResult } from './core/rich-editor/custom/types'
 import RichEditor from './core/rich-editor/RichEditor.vue'
 import type { RichTextEditorProps } from './types'
-import 'remixicon/fonts/remixicon.css'
 
 defineOptions({ name: 'XRichTextEditor' })
 

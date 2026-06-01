@@ -6,12 +6,24 @@
 
 <XAvatar name="UX" />
 <XAvatar name="王小明" size="lg" />
+<XAvatar icon="user" />
+<XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />
 <XAvatar name="边框" border-width="2px" border-color="#0f172a" />
 
 ```vue
 <XAvatar name="UX" />
 <XAvatar name="王小明" size="lg" />
+<XAvatar icon="user" />
+<XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />
 <XAvatar name="边框" border-width="2px" border-color="#0f172a" />
+```
+
+## 图标头像
+
+`icon` 会交给 `XIcon` 渲染，支持 x.ui 语义别名、Remix Icon 名称和 `ri-` 前缀名称。常规使用只需要引入 `x.ui/style.css`，无需额外引入图标样式。
+
+```ts
+import 'x.ui/style.css'
 ```
 
 ## Props
@@ -20,6 +32,12 @@
 | --- | --- | --- | --- |
 | src | 图片地址 | `string` | - |
 | name | 显示名称，图片不可用时取前两个字符 | `string` | - |
+| icon | 使用 `XIcon` 渲染的图标名称 | `string` | - |
+| iconVariant | 图标类型 | `line \| fill` | `line` |
+| iconFull | 图标是否撑满头像尺寸 | `boolean` | `false` |
+| iconColor | 图标颜色 | `string` | 继承头像文字色 |
+| iconTitle | 图标可访问标题 | `string` | - |
+| iconSpin | 图标是否旋转 | `boolean` | `false` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
 | shape | 形状 | `circle \| square` | `circle` |
 | color | 背景色 | `string` | - |

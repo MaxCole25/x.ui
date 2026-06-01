@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import 'remixicon/fonts/remixicon.css'
 import { computed, inject, nextTick, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { inputSizePreset } from '../../../_utils/inputSize'

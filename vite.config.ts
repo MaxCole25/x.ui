@@ -21,9 +21,15 @@ export default defineConfig(() => {
       ? {}
       : {
           lib: {
-            entry: resolve(__dirname, 'src/index.ts'),
+            entry: {
+              'x-ui': resolve(__dirname, 'src/index.ts'),
+              core: resolve(__dirname, 'src/core.ts'),
+              'rich-text-editor': resolve(__dirname, 'src/rich-text-editor.ts'),
+              table: resolve(__dirname, 'src/table.ts')
+            },
             name: 'XUi',
-            fileName: (format) => (format === 'umd' ? 'x-ui.umd.cjs' : 'x-ui.js'),
+            formats: ['es'],
+            fileName: (_format, entryName) => `${entryName}.js`,
             cssFileName: 'style'
           },
           rollupOptions: {

@@ -20,13 +20,13 @@ const emit = defineEmits<{
   (e: 'node-contextmenu', event: MouseEvent, node: TreeNodeData): void
   (e: 'drag-start', node: TreeNodeData): void
   (e: 'drag-end'): void
-  (e: 'toggle', key: string, expanded: boolean): void
+  (e: 'toggle', key: string, expanded: boolean, node: TreeNodeData): void
   (e: 'rename', node: TreeNodeData, label: string): void
 }>()
 
 const rowRef = ref<HTMLElement | null>(null)
 const dropPosition = ref<'before' | 'after' | 'inner' | null>(null)
-const hasChildren = computed(() => (props.node.children?.length ?? 0) > 0)
+const hasChildren = computed(() => Boolean(props.node.hasChildren) || (props.node.children?.length ?? 0) > 0)
 const nodeKey = computed(() => String(props.node.id))
 const expanded = computed(() => {
   if (!hasChildren.value) return false
@@ -81,8 +81,8 @@ function forwardNodeContextMenu(event: MouseEvent, node: TreeNodeData) {
   emit('node-contextmenu', event, node)
 }
 
-function forwardToggle(key: string, expanded: boolean) {
-  emit('toggle', key, expanded)
+function forwardToggle(key: string, expanded: boolean, node: TreeNodeData) {
+  emit('toggle', key, expanded, node)
 }
 
 function forwardRename(node: TreeNodeData, label: string) {
@@ -104,7 +104,7 @@ function handleContextMenu(event: MouseEvent) {
 
 function toggleExpand(event: MouseEvent) {
   event.stopPropagation()
-  emit('toggle', nodeKey.value, !expanded.value)
+  emit('toggle', nodeKey.value, !expanded.value, props.node)
 }
 
 function resolveDropType(event: DragEvent): 'before' | 'after' | 'inner' {
@@ -216,7 +216,7 @@ function submitRename() {
       </span>
     </div>
 
-    <div v-if="hasChildren && expanded" class="x-tree-node__children">
+    <div v-if="props.node.children?.length && expanded" class="x-tree-node__children">
       <TreeNode
         v-for="child in props.node.children"
         :key="String(child.id)"

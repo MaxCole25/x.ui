@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { XIcon } from '../src'
 import { remixIconNames } from '../src/components/basic-components/icon/src/iconNames'
@@ -80,5 +81,11 @@ describe('XIcon', () => {
   it('exports the full icon name list', () => {
     expect(remixIconNames).toContain('home-line')
     expect(remixIconNames.length).toBeGreaterThan(3000)
+  })
+
+  it('includes remix icon font styles from the main stylesheet', () => {
+    const css = readFileSync('src/styles/index.css', 'utf8')
+
+    expect(css).toContain('@import "remixicon/fonts/remixicon.css"')
   })
 })

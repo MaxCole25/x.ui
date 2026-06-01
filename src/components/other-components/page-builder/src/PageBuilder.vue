@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import 'remixicon/fonts/remixicon.css'
 import { computed, ref, watch } from 'vue'
 import { GridItem, GridLayout } from 'vue-grid-layout-v3'
 import { XButton } from '../../../basic-components/button'

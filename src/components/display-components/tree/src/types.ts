@@ -45,6 +45,7 @@ export interface TreeNodeData {
   hasMembers?: boolean
   isCurrentUserRootMember?: boolean
   permissionCode?: string
+  hasChildren?: boolean
   children?: TreeNodeData[]
   [key: string]: unknown
 }

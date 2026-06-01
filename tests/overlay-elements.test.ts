@@ -345,6 +345,19 @@ describe('new element components', () => {
     expect(wrapper.emitted('command')?.[0]).toEqual(['edit'])
   })
 
+  it('applies XDropdownMenu width style variable from prop', () => {
+    const wrapper = mount(XDropdownMenu, {
+      props: {
+        width: 180
+      },
+      slots: {
+        default: () => h(XDropdownItem, null, { default: () => '编辑' })
+      }
+    })
+
+    expect(wrapper.attributes('style')).toContain('--x-dropdown-menu-width: 180px')
+  })
+
   it('closes click-trigger dropdown when pointerdown happens outside trigger and popper', async () => {
     const wrapper = mount(XDropdown, {
       props: {

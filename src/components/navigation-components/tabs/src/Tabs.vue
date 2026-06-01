@@ -2,7 +2,6 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Component, CSSProperties } from 'vue'
 import type { TabItem, TabName, TabsCloseAllPayload, TabsCloseOthersPayload, TabsPaneContext, TabsProps, TabsReorderPosition } from './types'
-import 'remixicon/fonts/remixicon.css'
 
 defineOptions({ name: 'XTabs' })
 

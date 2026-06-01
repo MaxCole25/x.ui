@@ -1,10 +1,11 @@
+import type { Component } from 'vue'
 import type { XSize } from '../../../_utils/size'
 export type NavMenuMode = 'vertical' | 'horizontal'
 
 export interface NavMenuItem {
   key: string
   label: string
-  icon?: string
+  icon?: string | Component
   routeName?: string
   permissionCode?: string
   children?: NavMenuItem[]
@@ -26,9 +27,15 @@ export interface NavMenuProps {
   defaultOpenKeys?: string[]
   textColor?: string
   activeTextColor?: string
+  submenuActiveTextColor?: string
   activeBgColor?: string
   fontSize?: number | string
   fontWeight?: number | string
   activeFontWeight?: number | string
   fontFamily?: string
+  itemGap?: number | string
+  itemRadius?: number | string
+  submenuItemRadius?: number | string
+  showSubmenuArrow?: boolean
+  submenuArrowIcon?: string | Component
 }

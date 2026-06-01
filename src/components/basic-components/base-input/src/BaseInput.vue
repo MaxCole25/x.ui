@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import 'remixicon/fonts/remixicon.css'
 import { computed, inject, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey, formItemContextKey } from '../../../form-components/form/src/context'

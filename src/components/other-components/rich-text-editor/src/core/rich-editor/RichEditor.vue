@@ -83,6 +83,7 @@ export interface RichTextEditorTheme {
   overlayBackground?: string
   overlayBorderColor?: string
   overlayTextColor?: string
+  outlineActiveColor?: string
 }
 
 const props = withDefaults(
@@ -177,6 +178,7 @@ const editorStyle = computed(() => {
     '--xl-editor-overlay-bg': theme.overlayBackground || '',
     '--xl-editor-overlay-border': theme.overlayBorderColor || '',
     '--xl-editor-overlay-text': theme.overlayTextColor || '',
+    ...(theme.outlineActiveColor ? { '--xl-outline-active': theme.outlineActiveColor } : {}),
   }
 })
 
@@ -547,6 +549,7 @@ function normalizeContent(content: JSONContent | string | null | undefined): JSO
   --xl-outline-hover: var(--nm-color-text, #0f172a);
   --xl-outline-empty: color-mix(in srgb, var(--nm-color-text, #111827) 78%, #94a3b8 22%);
   --xl-outline-separator: var(--nm-color-shell-border, rgba(15, 23, 42, 0.08));
+  --xl-outline-active: #409EFF;
 }
 
 [data-doc-theme-scheme='dark'] .xl-rich-editor {
@@ -569,6 +572,7 @@ function normalizeContent(content: JSONContent | string | null | undefined): JSO
   --xl-outline-hover: #ffffff;
   --xl-outline-empty: #cbd5e1;
   --xl-outline-separator: var(--doc-divider-color, rgba(148, 163, 184, 0.18));
+  --xl-outline-active: #93c5fd;
 }
 
 .xl-rich-editor .xl-toolbar {

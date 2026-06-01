@@ -4,21 +4,34 @@
   "description": "A Vue 3 UI component library.",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "src/remixicon.css"
   ],
   "publishConfig": {
     "access": "restricted"
   },
-  "main": "./dist/x-ui.umd.cjs",
+  "main": "./dist/x-ui.js",
   "module": "./dist/x-ui.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/x-ui.js",
-      "require": "./dist/x-ui.umd.cjs"
+      "import": "./dist/x-ui.js"
     },
-    "./style.css": "./dist/style.css"
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./rich-text-editor": {
+      "types": "./dist/rich-text-editor.d.ts",
+      "import": "./dist/rich-text-editor.js"
+    },
+    "./table": {
+      "types": "./dist/table.d.ts",
+      "import": "./dist/table.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./remixicon.css": "./src/remixicon.css"
   },
   "sideEffects": [
     "**/*.css"

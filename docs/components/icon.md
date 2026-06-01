@@ -7,6 +7,8 @@ import IconGallery from '../.vitepress/components/IconGallery.vue'
 
 `XIcon` 提供 x.ui 统一的图标调用方式。组件基于 Remix Icon，并额外提供常用语义别名，方便在按钮、表单、菜单、工具栏和业务组件中保持一致的尺寸、颜色和可访问性写法。
 
+常规使用只需要引入 `x.ui/style.css`，其中已包含图标字体样式。
+
 ## 基础用法
 
 <div class="x-icon-preview-row">

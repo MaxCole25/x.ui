@@ -9,6 +9,12 @@ const appearance = reactive({
   src: '',
   alt: '演示头像',
   name: '演示',
+  icon: 'user',
+  iconVariant: 'line' as 'line' | 'fill',
+  iconFull: false,
+  iconColor: '#ffffff',
+  iconTitle: '',
+  iconSpin: false,
   size: 'md' as AvatarSize,
   shape: 'circle' as AvatarShape,
   color: '#1264f4'
@@ -33,6 +39,12 @@ const appearance = reactive({
             :src="appearance.src || undefined"
             :alt="appearance.alt"
             :name="appearance.name"
+            :icon="appearance.icon"
+            :icon-variant="appearance.iconVariant"
+            :icon-full="appearance.iconFull"
+            :icon-color="appearance.iconColor"
+            :icon-title="appearance.iconTitle || undefined"
+            :icon-spin="appearance.iconSpin"
             :size="appearance.size"
             :shape="appearance.shape"
             :color="appearance.color"
@@ -52,6 +64,10 @@ const appearance = reactive({
             <input v-model="appearance.name" />
           </label>
           <label>
+            <span>图标</span>
+            <input v-model="appearance.icon" />
+          </label>
+          <label>
             <span>尺寸</span>
             <select v-model="appearance.size">
               <option value="sm">sm</option>
@@ -67,10 +83,35 @@ const appearance = reactive({
             </select>
           </label>
         </template>
+        <template #column-2>
+          <label>
+            <span>图标类型</span>
+            <select v-model="appearance.iconVariant">
+              <option value="line">line</option>
+              <option value="fill">fill</option>
+            </select>
+          </label>
+          <label class="story-check">
+            <input v-model="appearance.iconFull" type="checkbox" />
+            <span>图标撑满</span>
+          </label>
+          <label>
+            <span>图标标题</span>
+            <input v-model="appearance.iconTitle" />
+          </label>
+          <label class="story-check">
+            <input v-model="appearance.iconSpin" type="checkbox" />
+            <span>图标旋转</span>
+          </label>
+        </template>
         <template #column-3>
           <label>
             <span>主题色</span>
             <input v-model="appearance.color" type="color" />
+          </label>
+          <label>
+            <span>图标色</span>
+            <input v-model="appearance.iconColor" type="color" />
           </label>
         </template>
       </ElementStylePlayground>

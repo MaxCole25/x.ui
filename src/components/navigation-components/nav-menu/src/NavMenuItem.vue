@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
-import type { CSSProperties } from 'vue'
+import { computed, inject, markRaw, nextTick, onBeforeUnmount, onMounted, provide, ref, toRaw, watch } from 'vue'
+import type { CSSProperties, Component } from 'vue'
+import { XIcon } from '../../../basic-components/icon'
 import type { NavMenuItem, NavMenuMode } from './types'
 
 type KeepPopupPathAlive = () => void
@@ -22,9 +23,12 @@ const props = withDefaults(
     appendToBody: boolean
     menuStyleVars: CSSProperties
     openKeys: Set<string>
+    showSubmenuArrow: boolean
+    submenuArrowIcon?: string | Component
     depth?: number
   }>(),
   {
+    showSubmenuArrow: true,
     depth: 0
   }
 )
@@ -50,8 +54,21 @@ const isCollapsedVerticalPopup = computed(() => props.mode === 'vertical' && pro
 const usesPopupSubmenu = computed(() => props.mode === 'horizontal' || isCollapsedVerticalPopup.value)
 const isSubmenuOpen = computed(() => (usesPopupSubmenu.value ? submenuOpen.value : props.openKeys.has(props.item.key)))
 const shouldTeleportSubmenu = computed(() => props.appendToBody && usesPopupSubmenu.value && hasChildren.value)
-const isRemixIcon = computed(() => props.item.icon?.startsWith('ri-') ?? false)
-const iconText = computed(() => props.item.icon?.slice(0, 1).toUpperCase() ?? props.item.label.slice(0, 1).toUpperCase())
+const iconText = computed(() => props.item.label.slice(0, 1).toUpperCase())
+const componentIcon = computed(() => {
+  if (!props.item.icon || typeof props.item.icon === 'string') {
+    return null
+  }
+
+  return markRaw(toRaw(props.item.icon))
+})
+const componentSubmenuArrowIcon = computed(() => {
+  if (!props.submenuArrowIcon || typeof props.submenuArrowIcon === 'string') {
+    return null
+  }
+
+  return markRaw(toRaw(props.submenuArrowIcon))
+})
 const arrowIcon = computed(() => {
   if (isCollapsedVerticalPopup.value || (props.mode === 'horizontal' && props.depth > 0)) {
     return 'ri-arrow-right-s-line'
@@ -62,8 +79,6 @@ const arrowIcon = computed(() => {
 const teleportedSubmenuStyle = computed(() => ({
   ...props.menuStyleVars,
   '--x-nav-menu-text-color': 'var(--x-color-text)',
-  '--x-nav-menu-active-text-color': '#fff',
-  '--x-nav-menu-active-bg-color': 'var(--x-color-primary)',
   '--x-nav-menu-arrow-size': '18px',
   left: `${submenuLeft.value}px`,
   top: `${submenuTop.value}px`,
@@ -264,12 +279,19 @@ provide(popupPathKey, {
       @click="handleSelect"
     >
       <span class="x-nav-menu-item__icon" aria-hidden="true">
-        <i v-if="isRemixIcon" :class="props.item.icon"></i>
+        <XIcon v-if="typeof props.item.icon === 'string'" :name="props.item.icon" />
+        <component :is="componentIcon" v-else-if="componentIcon" class="x-nav-menu-item__custom-icon" />
         <template v-else>{{ iconText }}</template>
       </span>
       <span v-if="!shouldHideLabel" class="x-nav-menu-item__label">{{ props.item.label }}</span>
-      <span v-if="hasChildren && !shouldHideLabel" class="x-nav-menu-item__arrow" aria-hidden="true">
-        <i :class="arrowIcon"></i>
+      <span v-if="hasChildren && !shouldHideLabel && props.showSubmenuArrow" class="x-nav-menu-item__arrow" aria-hidden="true">
+        <XIcon v-if="typeof props.submenuArrowIcon === 'string'" :name="props.submenuArrowIcon" />
+        <component
+          :is="componentSubmenuArrowIcon"
+          v-else-if="componentSubmenuArrowIcon"
+          class="x-nav-menu-item__custom-arrow"
+        />
+        <XIcon v-else :name="arrowIcon" />
       </span>
     </button>
 
@@ -293,6 +315,8 @@ provide(popupPathKey, {
           :append-to-body="props.appendToBody"
           :menu-style-vars="props.menuStyleVars"
           :open-keys="props.openKeys"
+          :show-submenu-arrow="props.showSubmenuArrow"
+          :submenu-arrow-icon="props.submenuArrowIcon"
           :depth="props.depth + 1"
           @select="handleChildSelect"
           @toggle-open="emit('toggle-open', $event)"

@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<TreeProps>(), {
 const emit = defineEmits<{
   (e: 'nodeClick', node: TreeNodeData): void
   (e: 'nodeDrop', draggingNode: TreeNodeData, dropNode: TreeNodeData, dropType: 'before' | 'after' | 'inner'): void
+  (e: 'nodeToggle', payload: { node: TreeNodeData; expanded: boolean }): void
   (e: 'contextAction', action: TreeContextAction, node: TreeNodeData): void
 }>()
 
@@ -69,6 +70,9 @@ watch(
       items.forEach((item) => {
         const key = String(item.id)
         next[key] = expandedState.value[key] !== false
+        if (item.hasChildren && !item.children?.length) {
+          next[key] = expandedState.value[key] ?? false
+        }
         if (item.children?.length) walk(item.children)
       })
     }
@@ -83,6 +87,10 @@ function setCurrentKey(key: string | null) {
 }
 function setExpanded(key: string, expanded: boolean) {
   expandedState.value = { ...expandedState.value, [key]: expanded }
+}
+function handleToggle(key: string, expanded: boolean, node: TreeNodeData) {
+  setExpanded(key, expanded)
+  emit('nodeToggle', { node, expanded })
 }
 function expandAll() {
   Object.keys(expandedState.value).forEach((k) => (expandedState.value[k] = true))
@@ -257,7 +265,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
       @node-contextmenu="(event, nodeData) => openContextMenu(event, nodeData)"
       @drag-start="draggingNode = $event"
       @drag-end="draggingNode = null"
-      @toggle="setExpanded"
+      @toggle="handleToggle"
       @rename="handleRename"
     />
 
