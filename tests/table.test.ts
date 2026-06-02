@@ -302,8 +302,25 @@ describe('XTable', () => {
     expect(wrapper.find('.x-table__bottom').exists()).toBe(true)
 
     const source = readTableSource()
-    expect(source).toContain('background: var(--x-table-top-background, var(--x-table-panel-background, #f8fafc));')
-    expect(source).toContain('background: var(--x-table-bottom-background, var(--x-table-panel-background, #f8fafc));')
+    expect(source).toContain('background: var(--x-table-top-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));')
+    expect(source).toContain('background: var(--x-table-bottom-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));')
+  })
+
+  it('uses theme table tokens when appearance props are omitted', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      }
+    })
+    const style = wrapper.find('.x-table').attributes('style') ?? ''
+    const source = readTableSource()
+
+    expect(style).not.toContain('--x-table-body-stripe-background')
+    expect(source).toContain('--x-table-border-color: var(--x-color-border, rgb(216 224 234));')
+    expect(source).toContain('background: var(--x-table-body-background, var(--x-color-surface, #fff));')
+    expect(source).toContain('color: var(--x-table-text-color, var(--x-color-text, #1f2937));')
+    expect(source).toContain('color: var(--x-table-body-text-color, var(--x-table-text-color, var(--x-color-text, #1f2937)));')
   })
 
   it('exposes table area colors and border styles through public props', () => {
@@ -428,10 +445,10 @@ describe('XTable', () => {
     expect(style).toContain('--x-table-cell-selected-text-color: #dcfce7')
     expect(style).toContain('--x-table-cell-selected-border-color: #22c55e')
     expect(style).toContain('--x-table-cell-selected-inner-border-color: rgba(34, 197, 94, 0.5)')
-    expect(selectedCellRule).toContain('color: var(--x-table-cell-selected-text-color, var(--x-table-body-text-color, var(--x-table-text-color, #1f2937)));')
+    expect(selectedCellRule).toContain('color: var(--x-table-cell-selected-text-color, var(--x-table-body-text-color, var(--x-table-text-color, var(--x-color-text, #1f2937))));')
     expect(selectedCellRule).not.toContain('color: var(--x-table-cell-selected-text-color, #0f172a);')
-    expect(selectedCellAfterRule).toContain('border: 2px solid var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75));')
-    expect(selectedCellAdjacentTopRule).toContain('border-top-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75)));')
+    expect(selectedCellAfterRule).toContain('border: 2px solid var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4));')
+    expect(selectedCellAdjacentTopRule).toContain('border-top-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4)));')
     expect(globalStyles).toContain('--x-table-cell-selected-background: rgb(59 130 246 / 12%);')
     expect(globalStyles).toContain('--x-table-cell-selected-text-color: var(--x-color-text, #1f2937);')
     expect(globalStyles).toContain('--x-table-cell-selected-background: rgba(59, 130, 246, 0.18);')
@@ -441,7 +458,7 @@ describe('XTable', () => {
   it('routes viewport header row and column borders through layered CSS variables', () => {
     const source = readTableSource()
 
-    expect(source).toContain('background: var(--x-table-panel-background, transparent);')
+    expect(source).toContain('background: var(--x-table-panel-background, var(--x-color-surface, transparent));')
     expect(source).toContain('border-bottom-color: var(--x-table-viewport-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));')
     expect(source).toContain('border-left-color: var(--x-table-viewport-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color)));')
     expect(source).toContain('border-right-color: var(--x-table-viewport-border-color, var(--x-table-vertical-border-color, var(--x-table-border-color)));')
@@ -477,16 +494,16 @@ describe('XTable', () => {
       getCssRule(source, '.x-table__page-current')
     ].join('\n')
 
-    expect(controlRules).toContain('background: var(--x-table-control-bg, #fff);')
-    expect(controlRules).toContain('border: 1px solid var(--x-table-control-border-color, #cbd5e1);')
-    expect(controlRules).toContain('color: var(--x-table-control-text-color, #334155);')
+    expect(controlRules).toContain('background: var(--x-table-control-bg, var(--x-color-surface, #fff));')
+    expect(controlRules).toContain('border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));')
+    expect(controlRules).toContain('color: var(--x-table-control-text-color, var(--x-color-text, #334155));')
     expect(controlRules).toContain('background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));')
     expect(controlRules).toContain('border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));')
     expect(controlRules).toContain('color: var(--x-table-control-hover-text-color, var(--x-color-primary));')
     expect(controlRules).toContain('background: var(--x-table-control-disabled-bg, var(--x-color-disabled-bg));')
     expect(controlRules).toContain('color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));')
-    expect(controlRules).toContain('color: var(--x-table-pagination-text-color, #475569);')
-    expect(controlRules).toContain('color: var(--x-table-pagination-current-text-color, #334155);')
+    expect(controlRules).toContain('color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));')
+    expect(controlRules).toContain('color: var(--x-table-pagination-current-text-color, var(--x-color-text, #334155));')
     expect(controlRules).not.toMatch(/(?:background|border|border-color|color):\s*(#fff|#cbd5e1|#334155|#475569|#f1f5f9|#94a3b8)\b/)
 
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #ffffff);')
@@ -664,9 +681,9 @@ describe('XTable', () => {
     expect(headerActions.attributes('style')).toContain('right: 0px')
     expect(bodyActions.attributes('style')).toContain('position: sticky')
     expect(bodyActions.attributes('style')).toContain('right: 0px')
-    expect(bodyActionCells[0].attributes('style')).toContain('var(--x-table-body-background, #fff)')
+    expect(bodyActionCells[0].attributes('style')).toContain('var(--x-table-body-background, var(--x-color-surface, #fff))')
     expect(bodyActionCells[1].attributes('style')).toContain('var(--x-table-body-stripe-background, transparent)')
-    expect(bodyActionCells[1].attributes('style')).toContain('var(--x-table-body-background, #fff)')
+    expect(bodyActionCells[1].attributes('style')).toContain('var(--x-table-body-background, var(--x-color-surface, #fff))')
     expect(wrapper.vm.getColumnSettings().map((setting) => setting.key)).toEqual(columns.map((column) => column.key))
   })
 

@@ -38,19 +38,6 @@ const rows = [
   :columns="columns"
   :data="rows"
   show-column-settings
-  panel-background-color="#f8fafc"
-  top-background-color="#f0f9ff"
-  bottom-background-color="#f8fafc"
-  header-background-color="#e0f2fe"
-  header-text-color="#0f172a"
-  body-background-color="#ffffff"
-  body-stripe-background-color="transparent"
-  body-text-color="#1f2937"
-  border-color="#bfdbfe"
-  horizontal-border-color="#bfdbfe"
-  :horizontal-border-width="1"
-  vertical-border-color="#cbd5e1"
-  :vertical-border-width="1"
 >
   <template #top="{ columns, data }">
     <div class="table-header">
@@ -67,7 +54,71 @@ const rows = [
 </XTable>
 ```
 
-暗色主题中如果需要精确控制每一类边线，可以使用更明确的边框属性。`border-color` 会写入 `--x-table-border-color`，作为所有表格边线的统一兜底；`horizontal-border-color` 和 `vertical-border-color` 继续保留为横线、竖线的兼容入口；更细的外框、表头底线、行线、列线属性优先级更高。
+## 主题与外观变量
+
+`XTable` 默认跟随 x.ui 全局主题 token。业务项目只要引入 `x.ui/style.css`，并在根节点或上层容器设置 `data-theme="dark"`、`:root.dark` 或 `.dark`，表格的表头、表体、汇总行、分页、列设置按钮、右键菜单、hover、选中行和单元格选区都会自动切换到暗色默认值，不需要给每个表格手动传 `header-background-color`、`body-background-color` 等外观属性。
+
+```html
+<div data-theme="dark">
+  <XTable :columns="columns" :data="rows" show-pagination show-column-settings />
+</div>
+```
+
+需要品牌定制时，可以在主题节点、页面容器或单个表格上覆盖 `--x-table-*` CSS 变量；如果同时传入外观 props，props 会写入表格根节点的 CSS 变量，优先级高于全局 CSS 变量。
+
+```css
+.brand-table {
+  --x-table-header-background: #10213a;
+  --x-table-body-background: #07111f;
+  --x-table-body-text-color: #e5eefb;
+  --x-table-border-color: rgba(148, 163, 184, 0.24);
+  --x-table-row-hover-overlay: rgba(59, 130, 246, 0.18);
+}
+```
+
+常用 XTable CSS 变量如下：
+
+| 变量 | 说明 |
+| --- | --- |
+| `--x-table-text-color` | 表格整体文字色兜底 |
+| `--x-table-panel-background` | 表顶和表底的面板背景兜底 |
+| `--x-table-top-background` | 表顶区域背景 |
+| `--x-table-bottom-background` | 表底区域背景 |
+| `--x-table-header-background` | 表头背景 |
+| `--x-table-header-text-color` | 表头文字色 |
+| `--x-table-body-background` | 表体和空状态背景 |
+| `--x-table-body-stripe-background` | 偶数行斑马纹叠加背景 |
+| `--x-table-body-text-color` | 表体文字色 |
+| `--x-table-summary-background` | 汇总行背景 |
+| `--x-table-summary-text-color` | 汇总行文字色 |
+| `--x-table-row-hover-overlay` | 数据行 hover 叠加层 |
+| `--x-table-row-selected-background` | 行选中背景 |
+| `--x-table-row-drag-background` | 行拖拽目标背景 |
+| `--x-table-drag-indicator-color` | 拖拽插入线颜色 |
+| `--x-table-sort-icon-color` | 排序图标默认颜色 |
+| `--x-table-border-color` | 表格所有边线的统一兜底 |
+| `--x-table-viewport-border-color` | 表格 viewport 外框颜色 |
+| `--x-table-header-divider-color` | 表头底部分隔线颜色 |
+| `--x-table-row-border-color` | 数据行横向分隔线颜色 |
+| `--x-table-column-border-color` | 单元格竖向分隔线颜色 |
+| `--x-table-horizontal-border-color` | 横向边线颜色兜底 |
+| `--x-table-vertical-border-color` | 竖向边线颜色兜底 |
+| `--x-table-control-bg` | 分页按钮、列设置按钮、右键菜单背景 |
+| `--x-table-control-text-color` | 分页按钮、列设置按钮、右键菜单文字色 |
+| `--x-table-control-border-color` | 分页按钮、列设置按钮、右键菜单边框色 |
+| `--x-table-control-hover-bg` | 控件 hover 背景 |
+| `--x-table-control-hover-text-color` | 控件 hover 文字色 |
+| `--x-table-control-hover-border-color` | 控件 hover 边框色 |
+| `--x-table-control-disabled-bg` | 控件禁用背景 |
+| `--x-table-control-disabled-text-color` | 控件禁用文字色 |
+| `--x-table-pagination-text-color` | 分页普通文字色 |
+| `--x-table-pagination-current-text-color` | 当前页文字色 |
+| `--x-table-cell-selected-background` | 单元格框选背景 |
+| `--x-table-cell-selected-text-color` | 单元格框选文字色 |
+| `--x-table-cell-selected-border-color` | 单元格框选外边框和手柄颜色 |
+| `--x-table-cell-selected-inner-border-color` | 相邻选中单元格之间的内线色 |
+
+如果需要精确控制每一类边线，可以使用更明确的边框属性。`border-color` 会写入 `--x-table-border-color`，作为所有表格边线的统一兜底；`horizontal-border-color` 和 `vertical-border-color` 继续保留为横线、竖线的兼容入口；更细的外框、表头底线、行线、列线属性优先级更高。
 
 ```vue
 <XTable

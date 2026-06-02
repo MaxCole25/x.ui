@@ -58,7 +58,6 @@ const props = withDefaults(defineProps<TableProps>(), {
   columnSettingsDialogTitle: '列设置',
   columnSettingsDialogWidth: 760,
   columnSettingsDialogHeight: 620,
-  bodyStripeBackgroundColor: 'transparent',
   showPagination: false,
   paginationMode: 'client',
   currentPage: 1,
@@ -2759,7 +2758,10 @@ function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body', 
     style.position = 'sticky'
     style[column.fixed] = column.fixed === 'left' ? column.left : column.right
     style.zIndex = type === 'header' ? 3 : 2
-    style.background = type === 'header' ? 'var(--x-table-header-background, #f3f6fa)' : getBodyRowLayeredBackground(rowIndex)
+    style.background =
+      type === 'header'
+        ? 'var(--x-table-header-background, var(--x-color-surface-soft, var(--x-color-surface, #f3f6fa)))'
+        : getBodyRowLayeredBackground(rowIndex)
     if (column.fixed === 'left' && column.column.key === lastLeftFixedColumnKey.value) {
       style.boxShadow = leftFrozenBoundaryShadow
     }
@@ -2780,7 +2782,10 @@ function getUtilityCellStyle(kind: 'drag' | 'selection', type: 'header' | 'body'
     position: 'sticky',
     left: kind === 'selection' && props.rowDraggable ? '44px' : '0px',
     zIndex: type === 'header' ? 3 : 2,
-    background: type === 'header' ? 'var(--x-table-header-background, #f3f6fa)' : getBodyRowLayeredBackground(rowIndex)
+    background:
+      type === 'header'
+        ? 'var(--x-table-header-background, var(--x-color-surface-soft, var(--x-color-surface, #f3f6fa)))'
+        : getBodyRowLayeredBackground(rowIndex)
   }
 
   return style
@@ -2790,7 +2795,7 @@ function getSummaryCellStyle(column: ResolvedColumn): CSSProperties {
   const style = getCellStyle(column, 'body', visibleRows.value.length)
   if (column.fixed !== 'none') {
     style.zIndex = 4
-    style.background = 'var(--x-table-summary-background, #f8fafc)'
+    style.background = 'var(--x-table-summary-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc)))'
   }
 
   return style
@@ -2800,7 +2805,7 @@ function getSummaryUtilityCellStyle(kind: 'drag' | 'selection'): CSSProperties {
   const style = getUtilityCellStyle(kind, 'body', visibleRows.value.length)
   if ('position' in style) {
     style.zIndex = 4
-    style.background = 'var(--x-table-summary-background, #f8fafc)'
+    style.background = 'var(--x-table-summary-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc)))'
   }
 
   return style
@@ -2817,9 +2822,9 @@ function getActionsCellStyle(type: 'header' | 'body' | 'summary' = 'body', rowIn
     zIndex: type === 'summary' ? 4 : type === 'header' ? 3 : 2,
     background:
       type === 'header'
-        ? 'var(--x-table-header-background, #f3f6fa)'
+        ? 'var(--x-table-header-background, var(--x-color-surface-soft, var(--x-color-surface, #f3f6fa)))'
         : type === 'summary'
-          ? 'var(--x-table-summary-background, #f8fafc)'
+          ? 'var(--x-table-summary-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc)))'
           : getBodyRowLayeredBackground(rowIndex)
   }
 
@@ -2832,8 +2837,8 @@ function getActionsCellStyle(type: 'header' | 'body' | 'summary' = 'body', rowIn
 
 function getBodyRowBackground(rowIndex: number) {
   return rowIndex % 2 === 1
-    ? 'linear-gradient(var(--x-table-body-stripe-background, transparent), var(--x-table-body-stripe-background, transparent)), var(--x-table-body-background, #fff)'
-    : 'var(--x-table-body-background, #fff)'
+    ? 'linear-gradient(var(--x-table-body-stripe-background, transparent), var(--x-table-body-stripe-background, transparent)), var(--x-table-body-background, var(--x-color-surface, #fff))'
+    : 'var(--x-table-body-background, var(--x-color-surface, #fff))'
 }
 
 function getBodyRowLayeredBackground(rowIndex: number) {
@@ -3672,12 +3677,12 @@ defineExpose({
 .x-table {
   align-content: start;
   align-self: stretch;
-  background: var(--x-table-panel-background, transparent);
-  --x-table-border-color: var(--x-border-color, rgb(216 224 234));
+  background: var(--x-table-panel-background, var(--x-color-surface, transparent));
+  --x-table-border-color: var(--x-color-border, rgb(216 224 234));
   --x-table-section-gap: 8px;
   --x-table-section-padding-y: 8px;
   box-sizing: border-box;
-  color: var(--x-table-text-color, #1f2937);
+  color: var(--x-table-text-color, var(--x-color-text, #1f2937));
   display: grid;
   font-size: var(--x-table-font-size, 12px);
   row-gap: var(--x-table-section-gap);
@@ -3716,7 +3721,7 @@ defineExpose({
 
 .x-table__top {
   align-items: center;
-  background: var(--x-table-top-background, var(--x-table-panel-background, #f8fafc));
+  background: var(--x-table-top-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));
   display: flex;
   gap: 8px;
   justify-content: space-between;
@@ -3740,10 +3745,10 @@ defineExpose({
 .x-table__column-settings-button,
 .x-table__toolbar-icon-button {
   align-items: center;
-  background: var(--x-table-control-bg, #fff);
-  border: 1px solid var(--x-table-control-border-color, #cbd5e1);
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
   border-radius: var(--x-table-radius, 6px);
-  color: var(--x-table-control-text-color, #334155);
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -3795,13 +3800,13 @@ defineExpose({
 }
 
 .x-table__column-settings-hint {
-  color: var(--x-color-text-muted, #64748b);
+  color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
   font-size: var(--x-table-font-size, 12px);
   margin: 0;
 }
 
 .x-table__column-settings-scroll {
-  border: 1px solid var(--x-color-border, #e2e8f0);
+  border: 1px solid var(--x-color-border, #d1d9e6);
   border-radius: 6px;
   max-height: 464px;
   min-width: 0;
@@ -3821,8 +3826,8 @@ defineExpose({
 
 .x-table__column-settings-header {
   background: var(--x-color-surface-soft, #f8fafc);
-  border-bottom: 1px solid var(--x-color-border, #e2e8f0);
-  color: var(--x-color-text-muted, #64748b);
+  border-bottom: 1px solid var(--x-color-border, #d1d9e6);
+  color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
   font-size: var(--x-table-font-size, 12px);
   font-weight: 600;
   min-height: 34px;
@@ -3847,7 +3852,7 @@ defineExpose({
 
 .x-table__column-settings-row {
   background: var(--x-color-surface, #fff);
-  border-bottom: 1px solid var(--x-color-border, #e2e8f0);
+  border-bottom: 1px solid var(--x-color-border, #d1d9e6);
   min-height: 48px;
   padding: 8px 10px;
   position: relative;
@@ -3870,7 +3875,7 @@ defineExpose({
 
 .x-table__column-settings-row.is-drag-over-before,
 .x-table__column-settings-row.is-drag-over-after {
-  background: var(--x-color-primary-soft, #f0f9ff);
+  background: var(--x-table-row-drag-background, var(--x-color-primary-soft, #f0f9ff));
   box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
 }
 
@@ -3884,7 +3889,7 @@ defineExpose({
 
 .x-table__column-settings-row.is-drag-over-before::before,
 .x-table__column-settings-row.is-drag-over-after::after {
-  background: var(--x-color-primary, #155e75);
+  background: var(--x-table-drag-indicator-color, var(--x-color-primary, #1264f4));
   border-radius: 999px;
   content: "";
   height: 2px;
@@ -3908,7 +3913,7 @@ defineExpose({
   background: transparent;
   border: 0;
   border-radius: 4px;
-  color: var(--x-color-text-muted, #64748b);
+  color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
   cursor: grab;
   display: inline-flex;
   font-size: 18px;
@@ -3921,7 +3926,7 @@ defineExpose({
 .x-table__column-settings-drag-button:hover,
 .x-table__column-settings-drag-button:focus-visible {
   background: var(--x-color-surface-soft, #f8fafc);
-  color: var(--x-color-primary, #155e75);
+  color: var(--x-color-primary, #1264f4);
   outline: none;
 }
 
@@ -3938,7 +3943,7 @@ defineExpose({
 }
 
 .x-table__column-settings-name {
-  color: var(--x-color-text, #1f2937);
+  color: var(--x-color-text, #121826);
   font-size: var(--x-table-font-size, 12px);
   font-weight: 600;
   min-width: 0;
@@ -3975,10 +3980,10 @@ defineExpose({
 }
 
 .x-table__column-settings-footer-button {
-  background: var(--x-table-control-bg, #fff);
-  border: 1px solid var(--x-table-control-border-color, #cbd5e1);
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
   border-radius: var(--x-table-radius, 6px);
-  color: var(--x-table-control-text-color, #334155);
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
   cursor: pointer;
   min-height: var(--x-table-row-height, 30px);
   padding: var(--x-table-cell-padding, 0 8px);
@@ -3991,14 +3996,14 @@ defineExpose({
 }
 
 .x-table__column-settings-footer-button.is-primary {
-  background: var(--x-color-primary, #155e75);
-  border-color: var(--x-color-primary, #155e75);
-  color: #fff;
+  background: var(--x-color-primary, #1264f4);
+  border-color: var(--x-color-primary, #1264f4);
+  color: var(--x-color-primary-text, #fff);
 }
 
 .x-table__bottom {
   align-items: center;
-  background: var(--x-table-bottom-background, var(--x-table-panel-background, #f8fafc));
+  background: var(--x-table-bottom-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -4007,7 +4012,7 @@ defineExpose({
 
 .x-table__pagination {
   align-items: center;
-  color: var(--x-table-pagination-text-color, #475569);
+  color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));
   display: inline-flex;
   flex-wrap: wrap;
   font-size: var(--x-table-font-size, 12px);
@@ -4027,11 +4032,11 @@ defineExpose({
 
 .x-table__page-size-select,
 .x-table__page-button {
-  background: var(--x-table-control-bg, #fff);
-  border: 1px solid var(--x-table-control-border-color, #cbd5e1);
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
   border-radius: var(--x-table-radius, 6px);
   box-sizing: border-box;
-  color: var(--x-table-control-text-color, #334155);
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
   min-height: var(--x-table-row-height, 30px);
 }
 
@@ -4040,8 +4045,8 @@ defineExpose({
 }
 
 .x-table__page-size-select option {
-  background: var(--x-table-control-bg, #fff);
-  color: var(--x-table-control-text-color, #334155);
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
 }
 
 .x-table__page-button {
@@ -4068,7 +4073,7 @@ defineExpose({
 }
 
 .x-table__page-ellipsis {
-  color: var(--x-table-pagination-text-color, #475569);
+  color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));
   padding: 0 2px;
 }
 
@@ -4086,7 +4091,7 @@ defineExpose({
 }
 
 .x-table__page-current {
-  color: var(--x-table-pagination-current-text-color, #334155);
+  color: var(--x-table-pagination-current-text-color, var(--x-color-text, #334155));
   min-width: 52px;
   text-align: center;
 }
@@ -4130,7 +4135,7 @@ defineExpose({
 }
 
 .x-table__body-viewport {
-  background: var(--x-table-body-background, #fff);
+  background: var(--x-table-body-background, var(--x-color-surface, #fff));
   height: 100%;
   min-height: 0;
   min-width: 0;
@@ -4169,7 +4174,7 @@ defineExpose({
 }
 
 .x-table__scrollbar-thumb {
-  background: rgb(100 116 139 / 36%);
+  background: var(--x-table-scrollbar-thumb, rgba(100, 116, 139, 0.36));
   border-radius: 999px;
   pointer-events: auto;
 }
@@ -4183,7 +4188,7 @@ defineExpose({
 }
 
 .x-table__scrollbar-thumb:hover {
-  background: rgb(71 85 105 / 54%);
+  background: var(--x-table-scrollbar-thumb-hover, rgba(71, 85, 105, 0.54));
 }
 
 .x-table__row {
@@ -4192,16 +4197,16 @@ defineExpose({
 }
 
 .x-table__row--header {
-  background: var(--x-table-header-background, #f3f6fa);
-  color: var(--x-table-header-text-color, #334155);
+  background: var(--x-table-header-background, var(--x-color-surface-soft, var(--x-color-surface, #f3f6fa)));
+  color: var(--x-table-header-text-color, var(--x-color-text, #334155));
   font-weight: 600;
 }
 
 .x-table__row--body {
   background:
     linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent)),
-    var(--x-table-body-background, #fff);
-  color: var(--x-table-body-text-color, var(--x-table-text-color, #1f2937));
+    var(--x-table-body-background, var(--x-color-surface, #fff));
+  color: var(--x-table-body-text-color, var(--x-table-text-color, var(--x-color-text, #1f2937)));
   position: relative;
   transition:
     background-color 140ms ease,
@@ -4238,10 +4243,10 @@ defineExpose({
 }
 
 .x-table__row--summary {
-  background: var(--x-table-summary-background, #f8fafc);
+  background: var(--x-table-summary-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc)));
   border-top: var(--x-table-horizontal-border-width, 1px) solid var(--x-table-row-border-color, var(--x-table-horizontal-border-color, var(--x-table-border-color)));
   bottom: 0;
-  color: var(--x-table-summary-text-color, var(--x-table-body-text-color, var(--x-table-text-color, #1f2937)));
+  color: var(--x-table-summary-text-color, var(--x-table-body-text-color, var(--x-table-text-color, var(--x-color-text, #1f2937))));
   font-weight: 600;
   position: sticky;
   z-index: 3;
@@ -4252,7 +4257,7 @@ defineExpose({
 }
 
 .x-table__row--body.is-selected {
-  background: var(--x-table-row-selected-background, #eef6ff);
+  background: var(--x-table-row-selected-background, var(--x-color-primary-soft, #eef6ff));
 }
 
 .x-table__row--body.is-dragging {
@@ -4262,7 +4267,7 @@ defineExpose({
 
 .x-table__row--body.is-drag-over-before,
 .x-table__row--body.is-drag-over-after {
-  background: var(--x-table-row-drag-background, #f0f9ff);
+  background: var(--x-table-row-drag-background, var(--x-color-primary-soft, #f0f9ff));
   box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
 }
 
@@ -4276,7 +4281,7 @@ defineExpose({
 
 .x-table__row--body.is-drag-over-before::before,
 .x-table__row--body.is-drag-over-after::after {
-  background: var(--x-table-drag-indicator-color, var(--x-color-primary, #155e75));
+  background: var(--x-table-drag-indicator-color, var(--x-color-primary, #1264f4));
   border-radius: 999px;
   content: "";
   height: 2px;
@@ -4312,8 +4317,8 @@ defineExpose({
 }
 
 .x-table__context-menu {
-  background: var(--x-table-control-bg, #fff);
-  border: 1px solid var(--x-table-control-border-color, #cbd5e1);
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
   border-radius: 6px;
   box-shadow: 0 10px 24px rgb(15 23 42 / 16%);
   box-sizing: border-box;
@@ -4324,7 +4329,7 @@ defineExpose({
 }
 
 .x-table__context-menu-section + .x-table__context-menu-section {
-  border-top: 1px solid var(--x-table-control-border-color, #e2e8f0);
+  border-top: 1px solid var(--x-table-control-border-color, var(--x-color-border, #d1d9e6));
   margin-top: 4px;
   padding-top: 4px;
 }
@@ -4335,7 +4340,7 @@ defineExpose({
   border: 0;
   border-radius: 4px;
   box-sizing: border-box;
-  color: var(--x-table-control-text-color, #334155);
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
   cursor: pointer;
   display: flex;
   font: inherit;
@@ -4429,14 +4434,14 @@ defineExpose({
 
 .x-table__cell.is-selected-cell {
   background: var(--x-table-cell-selected-background, rgb(59 130 246 / 12%));
-  color: var(--x-table-cell-selected-text-color, var(--x-table-body-text-color, var(--x-table-text-color, #1f2937)));
+  color: var(--x-table-cell-selected-text-color, var(--x-table-body-text-color, var(--x-table-text-color, var(--x-color-text, #1f2937))));
   overflow: visible;
   position: relative;
   z-index: 5;
 }
 
 .x-table__cell.is-selected-cell::after {
-  border: 2px solid var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75));
+  border: 2px solid var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4));
   box-sizing: border-box;
   content: "";
   inset: -1px;
@@ -4449,7 +4454,7 @@ defineExpose({
 }
 
 .x-table__cell.is-selected-cell.is-selected-cell-adjacent-top::after {
-  border-top-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75)));
+  border-top-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4)));
   border-top-width: 1px;
 }
 
@@ -4462,12 +4467,12 @@ defineExpose({
 }
 
 .x-table__cell.is-selected-cell.is-selected-cell-adjacent-left::after {
-  border-left-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75)));
+  border-left-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4)));
   border-left-width: 1px;
 }
 
 .x-table__cell-selection-handle {
-  background: var(--x-table-cell-selected-border-color, var(--x-color-primary, #155e75));
+  background: var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4));
   bottom: 0;
   box-sizing: border-box;
   cursor: nwse-resize;
@@ -4513,19 +4518,19 @@ defineExpose({
 
 .x-table__header-sort:hover,
 .x-table__header-sort:focus-visible {
-  color: var(--x-color-primary, #155e75);
+  color: var(--x-color-primary, #1264f4);
   outline: none;
 }
 
 .x-table__sort-icon {
-  color: var(--x-table-sort-icon-color, #94a3b8);
+  color: var(--x-table-sort-icon-color, var(--x-color-text-muted, #94a3b8));
   flex: 0 0 auto;
   font-size: 14px;
   line-height: 1;
 }
 
 .x-table__cell--header.is-sorted .x-table__sort-icon {
-  color: var(--x-color-primary, #155e75);
+  color: var(--x-color-primary, #1264f4);
 }
 
 .x-table__column-resize-handle {
@@ -4549,7 +4554,7 @@ defineExpose({
 }
 
 .x-table__column-resize-handle:hover::after {
-  background: var(--x-color-primary, #155e75);
+  background: var(--x-color-primary, #1264f4);
 }
 
 .x-table__cell--selection,
@@ -4560,7 +4565,7 @@ defineExpose({
 }
 
 .x-table__checkbox {
-  accent-color: var(--x-color-primary, #155e75);
+  accent-color: var(--x-color-primary, #1264f4);
   cursor: pointer;
   height: 16px;
   margin: 0;
@@ -4568,7 +4573,7 @@ defineExpose({
 }
 
 .x-table__drag-handle {
-  color: #94a3b8;
+  color: var(--x-table-sort-icon-color, var(--x-color-text-muted, #94a3b8));
   cursor: grab;
   font-size: 16px;
   letter-spacing: 0;
@@ -4586,8 +4591,8 @@ defineExpose({
 
 .x-table__empty {
   align-items: center;
-  background: var(--x-table-body-background, #fff);
-  color: var(--x-table-body-text-color, #64748b);
+  background: var(--x-table-body-background, var(--x-color-surface, #fff));
+  color: var(--x-table-body-text-color, var(--x-table-text-color, var(--x-color-text-muted, #64748b)));
   display: flex;
   justify-content: center;
   min-height: 160px;

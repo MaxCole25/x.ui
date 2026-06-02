@@ -46,6 +46,13 @@ const columns: TableColumn[] = [
   { key: 'updatedAt', label: '更新时间', width: 140 }
 ]
 
+const summaryRow = {
+  label: '汇总',
+  cells: {
+    count: 'sum'
+  }
+} as const
+
 const categoryOptions = [
   { label: 'Display', value: 'Display' },
   { label: 'Feedback', value: 'Feedback' },
@@ -77,26 +84,26 @@ const parentState = reactive({
   paginationMode: 'client' as TablePaginationMode,
   currentPage: 1,
   pageSize: 4,
-  panelBackgroundColor: '#f8fafc',
-  topBackgroundColor: '#f0f9ff',
-  bottomBackgroundColor: '#f8fafc',
-  headerBackgroundColor: '#e0f2fe',
-  headerTextColor: '#0f172a',
-  bodyBackgroundColor: '#ffffff',
-  bodyStripeBackgroundColor: 'transparent',
-  bodyTextColor: '#1f2937',
-  selectedCellBackgroundColor: 'rgb(59 130 246 / 12%)',
-  selectedCellTextColor: '#1f2937',
-  selectedCellBorderColor: '#1264f4',
-  selectedCellInnerBorderColor: 'rgba(18, 100, 244, 0.45)',
-  borderColor: '#bfdbfe',
+  panelBackgroundColor: '',
+  topBackgroundColor: '',
+  bottomBackgroundColor: '',
+  headerBackgroundColor: '',
+  headerTextColor: '',
+  bodyBackgroundColor: '',
+  bodyStripeBackgroundColor: '',
+  bodyTextColor: '',
+  selectedCellBackgroundColor: '',
+  selectedCellTextColor: '',
+  selectedCellBorderColor: '',
+  selectedCellInnerBorderColor: '',
+  borderColor: '',
   viewportBorderColor: '',
   headerDividerColor: '',
   rowBorderColor: '',
   columnBorderColor: '',
-  horizontalBorderColor: '#bfdbfe',
+  horizontalBorderColor: '',
   horizontalBorderWidth: 1,
-  verticalBorderColor: '#cbd5e1',
+  verticalBorderColor: '',
   verticalBorderWidth: 1
 })
 const selectedRowKeys = ref<string[]>([])
@@ -476,26 +483,27 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
             :page-size="parentState.pageSize"
             :total="parentState.paginationMode === 'server' ? 23 : rows.length"
             :page-sizes="[4, 8, 12]"
-            :panel-background-color="parentState.panelBackgroundColor"
-            :top-background-color="parentState.topBackgroundColor"
-            :bottom-background-color="parentState.bottomBackgroundColor"
-            :header-background-color="parentState.headerBackgroundColor"
-            :header-text-color="parentState.headerTextColor"
-            :body-background-color="parentState.bodyBackgroundColor"
-            :body-stripe-background-color="parentState.bodyStripeBackgroundColor"
-            :body-text-color="parentState.bodyTextColor"
-            :selected-cell-background-color="parentState.selectedCellBackgroundColor"
-            :selected-cell-text-color="parentState.selectedCellTextColor"
-            :selected-cell-border-color="parentState.selectedCellBorderColor"
-            :selected-cell-inner-border-color="parentState.selectedCellInnerBorderColor"
-            :border-color="parentState.borderColor"
+            :summary-row="summaryRow"
+            :panel-background-color="parentState.panelBackgroundColor || undefined"
+            :top-background-color="parentState.topBackgroundColor || undefined"
+            :bottom-background-color="parentState.bottomBackgroundColor || undefined"
+            :header-background-color="parentState.headerBackgroundColor || undefined"
+            :header-text-color="parentState.headerTextColor || undefined"
+            :body-background-color="parentState.bodyBackgroundColor || undefined"
+            :body-stripe-background-color="parentState.bodyStripeBackgroundColor || undefined"
+            :body-text-color="parentState.bodyTextColor || undefined"
+            :selected-cell-background-color="parentState.selectedCellBackgroundColor || undefined"
+            :selected-cell-text-color="parentState.selectedCellTextColor || undefined"
+            :selected-cell-border-color="parentState.selectedCellBorderColor || undefined"
+            :selected-cell-inner-border-color="parentState.selectedCellInnerBorderColor || undefined"
+            :border-color="parentState.borderColor || undefined"
             :viewport-border-color="parentState.viewportBorderColor || undefined"
             :header-divider-color="parentState.headerDividerColor || undefined"
             :row-border-color="parentState.rowBorderColor || undefined"
             :column-border-color="parentState.columnBorderColor || undefined"
-            :horizontal-border-color="parentState.horizontalBorderColor"
+            :horizontal-border-color="parentState.horizontalBorderColor || undefined"
             :horizontal-border-width="parentState.horizontalBorderWidth"
-            :vertical-border-color="parentState.verticalBorderColor"
+            :vertical-border-color="parentState.verticalBorderColor || undefined"
             :vertical-border-width="parentState.verticalBorderWidth"
             @row-click="handleRowClick"
             @row-dblclick="handleRowDoubleClick"
@@ -545,6 +553,28 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
                 <span class="table-story__selected">{{ selectedText }}</span>
                 <span class="table-story__event">{{ rowEventText }}</span>
               </div>
+            </template>
+          </XTable>
+        </div>
+
+        <div class="table-story__theme-default-demo" data-theme="dark">
+          <XTable
+            :columns="columns"
+            :data="rows.slice(0, 4)"
+            row-key="id"
+            show-column-settings
+            show-selection
+            show-pagination
+            :page-size="2"
+            :summary-row="summaryRow"
+            selection-mode="cell"
+            :selected-cell-keys="['1::component', '1::category', '2::component', '2::category']"
+          >
+            <template #top>
+              <strong class="table-story__dark-title">跟随主题默认值</strong>
+            </template>
+            <template #bottom>
+              <span class="table-story__dark-note">容器设置 data-theme="dark"，未传表头、表体、分页和选区外观 props。</span>
             </template>
           </XTable>
         </div>
@@ -664,6 +694,15 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
 
 .table-story__dark-demo {
   background: #020617;
+  box-sizing: border-box;
+  display: grid;
+  max-width: 860px;
+  min-height: 280px;
+  padding: 12px;
+}
+
+.table-story__theme-default-demo {
+  background: var(--x-color-surface, #0b1726);
   box-sizing: border-box;
   display: grid;
   max-width: 860px;

@@ -26,6 +26,7 @@
   --x-color-text-muted: var(--x-color-muted);
   --x-color-border: #d1d9e6;
   --x-color-surface: #ffffff;
+  --x-color-surface-soft: #f8fafc;
   --x-color-disabled-bg: #f1f5f9;
   --x-color-disabled-text: #94a3b8;
   --x-color-disabled-border: #d4d7de;
@@ -77,6 +78,31 @@
   --x-dialog-close-hover-bg: var(--x-color-primary-soft, #e0ecff);
   --x-dialog-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
   --x-dialog-resizer-color: rgba(140, 147, 166, 0.75);
+  --x-table-text-color: var(--x-color-text, #121826);
+  --x-table-panel-background: var(--x-color-surface, #ffffff);
+  --x-table-top-background: var(--x-color-surface-soft, #f8fafc);
+  --x-table-bottom-background: var(--x-color-surface-soft, #f8fafc);
+  --x-table-header-background: var(--x-color-surface-soft, #f8fafc);
+  --x-table-header-text-color: var(--x-color-text, #121826);
+  --x-table-body-background: var(--x-color-surface, #ffffff);
+  --x-table-body-stripe-background: transparent;
+  --x-table-body-text-color: var(--x-color-text, #121826);
+  --x-table-summary-background: var(--x-color-surface-soft, #f8fafc);
+  --x-table-summary-text-color: var(--x-color-text, #121826);
+  --x-table-row-hover-overlay: rgba(18, 100, 244, 0.06);
+  --x-table-row-selected-background: rgba(18, 100, 244, 0.1);
+  --x-table-row-drag-background: var(--x-color-primary-soft, #e0ecff);
+  --x-table-drag-indicator-color: var(--x-color-primary, #1264f4);
+  --x-table-sort-icon-color: var(--x-color-text-muted, #606b7d);
+  --x-table-scrollbar-thumb: rgba(100, 116, 139, 0.36);
+  --x-table-scrollbar-thumb-hover: rgba(71, 85, 105, 0.54);
+  --x-table-border-color: var(--x-color-border, #d1d9e6);
+  --x-table-viewport-border-color: var(--x-table-border-color);
+  --x-table-header-divider-color: var(--x-table-horizontal-border-color);
+  --x-table-row-border-color: var(--x-table-horizontal-border-color);
+  --x-table-column-border-color: var(--x-table-vertical-border-color);
+  --x-table-horizontal-border-color: var(--x-table-border-color);
+  --x-table-vertical-border-color: var(--x-table-border-color);
   --x-table-control-bg: var(--x-color-surface, #ffffff);
   --x-table-control-text-color: var(--x-color-text, #334155);
   --x-table-control-border-color: var(--x-color-border, #cbd5e1);
@@ -96,6 +122,7 @@
 :root.dark,
 :root[data-theme='dark'],
 [data-theme='dark'],
+.dark,
 [data-doc-theme-scheme='dark'] {
   --x-color-primary: #3b82f6;
   --x-color-primary-hover: #60a5fa;
@@ -122,6 +149,7 @@
   --x-color-text-muted: var(--x-color-muted);
   --x-color-border: #203247;
   --x-color-surface: #0b1726;
+  --x-color-surface-soft: #12243a;
   --x-color-disabled-bg: #111f31;
   --x-color-disabled-text: #60738d;
   --x-color-disabled-border: #334155;
@@ -159,6 +187,31 @@
   --x-dialog-close-hover-bg: rgba(148, 163, 184, 0.14);
   --x-dialog-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
   --x-dialog-resizer-color: rgba(141, 160, 184, 0.75);
+  --x-table-text-color: var(--x-color-text, #eef4fb);
+  --x-table-panel-background: var(--x-color-surface, #0b1726);
+  --x-table-top-background: var(--x-color-surface, #0b1726);
+  --x-table-bottom-background: var(--x-color-surface, #0b1726);
+  --x-table-header-background: var(--x-color-surface-soft, #12243a);
+  --x-table-header-text-color: var(--x-color-text, #eef4fb);
+  --x-table-body-background: var(--x-color-surface, #0b1726);
+  --x-table-body-stripe-background: rgba(255, 255, 255, 0.025);
+  --x-table-body-text-color: var(--x-color-text, #eef4fb);
+  --x-table-summary-background: #0f1e31;
+  --x-table-summary-text-color: var(--x-color-text, #eef4fb);
+  --x-table-row-hover-overlay: rgba(59, 130, 246, 0.16);
+  --x-table-row-selected-background: rgba(59, 130, 246, 0.2);
+  --x-table-row-drag-background: rgba(59, 130, 246, 0.14);
+  --x-table-drag-indicator-color: var(--x-color-primary, #3b82f6);
+  --x-table-sort-icon-color: var(--x-color-text-muted, #8da0b8);
+  --x-table-scrollbar-thumb: rgba(141, 160, 184, 0.34);
+  --x-table-scrollbar-thumb-hover: rgba(141, 160, 184, 0.54);
+  --x-table-border-color: var(--x-color-border, #203247);
+  --x-table-viewport-border-color: var(--x-table-border-color);
+  --x-table-header-divider-color: var(--x-table-horizontal-border-color);
+  --x-table-row-border-color: var(--x-table-horizontal-border-color);
+  --x-table-column-border-color: var(--x-table-vertical-border-color);
+  --x-table-horizontal-border-color: var(--x-table-border-color);
+  --x-table-vertical-border-color: var(--x-table-border-color);
   --x-table-control-bg: var(--x-color-surface, #0b1726);
   --x-table-control-text-color: var(--x-color-text, #eef4fb);
   --x-table-control-border-color: var(--x-color-border, #203247);
