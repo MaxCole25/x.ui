@@ -63,6 +63,7 @@ const inputStyle = computed(() => ({
   '--x-base-input-text-color': props.textColor,
   '--x-base-input-font-family': props.fontFamily,
   '--x-base-input-font-size': toCssSize(props.fontSize),
+  '--x-base-input-width': toCssSize(props.width),
   '--x-base-input-height': props.autoHeight ? 'auto' : toCssSize(props.height),
   '--x-base-input-padding': toCssSize(props.padding),
   '--x-base-input-text-align': props.textAlign

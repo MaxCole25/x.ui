@@ -224,7 +224,8 @@ describe('new element components', () => {
       props: {
         direction: 'horizontal',
         contentPosition: 'left',
-        borderStyle: 'dashed'
+        borderStyle: 'dashed',
+        thickness: 3
       },
       slots: {
         default: '分组'
@@ -234,6 +235,11 @@ describe('new element components', () => {
     expect(wrapper.classes()).toContain('x-divider--left')
     expect(wrapper.find('.x-divider__text').text()).toBe('分组')
     expect(wrapper.attributes('style')).toContain('--x-divider-border-style: dashed')
+    expect(wrapper.attributes('style')).toContain('--x-divider-thickness: 3px')
+
+    const css = readFileSync('src/styles/index.css', 'utf8')
+    expect(css).toContain('border-top-width: var(--x-divider-thickness, var(--x-element-border-width, 1px))')
+    expect(css).toContain('border-left-width: var(--x-divider-thickness, var(--x-element-border-width, 1px))')
   })
 
   it('emits XEmpty action from default action button', async () => {

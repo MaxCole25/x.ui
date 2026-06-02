@@ -14,7 +14,7 @@ const appearance = reactive({
   prefix: '前',
   suffix: '后',
   variant: 'solid' as ButtonVariant,
-  width: 180,
+  width: 120,
   height: 40,
   radius: 10,
   activeBackgroundColor: '#0f54d6',

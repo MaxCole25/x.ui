@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { XButton } from '../../../src'
-import type { ButtonSize, ButtonVariant } from '../../../src'
+import { XButton } from '../../../src/components/basic-components/button'
+import type { XSize } from '../../../src/components/_utils/size'
+import type { ButtonVariant } from '../../../src/components/basic-components/button'
 
 const variant = ref<ButtonVariant>('solid')
-const size = ref<ButtonSize>('md')
+const size = ref<XSize>('md')
 const loading = ref(false)
 const disabled = ref(false)
 const clickCount = ref(0)
+const showCode = ref(false)
 
 const previewCode = computed(() => {
   const attrs = [
@@ -70,6 +72,13 @@ function handleClick() {
       </label>
     </div>
 
-    <pre class="x-playground__code"><code>{{ previewCode }}</code></pre>
+    <div class="x-playground__toolbar">
+      <span>vue</span>
+      <button type="button" @click="showCode = !showCode">
+        {{ showCode ? '隐藏源码' : '显示源码' }}
+      </button>
+    </div>
+
+    <pre v-if="showCode" class="x-playground__code"><code>{{ previewCode }}</code></pre>
   </section>
 </template>

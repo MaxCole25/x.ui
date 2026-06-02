@@ -11,6 +11,7 @@ defineOptions({
 const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'solid',
   size: undefined,
+  width: 120,
   liftOnHover: true,
   disabled: false,
   loading: false

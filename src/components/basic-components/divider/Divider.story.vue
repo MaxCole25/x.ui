@@ -10,6 +10,7 @@ const appearance = reactive({
   direction: 'horizontal' as DividerDirection,
   contentPosition: 'center' as DividerContentPosition,
   borderStyle: 'solid' as DividerBorderStyle,
+  thickness: 1,
   spacing: 16
 })
 </script>
@@ -23,7 +24,7 @@ const appearance = reactive({
         <template #default="styleProps">
           <div class="divider-demo">
             <span>前</span>
-            <XDivider v-bind="styleProps" :direction="appearance.direction" :content-position="appearance.contentPosition" :border-style="appearance.borderStyle" :spacing="appearance.spacing">
+            <XDivider v-bind="styleProps" :direction="appearance.direction" :content-position="appearance.contentPosition" :border-style="appearance.borderStyle" :thickness="appearance.thickness" :spacing="appearance.spacing">
               {{ appearance.text }}
             </XDivider>
             <span>后</span>
@@ -36,6 +37,7 @@ const appearance = reactive({
           <label><span>线型</span><select v-model="appearance.borderStyle"><option value="solid">solid</option><option value="dashed">dashed</option><option value="dotted">dotted</option></select></label>
         </template>
         <template #column-2>
+          <label><span>粗细</span><input v-model.number="appearance.thickness" type="number" min="0" /></label>
           <label><span>间距</span><input v-model.number="appearance.spacing" type="number" min="0" /></label>
         </template>
       </ElementStylePlayground>

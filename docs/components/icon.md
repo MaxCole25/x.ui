@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { XIcon } from '../../src'
+import { XIcon } from '../../src/components/basic-components/icon'
 import IconGallery from '../.vitepress/components/IconGallery.vue'
 </script>
 

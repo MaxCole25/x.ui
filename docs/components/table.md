@@ -178,6 +178,8 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 通过 `cell-[key]` 覆盖某一列的单元格内容。开启 `show-actions` 后，可以使用 `row-actions` 插槽渲染操作列。需要操作列始终停靠在右侧时，设置 `actions-fixed`；操作列不会出现在内置列设置里。
 
+操作列宽度通过 `actionsWidth` 控制，支持数字或 CSS 长度字符串。模板中推荐使用 `:actions-width="180"` 传入数字；如果使用字符串形式，建议写完整单位，例如 `actions-width="180px"`、`actions-width="12rem"` 或 `actions-width="30%"`。组件会兼容 `actions-width="180"` 这类纯数字字符串，并按 `180px` 处理。
+
 ```vue
 <XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="180">
   <template #cell-name="{ value }">
@@ -351,16 +353,16 @@ body,
 | rowBorderColor | 数据行横向分隔线颜色，未设置时回退到 `horizontalBorderColor` | `string` | - |
 | columnBorderColor | 单元格竖向分隔线颜色，未设置时回退到 `verticalBorderColor` | `string` | - |
 | horizontalBorderColor | 表格横向边框颜色，影响表格上下边框、表头分隔线和行分隔线 | `string` | - |
-| horizontalBorderWidth | 表格横向边框宽度，数字会转为 px | `number \| string` | - |
+| horizontalBorderWidth | 表格横向边框宽度，支持数字或 CSS 长度字符串；纯数字字符串会按 px 兼容处理 | `number \| string` | - |
 | verticalBorderColor | 表格竖向边框颜色，影响表格左右边框和列分隔线 | `string` | - |
-| verticalBorderWidth | 表格竖向边框宽度，数字会转为 px | `number \| string` | - |
+| verticalBorderWidth | 表格竖向边框宽度，支持数字或 CSS 长度字符串；纯数字字符串会按 px 兼容处理 | `number \| string` | - |
 | showPagination | 是否显示表底内置分页器，关闭时显示全部传入数据 | `boolean` | `false` |
 | paginationMode | 分页模式，客户端分页会切分本地数据，服务器分页只抛出翻页事件 | `'client' \| 'server'` | `'client'` |
 | currentPage | 当前页，支持 `v-model:current-page` | `number` | `1` |
 | pageSize | 每页条数，支持 `v-model:page-size` | `number` | `10` |
 | total | 总条数，服务器分页时用于计算页数；未设置时使用 `data.length` | `number` | - |
 | pageSizes | 每页条数选项 | `number[]` | `[10, 20, 50, 100]` |
-| actionsWidth | 操作列宽度 | `number \| string` | `160` |
+| actionsWidth | 操作列宽度，支持数字或 CSS 长度字符串；模板中推荐 `:actions-width="180"`，纯数字字符串会按 px 兼容处理 | `number \| string` | `160` |
 | fullHeight | 是否撑满父元素高度 | `boolean` | `false` |
 
 ## TableColumn
@@ -369,8 +371,8 @@ body,
 | --- | --- | --- | --- |
 | key | 数据字段名 | `string` | 必填 |
 | label | 表头文本 | `string` | 必填 |
-| width | 固定列宽，数字会转为 px | `number \| string` | - |
-| minWidth | 最小列宽，未设置 `width` 时参与自适应分配；未配置时默认为 `40px` | `number \| string` | `40` |
+| width | 固定列宽，支持数字或 CSS 长度字符串；纯数字字符串会按 px 兼容处理 | `number \| string` | - |
+| minWidth | 最小列宽，未设置 `width` 时参与自适应分配；支持数字或 CSS 长度字符串，纯数字字符串会按 px 兼容处理；未配置时默认为 `40px` | `number \| string` | `40` |
 | align | 内容对齐方式 | `'left' \| 'center' \| 'right'` | `'left'` |
 | formatter | 单元格格式化函数 | `(value, row) => string` | - |
 

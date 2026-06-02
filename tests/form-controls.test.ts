@@ -37,6 +37,17 @@ describe('form controls', () => {
     expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-height: auto')
   })
 
+  it('exposes XBaseInput width as an appearance variable', () => {
+    const wrapper = mount(XBaseInput, {
+      props: {
+        modelValue: '固定宽度',
+        width: 280
+      }
+    })
+
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-width: 280px')
+  })
+
   it('uses inputBackgroundColor before backgroundColor on XBaseInput', () => {
     const wrapper = mount(XBaseInput, {
       props: {

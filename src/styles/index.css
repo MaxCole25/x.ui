@@ -227,7 +227,7 @@
     transform 160ms ease;
   user-select: none;
   white-space: nowrap;
-  width: var(--x-button-width, 100%);
+  width: var(--x-button-width, 120px);
 }
 
 .x-button:hover:not(:disabled):not(.is-hover-lift-disabled) {
@@ -473,6 +473,7 @@
 .x-divider {
   border-color: var(--x-element-border-color, var(--x-color-border));
   border-style: var(--x-divider-border-style, solid);
+  border-width: 0;
   box-sizing: border-box;
   color: var(--x-element-text, var(--x-color-muted));
   font-family: var(--x-font-family);
@@ -480,14 +481,14 @@
 
 .x-divider--horizontal {
   align-items: center;
-  border-top-width: var(--x-element-border-width, 1px);
+  border-top-width: var(--x-divider-thickness, var(--x-element-border-width, 1px));
   display: flex;
   margin: var(--x-divider-spacing, 16px) 0;
   width: 100%;
 }
 
 .x-divider--vertical {
-  border-left-width: var(--x-element-border-width, 1px);
+  border-left-width: var(--x-divider-thickness, var(--x-element-border-width, 1px));
   display: inline-block;
   height: 1em;
   margin: 0 var(--x-divider-spacing, 8px);
@@ -509,7 +510,7 @@
 .x-divider--left::after,
 .x-divider--center::after,
 .x-divider--right::after {
-  border-top: var(--x-element-border-width, 1px) var(--x-divider-border-style, solid) var(--x-element-border-color, var(--x-color-border));
+  border-top: var(--x-divider-thickness, var(--x-element-border-width, 1px)) var(--x-divider-border-style, solid) var(--x-element-border-color, var(--x-color-border));
   content: '';
   flex: 1 1 auto;
 }
@@ -1637,7 +1638,7 @@
   padding: var(--x-base-input-padding, 0 8px);
   position: relative;
   transition: border-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
-  width: 100%;
+  width: var(--x-base-input-width, 100%);
 }
 
 .x-base-input:hover:not(.is-disabled) {

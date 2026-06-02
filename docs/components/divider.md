@@ -16,6 +16,7 @@
 | direction | 方向 | `horizontal \| vertical` | `horizontal` |
 | contentPosition | 文本位置 | `left \| center \| right` | `center` |
 | borderStyle | 线型 | `solid \| dashed \| dotted` | `solid` |
+| thickness | 分割线粗细，数字按 px 处理 | `number \| string` | `1px` |
 | spacing | 外边距间距 | `number \| string` | 水平 `16px`，垂直 `8px` |
 
 ## Slots

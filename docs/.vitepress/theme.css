@@ -92,6 +92,42 @@
   padding: 18px;
 }
 
+.vp-doc .x-playground__toolbar {
+  align-items: center;
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-divider);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 8px 12px 8px 18px;
+}
+
+.vp-doc .x-playground__toolbar span {
+  color: var(--vp-c-text-2);
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.vp-doc .x-playground__toolbar button {
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  min-height: 30px;
+  padding: 0 10px;
+}
+
+.vp-doc .x-playground__toolbar button:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
 .vp-doc .x-control,
 .vp-doc .x-check {
   align-items: center;

@@ -10,5 +10,6 @@ export interface DividerProps extends ElementStyleProps {
   direction?: DividerDirection
   contentPosition?: DividerContentPosition
   borderStyle?: DividerBorderStyle
+  thickness?: number | string
   spacing?: number | string
 }

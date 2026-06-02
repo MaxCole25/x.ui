@@ -127,6 +127,7 @@ function parseCurrency(value) {
       clear-icon-color="#67c23a"
       clear-icon-size="18px"
       font-size="12px"
+      width="320px"
       height="40px"
       auto-height
       radius="8px"
@@ -147,6 +148,7 @@ function parseCurrency(value) {
   clear-icon-color="#67c23a"
   clear-icon-size="18px"
   font-size="12px"
+  width="320px"
   height="40px"
   auto-height
   radius="8px"
@@ -186,6 +188,7 @@ function parseCurrency(value) {
 | disabledTextColor | 禁用状态文字色 | `string` | - |
 | fontFamily | 字体样式 | `string` | - |
 | fontSize | 字体大小 | `number \| string` | - |
+| width | 输入框宽度 | `number \| string` | - |
 | height | 输入框高度 | `number \| string` | - |
 | autoHeight | 自动高度，比组件高度 `height` 优先级高；开启后 `height` 不再参与最小高度计算，适合嵌入表格单元格等容器 | `boolean` | `false` |
 | padding | 外层 `div` 内边距 | `number \| string` | - |

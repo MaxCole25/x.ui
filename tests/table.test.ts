@@ -209,6 +209,62 @@ describe('XTable', () => {
     expect(countCell.attributes('style')).toContain('text-align: right')
   })
 
+  it('normalizes numeric string column widths before writing grid tracks', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns: [
+          { key: 'name', label: '名称', minWidth: '120' },
+          { key: 'status', label: '状态', width: '120' },
+          { key: 'count', label: '数量', width: '96px' }
+        ],
+        data
+      }
+    })
+
+    const gridStyle = wrapper.find('.x-table__row--body').attributes('style')
+
+    expect(gridStyle).toContain('grid-template-columns: 120px 120px 96px')
+    expect(gridStyle).not.toContain(' 120 120 ')
+  })
+
+  it('normalizes numeric string actionsWidth before writing grid tracks', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showActions: true,
+        actionsWidth: '170'
+      }
+    })
+
+    const gridStyle = wrapper.find('.x-table__row--body').attributes('style')
+
+    expect(gridStyle).toContain('grid-template-columns: 160px 120px 96px 170px')
+    expect(gridStyle).not.toContain(' 170;')
+  })
+
+  it('keeps numeric and unit-bearing actionsWidth values valid in grid tracks', () => {
+    const numericWrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showActions: true,
+        actionsWidth: 170
+      }
+    })
+    const unitWrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        showActions: true,
+        actionsWidth: '170px'
+      }
+    })
+
+    expect(numericWrapper.find('.x-table__row--body').attributes('style')).toContain('160px 120px 96px 170px')
+    expect(unitWrapper.find('.x-table__row--body').attributes('style')).toContain('160px 120px 96px 170px')
+  })
+
   it('renders top and bottom slots with columns and data scope', () => {
     const wrapper = mount(XTable, {
       props: {

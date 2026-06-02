@@ -29,6 +29,7 @@ export interface BaseInputProps extends ElementStyleProps {
   disabledTextColor?: string
   fontFamily?: string
   fontSize?: number | string
+  width?: number | string
   height?: number | string
   autoHeight?: boolean
   hideClearButton?: boolean

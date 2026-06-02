@@ -39,6 +39,19 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 - 使用 Vitest 和 Vue Test Utils 验证组件行为。
 - Vue 必须保持为 peer dependency。
 
+## VitePress 文档示例渲染规则
+
+在 `docs/` 中实现类似 Element Plus 的“真实组件预览 + 源码展示”时，必须注意以下规则：
+
+- VitePress 1.x 自定义主题入口必须放在 `docs/.vitepress/theme/index.ts`，不要放在 `docs/.vitepress/theme.ts`。后者不会被 VitePress 作为主题入口读取，导致 `enhanceApp` 中注册的组件不生效，Markdown 中的 `<XButton>` 只会表现为未解析标签或普通文字。
+- 文档主题中不要直接 `app.use(XUi)` 或从 `src/index.ts` 整包注册组件库。整包入口会拉入所有组件及第三方依赖，VitePress SSR 阶段可能因为外部依赖 CSS（例如 `vue-grid-layout-v3/dist/index.css`）报 `Unknown file extension ".css"`。
+- 文档站需要展示组件示例时，优先按需从组件目录导入并注册当前文档需要的组件，例如 `src/components/basic-components/button`、`src/components/basic-components/icon`；全局样式可在主题入口单独导入 `src/styles/index.css`。
+- 新增文档 Demo 容器时，优先放在 `docs/.vitepress/components/`，并在 `docs/.vitepress/theme/index.ts` 中注册，Markdown 页面中再直接使用。
+- 文档示例必须支持源码显示/隐藏，默认隐藏源码，避免代码过多导致页面过长；除非用户明确要求展示教学源码，不要默认展开源码。
+- 文档示例的预览区应优先展示真实组件运行效果，源码只作为辅助信息放在折叠区域；不要再用“预览一份、代码块一份”的长页面写法。
+- 按钮类组件示例不要默认铺满整行。`XButton` 默认宽度为 `120px`；只有展示块级操作、表单底部主按钮或明确说明撑满父容器时，才显式传入 `width="100%"`。
+- 仅运行 `pnpm docs:build` 只能证明构建通过，不能完全证明页面中组件已真实渲染。新增或调整文档示例后，必须启动 `pnpm dev` 或 `pnpm exec vitepress dev docs`，用浏览器或 Headless Chrome 截图确认示例区域出现真实组件样式，而不是只出现源码文本或未解析标签。
+
 ## 公开接口命名规则
 
 新增或修改公开 Props、事件、插槽、类型和 `expose` 方法时，必须优先遵守 `docs/guide/api-naming.md`。

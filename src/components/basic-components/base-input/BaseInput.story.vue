@@ -26,6 +26,7 @@ const state = reactive({
   textColor: '#000000',
   fontFamily: 'Arial, sans-serif',
   fontSize: 12,
+  width: 320,
   previewWidth: 420,
   previewHeight: 92,
   height: 40,
@@ -100,6 +101,7 @@ const parseCurrency = (value: string) => {
                 :text-color="state.textColor"
                 :font-family="state.fontFamily"
                 :font-size="state.fontSize"
+                :width="state.width"
                 :height="state.height"
                 :auto-height="state.autoHeight"
                 :hide-clear-button="state.hideClearButton"
@@ -178,6 +180,10 @@ const parseCurrency = (value: string) => {
             <label>
               <span>字体大小</span>
               <input v-model.number="state.fontSize" type="number" min="10" max="32" />
+            </label>
+            <label>
+              <span>组件宽度</span>
+              <input v-model.number="state.width" type="number" min="120" max="960" />
             </label>
             <label>
               <span>容器宽度</span>
@@ -302,12 +308,12 @@ const parseCurrency = (value: string) => {
 
 .input-story__sandbox :deep(.x-base-input) {
   max-width: none;
-  width: 100%;
 }
 
 .input-story__stack {
   display: grid;
   gap: 10px;
+  justify-items: center;
   width: 100%;
 }
 

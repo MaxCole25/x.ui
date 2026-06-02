@@ -2735,7 +2735,12 @@ function normalizeSummaryNumber(value: unknown) {
 }
 
 function formatCssSize(value: number | string) {
-  return typeof value === 'number' ? `${value}px` : value
+  if (typeof value === 'number') {
+    return `${value}px`
+  }
+
+  const trimmed = value.trim()
+  return /^-?\d+(?:\.\d+)?$/.test(trimmed) ? `${trimmed}px` : value
 }
 
 function setCssVariable(style: Record<string, string>, key: string, value: string | undefined) {

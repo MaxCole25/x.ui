@@ -19,6 +19,7 @@ const hasDividerText = computed(() => props.direction === 'horizontal' && Boolea
 const dividerStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-divider-spacing': toCssSize(props.spacing),
+  '--x-divider-thickness': toCssSize(props.thickness),
   '--x-divider-border-style': props.borderStyle
 }))
 </script>

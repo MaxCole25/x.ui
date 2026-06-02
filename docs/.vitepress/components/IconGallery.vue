@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { XIcon } from '../../../src'
+import { XIcon } from '../../../src/components/basic-components/icon'
 import { remixIconNames } from '../../../src/components/basic-components/icon/src/iconNames'
 
 const keyword = ref('')
