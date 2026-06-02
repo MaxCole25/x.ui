@@ -151,6 +151,7 @@ export interface TableExcelImportPayload<Row extends Record<string, unknown> = R
 
 export interface TableProps<Row extends Record<string, unknown> = Record<string, unknown>> {
   size?: XSize
+  rowHeight?: number | string
   data: Row[]
   columns: TableColumn<Row>[]
   columnSettings?: TableColumnSetting[]

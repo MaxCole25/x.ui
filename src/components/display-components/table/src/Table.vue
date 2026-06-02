@@ -63,6 +63,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   currentPage: 1,
   pageSize: 10,
   size: undefined,
+  rowHeight: undefined,
   selectionMode: 'row',
   actionsWidth: 160,
   fullHeight: false
@@ -179,9 +180,13 @@ const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
 const tableStyle = computed<CSSProperties>(() => {
   const style: Record<string, string> = {}
+  const controlHeight = `${sizePreset.value.height}px`
+  const rowHeight = props.rowHeight === undefined || (typeof props.rowHeight === 'string' && props.rowHeight.trim() === '')
+    ? controlHeight
+    : formatCssSize(props.rowHeight)
   setCssVariable(style, '--x-table-panel-background', props.panelBackgroundColor)
-  setCssVariable(style, '--x-table-top-background', props.topBackgroundColor)
-  setCssVariable(style, '--x-table-bottom-background', props.bottomBackgroundColor)
+  setCssVariable(style, '--x-table-top-background', props.topBackgroundColor ?? props.panelBackgroundColor)
+  setCssVariable(style, '--x-table-bottom-background', props.bottomBackgroundColor ?? props.panelBackgroundColor)
   setCssVariable(style, '--x-table-header-background', props.headerBackgroundColor)
   setCssVariable(style, '--x-table-header-text-color', props.headerTextColor)
   setCssVariable(style, '--x-table-body-background', props.bodyBackgroundColor)
@@ -201,7 +206,8 @@ const tableStyle = computed<CSSProperties>(() => {
   setCssVariable(style, '--x-table-vertical-border-color', props.verticalBorderColor)
   setCssVariable(style, '--x-table-vertical-border-width', props.verticalBorderWidth === undefined ? undefined : formatCssSize(props.verticalBorderWidth))
   setCssVariable(style, '--x-table-font-size', `${sizePreset.value.fontSize}px`)
-  setCssVariable(style, '--x-table-row-height', `${sizePreset.value.height}px`)
+  setCssVariable(style, '--x-table-row-height', rowHeight)
+  setCssVariable(style, '--x-table-control-height', controlHeight)
   setCssVariable(style, '--x-table-cell-padding', sizePreset.value.padding)
   setCssVariable(style, '--x-table-radius', sizePreset.value.radius)
   return style as CSSProperties
@@ -3721,7 +3727,7 @@ defineExpose({
 
 .x-table__top {
   align-items: center;
-  background: var(--x-table-top-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));
+  background: var(--x-table-top-background, transparent);
   display: flex;
   gap: 8px;
   justify-content: space-between;
@@ -3753,12 +3759,12 @@ defineExpose({
   display: inline-flex;
   flex: 0 0 auto;
   font-size: calc(var(--x-table-font-size, 12px) + 6px);
-  height: var(--x-table-row-height, 30px);
+  height: var(--x-table-control-height, 30px);
   justify-content: center;
   line-height: 1;
   margin-left: auto;
   padding: 0;
-  width: var(--x-table-row-height, 30px);
+  width: var(--x-table-control-height, 30px);
 }
 
 .x-table__row-mutation-actions + .x-table__column-settings-button {
@@ -3985,7 +3991,7 @@ defineExpose({
   border-radius: var(--x-table-radius, 6px);
   color: var(--x-table-control-text-color, var(--x-color-text, #334155));
   cursor: pointer;
-  min-height: var(--x-table-row-height, 30px);
+  min-height: var(--x-table-control-height, 30px);
   padding: var(--x-table-cell-padding, 0 8px);
 }
 
@@ -4003,7 +4009,7 @@ defineExpose({
 
 .x-table__bottom {
   align-items: center;
-  background: var(--x-table-bottom-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));
+  background: var(--x-table-bottom-background, transparent);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -4037,7 +4043,7 @@ defineExpose({
   border-radius: var(--x-table-radius, 6px);
   box-sizing: border-box;
   color: var(--x-table-control-text-color, var(--x-color-text, #334155));
-  min-height: var(--x-table-row-height, 30px);
+  min-height: var(--x-table-control-height, 30px);
 }
 
 .x-table__page-size-select {
@@ -4062,7 +4068,7 @@ defineExpose({
 }
 
 .x-table__page-number {
-  min-width: var(--x-table-row-height, 30px);
+  min-width: var(--x-table-control-height, 30px);
 }
 
 .x-table__page-number.is-active {

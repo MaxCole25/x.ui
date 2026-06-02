@@ -80,8 +80,8 @@
   --x-dialog-resizer-color: rgba(140, 147, 166, 0.75);
   --x-table-text-color: var(--x-color-text, #121826);
   --x-table-panel-background: var(--x-color-surface, #ffffff);
-  --x-table-top-background: var(--x-color-surface-soft, #f8fafc);
-  --x-table-bottom-background: var(--x-color-surface-soft, #f8fafc);
+  --x-table-top-background: transparent;
+  --x-table-bottom-background: transparent;
   --x-table-header-background: var(--x-color-surface-soft, #f8fafc);
   --x-table-header-text-color: var(--x-color-text, #121826);
   --x-table-body-background: var(--x-color-surface, #ffffff);
@@ -189,8 +189,8 @@
   --x-dialog-resizer-color: rgba(141, 160, 184, 0.75);
   --x-table-text-color: var(--x-color-text, #eef4fb);
   --x-table-panel-background: var(--x-color-surface, #0b1726);
-  --x-table-top-background: var(--x-color-surface, #0b1726);
-  --x-table-bottom-background: var(--x-color-surface, #0b1726);
+  --x-table-top-background: transparent;
+  --x-table-bottom-background: transparent;
   --x-table-header-background: var(--x-color-surface-soft, #12243a);
   --x-table-header-text-color: var(--x-color-text, #eef4fb);
   --x-table-body-background: var(--x-color-surface, #0b1726);

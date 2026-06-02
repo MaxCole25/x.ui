@@ -81,9 +81,9 @@ const rows = [
 | 变量 | 说明 |
 | --- | --- |
 | `--x-table-text-color` | 表格整体文字色兜底 |
-| `--x-table-panel-background` | 表顶和表底的面板背景兜底 |
-| `--x-table-top-background` | 表顶区域背景 |
-| `--x-table-bottom-background` | 表底区域背景 |
+| `--x-table-panel-background` | 表格根容器背景，显式传入 `panelBackgroundColor` 时也作为表顶和表底的背景兜底 |
+| `--x-table-top-background` | 表顶区域背景，默认透明 |
+| `--x-table-bottom-background` | 表底区域背景，默认透明 |
 | `--x-table-header-background` | 表头背景 |
 | `--x-table-header-text-color` | 表头文字色 |
 | `--x-table-body-background` | 表体和空状态背景 |
@@ -357,12 +357,23 @@ body,
 }
 ```
 
+## 尺寸与行高
+
+`size` 会控制表格字号、单元格内边距、圆角和控件高度。需要单独调整表头、数据行和汇总行高度时，可以使用 `row-height`；数字和纯数字字符串会按 px 处理，带单位字符串会原样写入 CSS 变量。
+
+`row-height` 的优先级高于 `size` 生成的行高度，但不会改变表顶工具按钮、列设置弹窗按钮和分页按钮高度。这些控件仍跟随 `size`，避免调高数据行时把操作区一起撑大。建议业务侧不要把 `row-height` 设置得低于 `22px`，否则单元格内容或编辑器可能显得拥挤。
+
+```vue
+<XTable :columns="columns" :data="rows" size="sm" :row-height="40" />
+```
+
 ## Props
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | data | 表格数据 | `Record<string, unknown>[]` | 必填 |
 | columns | 列配置 | `TableColumn[]` | 必填 |
+| rowHeight | 表头、数据行和汇总行高度，数字和纯数字字符串按 px 处理，优先于 `size` 行高度，不影响分页和工具按钮高度 | `number \| string` | - |
 | columnSettings | 列设置，支持排序、冻结、对齐和宽度 | `TableColumnSetting[]` | - |
 | selectedRowKeys | 选中行的 key，支持 `v-model:selected-row-keys` | `TableRowKey[]` | - |
 | selectedCellKeys | 选中单元格的 key，支持 `v-model:selected-cell-keys` | `string[]` | - |
@@ -386,9 +397,9 @@ body,
 | columnSettingsDialogTitle | 内置列设置弹窗标题 | `string` | `'列设置'` |
 | columnSettingsDialogWidth | 内置列设置弹窗宽度 | `number` | `760` |
 | columnSettingsDialogHeight | 内置列设置弹窗高度 | `number` | `620` |
-| panelBackgroundColor | 表顶和表底的统一面板背景色，作为 `topBackgroundColor`、`bottomBackgroundColor` 未设置时的兜底 | `string` | - |
-| topBackgroundColor | 表顶插槽容器背景色，支持 CSS 颜色值 | `string` | - |
-| bottomBackgroundColor | 表底插槽容器背景色，支持 CSS 颜色值 | `string` | - |
+| panelBackgroundColor | 表格根容器背景色；显式传入时也作为 `topBackgroundColor`、`bottomBackgroundColor` 未设置时的兜底 | `string` | - |
+| topBackgroundColor | 表顶插槽容器背景色，支持 CSS 颜色值 | `string` | `'transparent'` |
+| bottomBackgroundColor | 表底插槽容器背景色，支持 CSS 颜色值 | `string` | `'transparent'` |
 | headerBackgroundColor | 表头区域背景色，支持 CSS 颜色值 | `string` | - |
 | headerTextColor | 表头区域文字颜色，支持 CSS 颜色值 | `string` | - |
 | bodyBackgroundColor | 表格内容区背景色，支持 CSS 颜色值 | `string` | - |

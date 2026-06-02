@@ -302,8 +302,50 @@ describe('XTable', () => {
     expect(wrapper.find('.x-table__bottom').exists()).toBe(true)
 
     const source = readTableSource()
-    expect(source).toContain('background: var(--x-table-top-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));')
-    expect(source).toContain('background: var(--x-table-bottom-background, var(--x-table-panel-background, var(--x-color-surface-soft, var(--x-color-surface, #f8fafc))));')
+    expect(source).toContain('background: var(--x-table-top-background, transparent);')
+    expect(source).toContain('background: var(--x-table-bottom-background, transparent);')
+  })
+
+  it('keeps top and bottom slot backgrounds transparent by default', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data
+      },
+      slots: {
+        top: '<div class="custom-top">表顶</div>',
+        bottom: '<div class="custom-bottom">表底</div>'
+      }
+    })
+    const style = wrapper.find('.x-table').attributes('style') ?? ''
+    const source = readTableSource()
+    const globalStyles = readGlobalStyles()
+
+    expect(style).not.toContain('--x-table-top-background')
+    expect(style).not.toContain('--x-table-bottom-background')
+    expect(source).toContain('background: var(--x-table-top-background, transparent);')
+    expect(source).toContain('background: var(--x-table-bottom-background, transparent);')
+    expect(globalStyles).toContain('--x-table-top-background: transparent;')
+    expect(globalStyles).toContain('--x-table-bottom-background: transparent;')
+  })
+
+  it('uses panel background as explicit top and bottom background fallback', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        panelBackgroundColor: '#0f172a'
+      },
+      slots: {
+        top: '<div class="custom-top">表顶</div>',
+        bottom: '<div class="custom-bottom">表底</div>'
+      }
+    })
+    const style = wrapper.find('.x-table').attributes('style') ?? ''
+
+    expect(style).toContain('--x-table-panel-background: #0f172a')
+    expect(style).toContain('--x-table-top-background: #0f172a')
+    expect(style).toContain('--x-table-bottom-background: #0f172a')
   })
 
   it('uses theme table tokens when appearance props are omitted', () => {
@@ -370,6 +412,50 @@ describe('XTable', () => {
     expect(style).toContain('--x-table-horizontal-border-width: 2px')
     expect(style).toContain('--x-table-vertical-border-color: #cbd5e1')
     expect(style).toContain('--x-table-vertical-border-width: 3px')
+  })
+
+  it('lets rowHeight override size row height without resizing controls', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        size: 'sm',
+        rowHeight: 40,
+        showActions: true,
+        showPagination: true
+      }
+    })
+
+    const style = wrapper.find('.x-table').attributes('style')
+    expect(style).toContain('--x-table-row-height: 40px')
+    expect(style).toContain('--x-table-control-height: 22px')
+    expect(style).toContain('--x-table-font-size: 10px')
+    expect(style).toContain('--x-table-cell-padding: 0 4px')
+  })
+
+  it('keeps custom rowHeight css length strings intact', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        rowHeight: '2.5rem'
+      }
+    })
+
+    expect(wrapper.find('.x-table').attributes('style')).toContain('--x-table-row-height: 2.5rem')
+  })
+
+  it('treats empty rowHeight strings as omitted values', () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        size: 'lg',
+        rowHeight: ''
+      }
+    })
+
+    expect(wrapper.find('.x-table').attributes('style')).toContain('--x-table-row-height: 38px')
   })
 
   it('preserves transparent viewport and custom header divider colors on the root variables', () => {
@@ -484,11 +570,14 @@ describe('XTable', () => {
     const source = readTableSource()
     const globalStyles = readGlobalStyles()
     const controlRules = [
+      getCssRule(source, '.x-table__column-settings-button,\n.x-table__toolbar-icon-button'),
       getCssRule(source, '.x-table__column-settings-button'),
+      getCssRule(source, '.x-table__column-settings-footer-button'),
       getCssRule(source, '.x-table__column-settings-button:hover'),
       getCssRule(source, '.x-table__pagination'),
       getCssRule(source, '.x-table__page-size-select,\n.x-table__page-button'),
       getCssRule(source, '.x-table__page-size-select option'),
+      getCssRule(source, '.x-table__page-number'),
       getCssRule(source, '.x-table__page-size-select:hover,\n.x-table__page-button:hover:not(:disabled)'),
       getCssRule(source, '.x-table__page-button:disabled'),
       getCssRule(source, '.x-table__page-current')
@@ -504,6 +593,9 @@ describe('XTable', () => {
     expect(controlRules).toContain('color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));')
     expect(controlRules).toContain('color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));')
     expect(controlRules).toContain('color: var(--x-table-pagination-current-text-color, var(--x-color-text, #334155));')
+    expect(controlRules).toContain('height: var(--x-table-control-height, 30px);')
+    expect(controlRules).toContain('min-height: var(--x-table-control-height, 30px);')
+    expect(controlRules).toContain('min-width: var(--x-table-control-height, 30px);')
     expect(controlRules).not.toMatch(/(?:background|border|border-color|color):\s*(#fff|#cbd5e1|#334155|#475569|#f1f5f9|#94a3b8)\b/)
 
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #ffffff);')
@@ -1048,6 +1140,17 @@ describe('XTable', () => {
     expect(sectionRule).toContain('padding: var(--x-table-cell-padding, 0 8px);')
     expect(sectionRule).toContain('padding-block: var(--x-table-section-padding-y);')
     expect(sectionRule.indexOf('padding-block')).toBeGreaterThan(sectionRule.indexOf('padding: var(--x-table-cell-padding'))
+  })
+
+  it('keeps row height scoped to table cells instead of controls', () => {
+    const source = readTableSource()
+    const cellRule = getCssRule(source, '.x-table__cell')
+    const headerCellRule = getCssRule(source, '.x-table__cell--header')
+
+    expect(cellRule).toContain('min-height: var(--x-table-row-height, 30px);')
+    expect(headerCellRule).toContain('min-height: var(--x-table-row-height, 30px);')
+    expect(cellRule).not.toContain('--x-table-control-height')
+    expect(headerCellRule).not.toContain('--x-table-control-height')
   })
 
   it('applies column settings for order fixed align ratio and pixel width', () => {

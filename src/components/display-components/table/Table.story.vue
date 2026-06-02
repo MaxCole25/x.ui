@@ -16,6 +16,7 @@ import type {
   TableRowReorderPayload,
   TableSelectionMode
 } from './src/types'
+import type { XSize } from '../../_utils/size'
 import '../../../styles/index.css'
 
 type DemoRow = Record<string, unknown> & {
@@ -67,6 +68,8 @@ const parentState = reactive({
   autoWidth: false,
   autoHeight: false,
   fullHeight: true,
+  size: 'md' as XSize,
+  rowHeight: 40,
   selectable: true,
   showActions: true,
   actionsFixed: true,
@@ -197,6 +200,10 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
   parentState.columnSettingsDialog = value as TableColumnSettingsDialogMode
 }
 
+function updateSize(value: string | number | boolean) {
+  parentState.size = value as XSize
+}
+
 </script>
 
 <template>
@@ -237,6 +244,37 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
           <label>
             <input v-model="parentState.fullHeight" type="checkbox" />
             <span>撑满父元素高度</span>
+          </label>
+          <div class="table-story__control-item">
+            <span>尺寸</span>
+            <XRadio
+              :model-value="parentState.size"
+              value="sm"
+              label="sm"
+              name="table-size"
+              size="sm"
+              @update:model-value="updateSize"
+            />
+            <XRadio
+              :model-value="parentState.size"
+              value="md"
+              label="md"
+              name="table-size"
+              size="sm"
+              @update:model-value="updateSize"
+            />
+            <XRadio
+              :model-value="parentState.size"
+              value="lg"
+              label="lg"
+              name="table-size"
+              size="sm"
+              @update:model-value="updateSize"
+            />
+          </div>
+          <label>
+            <span>行高</span>
+            <input v-model.number="parentState.rowHeight" type="number" min="12" max="80" step="1" />
           </label>
           <div class="table-story__control-item">
             <span>表格可选</span>
@@ -462,6 +500,8 @@ function updateColumnSettingsDialogMode(value: string | number | boolean) {
             v-model:selected-cell-keys="selectedCellKeys"
             :columns="columns"
             row-key="id"
+            :size="parentState.size"
+            :row-height="parentState.rowHeight"
             :full-height="parentState.fullHeight"
             :show-actions="parentState.showActions"
             :actions-fixed="parentState.actionsFixed"
