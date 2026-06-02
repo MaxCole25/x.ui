@@ -237,6 +237,8 @@
   height: 1em;
   justify-content: center;
   line-height: 1;
+  position: relative;
+  top: var(--x-icon-offset-y, 0);
   vertical-align: -0.125em;
   width: 1em;
 }
@@ -4624,6 +4626,97 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.x-scrolling-text {
+  background: var(--x-scrolling-text-bg, transparent);
+  box-sizing: border-box;
+  color: var(--x-scrolling-text-color, var(--x-color-text));
+  display: block;
+  font-family: var(--x-scrolling-text-font-family, var(--x-font-family));
+  font-size: var(--x-scrolling-text-font-size, 12px);
+  letter-spacing: 0;
+  line-height: 1.5;
+  max-width: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.x-scrolling-text--horizontal {
+  width: var(--x-scrolling-text-width, 100%);
+}
+
+.x-scrolling-text--vertical {
+  height: var(--x-scrolling-text-height, 120px);
+}
+
+.x-scrolling-text__track {
+  animation-duration: var(--x-scrolling-text-duration, 6s);
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  will-change: transform;
+}
+
+.x-scrolling-text--horizontal .x-scrolling-text__track {
+  display: inline-flex;
+  min-width: max-content;
+  white-space: nowrap;
+}
+
+.x-scrolling-text--vertical .x-scrolling-text__track {
+  display: inline-grid;
+  min-height: max-content;
+}
+
+.x-scrolling-text__content {
+  display: inline-block;
+  flex: 0 0 auto;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.x-scrolling-text--to-left .x-scrolling-text__track {
+  animation-name: x-scrolling-text-left;
+}
+
+.x-scrolling-text--to-right .x-scrolling-text__track {
+  animation-name: x-scrolling-text-right;
+  transform: translateX(-50%);
+}
+
+.x-scrolling-text--to-up .x-scrolling-text__track {
+  animation-name: x-scrolling-text-up;
+}
+
+.x-scrolling-text--to-down .x-scrolling-text__track {
+  animation-name: x-scrolling-text-down;
+  transform: translateY(-50%);
+}
+
+@keyframes x-scrolling-text-left {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes x-scrolling-text-right {
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes x-scrolling-text-up {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes x-scrolling-text-down {
+  to {
+    transform: translateY(0);
+  }
 }
 
 .x-avatar {

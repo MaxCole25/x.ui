@@ -3126,10 +3126,21 @@ defineExpose({
               :aria-label="getColumnSortLabel(column.column)"
               @click="toggleColumnSort(column.column)"
             >
-              <span class="x-table__header-label">{{ column.column.label }}</span>
+              <slot
+                :name="`header-${column.column.key}`"
+                :column="column.column"
+              >
+                <span class="x-table__header-label">{{ column.column.label }}</span>
+              </slot>
               <i class="x-table__sort-icon" :class="getColumnSortIcon(column.column)" aria-hidden="true" />
             </button>
-            <span v-else class="x-table__header-label">{{ column.column.label }}</span>
+            <slot
+              v-else
+              :name="`header-${column.column.key}`"
+              :column="column.column"
+            >
+              <span class="x-table__header-label">{{ column.column.label }}</span>
+            </slot>
             <span
               v-if="columnResizable"
               class="x-table__column-resize-handle"

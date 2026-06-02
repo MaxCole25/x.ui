@@ -41,6 +41,7 @@ import { XRichTextEditor } from './components/other-components/rich-text-editor'
 import { XScrollbar } from './components/basic-components/scrollbar'
 import { XOption, XSelect } from './components/form-components/select'
 import { XSlider } from './components/form-components/slider'
+import { XScrollingText } from './components/display-components/scrolling-text'
 import { XSwitch } from './components/form-components/switch'
 import { XTable } from './components/display-components/table'
 import { XTag } from './components/display-components/tag'
@@ -103,6 +104,7 @@ export { XRadio }
 export { XRadioButton }
 export { XRichTextEditor }
 export { XScrollbar }
+export { XScrollingText }
 export { XSelect }
 export { XSlider }
 export { XSwitch }
@@ -233,6 +235,7 @@ export type { PageBuilderCanvasSchema, PageBuilderLayoutSchema, PageBuilderNodeS
 export type { RadioButtonProps, RadioProps, RadioSize } from './components/form-components/radio'
 export type { RichTextEditorExpose, RichTextEditorProps, RichTextEditorTheme, RichTextEditorToolbarButton, RichTextEditorValue, UploadResult } from './components/other-components/rich-text-editor'
 export type { ScrollbarProps } from './components/basic-components/scrollbar'
+export type { ScrollingTextDisplayDirection, ScrollingTextFlowDirection, ScrollingTextProps } from './components/display-components/scrolling-text'
 export type {
   OptionProps,
   SelectOption,
@@ -292,6 +295,7 @@ const components = [
   XTimePicker,
   XTimeSelect,
   XScrollbar,
+  XScrollingText,
   XAvatar,
   XTag,
   XTooltip,

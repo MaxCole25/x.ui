@@ -58,6 +58,20 @@ import IconGallery from '../.vitepress/components/IconGallery.vue'
 <XIcon name="loading" :icon-size="24" spin title="加载中" />
 ```
 
+## 垂直微调
+
+在图标和文字同处一行时，可以通过 `offset-y` 单独微调图标的垂直位置，避免通过相邻文本的 padding 修正基线偏移。负值让图标上移，正值让图标下移。
+
+<div class="x-icon-preview-row">
+  <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px"></XIcon></span>
+  <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="1px"></XIcon></span>
+</div>
+
+```vue
+<XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px" />
+<XIcon name="information-line" color="red" icon-size="14px" offset-y="1px" />
+```
+
 ## 语义别名
 
 以下别名由 x.ui 维护，适合常见业务界面直接使用。
@@ -103,6 +117,7 @@ import IconGallery from '../.vitepress/components/IconGallery.vue'
 | `variant` | 当名称不带 `line` / `fill` 后缀时使用的风格 | `'line' \| 'fill'` | `'line'` |
 | `size` | 统一 UI 尺寸 | `'sm' \| 'md' \| 'lg'` | `'md'` |
 | `iconSize` | 图标本身尺寸，数字按 px 处理；未传 `size` 时可单独覆盖 | `number \| string` | - |
+| `offsetY` | 图标自身垂直偏移量，数字按 px 处理；负值上移，正值下移 | `number \| string` | - |
 | `color` | 图标颜色 | `string` | 继承当前文字色 |
 | `title` | 图标可访问名称 | `string` | - |
 | `decorative` | 是否作为装饰图标处理 | `boolean` | 未设置 `title` 时为 `true` |
@@ -113,6 +128,7 @@ import IconGallery from '../.vitepress/components/IconGallery.vue'
 - 搜索 `home`、`file`、`arrow` 等关键词，确认全部图标列表可以筛选。
 - 检查 `line` 和 `fill` 风格是否能正确切换。
 - 设置 `sm`、`md`、`lg` 和 `icon-size`，确认图标大小符合预期。
+- 设置 `offset-y="-1px"` 和 `offset-y="1px"`，确认只微调图标自身位置，不影响同行文字基线。
 - 设置 `color`，确认图标颜色不影响周围文本。
 - 设置 `title`，确认图标具有可访问名称。
 

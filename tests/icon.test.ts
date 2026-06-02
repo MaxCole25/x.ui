@@ -54,6 +54,30 @@ describe('XIcon', () => {
     expect(style).toContain('color: rgb(18, 100, 244)')
   })
 
+  it('keeps default vertical position unless offsetY is provided', () => {
+    const wrapper = mount(XIcon, {
+      props: {
+        name: 'information-line'
+      }
+    })
+
+    expect(wrapper.attributes('style') ?? '').not.toContain('--x-icon-offset-y')
+  })
+
+  it('maps kebab-case offset-y to the icon vertical offset variable', () => {
+    const wrapper = mount({
+      components: { XIcon },
+      template: '<XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px" />'
+    })
+
+    const icon = wrapper.find('.x-icon')
+    const style = icon.attributes('style')
+
+    expect(style).toContain('--x-icon-size: 14px')
+    expect(style).toContain('--x-icon-offset-y: -1px')
+    expect(style).toContain('color: red')
+  })
+
   it('uses aria-hidden for decorative icons', () => {
     const wrapper = mount(XIcon, {
       props: {
@@ -87,5 +111,7 @@ describe('XIcon', () => {
     const css = readFileSync('src/styles/index.css', 'utf8')
 
     expect(css).toContain('@import "remixicon/fonts/remixicon.css"')
+    expect(css).toContain('vertical-align: -0.125em')
+    expect(css).toContain('top: var(--x-icon-offset-y, 0)')
   })
 })

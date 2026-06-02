@@ -9,6 +9,7 @@ const state = reactive({
   name: 'home',
   variant: 'line' as IconVariant,
   size: 'lg' as IconSize,
+  offsetY: '',
   color: '#1264f4',
   title: '首页',
   spin: false
@@ -19,6 +20,7 @@ const previewCode = computed(() => {
     `name="${state.name}"`,
     state.variant !== 'line' ? `variant="${state.variant}"` : '',
     state.size !== 'md' ? `size="${state.size}"` : '',
+    state.offsetY ? `offset-y="${state.offsetY}"` : '',
     state.color ? `color="${state.color}"` : '',
     state.title ? `title="${state.title}"` : '',
     state.spin ? 'spin' : ''
@@ -37,6 +39,7 @@ const previewCode = computed(() => {
             :name="state.name"
             :variant="state.variant"
             :size="state.size"
+            :offset-y="state.offsetY"
             :color="state.color"
             :title="state.title"
             :spin="state.spin"
@@ -73,6 +76,11 @@ const previewCode = computed(() => {
           <label>
             <span>颜色</span>
             <input v-model="state.color" type="color" />
+          </label>
+
+          <label>
+            <span>垂直偏移</span>
+            <input v-model="state.offsetY" placeholder="-1px / 1px" />
           </label>
 
           <label>

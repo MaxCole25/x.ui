@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<IconProps>(), {
   variant: 'line',
   size: undefined,
   iconSize: undefined,
+  offsetY: undefined,
   decorative: undefined,
   spin: false
 })
@@ -53,6 +54,7 @@ const iconStyle = computed(() => {
 
   return {
     '--x-icon-size': size,
+    '--x-icon-offset-y': toCssSize(props.offsetY),
     color: props.color
   }
 })

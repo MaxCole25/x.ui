@@ -8,6 +8,7 @@ export interface IconProps {
   variant?: IconVariant
   size?: IconSize
   iconSize?: number | string
+  offsetY?: number | string
   color?: string
   title?: string
   decorative?: boolean

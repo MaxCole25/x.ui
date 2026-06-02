@@ -70,6 +70,7 @@ export default defineConfig({
               { text: '头像 Avatar', link: '/components/avatar' },
               { text: '图表 Chart', link: '/components/chart' },
               { text: '空状态 Empty', link: '/components/empty' },
+              { text: '滚动文字 ScrollingText', link: '/components/scrolling-text' },
               { text: '表格 Table', link: '/components/table' },
               { text: '标签 Tag', link: '/components/tag' },
               { text: '树目录 Tree', link: '/components/tree' }
