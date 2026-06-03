@@ -327,6 +327,7 @@ const submit = async () => {
 | disabled | 是否禁用内部组件 | `boolean` | `false` |
 | size | 表单尺寸 | `sm \| md \| lg` | `md` |
 | inline | 是否行内布局 | `boolean` | `false` |
+| height | 表单高度，数字按 px 处理 | `string \| number` | `auto` |
 | labelWidth | 标签宽度 | `string \| number` | `96px` |
 | labelPosition | 标签位置 | `left \| right \| top` | `right` |
 | loading | 是否显示加载遮罩 | `boolean` | `false` |

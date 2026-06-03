@@ -1436,6 +1436,8 @@
   display: grid;
   font-family: var(--x-font-family);
   gap: var(--x-form-item-gap, 18px);
+  height: var(--x-form-height, auto);
+  min-height: 0;
   position: relative;
 }
 

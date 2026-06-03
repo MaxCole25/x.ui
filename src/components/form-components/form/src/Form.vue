@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<FormProps>(), {
   disabled: false,
   size: 'md',
   inline: false,
+  height: 'auto',
   labelWidth: '96px',
   labelPosition: 'right',
   loading: false
@@ -90,6 +91,7 @@ provide(formContextKey, {
 
 const formStyle = computed(() => ({
   ...createElementStyleVars(props),
+  '--x-form-height': toCssSize(props.height),
   '--x-form-color': props.accentColor,
   '--x-form-border-color': props.borderColor,
   '--x-form-border-width': toCssSize(props.borderWidth),

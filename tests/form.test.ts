@@ -95,6 +95,26 @@ describe('form', () => {
     expect(wrapper.attributes('style')).toContain('--x-form-color: #0f766e')
   })
 
+  it('maps XForm height prop to the public CSS variable with auto default', () => {
+    const defaultWrapper = mount(XForm, {
+      slots: {
+        default: '表单内容'
+      }
+    })
+    const fixedWrapper = mount(XForm, {
+      props: {
+        height: 320
+      },
+      slots: {
+        default: '固定高度表单'
+      }
+    })
+
+    expect(defaultWrapper.attributes('style')).toContain('--x-form-height: auto')
+    expect(fixedWrapper.attributes('style')).toContain('--x-form-height: 320px')
+    expect(getCssRule('.x-form')).toContain('height: var(--x-form-height, auto)')
+  })
+
   it('renders custom label, help and error slots', () => {
     const wrapper = mount({
       components: { XForm, XFormItem, XInput },

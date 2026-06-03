@@ -27,6 +27,10 @@ const sample = reactive({
   remark: '<p>固定高度容器中的备注内容。</p>',
   centeredSwitch: true
 })
+
+const formControls = reactive({
+  height: 'auto'
+})
 </script>
 
 <template>
@@ -38,74 +42,86 @@ const sample = reactive({
     
 
     <Variant title="外观接口">
-      <ElementStylePlayground v-slot="styleProps">
-        <div class="x-form-story-shell">
-          <XForm v-bind="styleProps" style="max-width: 520px"><XFormItem label="姓名"><XInput v-model="sample.input" /></XFormItem></XForm>
-          <XForm label-position="left" label-width="86px" style="max-width: 520px">
-            <XFormItem label="客户ID" size="sm" align="center" help="内容区保持满宽，提示文案仍在控件下方换行。">
-              <XInput v-model="sample.customerId" placeholder="宽输入框占满 label 后的剩余宽度" style="width: 100%" />
-            </XFormItem>
-            <XFormItem label="启用状态" size="sm" align="center">
-              <XSwitch v-model="sample.checked" size="md" label-position="inside" active-text="开" inactive-text="关" />
-            </XFormItem>
-            <XFormItem label="含税" size="sm" align="center" content-justify="end">
-              <XSwitch v-model="sample.taxIncluded" size="md" label-position="inside" active-text="是" inactive-text="否" />
-            </XFormItem>
-            <XFormItem label="居中开关" size="sm" align="center" content-justify="center">
-              <XSwitch v-model="sample.centeredSwitch" size="md" label-position="inside" active-text="开" inactive-text="关" />
-            </XFormItem>
-          </XForm>
-          <XForm label-position="left" label-width="86px" style="max-width: 360px">
-            <XFormItem label="含税" content-justify="end">
-              <XSwitch v-model="sample.checked" />
-            </XFormItem>
-            <XFormItem label="付款方式" content-align="center" label-align="center">
-              <XInput v-model="sample.select" text-align="center" />
-            </XFormItem>
-          </XForm>
-          <div class="x-form-story-fill-panel">
-            <XFormItem label="备注" label-position="top" content-full-height>
-              <XRichTextEditor v-model="sample.remark" full-height :show-outline="false" />
-            </XFormItem>
-          </div>
-          <div class="x-form-story-inline-controls">
-            <XFormItem label="含图纸" label-position="left" label-width="58px" size="sm" align="center" content-justify="end">
-              <XSwitch v-model="sample.hasDrawing" size="md" label-position="inside" active-text="是" inactive-text="否" />
-            </XFormItem>
-            <XFormItem label="已复核" label-position="left" label-width="58px" size="sm" align="center" content-justify="end">
-              <XSwitch v-model="sample.reviewed" size="md" label-position="inside" active-text="是" inactive-text="否" />
-            </XFormItem>
-            <XFormItem label="已归档" label-position="left" label-width="58px" size="sm" align="center" content-justify="end">
-              <XSwitch v-model="sample.archived" size="md" label-position="inside" active-text="是" inactive-text="否" />
-            </XFormItem>
-          </div>
-          <div class="x-form-story-dark-panel">
-            <XForm label-position="left" label-width="86px">
-              <XFormItem
-                label="审批人"
-                required
-                help="通过 props 覆盖 label、内容、背景、边框和提示色。"
-                label-text-color="#dbeafe"
-                content-text-color="#f8fafc"
-                background-color="#111827"
-                border-color="#334155"
-                required-mark-color="#fb7185"
-                error-text-color="#f87171"
-                hint-text-color="#94a3b8"
-                style="--x-form-item-border-width: 1px; border-radius: 6px; padding: 10px 12px;"
-              >
-                <XInput v-model="sample.input" background-color="#0f172a" border-color="#475569" color="#f8fafc" placeholder="请输入审批人" />
-              </XFormItem>
-              <XFormItem
-                label="备注"
-                help="通过父级 CSS variables 统一暗色主题。"
-                class="x-form-story-dark-item"
-              >
-                <XInput v-model="sample.customerId" background-color="#0f172a" border-color="#475569" color="#f8fafc" placeholder="请输入备注" />
+      <ElementStylePlayground>
+        <template #default="styleProps">
+          <div class="x-form-story-shell">
+            <XForm v-bind="styleProps" :height="formControls.height" style="max-width: 520px">
+              <XFormItem label="姓名">
+                <XInput v-model="sample.input" />
               </XFormItem>
             </XForm>
+            <XForm label-position="left" label-width="86px" style="max-width: 520px">
+              <XFormItem label="客户ID" size="sm" align="center" help="内容区保持满宽，提示文案仍在控件下方换行。">
+                <XInput v-model="sample.customerId" placeholder="宽输入框占满 label 后的剩余宽度" style="width: 100%" />
+              </XFormItem>
+              <XFormItem label="启用状态" size="sm" align="center">
+                <XSwitch v-model="sample.checked" size="md" label-position="inside" active-text="开" inactive-text="关" />
+              </XFormItem>
+              <XFormItem label="含税" size="sm" align="center" content-justify="end">
+                <XSwitch v-model="sample.taxIncluded" size="md" label-position="inside" active-text="是" inactive-text="否" />
+              </XFormItem>
+              <XFormItem label="居中开关" size="sm" align="center" content-justify="center">
+                <XSwitch v-model="sample.centeredSwitch" size="md" label-position="inside" active-text="开" inactive-text="关" />
+              </XFormItem>
+            </XForm>
+            <XForm label-position="left" label-width="86px" style="max-width: 360px">
+              <XFormItem label="含税" content-justify="end">
+                <XSwitch v-model="sample.checked" />
+              </XFormItem>
+              <XFormItem label="付款方式" content-align="center" label-align="center">
+                <XInput v-model="sample.select" text-align="center" />
+              </XFormItem>
+            </XForm>
+            <div class="x-form-story-fill-panel">
+              <XFormItem label="备注" label-position="top" content-full-height>
+                <XRichTextEditor v-model="sample.remark" full-height :show-outline="false" />
+              </XFormItem>
+            </div>
+            <div class="x-form-story-inline-controls">
+              <XFormItem label="含图纸" label-position="left" label-width="58px" size="sm" align="center" content-justify="end">
+                <XSwitch v-model="sample.hasDrawing" size="md" label-position="inside" active-text="是" inactive-text="否" />
+              </XFormItem>
+              <XFormItem label="已复核" label-position="left" label-width="58px" size="sm" align="center" content-justify="end">
+                <XSwitch v-model="sample.reviewed" size="md" label-position="inside" active-text="是" inactive-text="否" />
+              </XFormItem>
+              <XFormItem label="已归档" label-position="left" label-width="58px" size="sm" align="center" content-justify="end">
+                <XSwitch v-model="sample.archived" size="md" label-position="inside" active-text="是" inactive-text="否" />
+              </XFormItem>
+            </div>
+            <div class="x-form-story-dark-panel">
+              <XForm label-position="left" label-width="86px">
+                <XFormItem
+                  label="审批人"
+                  required
+                  help="通过 props 覆盖 label、内容、背景、边框和提示色。"
+                  label-text-color="#dbeafe"
+                  content-text-color="#f8fafc"
+                  background-color="#111827"
+                  border-color="#334155"
+                  required-mark-color="#fb7185"
+                  error-text-color="#f87171"
+                  hint-text-color="#94a3b8"
+                  style="--x-form-item-border-width: 1px; border-radius: 6px; padding: 10px 12px;"
+                >
+                  <XInput v-model="sample.input" background-color="#0f172a" border-color="#475569" color="#f8fafc" placeholder="请输入审批人" />
+                </XFormItem>
+                <XFormItem
+                  label="备注"
+                  help="通过父级 CSS variables 统一暗色主题。"
+                  class="x-form-story-dark-item"
+                >
+                  <XInput v-model="sample.customerId" background-color="#0f172a" border-color="#475569" color="#f8fafc" placeholder="请输入备注" />
+                </XFormItem>
+              </XForm>
+            </div>
           </div>
-        </div>
+        </template>
+        <template #column-1>
+          <label>
+            <span>高度</span>
+            <input v-model="formControls.height" type="text" />
+          </label>
+        </template>
       </ElementStylePlayground>
     </Variant>
   </Story>

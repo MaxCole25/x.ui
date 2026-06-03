@@ -34,6 +34,7 @@ export interface FormProps extends ElementStyleProps {
   disabled?: boolean
   size?: FormSize
   inline?: boolean
+  height?: string | number
   labelWidth?: string | number
   labelPosition?: FormLabelPosition
   loading?: boolean
