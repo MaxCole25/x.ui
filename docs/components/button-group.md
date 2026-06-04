@@ -1,3 +1,29 @@
+<script setup lang="ts">
+const buttonGroupBasicCode = `<XButtonGroup>
+  <XButton variant="outline">上一项</XButton>
+  <XButton variant="outline">当前项</XButton>
+  <XButton variant="outline">下一项</XButton>
+</XButtonGroup>`
+
+const buttonGroupVerticalCode = `<XButtonGroup direction="vertical" width="160px">
+  <XButton variant="outline">创建</XButton>
+  <XButton variant="outline">复制</XButton>
+  <XButton variant="outline">删除</XButton>
+</XButtonGroup>`
+
+const buttonGroupRadiusCode = `<XButtonGroup :radius="12" width="360px">
+  <XButton variant="outline">日</XButton>
+  <XButton variant="outline">周</XButton>
+  <XButton variant="outline">月</XButton>
+</XButtonGroup>`
+
+const buttonGroupStateCode = `<XButtonGroup width="360px">
+  <XButton>保存</XButton>
+  <XButton variant="outline">预览</XButton>
+  <XButton variant="outline" disabled>发布</XButton>
+</XButtonGroup>`
+</script>
+
 # 按钮组 ButtonGroup
 
 用于将多个按钮组合成一组连续操作，常见于工具栏、筛选切换和弹窗底部的相邻动作。
@@ -6,73 +32,57 @@
 
 ## 基础用法
 
-<div class="x-demo-row">
-  <XButtonGroup>
-    <XButton variant="outline">上一项</XButton>
-    <XButton variant="outline">当前项</XButton>
-    <XButton variant="outline">下一项</XButton>
-  </XButtonGroup>
-</div>
-
-```vue
-<XButtonGroup>
-  <XButton variant="outline">上一项</XButton>
-  <XButton variant="outline">当前项</XButton>
-  <XButton variant="outline">下一项</XButton>
-</XButtonGroup>
-```
+<XDocDemo title="基础用法" :code="buttonGroupBasicCode">
+  <div class="x-demo-row">
+    <XButtonGroup>
+      <XButton variant="outline">上一项</XButton>
+      <XButton variant="outline">当前项</XButton>
+      <XButton variant="outline">下一项</XButton>
+    </XButtonGroup>
+  </div>
+</XDocDemo>
 
 ## 竖向排列
 
 通过 `direction="vertical"` 让按钮竖向排列。
 
-<div class="x-demo-row">
-  <XButtonGroup direction="vertical" width="160px">
-    <XButton variant="outline">创建</XButton>
-    <XButton variant="outline">复制</XButton>
-    <XButton variant="outline">删除</XButton>
-  </XButtonGroup>
-</div>
-
-```vue
-<XButtonGroup direction="vertical" width="160px">
-  <XButton variant="outline">创建</XButton>
-  <XButton variant="outline">复制</XButton>
-  <XButton variant="outline">删除</XButton>
-</XButtonGroup>
-```
+<XDocDemo title="竖向排列" :code="buttonGroupVerticalCode">
+  <div class="x-demo-row">
+    <XButtonGroup direction="vertical" width="160px">
+      <XButton variant="outline">创建</XButton>
+      <XButton variant="outline">复制</XButton>
+      <XButton variant="outline">删除</XButton>
+    </XButtonGroup>
+  </div>
+</XDocDemo>
 
 ## 自定义圆角
 
 `radius` 只作用于整组按钮最外侧四个角，中间按钮不会保留独立圆角。
 
-<div class="x-demo-row">
-  <XButtonGroup :radius="12" width="360px">
-    <XButton variant="outline">日</XButton>
-    <XButton variant="outline">周</XButton>
-    <XButton variant="outline">月</XButton>
-  </XButtonGroup>
-</div>
-
-```vue
-<XButtonGroup :radius="12" width="360px">
-  <XButton variant="outline">日</XButton>
-  <XButton variant="outline">周</XButton>
-  <XButton variant="outline">月</XButton>
-</XButtonGroup>
-```
+<XDocDemo title="自定义圆角" :code="buttonGroupRadiusCode">
+  <div class="x-demo-row">
+    <XButtonGroup :radius="12" width="360px">
+      <XButton variant="outline">日</XButton>
+      <XButton variant="outline">周</XButton>
+      <XButton variant="outline">月</XButton>
+    </XButtonGroup>
+  </div>
+</XDocDemo>
 
 ## 混合状态
 
 按钮组不改变按钮自身能力，`disabled`、`loading`、`variant` 和点击事件仍然由每个 `XButton` 控制。
 
-```vue
-<XButtonGroup width="360px">
-  <XButton>保存</XButton>
-  <XButton variant="outline">预览</XButton>
-  <XButton variant="outline" disabled>发布</XButton>
-</XButtonGroup>
-```
+<XDocDemo title="混合状态" :code="buttonGroupStateCode">
+  <div class="x-demo-row">
+    <XButtonGroup width="360px">
+      <XButton>保存</XButton>
+      <XButton variant="outline">预览</XButton>
+      <XButton variant="outline" disabled>发布</XButton>
+    </XButtonGroup>
+  </div>
+</XDocDemo>
 
 ## Props
 

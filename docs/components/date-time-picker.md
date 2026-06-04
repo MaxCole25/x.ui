@@ -1,18 +1,57 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const dateTime = ref('2026-06-03 09:30')
+const deliveryDateTime = ref('2026-06-03 18:00')
+
+const dateTimePickerBasicCode = `<XDateTimePicker v-model="dateTime" />`
+
+const dateTimePickerInputCode = `<XDateTimePicker
+  v-model="dateTime"
+  size="lg"
+  clearable
+  prefix="交付时间"
+/>`
+</script>
+
 # 日期时间选择器 DateTimePicker
 
 用于选择日期和时间。
 
 ## 基础用法
 
-```vue
-<XDateTimePicker v-model="dateTime" />
-```
+<XDocDemo title="基础用法" :code="dateTimePickerBasicCode">
+  <ClientOnly>
+    <div class="x-demo-column">
+      <div style="width: 260px">
+        <XDateTimePicker v-model="dateTime" />
+      </div>
+      <p class="x-demo-label">当前日期时间：{{ dateTime || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 输入框与弹窗
 
 日期时间选择器的输入框直接复用 `XBaseInput`，点击输入框会通过可拖动的 `XDialog` 打开自定义日期时间选择界面，不使用浏览器原生 `datetime-local` 选择器。
 
 日期部分复用 `XDatePickerPanel`，默认显示中国传统节日和二十四节气；时间部分放在日历右侧，参考 Vant TimePicker 的滚轮选择体验，提供小时、分钟两列竖向数字选择器。拖动滚动列会自动吸附到最近选项，也可以点击数字直接选择，点击“确定”后统一提交 `YYYY-MM-DD HH:mm` 格式的值。
+
+<XDocDemo title="输入框与弹窗" :code="dateTimePickerInputCode">
+  <ClientOnly>
+    <div class="x-demo-column">
+      <div style="width: 320px">
+        <XDateTimePicker
+          v-model="deliveryDateTime"
+          size="lg"
+          clearable
+          prefix="交付时间"
+        />
+      </div>
+      <p class="x-demo-label">当前日期时间：{{ deliveryDateTime || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

@@ -1,3 +1,25 @@
+<script setup lang="ts">
+const brickBasicCode = `<XBrick direction="horizontal" :gap="8" height="220px">
+  <XBrickItem width="160px" background-color="#e0ecff">左侧</XBrickItem>
+  <XBrickItem background-color="#f8fafc">中间自适应</XBrickItem>
+  <XBrickItem width="30%" background-color="#f0fdf4">右侧</XBrickItem>
+</XBrick>`
+
+const brickVerticalCode = `<XBrick direction="vertical" height="260px" :gap="8">
+  <XBrickItem height="64px" background-color="#e0ecff">顶部</XBrickItem>
+  <XBrickItem background-color="#f8fafc">内容一</XBrickItem>
+  <XBrickItem background-color="#f0fdf4">内容二</XBrickItem>
+</XBrick>`
+
+const brickCountCode = `<XBrick :count="3" height="180px" :gap="8" />`
+
+const brickAlignCode = `<XBrick height="220px" right-align vertical-center horizontal-center padding="16px">
+  <XBrickItem width="180px" background-color="#e0ecff">区块整体靠右，内容继承居中</XBrickItem>
+  <XBrickItem :vertical-center="false" padding="8px" background-color="#f8fafc">覆盖父级配置</XBrickItem>
+  <XBrickItem width="30%" bottom-align right-align background-color="#f0fdf4">内容右下对齐</XBrickItem>
+</XBrick>`
+</script>
+
 # 砖格 Brick
 
 `XBrick` 用于把一个容器按单一方向分隔成多个区域，适合面板、左右栏、上下分区和可嵌套的局部布局。
@@ -6,42 +28,31 @@
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { XBrick, XBrickItem } from 'x.ui'
-import 'x.ui/style.css'
-</script>
-
-<template>
-  <XBrick direction="horizontal" :gap="8" height="320px">
-    <XBrickItem width="240px">左侧</XBrickItem>
-    <XBrickItem>中间自适应</XBrickItem>
-    <XBrickItem width="30%">右侧</XBrickItem>
+<XDocDemo title="基础用法" :code="brickBasicCode">
+  <XBrick direction="horizontal" :gap="8" height="220px">
+    <XBrickItem width="160px" background-color="#e0ecff">左侧</XBrickItem>
+    <XBrickItem background-color="#f8fafc">中间自适应</XBrickItem>
+    <XBrickItem width="30%" background-color="#f0fdf4">右侧</XBrickItem>
   </XBrick>
-</template>
-```
+</XDocDemo>
 
 ## 竖向分隔
 
-```vue
-<template>
-  <XBrick direction="vertical" height="480px">
-    <XBrickItem height="80px">顶部</XBrickItem>
-    <XBrickItem>内容一</XBrickItem>
-    <XBrickItem>内容二</XBrickItem>
+<XDocDemo title="竖向分隔" :code="brickVerticalCode">
+  <XBrick direction="vertical" height="260px" :gap="8">
+    <XBrickItem height="64px" background-color="#e0ecff">顶部</XBrickItem>
+    <XBrickItem background-color="#f8fafc">内容一</XBrickItem>
+    <XBrickItem background-color="#f0fdf4">内容二</XBrickItem>
   </XBrick>
-</template>
-```
+</XDocDemo>
 
 ## 根据数量生成空容器
 
 当没有传入内部容器插槽时，可以通过 `count` 生成指定数量的空区域，用于占位或后续动态填充。
 
-```vue
-<template>
-  <XBrick :count="3" height="240px" :gap="8" />
-</template>
-```
+<XDocDemo title="根据数量生成空容器" :code="brickCountCode">
+  <XBrick :count="3" height="180px" :gap="8" />
+</XDocDemo>
 
 ## 区块对齐、内容对齐和内边距
 
@@ -49,15 +60,13 @@ import 'x.ui/style.css'
 
 `XBrick` 仍可以为所有内部容器统一设置内容垂直居中、水平居中、下对齐和内边距；`XBrickItem` 传入同名属性时会覆盖父级配置。`XBrickItem` 的 `rightAlign` 用于控制当前容器内部内容右对齐。若同时开启居中和末端对齐，末端对齐优先。
 
-```vue
-<template>
-  <XBrick height="240px" right-align vertical-center horizontal-center padding="16px">
-    <XBrickItem width="180px">区块整体靠右，内容继承居中</XBrickItem>
-    <XBrickItem :vertical-center="false" padding="8px">覆盖父级配置</XBrickItem>
-    <XBrickItem width="30%" bottom-align right-align>内容右下对齐</XBrickItem>
+<XDocDemo title="区块对齐、内容对齐和内边距" :code="brickAlignCode">
+  <XBrick height="220px" right-align vertical-center horizontal-center padding="16px">
+    <XBrickItem width="180px" background-color="#e0ecff">区块整体靠右，内容继承居中</XBrickItem>
+    <XBrickItem :vertical-center="false" padding="8px" background-color="#f8fafc">覆盖父级配置</XBrickItem>
+    <XBrickItem width="30%" bottom-align right-align background-color="#f0fdf4">内容右下对齐</XBrickItem>
   </XBrick>
-</template>
-```
+</XDocDemo>
 
 ## 滚动条样式
 

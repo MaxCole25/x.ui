@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, getCurrentInstance, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import TreeNode from './TreeNode.vue'
 import { componentSizePreset } from '../../../_utils/size'
-import type { TreeContextAction, TreeContextMenuItem, TreeNodeData, TreeNodeIcon, TreeProps } from './types'
+import type { TreeContextAction, TreeContextMenuItem, TreeNodeData, TreeNodeIcon, TreeProps, TreeSlots } from './types'
 
 defineOptions({ name: 'XTree' })
 
@@ -25,16 +25,22 @@ const props = withDefaults(defineProps<TreeProps>(), {
 
 const emit = defineEmits<{
   (e: 'nodeClick', node: TreeNodeData): void
+  (e: 'nodeExtraClick', node: TreeNodeData, event: MouseEvent): void
   (e: 'nodeDrop', draggingNode: TreeNodeData, dropNode: TreeNodeData, dropType: 'before' | 'after' | 'inner'): void
   (e: 'nodeToggle', payload: { node: TreeNodeData; expanded: boolean }): void
   (e: 'contextAction', action: TreeContextAction, node: TreeNodeData): void
 }>()
+
+defineSlots<TreeSlots>()
 
 const currentKeyState = ref(props.currentTreeKey)
 const draggingNode = ref<TreeNodeData | null>(null)
 const expandedState = ref<Record<string, boolean>>({})
 const contextMenu = reactive({ visible: false, x: 0, y: 0, node: null as TreeNodeData | null })
 const localIdSeed = ref(100000)
+const instance = getCurrentInstance()
+const hasNodeExtraClickListener = computed(() => Boolean(instance?.vnode.props?.onNodeExtraClick))
+const shouldStopExtraClick = computed(() => Boolean(hasNodeExtraClickListener.value || instance?.slots.nodeExtra))
 const defaultContextMenuItems = computed<TreeContextMenuItem[]>(() => {
   const items: TreeContextMenuItem[] = [{ action: 'new-root', label: '增加根节点' }]
   if (contextMenu.node && props.canCreateChildByNode(contextMenu.node)) {
@@ -260,17 +266,23 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
       :resolve-node-icon="resolveNodeIcon"
       :allow-drag="props.allowDrag"
       :allow-drop="props.allowDrop"
+      :stop-extra-click="shouldStopExtraClick"
       @node-click="emit('nodeClick', $event)"
+      @node-extra-click="(nodeData, event) => emit('nodeExtraClick', nodeData, event)"
       @node-drop="handleNodeDrop"
       @node-contextmenu="(event, nodeData) => openContextMenu(event, nodeData)"
       @drag-start="draggingNode = $event"
       @drag-end="draggingNode = null"
       @toggle="handleToggle"
       @rename="handleRename"
-    />
+    >
+      <template v-if="$slots.nodeExtra" #nodeExtra="{ node: slotNode }">
+        <slot name="nodeExtra" :node="slotNode" />
+      </template>
+    </TreeNode>
 
     <teleport to="body">
-      <ul v-if="contextMenu.visible" class="x-tree-menu" :style="{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }">
+      <ul v-if="contextMenu.visible && resolvedContextMenuItems.length" class="x-tree-menu" :style="{ left: `${contextMenu.x}px`, top: `${contextMenu.y}px` }">
         <li
           v-for="item in resolvedContextMenuItems"
           :key="item.action"

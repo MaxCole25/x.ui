@@ -1,30 +1,46 @@
+<script setup lang="ts">
+const avatarBasicCode = `<XAvatar name="UX" />
+<XAvatar name="王小明" size="lg" />`
+
+const avatarIconCode = `<XAvatar icon="user" />
+<XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />`
+
+const avatarBorderCode = `<XAvatar name="边框" border-width="2px" border-color="#0f172a" />
+<XAvatar name="方形" shape="square" avatar-background-color="#1264f4" />`
+</script>
+
 # 头像 Avatar
 
 用于展示用户头像、姓名缩写或自定义头像内容。
 
 ## 基础用法
 
-<XAvatar name="UX" />
-<XAvatar name="王小明" size="lg" />
-<XAvatar icon="user" />
-<XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />
-<XAvatar name="边框" border-width="2px" border-color="#0f172a" />
-
-```vue
-<XAvatar name="UX" />
-<XAvatar name="王小明" size="lg" />
-<XAvatar icon="user" />
-<XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />
-<XAvatar name="边框" border-width="2px" border-color="#0f172a" />
-```
+<XDocDemo title="基础用法" :code="avatarBasicCode">
+  <div class="x-demo-row">
+    <XAvatar name="UX" />
+    <XAvatar name="王小明" size="lg" />
+  </div>
+</XDocDemo>
 
 ## 图标头像
 
 `icon` 会交给 `XIcon` 渲染，支持 x.ui 语义别名、Remix Icon 名称和 `ri-` 前缀名称。常规使用只需要引入 `x.ui/style.css`，无需额外引入图标样式。
 
-```ts
-import 'x.ui/style.css'
-```
+<XDocDemo title="图标头像" :code="avatarIconCode">
+  <div class="x-demo-row">
+    <XAvatar icon="user" />
+    <XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />
+  </div>
+</XDocDemo>
+
+## 边框与形状
+
+<XDocDemo title="边框与形状" :code="avatarBorderCode">
+  <div class="x-demo-row">
+    <XAvatar name="边框" border-width="2px" border-color="#0f172a" />
+    <XAvatar name="方形" shape="square" avatar-background-color="#1264f4" />
+  </div>
+</XDocDemo>
 
 ## Props
 

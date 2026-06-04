@@ -1,9 +1,37 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const mode = ref('washington')
 const level = ref('p1')
 const priority = ref('normal')
+
+const radioButtonBasicCode = `<XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
+<XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
+<XRadioButton v-model="mode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+<XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>`
+
+const radioButtonGroupCode = `<XRadioButton v-model="priority" name="priority-button" value="normal">普通</XRadioButton>
+<XRadioButton v-model="priority" name="priority-button" value="urgent">紧急</XRadioButton>
+<XRadioButton v-model="priority" name="priority-button" value="blocked">阻塞</XRadioButton>`
+
+const radioButtonDisabledCode = `<XRadioButton v-model="level" name="level-button" value="p0">P0</XRadioButton>
+<XRadioButton v-model="level" name="level-button" value="p1">P1</XRadioButton>
+<XRadioButton v-model="level" name="level-button" value="p2" disabled>P2 禁用</XRadioButton>`
+
+const radioButtonSizeCode = `<XRadioButton size="sm" model-value="sm" value="sm">小尺寸</XRadioButton>
+<XRadioButton model-value="md" value="md">默认尺寸</XRadioButton>
+<XRadioButton size="lg" model-value="lg" value="lg">大尺寸</XRadioButton>`
+
+const radioButtonCustomCode = `<XRadioButton
+  model-value="custom"
+  value="custom"
+  button-color="#7c3aed"
+  button-size="36px"
+  font-size="14px"
+  font-family="Microsoft YaHei, 微软雅黑, sans-serif"
+>
+  自定义按钮
+</XRadioButton>`
 </script>
 
 # RadioButton 单选按钮
@@ -12,7 +40,7 @@ const priority = ref('normal')
 
 ## 基础用法
 
-<div class="x-demo-block">
+<XDocDemo title="基础用法" :code="radioButtonBasicCode">
   <div style="display: inline-flex; flex-wrap: wrap">
     <XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
     <XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
@@ -20,77 +48,44 @@ const priority = ref('normal')
     <XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>
   </div>
   <p class="x-demo-label">当前值：{{ mode }}</p>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const mode = ref('washington')
-</script>
-
-<template>
-  <XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
-  <XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
-  <XRadioButton v-model="mode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
-  <XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>
-</template>
-```
+</XDocDemo>
 
 ## 分组单选控制
 
 `XRadioButton` 不需要额外的 `XRadioGroup`。同一组按钮绑定同一个 `v-model`，并设置相同的 `name`；不同分组使用不同的 `v-model` 和 `name`，即可互不影响。这个规则与 `XRadio` 完全一致，业务中可以直接把 `XRadio` 替换为 `XRadioButton`。
 
-<div class="x-demo-block">
+<XDocDemo title="分组单选控制" :code="radioButtonGroupCode">
   <div style="display: inline-flex; flex-wrap: wrap">
     <XRadioButton v-model="priority" name="priority-button" value="normal">普通</XRadioButton>
     <XRadioButton v-model="priority" name="priority-button" value="urgent">紧急</XRadioButton>
     <XRadioButton v-model="priority" name="priority-button" value="blocked">阻塞</XRadioButton>
   </div>
   <p class="x-demo-label">当前优先级：{{ priority }}</p>
-</div>
-
-```vue
-<XRadioButton v-model="priority" name="priority-button" value="normal">普通</XRadioButton>
-<XRadioButton v-model="priority" name="priority-button" value="urgent">紧急</XRadioButton>
-<XRadioButton v-model="priority" name="priority-button" value="blocked">阻塞</XRadioButton>
-```
+</XDocDemo>
 
 ## 禁用状态
 
-<div class="x-demo-block">
+<XDocDemo title="禁用状态" :code="radioButtonDisabledCode">
   <div style="display: inline-flex; flex-wrap: wrap">
     <XRadioButton v-model="level" name="level-button" value="p0">P0</XRadioButton>
     <XRadioButton v-model="level" name="level-button" value="p1">P1</XRadioButton>
     <XRadioButton v-model="level" name="level-button" value="p2" disabled>P2 禁用</XRadioButton>
   </div>
-</div>
-
-```vue
-<XRadioButton v-model="level" name="level-button" value="p0">P0</XRadioButton>
-<XRadioButton v-model="level" name="level-button" value="p1">P1</XRadioButton>
-<XRadioButton v-model="level" name="level-button" value="p2" disabled>P2 禁用</XRadioButton>
-```
+</XDocDemo>
 
 ## 尺寸
 
-<div class="x-demo-block">
+<XDocDemo title="尺寸" :code="radioButtonSizeCode">
   <div style="display: inline-flex; flex-wrap: wrap">
     <XRadioButton size="sm" model-value="sm" value="sm">小尺寸</XRadioButton>
     <XRadioButton model-value="md" value="md">默认尺寸</XRadioButton>
     <XRadioButton size="lg" model-value="lg" value="lg">大尺寸</XRadioButton>
   </div>
-</div>
-
-```vue
-<XRadioButton size="sm" model-value="sm" value="sm">小尺寸</XRadioButton>
-<XRadioButton model-value="md" value="md">默认尺寸</XRadioButton>
-<XRadioButton size="lg" model-value="lg" value="lg">大尺寸</XRadioButton>
-```
+</XDocDemo>
 
 ## 外观定制
 
-<div class="x-demo-block">
+<XDocDemo title="外观定制" :code="radioButtonCustomCode">
   <div style="display: inline-flex; flex-wrap: wrap">
     <XRadioButton
       model-value="custom"
@@ -110,20 +105,7 @@ const mode = ref('washington')
       另一主题
     </XRadioButton>
   </div>
-</div>
-
-```vue
-<XRadioButton
-  model-value="custom"
-  value="custom"
-  button-color="#7c3aed"
-  button-size="36px"
-  font-size="14px"
-  font-family="Microsoft YaHei, 微软雅黑, sans-serif"
->
-  自定义按钮
-</XRadioButton>
-```
+</XDocDemo>
 
 ## Props
 

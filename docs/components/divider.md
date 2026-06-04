@@ -1,13 +1,54 @@
+<script setup lang="ts">
+const dividerBasicCode = `<XDivider>标题</XDivider>`
+
+const dividerVerticalCode = `<span>文本</span>
+<XDivider direction="vertical" />
+<span>文本</span>`
+
+const dividerStyleCode = `<XDivider content-position="left" border-style="dashed" border-color="#0e7490">
+  左侧标题
+</XDivider>
+
+<XDivider content-position="right" border-style="dotted" :thickness="2" text-color="#7c3aed">
+  右侧标题
+</XDivider>`
+</script>
+
 # 分割线 Divider
 
 用于分隔内容区域，支持水平、垂直、标题文本和线型。
 
 ## 基础用法
 
-```vue
-<XDivider>标题</XDivider>
-文本 <XDivider direction="vertical" /> 文本
-```
+<XDocDemo title="水平分割线" :code="dividerBasicCode">
+  <XDivider>标题</XDivider>
+</XDocDemo>
+
+## 垂直分割线
+
+垂直分割线适合在同一行内分隔短文本或工具项。
+
+<XDocDemo title="垂直分割线" :code="dividerVerticalCode">
+  <div class="x-demo-row">
+    <span>文本</span>
+    <XDivider direction="vertical" />
+    <span>文本</span>
+  </div>
+</XDocDemo>
+
+## 标题位置和线型
+
+通过 `contentPosition`、`borderStyle`、`thickness` 和颜色属性调整分割线的视觉表现。
+
+<XDocDemo title="标题位置和线型" :code="dividerStyleCode">
+  <XDivider content-position="left" border-style="dashed" border-color="#0e7490">
+    左侧标题
+  </XDivider>
+
+  <XDivider content-position="right" border-style="dotted" :thickness="2" text-color="#7c3aed">
+    右侧标题
+  </XDivider>
+</XDocDemo>
 
 ## Props
 

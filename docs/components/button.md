@@ -81,15 +81,8 @@ function handleClick() {
 
 <XDocDemo title="前后缀插槽" :code="buttonSlotCode">
   <div class="x-demo-row">
-    <XButton width="180px">
-      <template #prefix>+</template>
-      新建
-    </XButton>
-
-    <XButton width="220px" variant="outline">
-      保存
-      <template #suffix>Ctrl+S</template>
-    </XButton>
+    <XButton width="180px"><template #prefix>+</template>新建</XButton>
+    <XButton width="220px" variant="outline">保存<template #suffix>Ctrl+S</template></XButton>
   </div>
 </XDocDemo>
 
@@ -121,6 +114,7 @@ function handleClick() {
 | `borderColor` | 按钮边框颜色 | `string` | 按按钮类型决定 |
 | `backgroundColor` | 按钮背景色，映射到按钮自身背景变量 | `string` | 按按钮类型决定 |
 | `textColor` | 按钮文字颜色，映射到按钮自身文字变量 | `string` | 按按钮类型决定 |
+| `padding` | 按钮内边距，数字按 px 处理；设置 `size` 时由尺寸规格接管 | `number \| string` | `0 8px` |
 | `radius` | 按钮圆角，数字按 px 处理；设置 `size` 时由尺寸规格接管 | `number \| string` | `6px` |
 | `activeBackgroundColor` | 按下激活时的背景色 | `string` | 按按钮类型决定 |
 | `activeBorderColor` | 按下激活时的边框色 | `string` | 按按钮类型决定 |
@@ -158,7 +152,6 @@ function handleClick() {
 | 属性名 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `fontSize` | 字号，数字按 px 处理 | `string \| number` | — |
-| `padding` | 内边距 | `string \| number` | — |
 | `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

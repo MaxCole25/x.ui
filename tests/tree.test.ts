@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { h } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { XTree } from '../src'
 import type { TreeNodeData } from '../src'
@@ -29,6 +30,40 @@ describe('XTree', () => {
     })
 
     expect(wrapper.find('.x-tree-node__icon .ri-table-line').exists()).toBe(true)
+  })
+
+  it('keeps author text as the default node extra content', async () => {
+    const wrapper = mount(XTree, {
+      props: {
+        treeData: [{ id: '1', label: '节点A', authorDisplayName: '张三' }]
+      }
+    })
+
+    expect(wrapper.find('.x-tree-node__author').text()).toBe('张三')
+
+    await wrapper.find('.x-tree-node__author').trigger('click')
+    expect(wrapper.emitted('nodeClick')?.[0]?.[0]).toMatchObject({ id: '1', label: '节点A' })
+  })
+
+  it('renders nodeExtra slot and emits nodeExtraClick without triggering nodeClick', async () => {
+    const onNodeExtraClick = vi.fn()
+    const wrapper = mount(XTree, {
+      props: {
+        treeData: [{ id: '1', label: '节点A', authorDisplayName: '张三' }],
+        onNodeExtraClick
+      },
+      slots: {
+        nodeExtra: ({ node }: { node: TreeNodeData }) => h('button', { class: 'custom-extra', type: 'button' }, `${node.label}操作`)
+      }
+    })
+
+    expect(wrapper.find('.custom-extra').text()).toBe('节点A操作')
+    expect(wrapper.find('.x-tree-node__author').text()).not.toBe('张三')
+
+    await wrapper.find('.custom-extra').trigger('click')
+    expect(onNodeExtraClick).toHaveBeenCalledTimes(1)
+    expect(onNodeExtraClick.mock.calls[0][0]).toMatchObject({ id: '1', label: '节点A' })
+    expect(wrapper.emitted('nodeClick')).toBeUndefined()
   })
 
   it('resolves custom icon from nodeIcon prop', () => {

@@ -13,7 +13,8 @@ const props = withDefaults(defineProps<SliderProps>(), {
   max: 100,
   step: 1,
   disabled: false,
-  showValue: false
+  showValue: false,
+  vertical: false
 })
 
 const emit = defineEmits<{
@@ -34,7 +35,11 @@ const update = (value: number) => {
 </script>
 
 <template>
-  <div class="x-slider" :class="{ 'is-disabled': props.disabled }" :style="sliderStyle">
+  <div
+    class="x-slider"
+    :class="{ 'x-slider--vertical': props.vertical, 'is-disabled': props.disabled }"
+    :style="sliderStyle"
+  >
     <input
       :value="props.modelValue"
       type="range"
@@ -42,6 +47,7 @@ const update = (value: number) => {
       :max="props.max"
       :step="props.step"
       :disabled="props.disabled"
+      :aria-orientation="props.vertical ? 'vertical' : 'horizontal'"
       @input="update(Number(($event.target as HTMLInputElement).value))"
     />
     <span v-if="props.showValue" class="x-slider__value">{{ props.modelValue }}</span>

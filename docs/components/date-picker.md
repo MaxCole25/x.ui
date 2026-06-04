@@ -1,12 +1,47 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const date = ref('2026-06-03')
+const deliveryDate = ref('2026-05-06')
+const markedDate = ref('2026-05-06')
+const customFestivals = {
+  '2026-05-06': { name: '纪念日', type: 'custom' as const }
+}
+
+const datePickerBasicCode = `<XDatePicker v-model="date" />`
+
+const datePickerInputCode = `<XDatePicker
+  v-model="date"
+  size="lg"
+  clearable
+  prefix="交付日期"
+  active-border-color="#1264f4"
+/>`
+
+const datePickerFestivalCode = `<XDatePicker
+  v-model="date"
+  :festivals="{
+    '2026-05-06': { name: '纪念日', type: 'custom' }
+  }"
+/>`
+</script>
+
 # 日期选择器 DatePicker
 
 用于选择日期。
 
 ## 基础用法
 
-```vue
-<XDatePicker v-model="date" />
-```
+<XDocDemo title="基础用法" :code="datePickerBasicCode">
+  <ClientOnly>
+    <div class="x-demo-column">
+      <div style="width: 240px">
+        <XDatePicker v-model="date" />
+      </div>
+      <p class="x-demo-label">当前日期：{{ date || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 输入框能力
 
@@ -14,26 +49,38 @@
 
 日期面板默认显示中国传统日期信息，包括春节、元宵、端午、中秋、重阳等农历节日，以及小寒、大寒、立春、雨水、惊蛰、春分、清明、谷雨、立夏、小满、芒种、夏至、小暑、大暑、立秋、处暑、白露、秋分、寒露、霜降、立冬、小雪、大雪、冬至二十四节气。它不显示每年变化的法定放假和调休上班安排。
 
-```vue
-<XDatePicker
-  v-model="date"
-  size="lg"
-  clearable
-  prefix="交付日期"
-  active-border-color="#1264f4"
-/>
-```
+<XDocDemo title="输入框能力" :code="datePickerInputCode">
+  <ClientOnly>
+    <div class="x-demo-column">
+      <div style="width: 320px">
+        <XDatePicker
+          v-model="deliveryDate"
+          size="lg"
+          clearable
+          prefix="交付日期"
+          active-border-color="#1264f4"
+        />
+      </div>
+      <p class="x-demo-label">当前日期：{{ deliveryDate || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 自定义日期标记
 
-```vue
-<XDatePicker
-  v-model="date"
-  :festivals="{
-    '2026-05-06': { name: '纪念日', type: 'custom' }
-  }"
-/>
-```
+<XDocDemo title="自定义日期标记" :code="datePickerFestivalCode">
+  <ClientOnly>
+    <div class="x-demo-column">
+      <div style="width: 260px">
+        <XDatePicker
+          v-model="markedDate"
+          :festivals="customFestivals"
+        />
+      </div>
+      <p class="x-demo-label">当前日期：{{ markedDate || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

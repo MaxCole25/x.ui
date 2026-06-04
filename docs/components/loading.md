@@ -1,3 +1,18 @@
+<script setup lang="ts">
+const loadingDirectiveCode = `<div v-loading="loading" class="panel">
+  正在加载的数据区域
+</div>`
+
+const loadingComponentCode = `<div style="position: relative; min-height: 160px">
+  <XLoading model-value text="加载中" />
+</div>`
+
+const loadingServiceCode = `import { XLoadingService } from 'x.ui'
+
+const loading = XLoadingService({ text: '提交中' })
+setTimeout(() => loading.close(), 1200)`
+</script>
+
 # Loading 加载
 
 `XLoading` 参考 Element Plus 的 `v-loading`，提供组件、指令和服务三种使用方式。
@@ -6,36 +21,29 @@
 
 全量安装 `x.ui` 后可直接使用 `v-loading`：
 
-```vue
-<template>
-  <div v-loading="loading" class="panel">
-    正在加载的数据区域
+<XDocDemo title="指令用法" :code="loadingDirectiveCode">
+  <div style="position: relative; min-height: 120px; border: 1px dashed var(--x-color-border); border-radius: 6px; padding: 16px">
+    <p>正在加载的数据区域</p>
+    <XLoading model-value text="加载中" />
   </div>
-</template>
-```
+</XDocDemo>
 
 ## 组件用法
 
-```vue
-<script setup lang="ts">
-import { XLoading } from 'x.ui'
-</script>
-
-<template>
+<XDocDemo title="组件用法" :code="loadingComponentCode">
   <div style="position: relative; min-height: 160px">
     <XLoading model-value text="加载中" />
   </div>
-</template>
-```
+</XDocDemo>
 
 ## 服务用法
 
-```ts
-import { XLoadingService } from 'x.ui'
-
-const loading = XLoadingService({ text: '提交中' })
-setTimeout(() => loading.close(), 1200)
-```
+<XDocDemo title="服务用法" :code="loadingServiceCode" language="ts">
+  <div style="position: relative; min-height: 120px; border: 1px dashed var(--x-color-border); border-radius: 6px; padding: 16px">
+    <p>服务调用会把加载层挂载到指定目标或全屏区域。</p>
+    <XLoading model-value text="提交中" background-color="rgba(255, 255, 255, 0.68)" />
+  </div>
+</XDocDemo>
 
 ## Props / Options
 

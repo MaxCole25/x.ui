@@ -1,3 +1,113 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { TableColumn, TableColumnSetting } from '../../src/components/display-components/table'
+
+const columns: TableColumn[] = [
+  { key: 'name', label: '名称', minWidth: 160 },
+  { key: 'status', label: '状态', width: 120 },
+  { key: 'count', label: '数量', width: 100, align: 'right', formatter: (value) => `${value} 个` }
+]
+
+const rows = ref([
+  { id: 1, name: '工作台', status: '启用', count: 12 },
+  { id: 2, name: '成员管理', status: '停用', count: 5 },
+  { id: 3, name: '权限中心', status: '启用', count: 8 },
+  { id: 4, name: '消息中心', status: '启用', count: 16 }
+])
+
+const selectedRowKeys = ref<(string | number)[]>([])
+const selectedCellKeys = ref<string[]>([])
+const columnSettings: TableColumnSetting[] = [
+  { key: 'name', order: 0, fixed: 'none', align: 'left', width: 220 },
+  { key: 'status', order: 1, fixed: 'none', align: 'center', widthRatio: 25 },
+  { key: 'count', order: 2, fixed: 'none', align: 'right', width: 120 }
+]
+
+const tableBasicCode = `<XTable :columns="columns" :data="rows" row-key="id" />`
+
+const tableSlotsCode = `<XTable :columns="columns" :data="rows" show-column-settings>
+  <template #top="{ columns, data }">
+    <div class="table-header">
+      <strong>模块列表</strong>
+      <span>列 {{ columns.length }} / 行 {{ data.length }}</span>
+    </div>
+  </template>
+</XTable>`
+
+const tableThemeCode = `<div data-theme="dark">
+  <XTable :columns="columns" :data="rows" show-pagination />
+</div>`
+
+const tableBrandCode = `<XTable
+  :columns="columns"
+  :data="rows"
+  header-background-color="#172033"
+  body-background-color="#0b1220"
+/>`
+
+const tablePaginationCode = `<XTable
+  :columns="columns"
+  :data="rows"
+  show-pagination
+  :page-size="2"
+/>`
+
+const tableServerPaginationCode = `<XTable
+  v-model:current-page="page"
+  v-model:page-size="pageSize"
+  :columns="columns"
+  :data="rows"
+  :total="total"
+  show-pagination
+  pagination-mode="server"
+/>`
+
+const tableColumnSettingsCode = `<XTable
+  :columns="columns"
+  :data="rows"
+  show-column-settings
+  :column-settings="columnSettings"
+/>`
+
+const tableCellCode = `<XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="120">
+  <template #cell-name="{ value }">
+    <strong>{{ value }}</strong>
+  </template>
+</XTable>`
+
+const tableSelectionCode = `<XTable
+  v-model:selected-cell-keys="selectedCellKeys"
+  :columns="columns"
+  :data="rows"
+  show-selection
+  selection-mode="cell"
+/>`
+
+const tableRowDragCode = `<XTable
+  v-model:selected-row-keys="selectedRowKeys"
+  :columns="columns"
+  :data="rows"
+  show-selection
+  row-draggable
+/>`
+
+const tableEditableCode = `<XTable
+  v-model:data="rows"
+  v-model:selected-row-keys="selectedRowKeys"
+  :columns="columns"
+  editable
+  show-selection
+  show-append-row-button
+  show-delete-selected-rows-button
+/>`
+
+const tableFullHeightCode = `<div style="height: 360px">
+  <XTable :columns="columns" :data="rows" full-height />
+</div>`
+
+const tableSizeCode = `<XTable :columns="columns" :data="rows" size="sm" :row-height="40" />`
+</script>
+
 # 表格 Table
 
 `XTable` 是一个从简单展示重新开始的表格组件。当前版本负责数据渲染、基础列样式、插槽扩展、分页、列设置、选择、编辑、复制粘贴、拖拽排序和 Excel 导入导出。
@@ -8,61 +118,38 @@
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { XTable, type TableColumn } from 'x.ui'
-
-const columns: TableColumn[] = [
-  { key: 'name', label: '名称', minWidth: 160 },
-  { key: 'status', label: '状态', width: 120 },
-  { key: 'count', label: '数量', width: 100, align: 'right', formatter: (value) => `${value} 个` }
-]
-
-const rows = [
-  { id: 1, name: '工作台', status: '启用', count: 12 },
-  { id: 2, name: '成员管理', status: '停用', count: 5 }
-]
-</script>
-
-<template>
-  <XTable :columns="columns" :data="rows" row-key="id" />
-</template>
-```
+<XDocDemo title="基础用法" :code="tableBasicCode">
+  <ClientOnly>
+    <XTable :columns="columns" :data="rows" row-key="id" />
+  </ClientOnly>
+</XDocDemo>
 
 ## 自定义表顶和表底
 
 `top` 和 `bottom` 插槽会扩展表格上方、下方区域。`top` 插槽参数包含当前 `columns`、`data`、`visibleData`、`columnSettings`、`pagination` 和列设置、分页更新方法。开启 `show-column-settings` 后，表顶会内置一个列设置图标按钮，默认点击后打开统一列设置弹窗，同时继续触发 `column-settings-click` 事件；需要业务侧完全自定义时可设置 `column-settings-dialog="false"` 后自行承载弹窗。开启内置分页后，`bottom` 插槽内容会和分页器一起显示。
 
-```vue
-<XTable
-  :columns="columns"
-  :data="rows"
-  show-column-settings
->
-  <template #top="{ columns, data }">
-    <div class="table-header">
-      <strong>模块列表</strong>
-      <span>列 {{ columns.length }} / 行 {{ data.length }}</span>
-    </div>
-  </template>
-
-  <template #bottom="{ data }">
-    <div class="table-footer">
-      <span class="table-footer__total">共 {{ data.length }} 条记录</span>
-    </div>
-  </template>
-</XTable>
-```
+<XDocDemo title="自定义表顶和表底" :code="tableSlotsCode">
+  <ClientOnly>
+    <XTable
+      :columns="columns"
+      :data="rows"
+      show-column-settings
+      :column-settings-dialog="false"
+    />
+  </ClientOnly>
+</XDocDemo>
 
 ## 主题与外观变量
 
 `XTable` 默认跟随 x.ui 全局主题 token。业务项目只要引入 `x.ui/style.css`，并在根节点或上层容器设置 `data-theme="dark"`、`:root.dark` 或 `.dark`，表格的表头、表体、汇总行、分页、列设置按钮、右键菜单、hover、选中行和单元格选区都会自动切换到暗色默认值，不需要给每个表格手动传 `header-background-color`、`body-background-color` 等外观属性。
 
-```html
-<div data-theme="dark">
-  <XTable :columns="columns" :data="rows" show-pagination show-column-settings />
-</div>
-```
+<XDocDemo title="跟随暗色主题" :code="tableThemeCode">
+  <ClientOnly>
+    <div data-theme="dark" style="padding: 12px; background: #020617; border-radius: 6px">
+      <XTable :columns="columns" :data="rows" show-pagination :page-size="2" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 需要品牌定制时，可以在主题节点、页面容器或单个表格上覆盖 `--x-table-*` CSS 变量；如果同时传入外观 props，props 会写入表格根节点的 CSS 变量，优先级高于全局 CSS 变量。
 
@@ -120,39 +207,41 @@ const rows = [
 
 如果需要精确控制每一类边线，可以使用更明确的边框属性。`border-color` 会写入 `--x-table-border-color`，作为所有表格边线的统一兜底；`horizontal-border-color` 和 `vertical-border-color` 继续保留为横线、竖线的兼容入口；更细的外框、表头底线、行线、列线属性优先级更高。
 
-```vue
-<XTable
-  :columns="columns"
-  :data="rows"
-  panel-background-color="#111827"
-  top-background-color="#111827"
-  bottom-background-color="#111827"
-  header-background-color="#172033"
-  header-text-color="#dbeafe"
-  body-background-color="#0b1220"
-  body-stripe-background-color="#10192c"
-  body-text-color="#e5e7eb"
-  border-color="#334155"
-  viewport-border-color="#64748b"
-  header-divider-color="#38bdf8"
-  row-border-color="#1d4ed8"
-  column-border-color="#7c3aed"
-/>
-```
+<XDocDemo title="品牌定制" :code="tableBrandCode">
+  <ClientOnly>
+    <XTable
+      :columns="columns"
+      :data="rows"
+      panel-background-color="#111827"
+      header-background-color="#172033"
+      header-text-color="#dbeafe"
+      body-background-color="#0b1220"
+      body-stripe-background-color="#10192c"
+      body-text-color="#e5e7eb"
+      border-color="#334155"
+      viewport-border-color="#64748b"
+      header-divider-color="#38bdf8"
+      row-border-color="#1d4ed8"
+      column-border-color="#7c3aed"
+    />
+  </ClientOnly>
+</XDocDemo>
 
 ## 分页
 
 开启 `show-pagination` 后，表底会显示内置分页器。默认 `pagination-mode="client"`，组件会根据 `current-page` 和 `page-size` 从传入的 `data` 中切出当前页；如果表格需要全量展示，保持 `show-pagination` 为 `false` 即可隐藏分页元素并显示全部数据。
 
-```vue
-<XTable
-  :columns="columns"
-  :data="rows"
-  show-pagination
-  :page-size="10"
-  :page-sizes="[10, 20, 50]"
-/>
-```
+<XDocDemo title="分页" :code="tablePaginationCode">
+  <ClientOnly>
+    <XTable
+      :columns="columns"
+      :data="rows"
+      show-pagination
+      :page-size="2"
+      :page-sizes="[2, 4, 8]"
+    />
+  </ClientOnly>
+</XDocDemo>
 
 分页控件、每页条数下拉框和列设置图标按钮会读取 XTable 专属 CSS 变量，并跟随 x.ui 全局 light / dark 主题默认值。业务侧需要细调时，可以在表格容器或上层主题节点覆盖这些变量：
 
@@ -173,55 +262,36 @@ const rows = [
 
 服务器分页时使用 `pagination-mode="server"`。组件不会切分 `data`，只把当前页、每页条数、总数和页数通过事件抛出，业务侧收到事件后请求服务器并替换 `data`。
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XTable, type TablePaginationChangePayload } from 'x.ui'
-
-const page = ref(1)
-const pageSize = ref(20)
-const total = ref(0)
-const rows = ref([])
-
-function handlePaginationChange(payload: TablePaginationChangePayload) {
-  page.value = payload.currentPage
-  pageSize.value = payload.pageSize
-  loadRows()
-}
-</script>
-
-<template>
-  <XTable
-    v-model:current-page="page"
-    v-model:page-size="pageSize"
-    :columns="columns"
-    :data="rows"
-    :total="total"
-    show-pagination
-    pagination-mode="server"
-    @pagination-change="handlePaginationChange"
-  />
-</template>
-```
+<XDocDemo title="服务器分页写法" :code="tableServerPaginationCode">
+  <ClientOnly>
+    <XTable
+      :columns="columns"
+      :data="rows"
+      :total="40"
+      show-pagination
+      pagination-mode="server"
+      :page-size="10"
+    />
+  </ClientOnly>
+</XDocDemo>
 
 ## 列设置
 
-通过 `column-settings` 可以控制列排序、隐藏、冻结、默认对齐、比例宽度和固定像素宽度。开启 `show-column-settings` 后，表格会在表顶内置列设置图标按钮，并默认打开内置列设置弹窗。内置弹窗支持显示/隐藏列、拖拽排序、左/右冻结、左/中/右对齐、比例宽度、px 宽度和恢复默认。
+通过 `column-settings` 可以控制列排序、隐藏、冻结、默认对齐、比例宽度和固定像素宽度。开启 `show-column-settings` 后，表格会在表顶内置列设置图标按钮，并默认打开内置列设置弹窗。内置弹窗支持显示/隐藏列、拖拽排序、置顶、置底、左/右冻结、左/中/右对齐、比例宽度、px 宽度和恢复默认。
 
 如果页面已经通过 `column-settings-click` 事件实现了自定义弹窗，默认 `column-settings-dialog="auto"` 会保持旧行为：点击按钮只触发事件，不打开内置弹窗。需要强制使用内置弹窗时设置 `:column-settings-dialog="true"`；需要完全关闭内置弹窗时设置 `:column-settings-dialog="false"`。也可以继续在 `top` 插槽中使用 `columnSettings`、`updateColumnSetting`、`moveColumnSetting`、`reorderColumnSetting`、`resetColumnSettings` 构建自定义设置面板。
 
-```vue
-<XTable
-  :columns="columns"
-  :data="rows"
-  show-column-settings
-  :column-settings="[
-    { key: 'name', order: 0, fixed: 'left', align: 'left', width: 220 },
-    { key: 'status', order: 1, fixed: 'none', align: 'center', widthRatio: 25 },
-    { key: 'count', order: 2, fixed: 'right', align: 'right', width: 120 }
-  ]"
-/>
-```
+<XDocDemo title="列设置" :code="tableColumnSettingsCode">
+  <ClientOnly>
+    <XTable
+      :columns="columns"
+      :data="rows"
+      show-column-settings
+      :column-settings="columnSettings"
+      :column-settings-dialog="false"
+    />
+  </ClientOnly>
+</XDocDemo>
 
 `width` 优先级高于 `widthRatio`。多个 px 宽度列相加超过表格可视宽度时，表格正文会出现横向滚动条；`widthRatio` 使用百分比，按表格可视宽度分配。
 
@@ -231,17 +301,11 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 操作列宽度通过 `actionsWidth` 控制，支持数字或 CSS 长度字符串。模板中推荐使用 `:actions-width="180"` 传入数字；如果使用字符串形式，建议写完整单位，例如 `actions-width="180px"`、`actions-width="12rem"` 或 `actions-width="30%"`。组件会兼容 `actions-width="180"` 这类纯数字字符串，并按 `180px` 处理。
 
-```vue
-<XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="180">
-  <template #cell-name="{ value }">
-    <strong>{{ value }}</strong>
-  </template>
-
-  <template #row-actions="{ row }">
-    <button @click="view(row)">查看</button>
-  </template>
-</XTable>
-```
+<XDocDemo title="自定义单元格和操作列" :code="tableCellCode">
+  <ClientOnly>
+    <XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="120" />
+  </ClientOnly>
+</XDocDemo>
 
 ## 选择列和行拖拽排序
 
@@ -249,68 +313,52 @@ function handlePaginationChange(payload: TablePaginationChangePayload) {
 
 单元格框选区域支持通过 props 或 CSS 变量配置选区背景色、文字色、边框色和相邻单元格之间的内线色。未传 props 时，仍可以在表格容器或主题节点上直接覆盖 `--x-table-cell-selected-background`、`--x-table-cell-selected-text-color`、`--x-table-cell-selected-border-color`、`--x-table-cell-selected-inner-border-color`。
 
-```vue
-<XTable
-  v-model:selected-cell-keys="selectedCellKeys"
-  :columns="columns"
-  :data="rows"
-  show-selection
-  selection-mode="cell"
-  body-background-color="#0b1220"
-  body-text-color="#e5e7eb"
-  selected-cell-background-color="rgba(59, 130, 246, 0.22)"
-  selected-cell-text-color="#f8fafc"
-  selected-cell-border-color="#60a5fa"
-  selected-cell-inner-border-color="rgba(96, 165, 250, 0.56)"
-/>
-```
+<XDocDemo title="选择列和单元格选择" :code="tableSelectionCode">
+  <ClientOnly>
+    <XTable
+      v-model:selected-cell-keys="selectedCellKeys"
+      :columns="columns"
+      :data="rows"
+      show-selection
+      selection-mode="cell"
+      selected-cell-background-color="rgba(59, 130, 246, 0.22)"
+      selected-cell-border-color="#60a5fa"
+    />
+  </ClientOnly>
+</XDocDemo>
 
 开启 `row-draggable` 后，数据行左侧会显示拖拽手柄。只有从拖拽列开始拖动时才会触发行排序，避免影响后续单元格框选能力。拖拽完成时组件触发 `row-reorder`，业务侧需要用事件中的 `rows` 更新数据源顺序。
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XTable, type TableRowKey, type TableRowReorderPayload } from 'x.ui'
-
-const selectedRowKeys = ref<TableRowKey[]>([])
-const rows = ref([
-  { id: 1, name: '工作台' },
-  { id: 2, name: '成员管理' }
-])
-
-function handleRowReorder(payload: TableRowReorderPayload) {
-  rows.value = payload.rows
-}
-</script>
-
-<template>
-  <XTable
-    v-model:selected-row-keys="selectedRowKeys"
-    :columns="columns"
-    :data="rows"
-    show-selection
-    selection-mode="row"
-    row-draggable
-    @row-reorder="handleRowReorder"
-  />
-</template>
-```
+<XDocDemo title="行拖拽排序" :code="tableRowDragCode">
+  <ClientOnly>
+    <XTable
+      v-model:selected-row-keys="selectedRowKeys"
+      :columns="columns"
+      :data="rows"
+      show-selection
+      selection-mode="row"
+      row-draggable
+    />
+  </ClientOnly>
+</XDocDemo>
 
 ## 可编辑行工具栏
 
 开启 `editable` 后，可以通过 `show-append-row-button` 和 `show-delete-selected-rows-button` 在表顶显示内置图标按钮。`新建行数据` 会在末尾追加一行空数据；`删除选择行` 会删除左侧选择列勾选的行。两个操作都会通过 `update:data` 抛出最新数据，适合和 `v-model:data` 搭配使用。为避免分页数据和全量数据不一致，开启分页时按钮会禁用。
 
-```vue
-<XTable
-  v-model:data="rows"
-  v-model:selected-row-keys="selectedRowKeys"
-  :columns="columns"
-  editable
-  show-selection
-  show-append-row-button
-  show-delete-selected-rows-button
-/>
-```
+<XDocDemo title="可编辑行工具栏" :code="tableEditableCode">
+  <ClientOnly>
+    <XTable
+      v-model:data="rows"
+      v-model:selected-row-keys="selectedRowKeys"
+      :columns="columns"
+      editable
+      show-selection
+      show-append-row-button
+      show-delete-selected-rows-button
+    />
+  </ClientOnly>
+</XDocDemo>
 
 ## Excel 导入导出
 
@@ -333,11 +381,13 @@ function handleRowReorder(payload: TableRowReorderPayload) {
 
 父容器有明确高度时，可以开启 `full-height`，让表格高度撑满父元素，表头、表底保持固定，数据区域在内部滚动。`full-height` 只负责表格填满已有高度容器；应用根节点和页面容器也需要形成完整高度链，否则滚动条可能落到 `body`、页签面板或页面 wrapper 上。
 
-```vue
-<div style="height: 520px">
-  <XTable :columns="columns" :data="rows" full-height />
-</div>
-```
+<XDocDemo title="撑满父元素" :code="tableFullHeightCode">
+  <ClientOnly>
+    <div style="height: 360px">
+      <XTable :columns="columns" :data="rows" full-height />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 后台壳应用常见写法：
 
@@ -363,9 +413,11 @@ body,
 
 `row-height` 的优先级高于 `size` 生成的行高度，但不会改变表顶工具按钮、列设置弹窗按钮和分页按钮高度。这些控件仍跟随 `size`，避免调高数据行时把操作区一起撑大。建议业务侧不要把 `row-height` 设置得低于 `22px`，否则单元格内容或编辑器可能显得拥挤。
 
-```vue
-<XTable :columns="columns" :data="rows" size="sm" :row-height="40" />
-```
+<XDocDemo title="尺寸与行高" :code="tableSizeCode">
+  <ClientOnly>
+    <XTable :columns="columns" :data="rows" size="sm" :row-height="40" />
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 
@@ -518,7 +570,7 @@ body,
 - 检查 `top`、`bottom`、`cell-[key]`、`row-actions` 插槽是否能正常渲染。
 - 开启 `show-selection` 后，检查行选、单元格点击选择、Tab / Shift+Tab 横向移动选区、Ctrl/Command 多选、拖拽框选、手柄调整选区、选择行列勾选和已选数量是否正确；再开启 `editable`，确认普通单元格点击不会切换行选，只能通过选择列勾选行，双击单元格或选中单元格后直接输入字符都可以进入编辑并提交新值。
 - 开启 `row-draggable` 后，从拖拽列拖拽数据行，检查拖拽高亮和排序结果是否正确；从普通单元格开始拖动不应触发行排序。
-- 开启 `show-column-settings` 后，点击表顶列设置图标按钮，在 `XDialog` 弹窗中检查列名拖拽排序、左/右冻结、对齐、比例宽度和 px 宽度是否生效。
+- 开启 `show-column-settings` 后，点击表顶列设置图标按钮，在 `XDialog` 弹窗中检查列名拖拽排序、置顶、置底、左/右冻结、对齐、比例宽度和 px 宽度是否生效；滚动列设置列表时，检查列表内容不会叠加在列头上。
 - 在数据单元格右键菜单中检查复制、粘贴启用条件和 `Ctrl+C`、`Ctrl+V` 快捷键文案；开启单元格选择后复制选区，开启 `editable` 后从剪贴板粘贴多行多列内容，确认 `v-model:data` 得到更新。
 - 在未开启分页且开启 `editable` 时，通过右键菜单和 `Ctrl+I`、`Ctrl+U`、`Ctrl+D` 检查 `增加行`、`向上插入行`、`向下插入行` 是否能更新 `v-model:data`；开启分页后这三项应禁用。
 - 开启 `show-append-row-button` 和 `show-delete-selected-rows-button` 后，检查表顶图标按钮只在 `editable` 时显示；追加行应更新 `v-model:data`，删除选择行应根据左侧选择列勾选结果删除并清空选择。

@@ -1,10 +1,60 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const mode = ref('day')
 const buttonMode = ref('washington')
 const level = ref('p1')
 const priority = ref('normal')
+
+const radioBasicCode = `<XRadio v-model="mode" name="mode" value="day">日视图</XRadio>
+<XRadio v-model="mode" name="mode" value="week">周视图</XRadio>
+<XRadio v-model="mode" name="mode" value="month">月视图</XRadio>`
+
+const radioButtonCode = `<XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
+<XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
+<XRadioButton v-model="buttonMode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+<XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>`
+
+const radioGroupCode = `<XRadio v-model="priority" name="priority" value="normal">普通</XRadio>
+<XRadio v-model="priority" name="priority" value="urgent">紧急</XRadio>
+<XRadio v-model="priority" name="priority" value="blocked">阻塞</XRadio>`
+
+const radioDisabledCode = `<XRadio v-model="level" name="level" value="p0">P0</XRadio>
+<XRadio v-model="level" name="level" value="p1">P1</XRadio>
+<XRadio v-model="level" name="level" value="p2" disabled>P2 禁用</XRadio>`
+
+const radioSizeCode = `<XRadio size="sm" model-value="sm" value="sm">小尺寸</XRadio>
+<XRadio model-value="md" value="md">默认尺寸</XRadio>
+<XRadio size="lg" model-value="lg" value="lg">大尺寸</XRadio>`
+
+const radioThemeCode = `<XRadio model-value="custom" value="custom" button-color="#7c3aed">
+  主题覆盖
+</XRadio>
+
+<XRadioButton model-value="button" value="button" button-color="#7c3aed">
+  按钮主题
+</XRadioButton>`
+
+const radioCustomCode = `<XRadio
+  model-value="custom"
+  value="custom"
+  button-color="#7c3aed"
+  button-size="16px"
+  label-color="#4c1d95"
+  font-size="15px"
+  font-family="SimSun, 宋体, serif"
+>
+  自定义外观
+</XRadio>
+
+<XRadio
+  model-value="silent"
+  value="silent"
+  button-color="#0f766e"
+  label-color="#115e59"
+>
+  另一主题
+</XRadio>`
 </script>
 
 # Radio 单选框
@@ -13,34 +63,20 @@ const priority = ref('normal')
 
 ## 基础用法
 
-<div class="x-demo-block">
+<XDocDemo title="基础用法" :code="radioBasicCode">
   <div class="x-demo-row">
     <XRadio v-model="mode" name="mode" value="day">日视图</XRadio>
     <XRadio v-model="mode" name="mode" value="week">周视图</XRadio>
     <XRadio v-model="mode" name="mode" value="month">月视图</XRadio>
   </div>
   <p class="x-demo-label">当前值：{{ mode }}</p>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const mode = ref('day')
-</script>
-
-<template>
-  <XRadio v-model="mode" name="mode" value="day">日视图</XRadio>
-  <XRadio v-model="mode" name="mode" value="week">周视图</XRadio>
-  <XRadio v-model="mode" name="mode" value="month">月视图</XRadio>
-</template>
-```
+</XDocDemo>
 
 ## 按钮形态
 
 `XRadioButton` 是 `XRadio` 的按钮形态，绑定值、选项值、`name`、禁用状态和事件逻辑保持一致。多个按钮绑定同一个 `v-model`，并设置同一个 `name`，即可像普通 `XRadio` 一样形成一组按钮式单选。
 
-<div class="x-demo-block">
+<XDocDemo title="按钮形态" :code="radioButtonCode">
   <div style="display: inline-flex; flex-wrap: wrap">
     <XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
     <XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
@@ -48,104 +84,53 @@ const mode = ref('day')
     <XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>
   </div>
   <p class="x-demo-label">当前值：{{ buttonMode }}</p>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const buttonMode = ref('washington')
-</script>
-
-<template>
-  <XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
-  <XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
-  <XRadioButton v-model="buttonMode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
-  <XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>
-</template>
-```
+</XDocDemo>
 
 ## 分组单选控制
 
 页面中有多个 `XRadio` 时，同一组单选项绑定同一个 `v-model`，并设置相同的 `name`；不同分组使用不同的 `v-model` 和 `name`，即可互不影响。
 
-<div class="x-demo-block">
+<XDocDemo title="分组单选控制" :code="radioGroupCode">
   <div class="x-demo-row">
     <XRadio v-model="priority" name="priority" value="normal">普通</XRadio>
     <XRadio v-model="priority" name="priority" value="urgent">紧急</XRadio>
     <XRadio v-model="priority" name="priority" value="blocked">阻塞</XRadio>
   </div>
   <p class="x-demo-label">当前优先级：{{ priority }}</p>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const priority = ref('normal')
-</script>
-
-<template>
-  <XRadio v-model="priority" name="priority" value="normal">普通</XRadio>
-  <XRadio v-model="priority" name="priority" value="urgent">紧急</XRadio>
-  <XRadio v-model="priority" name="priority" value="blocked">阻塞</XRadio>
-</template>
-```
+</XDocDemo>
 
 ## 禁用状态
 
-<div class="x-demo-block">
+<XDocDemo title="禁用状态" :code="radioDisabledCode">
   <div class="x-demo-row">
     <XRadio v-model="level" name="level" value="p0">P0</XRadio>
     <XRadio v-model="level" name="level" value="p1">P1</XRadio>
     <XRadio v-model="level" name="level" value="p2" disabled>P2 禁用</XRadio>
   </div>
-</div>
-
-```vue
-<XRadio v-model="level" name="level" value="p0">P0</XRadio>
-<XRadio v-model="level" name="level" value="p1">P1</XRadio>
-<XRadio v-model="level" name="level" value="p2" disabled>P2 禁用</XRadio>
-```
+</XDocDemo>
 
 ## 尺寸
 
-<div class="x-demo-block">
+<XDocDemo title="尺寸" :code="radioSizeCode">
   <div class="x-demo-row">
     <XRadio size="sm" model-value="sm" value="sm">小尺寸</XRadio>
     <XRadio model-value="md" value="md">默认尺寸</XRadio>
     <XRadio size="lg" model-value="lg" value="lg">大尺寸</XRadio>
   </div>
-</div>
-
-```vue
-<XRadio size="sm" model-value="sm" value="sm">小尺寸</XRadio>
-<XRadio model-value="md" value="md">默认尺寸</XRadio>
-<XRadio size="lg" model-value="lg" value="lg">大尺寸</XRadio>
-```
+</XDocDemo>
 
 ## 业务主题
 
-<div class="x-demo-block">
+<XDocDemo title="业务主题" :code="radioThemeCode">
   <div class="x-demo-row">
     <XRadio model-value="custom" value="custom" button-color="#7c3aed">主题覆盖</XRadio>
     <XRadioButton model-value="button" value="button" button-color="#7c3aed">按钮主题</XRadioButton>
   </div>
-</div>
-
-```vue
-<XRadio model-value="custom" value="custom" button-color="#7c3aed">
-  主题覆盖
-</XRadio>
-
-<XRadioButton model-value="button" value="button" button-color="#7c3aed">
-  按钮主题
-</XRadioButton>
-```
+</XDocDemo>
 
 ## 外观定制
 
-<div class="x-demo-block">
+<XDocDemo title="外观定制" :code="radioCustomCode">
   <div class="x-demo-row">
     <XRadio
       model-value="custom"
@@ -167,30 +152,7 @@ const priority = ref('normal')
       另一主题
     </XRadio>
   </div>
-</div>
-
-```vue
-<XRadio
-  model-value="custom"
-  value="custom"
-  button-color="#7c3aed"
-  button-size="16px"
-  label-color="#4c1d95"
-  font-size="15px"
-  font-family="SimSun, 宋体, serif"
->
-  自定义外观
-</XRadio>
-
-<XRadio
-  model-value="silent"
-  value="silent"
-  button-color="#0f766e"
-  label-color="#115e59"
->
-  另一主题
-</XRadio>
-```
+</XDocDemo>
 
 ## Props
 

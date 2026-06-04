@@ -1,29 +1,38 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const visible = ref(false)
+
+const dialogBasicCode = `<button type="button" @click="visible = true">打开弹窗</button>
+
+<XDialog v-model="visible" title="编辑信息">
+  <div>这里放置表单内容</div>
+  <template #footer>
+    <XButton variant="ghost" @click="visible = false">取消</XButton>
+    <XButton @click="visible = false">保存</XButton>
+  </template>
+</XDialog>`
+</script>
+
 # 弹窗 Dialog
 
 `XDialog` 是可拖拽、可缩放的弹出窗体组件，支持 `v-model` 控制显隐，并通过插槽承载自定义业务内容。
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XButton, XDialog } from 'x.ui'
-
-const visible = ref(false)
-</script>
-
-<template>
-  <XButton @click="visible = true">打开弹窗</XButton>
-
-  <XDialog v-model="visible" title="编辑信息">
-    <div>这里放置表单内容</div>
-    <template #footer>
-      <XButton variant="ghost" @click="visible = false">取消</XButton>
-      <XButton @click="visible = false">保存</XButton>
-    </template>
-  </XDialog>
-</template>
-```
+<XDocDemo title="基础用法" :code="dialogBasicCode">
+  <ClientOnly>
+    <div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="visible = true"
+      >
+        打开弹窗
+      </button><XDialog v-model="visible" title="编辑信息" :width="520" :height="320" :min-width="360" :min-height="240"><div>这里放置表单内容。</div></XDialog>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

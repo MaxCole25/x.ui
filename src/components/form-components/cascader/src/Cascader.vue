@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import { formContextKey, formItemContextKey } from '../../form/src/context'
 import type { SelectOptionValue } from '../../select'
 import type { CascaderOption, CascaderOptionSource, CascaderProps, CascaderSize } from './types'
@@ -44,14 +45,20 @@ const emit = defineEmits<{
 const form = inject(formContextKey, null)
 const formItem = inject(formItemContextKey, null)
 const open = ref(false)
+const cascaderRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
 const activePath = ref<CascaderOption[]>([])
 const remoteRootOptions = ref<CascaderOption[]>([])
 const remoteChildren = ref(new Map<string, CascaderOption[]>())
 const remoteLoading = ref(false)
+const teleportedPanelStyle = ref<Record<string, string>>({})
 let remoteRequestId = 0
+let isListeningForPositionChanges = false
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
 const canInteract = computed(() => !mergedDisabled.value && !props.readonly)
+const shouldTeleportPanel = computed(() => Boolean(props.teleportTo))
+const teleportTarget = computed(() => props.teleportTo ?? 'body')
 
 const sizePreset: Record<CascaderSize, Pick<CascaderProps, 'fontSize' | 'height' | 'padding' | 'radius'>> = {
   sm: {
@@ -175,6 +182,63 @@ const cascaderStyle = computed(() => ({
   '--x-cascader-clear-icon-color': props.clearIconColor,
   '--x-cascader-clear-icon-size': toCssSize(props.clearIconSize)
 }))
+const panelStyle = computed(() => ({
+  ...cascaderStyle.value,
+  ...(shouldTeleportPanel.value
+    ? teleportedPanelStyle.value
+    : {
+        zIndex: String(overlayZIndex.popper)
+      })
+}))
+const panelClasses = computed(() => [
+  'x-cascader__panel',
+  {
+    'is-teleported': shouldTeleportPanel.value
+  }
+])
+
+const updatePanelPosition = () => {
+  if (!shouldTeleportPanel.value || !open.value || !cascaderRef.value) return
+
+  const gap = 8
+  const rect = cascaderRef.value.getBoundingClientRect()
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth
+  const panelHeight = panelRef.value?.offsetHeight || 260
+  const panelWidth = panelRef.value?.scrollWidth || rect.width
+  const maxWidth = Math.max(gap, viewportWidth - gap * 2)
+  const width = Math.max(1, Math.min(Math.max(rect.width, panelWidth), maxWidth))
+  const left = Math.min(Math.max(rect.left, gap), Math.max(gap, viewportWidth - width - gap))
+  const spaceBelow = viewportHeight - rect.bottom - gap
+  const spaceAbove = rect.top - gap
+  const shouldOpenUp = spaceBelow < panelHeight && spaceAbove > spaceBelow
+  const top = shouldOpenUp
+    ? Math.max(gap, rect.top - gap - panelHeight)
+    : Math.min(Math.max(gap, rect.bottom + gap), Math.max(gap, viewportHeight - gap))
+
+  teleportedPanelStyle.value = {
+    left: `${Math.round(left)}px`,
+    top: `${Math.round(top)}px`,
+    width: `${Math.round(width)}px`,
+    zIndex: String(overlayZIndex.popper)
+  }
+}
+
+const addPositionListeners = () => {
+  if (!shouldTeleportPanel.value || isListeningForPositionChanges) return
+
+  window.addEventListener('resize', updatePanelPosition)
+  window.addEventListener('scroll', updatePanelPosition, true)
+  isListeningForPositionChanges = true
+}
+
+const removePositionListeners = () => {
+  if (!isListeningForPositionChanges) return
+
+  window.removeEventListener('resize', updatePanelPosition)
+  window.removeEventListener('scroll', updatePanelPosition, true)
+  isListeningForPositionChanges = false
+}
 
 const commit = (value: SelectOptionValue[]) => {
   emit('update:modelValue', value)
@@ -265,10 +329,44 @@ watch(open, (value) => {
     activePath.value = selectedPath.value
   }
 })
+
+watch(open, async (value) => {
+  if (!value) {
+    removePositionListeners()
+    return
+  }
+
+  await nextTick()
+  updatePanelPosition()
+  addPositionListeners()
+})
+
+watch(
+  () => props.teleportTo,
+  async () => {
+    removePositionListeners()
+    await nextTick()
+    if (open.value) {
+      updatePanelPosition()
+      addPositionListeners()
+    }
+  }
+)
+
+watch(columns, async () => {
+  if (!open.value) return
+  await nextTick()
+  updatePanelPosition()
+})
+
+onBeforeUnmount(() => {
+  removePositionListeners()
+})
 </script>
 
 <template>
   <div
+    ref="cascaderRef"
     v-bind="$attrs"
     class="x-cascader"
     :class="[
@@ -323,7 +421,36 @@ watch(open, (value) => {
       </span>
     </button>
 
-    <div v-show="open" class="x-cascader__panel" role="listbox">
+    <Teleport v-if="shouldTeleportPanel" :to="teleportTarget">
+      <div v-show="open" ref="panelRef" :class="panelClasses" :style="panelStyle" role="listbox">
+        <div v-if="isLoading" class="x-cascader__empty">{{ props.loadingText }}</div>
+        <div v-else-if="!rootOptions.length" class="x-cascader__empty">{{ props.emptyText }}</div>
+        <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="x-cascader__column">
+          <button
+            v-for="option in column"
+            :key="String(option.value)"
+            type="button"
+            class="x-cascader__option"
+            :class="{
+              'is-active': displayPath[columnIndex]?.value === option.value,
+              'is-disabled': option.disabled
+            }"
+            role="option"
+            :aria-selected="displayPath[columnIndex]?.value === option.value"
+            :disabled="option.disabled"
+            @mousedown.prevent
+            @click="choose(option, columnIndex)"
+          >
+            <span>{{ getOptionDisplayText(option) }}</span>
+            <span v-if="option.children?.length" aria-hidden="true">
+              <i class="ri-arrow-right-s-line"></i>
+            </span>
+          </button>
+        </div>
+      </div>
+    </Teleport>
+
+    <div v-else v-show="open" ref="panelRef" :class="panelClasses" :style="panelStyle" role="listbox">
       <div v-if="isLoading" class="x-cascader__empty">{{ props.loadingText }}</div>
       <div v-else-if="!rootOptions.length" class="x-cascader__empty">{{ props.emptyText }}</div>
       <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="x-cascader__column">

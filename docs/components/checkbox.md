@@ -4,6 +4,32 @@ import { ref } from 'vue'
 const checked = ref(true)
 const permissions = ref(['read'])
 const indeterminate = ref(true)
+
+const checkboxBasicCode = `<script setup>
+import { ref } from 'vue'
+
+const checked = ref(true)
+<\/script>
+
+<template>
+  <XCheckbox v-model="checked">启用通知</XCheckbox>
+</template>`
+
+const checkboxMultipleCode = `<XCheckbox v-model="permissions" value="read">读取</XCheckbox>
+<XCheckbox v-model="permissions" value="write">写入</XCheckbox>
+<XCheckbox v-model="permissions" value="admin">管理</XCheckbox>`
+
+const checkboxStateCode = `<XCheckbox v-model="checked" indeterminate>部分选择</XCheckbox>
+<XCheckbox disabled>禁用未选</XCheckbox>
+<XCheckbox model-value disabled>禁用已选</XCheckbox>`
+
+const checkboxSizeCode = `<XCheckbox size="sm" model-value>小尺寸</XCheckbox>
+<XCheckbox model-value>默认尺寸</XCheckbox>
+<XCheckbox size="lg" model-value>大尺寸</XCheckbox>`
+
+const checkboxThemeCode = `<XCheckbox model-value checked-color="#7c3aed" border-color="#c4b5fd" radius="6px">
+  主题覆盖
+</XCheckbox>`
 </script>
 
 # Checkbox 多选框
@@ -12,87 +38,51 @@ const indeterminate = ref(true)
 
 ## 基础用法
 
-<div class="x-demo-block">
+<XDocDemo title="基础用法" :code="checkboxBasicCode">
   <div class="x-demo-row">
     <XCheckbox v-model="checked">启用通知</XCheckbox>
     <span class="x-demo-label">当前值：{{ checked }}</span>
   </div>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const checked = ref(true)
-</script>
-
-<template>
-  <XCheckbox v-model="checked">启用通知</XCheckbox>
-</template>
-```
+</XDocDemo>
 
 ## 多选数组
 
-<div class="x-demo-block">
+<XDocDemo title="多选数组" :code="checkboxMultipleCode">
   <div class="x-demo-row">
     <XCheckbox v-model="permissions" value="read">读取</XCheckbox>
     <XCheckbox v-model="permissions" value="write">写入</XCheckbox>
     <XCheckbox v-model="permissions" value="admin">管理</XCheckbox>
   </div>
   <p class="x-demo-label">当前值：{{ permissions.join('、') || '暂无' }}</p>
-</div>
-
-```vue
-<XCheckbox v-model="permissions" value="read">读取</XCheckbox>
-<XCheckbox v-model="permissions" value="write">写入</XCheckbox>
-<XCheckbox v-model="permissions" value="admin">管理</XCheckbox>
-```
+</XDocDemo>
 
 ## 半选和禁用
 
-<div class="x-demo-block">
+<XDocDemo title="半选和禁用" :code="checkboxStateCode">
   <div class="x-demo-row">
     <XCheckbox v-model="indeterminate" indeterminate>部分选择</XCheckbox>
     <XCheckbox disabled>禁用未选</XCheckbox>
     <XCheckbox model-value disabled>禁用已选</XCheckbox>
   </div>
-</div>
-
-```vue
-<XCheckbox v-model="checked" indeterminate>部分选择</XCheckbox>
-<XCheckbox disabled>禁用未选</XCheckbox>
-<XCheckbox model-value disabled>禁用已选</XCheckbox>
-```
+</XDocDemo>
 
 ## 尺寸
 
-<div class="x-demo-block">
+<XDocDemo title="尺寸" :code="checkboxSizeCode">
   <div class="x-demo-row">
     <XCheckbox size="sm" model-value>小尺寸</XCheckbox>
     <XCheckbox model-value>默认尺寸</XCheckbox>
     <XCheckbox size="lg" model-value>大尺寸</XCheckbox>
   </div>
-</div>
-
-```vue
-<XCheckbox size="sm" model-value>小尺寸</XCheckbox>
-<XCheckbox model-value>默认尺寸</XCheckbox>
-<XCheckbox size="lg" model-value>大尺寸</XCheckbox>
-```
+</XDocDemo>
 
 ## 业务主题
 
-<div class="x-demo-block">
+<XDocDemo title="业务主题" :code="checkboxThemeCode">
   <div class="x-demo-row">
     <XCheckbox model-value checked-color="#7c3aed" border-color="#c4b5fd" radius="6px">主题覆盖</XCheckbox>
   </div>
-</div>
-
-```vue
-<XCheckbox model-value checked-color="#7c3aed" border-color="#c4b5fd" radius="6px">
-  主题覆盖
-</XCheckbox>
-```
+</XDocDemo>
 
 ## Props
 

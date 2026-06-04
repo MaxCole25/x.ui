@@ -1,13 +1,44 @@
+<script setup lang="ts">
+const tagBasicCode = `<XTag>默认标签</XTag>
+<XTag variant="success" closable @close="handleClose">成功</XTag>`
+
+const tagEffectCode = `<XTag effect="light">浅色</XTag>
+<XTag effect="dark" variant="warning">深色</XTag>
+<XTag effect="plain" variant="danger">朴素</XTag>`
+
+const tagCustomCode = `<XTag accent-color="#7c3aed" round hit>自定义颜色</XTag>`
+</script>
+
 # 标签 Tag
 
 用于标记状态、分类和轻量提示，支持关闭事件和自定义颜色。
 
 ## 基础用法
 
-```vue
-<XTag>默认标签</XTag>
-<XTag variant="success" closable @close="handleClose">成功</XTag>
-```
+<XDocDemo title="基础用法" :code="tagBasicCode">
+  <div class="x-demo-row">
+    <XTag>默认标签</XTag>
+    <XTag variant="success" closable>成功</XTag>
+  </div>
+</XDocDemo>
+
+## 显示效果
+
+<XDocDemo title="显示效果" :code="tagEffectCode">
+  <div class="x-demo-row">
+    <XTag effect="light">浅色</XTag>
+    <XTag effect="dark" variant="warning">深色</XTag>
+    <XTag effect="plain" variant="danger">朴素</XTag>
+  </div>
+</XDocDemo>
+
+## 自定义颜色
+
+<XDocDemo title="自定义颜色" :code="tagCustomCode">
+  <div class="x-demo-row">
+    <XTag accent-color="#7c3aed" round hit>自定义颜色</XTag>
+  </div>
+</XDocDemo>
 
 ## Props
 

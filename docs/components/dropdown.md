@@ -1,30 +1,71 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const command = ref('等待选择')
+
+const dropdownBasicCode = `<XDropdown @command="handleCommand">
+  <XButton>更多</XButton>
+  <template #dropdown>
+    <div class="demo-dropdown-menu">
+      <button class="demo-dropdown-item" @click="handleCommand('edit')">编辑</button>
+      <button class="demo-dropdown-item is-danger" @click="handleCommand('delete')">删除</button>
+    </div>
+  </template>
+</XDropdown>`
+
+const dropdownMenuCode = `<XDropdown trigger="click" popper-width="180px">
+  <XButton>打开菜单</XButton>
+  <template #dropdown>
+    <div class="demo-dropdown-menu">
+      <button class="demo-dropdown-item">编辑</button>
+      <button class="demo-dropdown-item is-danger">删除</button>
+    </div>
+  </template>
+</XDropdown>`
+
+const dropdownItemCode = `<XDropdown trigger="click" :hide-on-click="false">
+  <XButton>更多操作</XButton>
+  <template #dropdown>
+    <div class="demo-dropdown-menu">
+      <button class="demo-dropdown-item">复制</button>
+      <button class="demo-dropdown-item is-disabled" disabled>已禁用</button>
+      <button class="demo-dropdown-item is-danger">删除</button>
+    </div>
+  </template>
+</XDropdown>`
+</script>
+
 # 下拉菜单 Dropdown
 
 用于承载命令菜单、更多操作和页面构建器中的动作入口。
 
 ## 基础用法
 
-```vue
-<XDropdown @command="handleCommand">
-  <XButton>更多</XButton>
-  <template #dropdown>
-    <XDropdownMenu>
-      <XDropdownItem command="edit">编辑</XDropdownItem>
-      <XDropdownItem command="delete" divided>删除</XDropdownItem>
-    </XDropdownMenu>
-  </template>
-</XDropdown>
-```
+<XDocDemo title="基础用法" :code="dropdownBasicCode">
+  <ClientOnly>
+    <div class="x-demo-column" style="width: 180px">
+      <XDropdown trigger="click" @command="(value) => { command = String(value) }">
+        <XButton>更多</XButton>
+        <template #dropdown>
+          <div style="display: flex; min-width: 136px; flex-direction: column; gap: 4px; padding: 6px">
+            <button type="button" class="x-demo-action" @click="command = '编辑'">编辑</button>
+            <button type="button" class="x-demo-action" style="color: #d92d20" @click="command = '删除'">删除</button>
+          </div>
+        </template>
+      </XDropdown>
+      <p class="x-demo-label">当前命令：{{ command }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 组件组成
 
-`XDropdown`、`XDropdownMenu` 和 `XDropdownItem` 是一组配套组件，文档统一放在本页：
+当前公开入口提供 `XDropdown`，弹层内容通过 `dropdown` 插槽传入。菜单容器和菜单项可以直接使用业务侧的 HTML 或项目内按钮组件组织。
 
 | 组件 | 职责 |
 | --- | --- |
 | `XDropdown` | 控制触发方式、弹层位置、Teleport、显示隐藏和 `command` 事件。 |
-| `XDropdownMenu` | 提供菜单列表容器，控制菜单宽度、高度、边框、背景和内边距。 |
-| `XDropdownItem` | 表示单个菜单命令项，支持命令值、禁用、分割线、图标和激活态。 |
+| `dropdown` 插槽内容 | 承载菜单列表、命令按钮、说明文本或自定义业务面板。 |
 
 ## XDropdown
 
@@ -66,33 +107,37 @@
 | 名称 | 说明 |
 | --- | --- |
 | default | 触发器内容 |
-| dropdown | 弹层内容，通常放置 `XDropdownMenu` |
+| dropdown | 弹层内容，通常放置菜单列表或业务面板 |
 
-## XDropdownMenu
+## 自定义菜单容器
 
 ### 基础用法
 
-```vue
-<XDropdownMenu width="180px" max-height="180px">
-  <XDropdownItem>编辑</XDropdownItem>
-  <XDropdownItem divided>删除</XDropdownItem>
-</XDropdownMenu>
-```
+<XDocDemo title="菜单容器" :code="dropdownMenuCode">
+  <ClientOnly>
+    <XDropdown trigger="click" popper-width="180px">
+      <XButton>打开菜单</XButton>
+      <template #dropdown>
+        <div style="display: flex; min-width: 160px; max-height: 180px; flex-direction: column; gap: 4px; padding: 6px">
+          <button type="button" class="x-demo-action">编辑</button>
+          <button type="button" class="x-demo-action" style="color: #d92d20">删除</button>
+        </div>
+      </template>
+    </XDropdown>
+  </ClientOnly>
+</XDocDemo>
 
-### Props
+### 可控制能力
 
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| width | 弹窗宽度 | `number \| string` | `max-content` |
-| maxHeight | 最大高度 | `number \| string` | `260px` |
-| minWidth | 最小宽度 | `number \| string` | `136px` |
-| padding | 内边距 | `number \| string` | `6px` |
-| radius | 圆角 | `number \| string` | `6px` |
-| shadow | 阴影 | `string` | 内置阴影 |
-| borderWidth | 边框宽度 | `number \| string` | `1px` |
-| borderColor | 边框色 | `string` | `#e4e7ed` |
-| backgroundColor | 背景色 | `string` | `#fff` |
-| textColor | 文字色 | `string` | `#606266` |
+| popperWidth | 弹层宽度 | `number \| string` | `max-content` |
+| radius | 弹层圆角 | `number \| string` | `6px` |
+| shadow | 弹层阴影 | `string` | 内置阴影 |
+| borderWidth | 弹层边框宽度 | `number \| string` | `1px` |
+| borderColor | 弹层边框色 | `string` | `#e4e7ed` |
+| backgroundColor | 弹层背景色 | `string` | `#fff` |
+| textColor | 弹层文字色 | `string` | `#606266` |
 
 ### Slots
 
@@ -100,37 +145,30 @@
 | --- | --- |
 | default | 菜单项内容 |
 
-## XDropdownItem
+## 自定义菜单项
 
 ### 基础用法
 
-```vue
-<XDropdownItem command="copy" icon="ri-file-copy-line">复制</XDropdownItem>
-<XDropdownItem command="remove" divided>删除</XDropdownItem>
-```
+<XDocDemo title="菜单项" :code="dropdownItemCode">
+  <ClientOnly>
+    <XDropdown trigger="click" :hide-on-click="false">
+      <XButton>更多操作</XButton>
+      <template #dropdown>
+        <div style="display: flex; min-width: 160px; flex-direction: column; gap: 4px; padding: 6px">
+          <button type="button" class="x-demo-action">复制</button>
+          <button type="button" class="x-demo-action" disabled style="opacity: 0.45">已禁用</button>
+          <button type="button" class="x-demo-action" style="color: #d92d20">删除</button>
+        </div>
+      </template>
+    </XDropdown>
+  </ClientOnly>
+</XDocDemo>
 
-### Props
+### 菜单项建议
 
-| 名称 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| command | 命令值 | `unknown` | - |
-| disabled | 是否禁用 | `boolean` | `false` |
-| divided | 是否显示上分割线 | `boolean` | `false` |
-| icon | 图标 class 名 | `string` | - |
-| size | 尺寸 | `sm \| md \| lg` | `md` |
-| active | 是否激活 | `boolean` | `false` |
-| height | 高度 | `number \| string` | 尺寸值 |
-| padding | 内边距 | `string` | 尺寸值 |
-| radius | 圆角 | `number \| string` | `4px` |
-| hoverBackgroundColor | 悬浮背景色 | `string` | 主色浅色 |
-| hoverTextColor | 悬浮文字色 | `string` | 主色 |
-| activeBackgroundColor | 激活背景色 | `string` | 主色 |
-| activeTextColor | 激活文字色 | `string` | `#fff` |
-| dividedColor | 分割线颜色 | `string` | `#edf1f7` |
-| borderWidth | 边框宽度 | `number \| string` | `0` |
-| borderColor | 边框色 | `string` | `transparent` |
-| backgroundColor | 背景色 | `string` | `transparent` |
-| textColor | 文字色 | `string` | `#606266` |
+1. 菜单项建议使用 `button type="button"`，避免嵌套在表单中时触发表单提交。
+2. 点击菜单项后需要关闭弹层时，保持 `hideOnClick` 默认值；需要连续操作时可设置 `:hide-on-click="false"`。
+3. 危险操作、禁用状态、图标和分割线可以在插槽内容中按业务设计系统自行实现。
 
 ### Events
 
@@ -150,19 +188,6 @@
 以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
 
 ### XDropdown / `DropdownProps`
-
-| 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
-
-### XDropdownMenu / `DropdownMenuProps`
-
-| 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| `size` | 尺寸规格 | `XSize` | — |
-| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
-
-### XDropdownItem / `DropdownItemProps`
 
 | 属性名 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |

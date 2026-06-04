@@ -20,7 +20,7 @@ export interface BrickProps extends ElementStyleProps {
   padding?: BrickSize
 }
 
-export interface BrickItemProps {
+export interface BrickItemProps extends ElementStyleProps {
   size?: BrickSize
   width?: BrickSize
   height?: BrickSize

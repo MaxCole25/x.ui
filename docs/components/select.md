@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const selectStatus = ref('todo')
@@ -18,6 +18,47 @@ const queryStatus = async () => {
     { name: '远程已完成', id: 'done' }
   ]
 }
+
+const selectBasicCode = `<XSelect v-model="selectStatus" :options="statusOptions" placeholder="请选择状态" />`
+
+const selectOptionCode = `<XSelect v-model="selectStatus">
+  <XOption label="待处理" value="todo" />
+  <XOption label="处理中" value="doing" />
+  <XOption label="已完成" value="done" />
+  <XOption label="已归档" value="archived" disabled />
+</XSelect>`
+
+const selectMultipleCode = `<XSelect v-model="selectMultiple" multiple :options="statusOptions" />`
+
+const selectDisplayValueCode = `<XSelect v-model="selectStatus" :options="statusOptions" display-field="value" />`
+
+const selectRemoteCode = `<XSelect
+  v-model="remoteStatus"
+  remote
+  :field-names="statusFieldNames"
+  :remote-method="queryStatus"
+  placeholder="展开后请求服务端"
+/>`
+
+const selectStateCode = `<XSelect v-model="selectClear" :options="statusOptions" clearable />
+<XSelect v-model="selectClear" :options="statusOptions" readonly clearable />
+<XSelect :options="statusOptions" disabled placeholder="禁用状态" />`
+
+const selectAffixCode = `<XSelect v-model="selectStatus" prefix="状态" suffix="必选" status="success" :options="statusOptions" />
+<XSelect v-model="selectStatus" prefix="负责人" suffix="只读" readonly :options="statusOptions" />`
+
+const selectSizeCode = `<XSelect size="sm" :options="statusOptions" placeholder="小尺寸" />
+<XSelect :options="statusOptions" placeholder="默认尺寸" />
+<XSelect size="lg" :options="statusOptions" placeholder="大尺寸" />`
+
+const selectThemeCode = `<XSelect
+  accent-color="#7c3aed"
+  border-color="#c4b5fd"
+  radius="12px"
+  input-background-color="#faf5ff"
+  :options="statusOptions"
+  placeholder="单组件主题覆盖"
+/>`
 </script>
 
 # Select 下拉框
@@ -26,34 +67,17 @@ const queryStatus = async () => {
 
 ## 基础用法
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="基础用法" :code="selectBasicCode">
+  <div class="x-demo-column" style="width: 260px">
     <XSelect v-model="selectStatus" :options="statusOptions" placeholder="请选择状态" />
     <p class="x-demo-label">当前值：{{ selectStatus }}</p>
   </div>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const status = ref('todo')
-const options = [
-  { label: '待处理', value: 'todo' },
-  { label: '处理中', value: 'doing' },
-  { label: '已完成', value: 'done' }
-]
-</script>
-
-<template>
-  <XSelect v-model="status" :options="options" placeholder="请选择状态" />
-</template>
-```
+</XDocDemo>
 
 ## 使用 XOption
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="使用 XOption" :code="selectOptionCode">
+  <div class="x-demo-column" style="width: 260px">
     <XSelect v-model="selectStatus">
       <XOption label="待处理" value="todo" />
       <XOption label="处理中" value="doing" />
@@ -61,44 +85,33 @@ const options = [
       <XOption label="已归档" value="archived" disabled />
     </XSelect>
   </div>
-</div>
-
-```vue
-<XSelect v-model="status">
-  <XOption label="待处理" value="todo" />
-  <XOption label="处理中" value="doing" />
-  <XOption label="已完成" value="done" />
-  <XOption label="已归档" value="archived" disabled />
-</XSelect>
-```
+</XDocDemo>
 
 ## 多选
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="多选" :code="selectMultipleCode">
+  <div class="x-demo-column" style="width: 260px">
     <XSelect v-model="selectMultiple" multiple :options="statusOptions" />
     <p class="x-demo-label">当前值：{{ selectMultiple.join('、') }}</p>
   </div>
-</div>
-
-```vue
-<XSelect v-model="values" multiple :options="options" />
-```
+</XDocDemo>
 
 ## 显示选项值
 
 `displayField` 默认显示 `label`。设置为 `value` 后，下拉项和已选内容会显示选项值；如果 `fieldNames.value` 映射的是后端 `id` 字段，就会显示 id。
 
-```vue
-<XSelect v-model="status" :options="options" display-field="value" />
-```
+<XDocDemo title="显示选项值" :code="selectDisplayValueCode">
+  <div class="x-demo-column" style="width: 260px">
+    <XSelect v-model="selectStatus" :options="statusOptions" display-field="value" />
+  </div>
+</XDocDemo>
 
 ## 服务端下拉与键值数据
 
 开启 `remote` 后，展开下拉时会触发 `query` 事件，并调用 `remoteMethod` 获取选项。后端返回 `id`、`name` 这类键值字段时，可通过 `fieldNames` 映射为组件内部的 `value` 和 `label`。
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="服务端下拉与键值数据" :code="selectRemoteCode">
+  <div class="x-demo-column" style="width: 280px">
     <XSelect
       v-model="remoteStatus"
       remote
@@ -108,92 +121,53 @@ const options = [
     />
     <p class="x-demo-label">当前值：{{ remoteStatus }}</p>
   </div>
-</div>
-
-```vue
-<script setup>
-const fieldNames = { label: 'name', value: 'id' }
-const queryStatus = async () => {
-  const response = await fetch('/api/status-options')
-  return response.json()
-}
-</script>
-
-<template>
-  <XSelect
-    v-model="status"
-    remote
-    :field-names="fieldNames"
-    :remote-method="queryStatus"
-  />
-</template>
-```
+</XDocDemo>
 
 ## 可清空和禁用
 
 设置 `clearable` 后，已选中内容时鼠标悬停在组件上会在后缀图标位置显示清除图标；未悬停、无内容、只读或禁用时仍显示下拉图标。
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="可清空和禁用" :code="selectStateCode">
+  <div class="x-demo-column" style="width: 260px">
     <XSelect v-model="selectClear" :options="statusOptions" clearable />
     <XSelect v-model="selectClear" :options="statusOptions" readonly clearable />
     <XSelect :options="statusOptions" disabled placeholder="禁用状态" />
   </div>
-</div>
-
-```vue
-<XSelect v-model="value" :options="options" clearable />
-<XSelect v-model="value" :options="options" readonly clearable />
-<XSelect :options="options" disabled placeholder="禁用状态" />
-```
+</XDocDemo>
 
 ## 前后缀和状态
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="前后缀和状态" :code="selectAffixCode">
+  <div class="x-demo-column" style="width: 280px">
     <XSelect v-model="selectStatus" prefix="状态" suffix="必选" status="success" :options="statusOptions" />
     <XSelect v-model="selectStatus" prefix="负责人" suffix="只读" readonly :options="statusOptions" />
   </div>
-</div>
-
-```vue
-<XSelect v-model="status" prefix="状态" suffix="必选" status="success" :options="options" />
-<XSelect v-model="status" prefix="负责人" suffix="只读" readonly :options="options" />
-```
+</XDocDemo>
 
 ## 尺寸
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
+<XDocDemo title="尺寸" :code="selectSizeCode">
+  <div class="x-demo-column" style="width: 260px">
     <XSelect size="sm" :options="statusOptions" placeholder="小尺寸" />
     <XSelect :options="statusOptions" placeholder="默认尺寸" />
     <XSelect size="lg" :options="statusOptions" placeholder="大尺寸" />
   </div>
-</div>
-
-```vue
-<XSelect size="sm" :options="options" placeholder="小尺寸" />
-<XSelect :options="options" placeholder="默认尺寸" />
-<XSelect size="lg" :options="options" placeholder="大尺寸" />
-```
+</XDocDemo>
 
 ## 业务主题
 
-<div class="x-demo-block">
-  <div class="x-demo-column">
-    <XSelect color="#7c3aed" border-color="#c4b5fd" radius="12px" input-background-color="#faf5ff" :options="statusOptions" placeholder="单组件主题覆盖" />
+<XDocDemo title="业务主题" :code="selectThemeCode">
+  <div class="x-demo-column" style="width: 280px">
+    <XSelect
+      accent-color="#7c3aed"
+      border-color="#c4b5fd"
+      radius="12px"
+      input-background-color="#faf5ff"
+      :options="statusOptions"
+      placeholder="单组件主题覆盖"
+    />
   </div>
-</div>
-
-```vue
-<XSelect
-  color="#7c3aed"
-  border-color="#c4b5fd"
-  radius="12px"
-  input-background-color="#faf5ff"
-  :options="options"
-/>
-```
+</XDocDemo>
 
 ## Props
 

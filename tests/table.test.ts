@@ -607,6 +607,19 @@ describe('XTable', () => {
     expect(globalStyles).toContain('--x-table-pagination-text-color: var(--x-color-text-muted, #8da0b8);')
   })
 
+  it('keeps the column settings header above scrolling and drag-highlighted rows', () => {
+    const source = readTableSource()
+    const headerRule = getCssRule(source, '.x-table__column-settings-header')
+    const dragIndicatorRule = getCssRule(source, '.x-table__column-settings-row.is-drag-over-before::before,\n.x-table__column-settings-row.is-drag-over-after::after')
+    const rowRule = source.match(/\.x-table__column-settings-row\s*\{[\s\S]*?z-index: 0;[\s\S]*?\n\}/)?.[0] ?? ''
+
+    expect(headerRule).toContain('background: var(--x-color-surface-soft, #f8fafc);')
+    expect(headerRule).toContain('position: sticky;')
+    expect(headerRule).toContain('z-index: 5;')
+    expect(rowRule).toContain('z-index: 0;')
+    expect(dragIndicatorRule).toContain('z-index: 1;')
+  })
+
   it('keeps pagination hidden by default', () => {
     const wrapper = mount(XTable, {
       props: {
@@ -1064,6 +1077,71 @@ describe('XTable', () => {
       settings = getLastColumnSettingsUpdate()
       const orderedKeys = [...settings].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((setting) => setting.key)
       expect(orderedKeys).toEqual(['count', 'name', 'status'])
+    } finally {
+      cleanup()
+    }
+  })
+
+  it('moves column settings to the first or last position from the built-in dialog', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        showColumnSettings: true,
+        columnSettingsDialog: true
+      }
+    })
+
+    type TestColumnSetting = {
+      key: string
+      order?: number
+    }
+
+    function getLastColumnSettingsUpdate() {
+      const events = wrapper.emitted('update:columnSettings') ?? []
+      return events[events.length - 1]?.[0] as TestColumnSetting[]
+    }
+
+    function getUpdateCount() {
+      return wrapper.emitted('update:columnSettings')?.length ?? 0
+    }
+
+    function orderedKeys(settings: TestColumnSetting[]) {
+      return [...settings].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((setting) => setting.key)
+    }
+
+    function findSettingRow(label: string) {
+      return Array.from(document.body.querySelectorAll('.x-table__column-settings-row'))
+        .find((row) => row.textContent?.includes(label)) as Element
+    }
+
+    function clickEdgeButton(row: Element, label: '置顶' | '置底') {
+      const button = Array.from(row.querySelectorAll('.x-table__column-settings-edge-button'))
+        .find((item) => item.textContent?.includes(label)) as HTMLButtonElement
+      button.click()
+    }
+
+    try {
+      await wrapper.find('.x-table__column-settings-button').trigger('click')
+      await nextTick()
+
+      clickEdgeButton(findSettingRow('状态'), '置顶')
+      await nextTick()
+      expect(orderedKeys(getLastColumnSettingsUpdate())).toEqual(['status', 'name', 'count'])
+
+      const updateCountAfterMoveFirst = getUpdateCount()
+      clickEdgeButton(findSettingRow('状态'), '置顶')
+      await nextTick()
+      expect(getUpdateCount()).toBe(updateCountAfterMoveFirst)
+
+      clickEdgeButton(findSettingRow('状态'), '置底')
+      await nextTick()
+      expect(orderedKeys(getLastColumnSettingsUpdate())).toEqual(['name', 'count', 'status'])
+
+      const updateCountAfterMoveLast = getUpdateCount()
+      clickEdgeButton(findSettingRow('状态'), '置底')
+      await nextTick()
+      expect(getUpdateCount()).toBe(updateCountAfterMoveLast)
     } finally {
       cleanup()
     }

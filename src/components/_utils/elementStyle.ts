@@ -1,6 +1,7 @@
 export interface ElementStyleProps {
   borderWidth?: number | string
   borderColor?: string
+  radius?: number | string
   backgroundColor?: string
   textColor?: string
   showActiveBorder?: boolean

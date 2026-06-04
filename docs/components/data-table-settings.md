@@ -1,3 +1,39 @@
+<script setup lang="ts">
+const tableSettingsAdapter = {
+  loadTables: () => [
+    {
+      tableKey: 'sales_order',
+      label: '销售订单',
+      physicalTableName: 'sales_order',
+      modelName: 'SalesOrder',
+      businessKeys: [{ key: 'orderNo', label: '订单号' }]
+    }
+  ],
+  loadColumns: () => [
+    { key: 'orderNo', label: '订单号', displayType: 'text', editType: 'input', keyType: 'primary', sortOrder: 1 },
+    { key: 'customerName', label: '客户名称', displayType: 'text', editType: 'autocomplete', sortOrder: 2 },
+    { key: 'status', label: '状态', displayType: 'tag', editType: 'select', dataSourceKey: 'order_status', sortOrder: 3 }
+  ],
+  loadSettings: () => [],
+  loadDataSources: () => [{ key: 'order_status', label: '订单状态', valueCount: 4 }],
+  saveSettings: (_table, rows) => ({ saved: rows.length })
+}
+
+const dataTableSettingsBasicCode = `<XDataTableSettings :adapter="adapter" height="100%" />`
+
+const dataTableSettingsThemeCode = `<XDataTableSettings
+  :adapter="adapter"
+  background-color="#ffffff"
+  text-color="#0f172a"
+  border-color="#d7e3f0"
+  header-background-color="#f3f7fb"
+  header-text-color="#0f172a"
+  control-border-color="#cbd5e1"
+  save-button-background-color="#1264f4"
+  save-button-text-color="#ffffff"
+/>`
+</script>
+
 # 数据表设置 DataTableSettings
 
 `XDataTableSettings` 是一个完整的数据表字段配置面板，用于把“远程获取数据表列表、选择数据表、加载字段配置、编辑字段配置、保存回后端”的流程封装成通用组件。
@@ -6,43 +42,35 @@
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { XDataTableSettings, type DataTableSettingsAdapter } from 'x.ui'
-
-const adapter: DataTableSettingsAdapter = {
-  loadTables: () => http.get('/system/data-tables').then((res) => res.data),
-  loadColumns: (table) => http.get(`/system/data-tables/${table.tableKey}/columns`).then((res) => res.data),
-  loadSettings: (table) => http.get(`/system/table-column-settings/${table.tableKey}`).then((res) => res.data),
-  loadDataSources: () => http.get('/system/dictionaries/sources').then((res) => res.data),
-  saveSettings: (table, rows) => http.put(`/system/table-column-settings/${table.tableKey}`, { items: rows })
-}
-</script>
-
-<template>
-  <XDataTableSettings :adapter="adapter" height="100%" />
-</template>
-```
+<XDocDemo title="基础用法" :code="dataTableSettingsBasicCode">
+  <ClientOnly>
+    <div style="height: 420px">
+      <XDataTableSettings :adapter="tableSettingsAdapter" height="100%" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 主题配色
 
 业务项目可以通过公开配色属性覆盖组件外层、表格、内置控件和保存按钮的主题色，不需要依赖深层选择器。
 
-```vue
-<template>
-  <XDataTableSettings
-    :adapter="adapter"
-    background-color="#ffffff"
-    text-color="#0f172a"
-    border-color="#d7e3f0"
-    header-background-color="#f3f7fb"
-    header-text-color="#0f172a"
-    control-border-color="#cbd5e1"
-    save-button-background-color="#1264f4"
-    save-button-text-color="#ffffff"
-  />
-</template>
-```
+<XDocDemo title="主题配色" :code="dataTableSettingsThemeCode">
+  <ClientOnly>
+    <div style="height: 420px">
+      <XDataTableSettings
+        :adapter="tableSettingsAdapter"
+        background-color="#ffffff"
+        text-color="#0f172a"
+        border-color="#d7e3f0"
+        header-background-color="#f3f7fb"
+        header-text-color="#0f172a"
+        control-border-color="#cbd5e1"
+        save-button-background-color="#1264f4"
+        save-button-text-color="#ffffff"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 远程适配器
 

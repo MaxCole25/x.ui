@@ -2,6 +2,20 @@
 import { ref } from 'vue'
 
 const inputValue = ref('默认尺寸')
+
+const inputBasicCode = `<script setup>
+import { ref } from 'vue'
+
+const value = ref('')
+<\/script>
+
+<template>
+  <XInput v-model="value" placeholder="请输入内容" clearable />
+</template>`
+
+const inputSizeCode = `<XInput size="sm" placeholder="小尺寸" />
+<XInput size="md" placeholder="默认尺寸" />
+<XInput size="lg" placeholder="大尺寸" />`
 </script>
 
 # Input 输入框
@@ -10,40 +24,30 @@ const inputValue = ref('默认尺寸')
 
 ## 基础用法
 
-<div class="x-demo-block">
+<XDocDemo title="基础用法" :code="inputBasicCode">
   <div class="x-demo-column">
-    <XInput v-model="inputValue" placeholder="请输入内容" clearable />
+    <div style="width: 240px">
+      <XInput v-model="inputValue" placeholder="请输入内容" clearable />
+    </div>
     <p class="x-demo-label">当前输入：{{ inputValue || '暂无' }}</p>
   </div>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const value = ref('')
-</script>
-
-<template>
-  <XInput v-model="value" placeholder="请输入内容" clearable />
-</template>
-```
+</XDocDemo>
 
 ## 尺寸
 
-<div class="x-demo-block">
+<XDocDemo title="尺寸" :code="inputSizeCode">
   <div class="x-demo-column">
-    <XInput size="sm" placeholder="小尺寸" />
-    <XInput size="md" placeholder="默认尺寸" />
-    <XInput size="lg" placeholder="大尺寸" />
+    <div style="width: 240px">
+      <XInput size="sm" placeholder="小尺寸" />
+    </div>
+    <div style="width: 240px">
+      <XInput size="md" placeholder="默认尺寸" />
+    </div>
+    <div style="width: 240px">
+      <XInput size="lg" placeholder="大尺寸" />
+    </div>
   </div>
-</div>
-
-```vue
-<XInput size="sm" placeholder="小尺寸" />
-<XInput size="md" placeholder="默认尺寸" />
-<XInput size="lg" placeholder="大尺寸" />
-```
+</XDocDemo>
 
 尺寸预设只在显式传入 `size` 时生效。未传入 `size` 时，`XInput` 会保留 `XBaseInput` 的表单继承能力，例如在 `XForm size="lg"` 中自动继承表单尺寸。
 

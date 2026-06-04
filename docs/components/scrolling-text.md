@@ -1,27 +1,13 @@
-# 滚动文字 ScrollingText
-
-用于公告、状态提示或短文本信息的连续滚动展示。组件默认 `padding` 为 `0`，只提供显示方向、文字流向、速度和字体颜色相关外观接口。
-
-## 基础用法
-
-```vue
-<XScrollingText width="280px">
+<script setup lang="ts">
+const scrollingTextBasicCode = `<XScrollingText width="280px">
   系统公告：今日 18:00 将进行例行维护。
-</XScrollingText>
-```
+</XScrollingText>`
 
-## 竖向滚动
-
-```vue
-<XScrollingText display-direction="vertical" flow-direction="up" height="96px">
+const scrollingTextVerticalCode = `<XScrollingText display-direction="vertical" flow-direction="up" height="96px">
   任务已提交，正在等待处理。
-</XScrollingText>
-```
+</XScrollingText>`
 
-## 自定义外观和速度
-
-```vue
-<XScrollingText
+const scrollingTextThemeCode = `<XScrollingText
   display-direction="horizontal"
   flow-direction="right"
   width="320px"
@@ -32,8 +18,45 @@
   background-color="#1264f4"
 >
   x.ui 支持滚动速度、字体样式、字体大小、字体颜色和背景色配置。
-</XScrollingText>
-```
+</XScrollingText>`
+</script>
+
+# 滚动文字 ScrollingText
+
+用于公告、状态提示或短文本信息的连续滚动展示。组件默认 `padding` 为 `0`，只提供显示方向、文字流向、速度和字体颜色相关外观接口。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="scrollingTextBasicCode">
+  <XScrollingText width="280px">
+    系统公告：今日 18:00 将进行例行维护。
+  </XScrollingText>
+</XDocDemo>
+
+## 竖向滚动
+
+<XDocDemo title="竖向滚动" :code="scrollingTextVerticalCode">
+  <XScrollingText display-direction="vertical" flow-direction="up" height="96px">
+    任务已提交，正在等待处理。
+  </XScrollingText>
+</XDocDemo>
+
+## 自定义外观和速度
+
+<XDocDemo title="自定义外观和速度" :code="scrollingTextThemeCode">
+  <XScrollingText
+    display-direction="horizontal"
+    flow-direction="right"
+    width="320px"
+    :speed="60"
+    font-family="Arial, sans-serif"
+    font-size="14px"
+    text-color="#ffffff"
+    background-color="#1264f4"
+  >
+    x.ui 支持滚动速度、字体样式、字体大小、字体颜色和背景色配置。
+  </XScrollingText>
+</XDocDemo>
 
 ## Props
 

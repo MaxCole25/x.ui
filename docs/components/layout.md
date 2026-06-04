@@ -1,3 +1,24 @@
+<script setup lang="ts">
+const layoutBasicCode = `<XLayout
+  mode="top-sidebar"
+  :full-height="false"
+  :sidebar-width="180"
+  sidebar-padding="8px 12px"
+>
+  <template #topbar>顶部区域</template>
+  <template #sidebar>侧栏区域</template>
+  主内容区域
+  <template #footer>底部区域</template>
+</XLayout>`
+
+const layoutModeCode = `<XLayout mode="sidebar-top" :full-height="false" :sidebar-width="160">
+  <template #topbar>顶部区域</template>
+  <template #sidebar>贯穿侧栏</template>
+  内容区域
+  <template #footer>底部区域</template>
+</XLayout>`
+</script>
+
 # 布局 Layout
 
 `XLayout` 是从 NexMod 主布局抽离出的基础布局组件，支持通过属性快速切换布局方式。
@@ -8,21 +29,21 @@
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { XLayout } from 'x.ui'
-import 'x.ui/style.css'
-</script>
-
-<template>
-  <XLayout mode="top-sidebar" :sidebar-width="280" sidebar-padding="8px 12px 10px 6px">
-    <template #topbar>顶部区域</template>
-    <template #sidebar>侧栏区域</template>
-    主内容区域
-    <template #footer>底部区域</template>
-  </XLayout>
-</template>
-```
+<XDocDemo title="基础用法" :code="layoutBasicCode">
+  <div style="height: 320px">
+    <XLayout
+      mode="top-sidebar"
+      :full-height="false"
+      :sidebar-width="180"
+      sidebar-padding="8px 12px"
+    >
+      <template #topbar>顶部区域</template>
+      <template #sidebar>侧栏区域</template>
+      主内容区域
+      <template #footer>底部区域</template>
+    </XLayout>
+  </div>
+</XDocDemo>
 
 `sidebarPadding` 支持标准 CSS padding 写法，例如：`12`、`'12px'`、`'8px 12px'`、`'8px 12px 10px 6px'`。
 
@@ -31,6 +52,17 @@ import 'x.ui/style.css'
 - `top-sidebar`：顶部横向 + 左侧栏 + 内容 + 底部。
 - `sidebar-top`：左侧栏贯穿整列，顶部、内容、底部在右侧。
 - `top-only`：仅顶部 + 内容 + 底部，不渲染侧栏。
+
+<XDocDemo title="侧栏贯穿布局" :code="layoutModeCode">
+  <div style="height: 300px">
+    <XLayout mode="sidebar-top" :full-height="false" :sidebar-width="160">
+      <template #topbar>顶部区域</template>
+      <template #sidebar>贯穿侧栏</template>
+      内容区域
+      <template #footer>底部区域</template>
+    </XLayout>
+  </div>
+</XDocDemo>
 
 ## Props
 

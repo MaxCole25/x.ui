@@ -1,12 +1,34 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const color = ref('#1264f4')
+const disabledColor = ref('#94a3b8')
+
+const colorPickerBasicCode = `<XColorPicker v-model="color" />`
+
+const colorPickerDisabledCode = `<XColorPicker v-model="color" disabled />`
+</script>
+
 # 颜色选择器 ColorPicker
 
 用于选择和展示当前颜色，内置颜色选择器面板。
 
 ## 基础用法
 
-```vue
-<XColorPicker v-model="color" />
-```
+<XDocDemo title="基础用法" :code="colorPickerBasicCode">
+  <div class="x-demo-column">
+    <XColorPicker v-model="color" />
+    <p class="x-demo-label">当前颜色：{{ color }}</p>
+  </div>
+</XDocDemo>
+
+## 禁用状态
+
+禁用后色块和颜色输入都不可交互。
+
+<XDocDemo title="禁用状态" :code="colorPickerDisabledCode">
+  <XColorPicker v-model="disabledColor" disabled />
+</XDocDemo>
 
 ## Props
 

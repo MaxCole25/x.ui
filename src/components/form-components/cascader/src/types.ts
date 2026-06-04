@@ -54,5 +54,6 @@ export interface CascaderProps
   textAlign?: CascaderTextAlign
   separator?: string
   changeOnSelect?: boolean
+  teleportTo?: string
   name?: string
 }

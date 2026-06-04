@@ -1,66 +1,87 @@
 ﻿# 富文本 RichTextEditor
 
-`XRichTextEditor` 是从 NexMod `XlEdit` 迁移来的完整 TipTap 富文本编辑器，适合文档编辑、知识库正文、富文本消息和后台内容录入场景。
-
-## 基础用法
-
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XRichTextEditor } from 'x.ui'
-import 'x.ui/style.css'
 
 const content = ref('')
-</script>
-
-<template>
-  <XRichTextEditor v-model="content" />
-</template>
-```
-
-## 保存为 JSON 字符串
-
-组件推荐把 `modelValue` 保存为 TipTap JSON 字符串。传入空字符串时会显示空文档；传入非 JSON 字符串时会按 HTML 内容载入，便于兼容旧数据。
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const content = ref(JSON.stringify({
+const jsonContent = ref(JSON.stringify({
   type: 'doc',
   content: [
     { type: 'paragraph', content: [{ type: 'text', text: '你好，x.ui' }] }
   ]
 }))
-</script>
+const fullHeightContent = ref(JSON.stringify({
+  type: 'doc',
+  content: [
+    { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: '填满父容器' }] },
+    { type: 'paragraph', content: [{ type: 'text', text: '内容区会在固定高度容器内滚动。' }] }
+  ]
+}))
 
-<template>
+const richTextBasicCode = `<XRichTextEditor v-model="content" />`
+
+const richTextJsonCode = `<XRichTextEditor
+  v-model="content"
+  :min-height="420"
+  :can-save="true"
+  :show-outline="true"
+  @save-doc="() => console.log('save')"
+  @html-change="(html) => console.log(html)"
+/>`
+
+const richTextFullHeightCode = `<div style="height: 520px; min-height: 0">
   <XRichTextEditor
     v-model="content"
-    :min-height="420"
-    :can-save="true"
-    :show-outline="true"
-    @save-doc="() => console.log('save')"
-    @html-change="(html) => console.log(html)"
+    full-height
+    :show-outline="false"
   />
-</template>
-```
+</div>`
+</script>
+
+`XRichTextEditor` 是从 NexMod `XlEdit` 迁移来的完整 TipTap 富文本编辑器，适合文档编辑、知识库正文、富文本消息和后台内容录入场景。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="richTextBasicCode">
+  <ClientOnly>
+    <div style="min-height: 360px">
+      <XRichTextEditor v-model="content" :min-height="260" :show-outline="false" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
+
+## 保存为 JSON 字符串
+
+组件推荐把 `modelValue` 保存为 TipTap JSON 字符串。传入空字符串时会显示空文档；传入非 JSON 字符串时会按 HTML 内容载入，便于兼容旧数据。
+
+<XDocDemo title="保存为 JSON 字符串" :code="richTextJsonCode">
+  <ClientOnly>
+    <div style="min-height: 460px">
+      <XRichTextEditor
+        v-model="jsonContent"
+        :min-height="320"
+        :can-save="true"
+        :show-outline="true"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 填满父容器高度
 
 `minHeight` 用于普通表单、弹窗等场景，控制编辑区域的最小高度。若父容器已经有明确高度，并希望富文本整体占满剩余空间，请使用 `fullHeight`。开启后组件根节点、编辑器外壳、内容区和 ProseMirror 编辑面会沿父容器高度链填满，工具栏保持自身高度，滚动保留在内容 viewport 内。
 
-```vue
-<template>
-  <div style="height: 520px; min-height: 0">
-    <XRichTextEditor
-      v-model="content"
-      full-height
-      :show-outline="false"
-    />
-  </div>
-</template>
-```
+<XDocDemo title="填满父容器高度" :code="richTextFullHeightCode">
+  <ClientOnly>
+    <div style="height: 420px; min-height: 0">
+      <XRichTextEditor
+        v-model="fullHeightContent"
+        full-height
+        :show-outline="false"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

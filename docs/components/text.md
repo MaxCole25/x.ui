@@ -1,25 +1,9 @@
-# 文本 Text
-
-用于展示标题、正文、辅助说明和状态文本。
-
-## 基础用法
-
-<XText>正文文本</XText>
+<script setup lang="ts">
+const textBasicCode = `<XText>正文文本</XText>
 <XText size="title">标题文本</XText>
-<XText variant="muted">辅助文本</XText>
+<XText variant="muted">辅助文本</XText>`
 
-```vue
-<XText>正文文本</XText>
-<XText size="title">标题文本</XText>
-<XText variant="muted">辅助文本</XText>
-```
-
-## 外观接口
-
-`XText` 支持常用外观属性，可用于在低代码配置面板中统一控制文本容器、边框和字号样式。
-当显式传入 `size="sm" | "md" | "lg"` 时，组件会按统一尺寸预设接管字号、高度、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`；未显式传入 `size` 时，仍可通过 `fontSize`、`height`、`padding`、`radius` 做局部外观调整。
-
-<XText
+const textAppearanceCode = `<XText
   model-value="外层 div 承载边框"
   border-width="3px"
   border-color="#ff0000"
@@ -31,39 +15,59 @@
   radius="8px"
   padding="5px 10px"
   text-align="left"
-/>
+/>`
 
-```vue
-<XText
-  v-model="value"
-  border-width="3px"
-  border-color="#ff0000"
-  background-color="#f0fdf4"
-  text-color="#000000"
-  font-family="Arial, sans-serif"
-  :font-size="12"
-  :height="40"
-  radius="8px"
-  padding="5px 10px"
-  text-align="left"
-/>
-```
+const textFormatterCode = `<XText
+  :model-value="12.5"
+  :formatter="(value) => \`[\${value}]\`"
+/>`
+</script>
+
+# 文本 Text
+
+用于展示标题、正文、辅助说明和状态文本。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="textBasicCode">
+  <div class="x-demo-column">
+    <XText>正文文本</XText>
+    <XText size="title">标题文本</XText>
+    <XText variant="muted">辅助文本</XText>
+  </div>
+</XDocDemo>
+
+## 外观接口
+
+`XText` 支持常用外观属性，可用于在低代码配置面板中统一控制文本容器、边框和字号样式。
+当显式传入 `size="sm" | "md" | "lg"` 时，组件会按统一尺寸预设接管字号、高度、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`；未显式传入 `size` 时，仍可通过 `fontSize`、`height`、`padding`、`radius` 做局部外观调整。
+
+<XDocDemo title="外观接口" :code="textAppearanceCode">
+  <XText
+    model-value="外层 div 承载边框"
+    border-width="3px"
+    border-color="#ff0000"
+    background-color="#f0fdf4"
+    text-color="#000000"
+    font-family="Arial, sans-serif"
+    :font-size="12"
+    :height="40"
+    radius="8px"
+    padding="5px 10px"
+    text-align="left"
+  />
+</XDocDemo>
 
 ## 文本格式化
 
 通过 `formatter` 可以把绑定值格式化后展示。组件不内置具体业务格式，展示规则由使用方决定。
 
-<XText
-  :model-value="12.5"
-  :formatter="(value) => `[${value}]`"
-/>
-
-```vue
-<XText
-  :model-value="12.5"
-  :formatter="(value) => `[${value}]`"
-/>
-```
+<XDocDemo title="文本格式化" :code="textFormatterCode">
+  <XText
+    :model-value="12.5"
+    :formatter="(value) => `[${value}]`"
+  />
+</XDocDemo>
 
 ## Props
 

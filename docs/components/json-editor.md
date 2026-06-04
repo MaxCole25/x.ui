@@ -1,12 +1,28 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const jsonText = ref(`{
+  "name": "x.ui",
+  "version": "0.1.0",
+  "features": ["components", "docs", "stories"]
+}`)
+
+const jsonEditorBasicCode = `<XJsonEditor v-model="jsonText" />`
+</script>
+
 # JSON编辑器 JsonEditor
 
 `XJsonEditor` 支持行号、高亮、错误定位和一键格式化。
 
-## 用法
+## 基础用法
 
-```vue
-<XJsonEditor v-model="jsonText" />
-```
+<XDocDemo title="基础用法" :code="jsonEditorBasicCode">
+  <ClientOnly>
+    <div style="max-width: 720px">
+      <XJsonEditor v-model="jsonText" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

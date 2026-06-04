@@ -47,6 +47,7 @@ const sample = reactive({
   suffix: '必选',
   separator: ' / ',
   changeOnSelect: false,
+  teleportTo: '',
   activeBorderColor: '#1264f4',
   clearIconColor: '#64748b',
   clearIconSize: 16,
@@ -124,6 +125,10 @@ const updateRadius = (event: Event) => {
             <label>
               <span>分隔符</span>
               <input v-model="sample.separator" />
+            </label>
+            <label>
+              <span>挂载目标</span>
+              <input v-model="sample.teleportTo" />
             </label>
             <label>
               <span>字体</span>

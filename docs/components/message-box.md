@@ -1,11 +1,10 @@
-# MessageBox 消息弹框
+<script setup lang="ts">
+import { ref } from 'vue'
 
-`XMessageBox` 参考 Element Plus 的 `ElMessageBox`，用于需要用户确认的反馈场景。它支持服务调用，也支持 `XMessageBoxComponent` 作为普通组件使用。
+const serviceVisible = ref(false)
+const visible = ref(false)
 
-## 服务调用
-
-```ts
-import { XMessageBox } from 'x.ui'
+const messageBoxServiceCode = `import { XMessageBox } from 'x.ui'
 
 XMessageBox.alert('操作成功', '提示')
 
@@ -13,23 +12,48 @@ XMessageBox.confirm('删除后不可恢复，是否继续？', '删除确认', {
   status: 'warning',
   confirmButtonText: '删除',
   cancelButtonText: '取消'
-})
-```
+})`
+
+const messageBoxComponentCode = `<button type="button" @click="visible = true">打开弹框</button>
+
+<XMessageBoxComponent v-model="visible" title="提示" message="确认继续吗？" show-cancel-button />`
+</script>
+
+# MessageBox 消息弹框
+
+`XMessageBox` 参考 Element Plus 的 `ElMessageBox`，用于需要用户确认的反馈场景。它支持服务调用，也支持 `XMessageBoxComponent` 作为普通组件使用。
+
+## 服务调用
+
+<XDocDemo title="服务调用" :code="messageBoxServiceCode" language="ts">
+  <ClientOnly>
+    <div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="serviceVisible = true"
+      >
+        模拟服务调用
+      </button><XMessageBoxComponent v-model="serviceVisible" title="删除确认" message="删除后不可恢复，是否继续？" status="warning" show-cancel-button confirm-button-text="删除" cancel-button-text="取消" :close-on-mask-click="false" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 组件用法
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XMessageBoxComponent } from 'x.ui'
-
-const visible = ref(false)
-</script>
-
-<template>
-  <XMessageBoxComponent v-model="visible" title="提示" message="确认继续吗？" show-cancel-button />
-</template>
-```
+<XDocDemo title="组件用法" :code="messageBoxComponentCode">
+  <ClientOnly>
+    <div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="visible = true"
+      >
+        打开弹框
+      </button><XMessageBoxComponent v-model="visible" title="提示" message="确认继续吗？" show-cancel-button />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props / Options
 

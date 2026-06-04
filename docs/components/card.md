@@ -1,14 +1,54 @@
+<script setup lang="ts">
+const cardBasicCode = `<XCard header="卡片标题" footer="底部内容" width="320px">
+  卡片正文
+</XCard>`
+
+const cardSlotCode = `<XCard width="320px" shadow="hover">
+  <template #header>
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span>项目概览</span>
+      <XButton width="72px" height="28px">查看</XButton>
+    </div>
+  </template>
+
+  <div style="line-height: 1.8">
+    今日新增 12 条任务，3 条需要优先处理。
+  </div>
+
+  <template #footer>
+    更新时间：09:30
+  </template>
+</XCard>`
+</script>
+
 # 卡片 Card
 
 用于承载一组相关内容，可配置头部、底部、边框、背景和阴影。
 
 ## 基础用法
 
-```vue
-<XCard header="卡片标题" footer="底部内容">
-  卡片正文
-</XCard>
-```
+<XDocDemo title="基础用法" :code="cardBasicCode">
+  <XCard header="卡片标题" footer="底部内容" width="320px">
+    卡片正文
+  </XCard>
+</XDocDemo>
+
+## 自定义插槽
+
+通过 `header`、`default` 和 `footer` 插槽组合更完整的内容区块。
+
+<XDocDemo title="自定义插槽" :code="cardSlotCode">
+  <XCard width="320px" shadow="hover">
+    <template #header>
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span>项目概览</span>
+        <XButton width="72px" height="28px">查看</XButton>
+      </div>
+    </template>
+    <div style="line-height: 1.8">今日新增 12 条任务，3 条需要优先处理。</div>
+    <template #footer>更新时间：09:30</template>
+  </XCard>
+</XDocDemo>
 
 ## Props
 

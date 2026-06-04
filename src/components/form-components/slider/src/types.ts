@@ -9,4 +9,5 @@ export interface SliderProps extends ElementStyleProps {
   step?: number
   disabled?: boolean
   showValue?: boolean
+  vertical?: boolean
 }

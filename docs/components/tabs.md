@@ -1,64 +1,90 @@
-# 标签页 Tabs
-
-`XTabs` 是用于多页签内容切换的容器组件，支持关闭、新增、拖拽排序、懒渲染、右键菜单、四向布局和自定义标签内容。
-
-## 基础用法
-
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XTabs, type TabItem, type TabName } from 'x.ui'
 
-const active = ref<TabName>('overview')
-const items: TabItem[] = [
+const active = ref('overview')
+const items = ref([
   { name: 'overview', label: '总览', locked: true },
   { name: 'members', label: '成员', closable: true },
   { name: 'settings', label: '设置', disabled: true }
-]
-</script>
+])
 
-<template>
-  <XTabs v-model="active" :items="items" closable>
-    <template #pane="{ item }">
-      当前页签：{{ item.label }}
-    </template>
-  </XTabs>
-</template>
-```
+const tabsBasicCode = `<XTabs v-model="active" :items="items" closable>
+  <template #pane="{ item }">
+    当前页签：{{ item.label }}
+  </template>
+</XTabs>`
 
-## 页签类型
-
-```vue
-<XTabs v-model="active" :items="items" variant="line" />
+const tabsVariantCode = `<XTabs v-model="active" :items="items" variant="line" />
 <XTabs v-model="active" :items="items" variant="card" />
-<XTabs v-model="active" :items="items" variant="border-card" />
-```
+<XTabs v-model="active" :items="items" variant="border-card" />`
 
-`variant=""` 与 `variant="line"` 都会使用线条页签。`card` 为默认卡片页签，`border-card` 会给整体容器增加边框并弱化内容区内边框，适合需要完整外框的页面模块。
-
-## 新增与关闭
-
-```vue
-<XTabs
+const tabsEditableCode = `<XTabs
   v-model="active"
   :items="items"
   addable
   closable
   @tab-add="createTab"
   @tab-remove="removeTab"
-/>
-```
+/>`
 
-## 拖拽排序
-
-```vue
-<XTabs
+const tabsDraggableCode = `<XTabs
   v-model="active"
   :items="items"
   draggable
   @reorder="moveTab"
-/>
-```
+/>`
+</script>
+
+# 标签页 Tabs
+
+`XTabs` 是用于多页签内容切换的容器组件，支持关闭、新增、拖拽排序、懒渲染、右键菜单、四向布局和自定义标签内容。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="tabsBasicCode">
+  <ClientOnly>
+    <XTabs v-model="active" :items="items" closable />
+  </ClientOnly>
+</XDocDemo>
+
+## 页签类型
+
+<XDocDemo title="页签类型" :code="tabsVariantCode">
+  <ClientOnly>
+    <div class="x-demo-column">
+      <XTabs v-model="active" :items="items" variant="line" />
+      <XTabs v-model="active" :items="items" variant="card" />
+      <XTabs v-model="active" :items="items" variant="border-card" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
+
+`variant=""` 与 `variant="line"` 都会使用线条页签。`card` 为默认卡片页签，`border-card` 会给整体容器增加边框并弱化内容区内边框，适合需要完整外框的页面模块。
+
+## 新增与关闭
+
+<XDocDemo title="新增与关闭" :code="tabsEditableCode">
+  <ClientOnly>
+    <XTabs
+      v-model="active"
+      :items="items"
+      addable
+      closable
+    />
+  </ClientOnly>
+</XDocDemo>
+
+## 拖拽排序
+
+<XDocDemo title="拖拽排序" :code="tabsDraggableCode">
+  <ClientOnly>
+    <XTabs
+      v-model="active"
+      :items="items"
+      draggable
+    />
+  </ClientOnly>
+</XDocDemo>
 
 `reorder` 会返回 `{ source, target, position }`，业务侧根据这个结果调整 `items` 顺序。
 

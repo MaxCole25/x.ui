@@ -1,36 +1,60 @@
-# 页面构建器 PageBuilder
-
-`XPageBuilder` 是从 NexMod 的 PageBuilder 思路中拆出的独立编辑器组件。它不再生成前端文件、不绑定路由和接口动作，只维护组件编辑器里的 UI 布局 JSON。
-
-内部组件库只保留 PageBuilder 自身的 `容器` 组件，其余可拖入组件来自 x.ui，例如 `XButton`、`XInput`、`XSelect`、`XTable`、`XTree`、`XTabs` 等。
-
-## 基础用法
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { XPageBuilder, createDefaultPageBuilderSchema, type PageBuilderSchema } from 'x.ui'
-import 'x.ui/style.css'
-
-const schema = ref<PageBuilderSchema>(createDefaultPageBuilderSchema())
-</script>
-
-<template>
-  <XPageBuilder v-model="schema" @export-json="(value) => console.log(value)" />
-</template>
-```
-
-## 动态字段组件
-
-业务系统可以通过 `customWidgets` 给组件库追加动态组件，例如把当前数据表字段作为“字段”页签注入。字段拖入画布后仍然是普通节点，可以在 `props` 中保存 `tableKey`、`fieldKey`、`fieldLabel` 等绑定信息。
-
-```vue
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { XInput, XPageBuilder, createDefaultPageBuilderSchema, type PageBuilderWidgetDefinition } from 'x.ui'
+import { XInput } from '../../src/components/form-components/input'
 
-const schema = ref(createDefaultPageBuilderSchema())
-const fieldWidgets = computed<PageBuilderWidgetDefinition[]>(() => [
+const schema = ref({
+  version: '1.0',
+  canvas: {
+    columns: 12,
+    rowHeight: 58,
+    gap: 12,
+    padding: 16,
+    background: '#f6f8fb'
+  },
+  nodes: [
+    {
+      id: 'node-title',
+      type: 'x-input',
+      component: 'XInput',
+      label: '标题输入',
+      layout: { x: 0, y: 0, w: 5, h: 1 },
+      props: { modelValue: '', placeholder: '请输入标题', clearable: true, size: 'md' }
+    },
+    {
+      id: 'node-save',
+      type: 'x-button',
+      component: 'XButton',
+      label: '保存按钮',
+      layout: { x: 5, y: 0, w: 2, h: 1 },
+      props: { variant: 'solid', size: 'md' },
+      slots: { default: '保存' }
+    }
+  ]
+})
+
+const fieldSchema = ref({
+  ...schema.value,
+  nodes: [
+    {
+      id: 'field-full-name',
+      type: 'field-input:customers:fullName',
+      component: 'XInput',
+      label: '客户全称',
+      layout: { x: 0, y: 0, w: 5, h: 1 },
+      props: {
+        modelValue: '',
+        placeholder: '客户全称',
+        clearable: true,
+        size: 'md',
+        tableKey: 'customers',
+        fieldKey: 'fullName',
+        fieldLabel: '客户全称'
+      }
+    }
+  ]
+})
+
+const fieldWidgets = computed(() => [
   {
     type: 'field-input:customers:fullName',
     component: 'XInput',
@@ -51,12 +75,39 @@ const fieldWidgets = computed<PageBuilderWidgetDefinition[]>(() => [
     }
   }
 ])
+
+const pageBuilderBasicCode = `<XPageBuilder v-model="schema" @export-json="(value) => console.log(value)" />`
+
+const pageBuilderFieldCode = `<XPageBuilder v-model="schema" :custom-widgets="fieldWidgets" />`
 </script>
 
-<template>
-  <XPageBuilder v-model="schema" :custom-widgets="fieldWidgets" />
-</template>
-```
+# 页面构建器 PageBuilder
+
+`XPageBuilder` 是从 NexMod 的 PageBuilder 思路中拆出的独立编辑器组件。它不再生成前端文件、不绑定路由和接口动作，只维护组件编辑器里的 UI 布局 JSON。
+
+内部组件库只保留 PageBuilder 自身的 `容器` 组件，其余可拖入组件来自 x.ui，例如 `XButton`、`XInput`、`XSelect`、`XTable`、`XTree`、`XTabs` 等。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="pageBuilderBasicCode">
+  <ClientOnly>
+    <div style="height: 520px">
+      <XPageBuilder v-model="schema" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
+
+## 动态字段组件
+
+业务系统可以通过 `customWidgets` 给组件库追加动态组件，例如把当前数据表字段作为“字段”页签注入。字段拖入画布后仍然是普通节点，可以在 `props` 中保存 `tableKey`、`fieldKey`、`fieldLabel` 等绑定信息。
+
+<XDocDemo title="动态字段组件" :code="pageBuilderFieldCode">
+  <ClientOnly>
+    <div style="height: 520px">
+      <XPageBuilder v-model="fieldSchema" :custom-widgets="fieldWidgets" />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 输出数据
 

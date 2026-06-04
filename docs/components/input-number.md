@@ -1,19 +1,23 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const count = ref(12)
+
+const inputNumberBasicCode = `<XInputNumber v-model="count" :min="0" :max="99" :step="3" />`
+</script>
+
 # 数字输入框 InputNumber
 
 用于输入带步进控制的数值。
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-const count = ref(12)
-</script>
-
-<template>
-  <XInputNumber v-model="count" :min="0" :max="99" :step="3" />
-</template>
-```
+<XDocDemo title="基础用法" :code="inputNumberBasicCode">
+  <div class="x-demo-column" style="width: 240px">
+    <XInputNumber v-model="count" :min="0" :max="99" :step="3" />
+    <p class="x-demo-label">当前值：{{ count }}</p>
+  </div>
+</XDocDemo>
 
 ## 尺寸规则
 

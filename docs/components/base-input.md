@@ -6,6 +6,66 @@ const inputAmount = ref(128)
 const inputFormattedAmount = ref(9200)
 const inputClearable = ref('可清空内容')
 
+const baseInputBasicCode = `<script setup>
+import { ref } from 'vue'
+
+const value = ref('')
+<\/script>
+
+<template>
+  <XBaseInput v-model="value" placeholder="请输入名称" />
+</template>`
+
+const baseInputClearableCode = `<XBaseInput v-model="value" placeholder="请输入内容" clearable />`
+
+const baseInputFormatterCode = `<script setup>
+import { ref } from 'vue'
+
+const amount = ref(9200)
+
+function formatCurrency(value) {
+  const n = Number(value ?? 0)
+  return Number.isFinite(n)
+    ? \`￥\${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\`
+    : '￥0.00'
+}
+
+function parseCurrency(value) {
+  const n = Number(String(value ?? '').replace(/[¥￥,\\s]/g, ''))
+  return Number.isFinite(n) ? n : 0
+}
+<\/script>
+
+<template>
+  <XBaseInput
+    v-model="amount"
+    text-align="right"
+    type="number"
+    :formatter="formatCurrency"
+    :parser="parseCurrency"
+  />
+</template>`
+
+const baseInputAffixCode = `<XBaseInput v-model="amount" type="number" prefix="￥" suffix="元" />`
+
+const baseInputAppearanceCode = `<XBaseInput
+  active-border-color="#2563eb"
+  border-color="#dc2626"
+  background-color="#f0fdf4"
+  text-color="#000000"
+  clear-icon-color="#67c23a"
+  clear-icon-size="18px"
+  font-size="12px"
+  width="320px"
+  height="40px"
+  auto-height
+  radius="8px"
+  padding="5px 10px"
+  text-align="center"
+  clearable
+  model-value="外层 div 承载边框"
+/>`
+
 function formatCurrency(value) {
   const n = Number(value ?? 0)
   return Number.isFinite(n)
@@ -25,99 +85,57 @@ function parseCurrency(value) {
 
 ## 基础用法
 
-<div class="x-demo-block">
+<XDocDemo title="基础用法" :code="baseInputBasicCode">
   <div class="x-demo-column">
-    <XBaseInput v-model="inputBasic" placeholder="请输入名称" />
+    <div style="width: 240px">
+      <XBaseInput v-model="inputBasic" placeholder="请输入名称" />
+    </div>
     <p class="x-demo-label">当前输入：{{ inputBasic || '暂无' }}</p>
   </div>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const value = ref('')
-</script>
-
-<template>
-  <XBaseInput v-model="value" placeholder="请输入名称" />
-</template>
-```
+</XDocDemo>
 
 ## 可清空
 
-<div class="x-demo-block">
+<XDocDemo title="可清空" :code="baseInputClearableCode">
   <div class="x-demo-column">
-    <XBaseInput v-model="inputClearable" placeholder="请输入内容" clearable />
+    <div style="width: 240px">
+      <XBaseInput v-model="inputClearable" placeholder="请输入内容" clearable />
+    </div>
   </div>
-</div>
-
-```vue
-<XBaseInput v-model="value" placeholder="请输入内容" clearable />
-```
+</XDocDemo>
 
 ## 格式化显示
 
 金额、统计值等场景可以用 `formatter` 负责展示文本，用 `parser` 把用户输入转换回真实值。输入框内显示格式化后的内容，`v-model` 仍保持解析后的原始值。
 
-<div class="x-demo-block">
+<XDocDemo title="格式化显示" :code="baseInputFormatterCode">
   <div class="x-demo-column">
-    <XBaseInput
-      v-model="inputFormattedAmount"
-      text-align="right"
-      type="number"
-      :formatter="formatCurrency"
-      :parser="parseCurrency"
-    />
+    <div style="width: 240px">
+      <XBaseInput
+        v-model="inputFormattedAmount"
+        text-align="right"
+        type="number"
+        :formatter="formatCurrency"
+        :parser="parseCurrency"
+      />
+    </div>
     <p class="x-demo-label">真实值：{{ inputFormattedAmount }}</p>
   </div>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const amount = ref(9200)
-
-function formatCurrency(value) {
-  const n = Number(value ?? 0)
-  return Number.isFinite(n)
-    ? `￥${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : '￥0.00'
-}
-
-function parseCurrency(value) {
-  const n = Number(String(value ?? '').replace(/[¥￥,\s]/g, ''))
-  return Number.isFinite(n) ? n : 0
-}
-</script>
-
-<template>
-  <XBaseInput
-    v-model="amount"
-    text-align="right"
-    type="number"
-    :formatter="formatCurrency"
-    :parser="parseCurrency"
-  />
-</template>
-```
+</XDocDemo>
 
 ## 前后缀
 
-<div class="x-demo-block">
+<XDocDemo title="前后缀" :code="baseInputAffixCode">
   <div class="x-demo-column">
-    <XBaseInput v-model="inputAmount" type="number" prefix="￥" suffix="元" />
+    <div style="width: 240px">
+      <XBaseInput v-model="inputAmount" type="number" prefix="￥" suffix="元" />
+    </div>
   </div>
-</div>
-
-```vue
-<XBaseInput v-model="amount" type="number" prefix="￥" suffix="元" />
-```
+</XDocDemo>
 
 ## 外观接口
 
-<div class="x-demo-block">
+<XDocDemo title="外观接口" :code="baseInputAppearanceCode">
   <div class="x-demo-column">
     <XBaseInput
       active-border-color="#2563eb"
@@ -137,27 +155,7 @@ function parseCurrency(value) {
       model-value="外层 div 承载边框"
     />
   </div>
-</div>
-
-```vue
-<XBaseInput
-  active-border-color="#2563eb"
-  border-color="#dc2626"
-  background-color="#f0fdf4"
-  text-color="#000000"
-  clear-icon-color="#67c23a"
-  clear-icon-size="18px"
-  font-size="12px"
-  width="320px"
-  height="40px"
-  auto-height
-  radius="8px"
-  padding="5px 10px"
-  text-align="center"
-  clearable
-  model-value="外层 div 承载边框"
-/>
-```
+</XDocDemo>
 
 ## Props
 

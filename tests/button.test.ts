@@ -50,11 +50,12 @@ describe('XButton', () => {
     expect(style).toContain('--x-button-radius: 6px')
   })
 
-  it('maps width, height, border, radius and button colors to style variables', () => {
+  it('maps width, height, padding, border, radius and button colors to style variables', () => {
     const wrapper = mount(XButton, {
       props: {
         width: 160,
         height: '42px',
+        padding: '0 16px',
         borderWidth: 2,
         borderColor: '#345678',
         backgroundColor: '#f0fdf4',
@@ -70,6 +71,7 @@ describe('XButton', () => {
 
     expect(style).toContain('--x-button-width: 160px')
     expect(style).toContain('--x-button-height: 42px')
+    expect(style).toContain('--x-button-padding: 0 16px')
     expect(style).toContain('--x-element-border-width: 2px')
     expect(style).toContain('--x-button-border-color: #345678')
     expect(style).toContain('--x-button-bg: #f0fdf4')

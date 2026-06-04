@@ -74,3 +74,7 @@ export interface TreeProps {
   canManageMembersByNode?: (node: TreeNodeData) => boolean
   canMigrateNode?: (node: TreeNodeData) => boolean
 }
+
+export interface TreeSlots {
+  nodeExtra?: (props: { node: TreeNodeData }) => unknown
+}

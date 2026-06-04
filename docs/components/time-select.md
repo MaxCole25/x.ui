@@ -1,18 +1,59 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const time = ref('09:30')
+const deliveryTime = ref('10:00')
+
+const timeSelectBasicCode = `<XTimeSelect v-model="time" start="09:00" end="18:00" :step-minutes="30" />`
+
+const timeSelectDialogCode = `<XTimeSelect
+  v-model="deliveryTime"
+  start="08:00"
+  end="20:00"
+  :step-minutes="60"
+  size="lg"
+  clearable
+  prefix="送达时间"
+/>`
+</script>
+
 # 时间选择 TimeSelect
 
 用于从固定时间段中选择时间。
 
 ## 基础用法
 
-```vue
-<XTimeSelect v-model="time" start="09:00" end="18:00" :step-minutes="30" />
-```
+<XDocDemo title="基础用法" :code="timeSelectBasicCode">
+  <ClientOnly>
+    <div class="x-demo-column" style="width: 280px">
+      <XTimeSelect v-model="time" start="09:00" end="18:00" :step-minutes="30" />
+      <p class="x-demo-label">当前时间：{{ time || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 输入框与弹窗
 
 时间选择的输入框复用 `XBaseInput`，点击输入框会通过可拖动的 `XDialog` 打开自定义时间选择界面，不使用浏览器原生 `select`。
 
 时间面板参考 `XDateTimePicker` 的时间选择样式，但只展示由 `start`、`end` 和 `stepMinutes` 生成的固定时间列表。滚动列表会自动吸附到最近选项，也可以点击选项直接选择，点击“确定”后提交 `HH:mm` 格式的值。
+
+<XDocDemo title="输入框与弹窗" :code="timeSelectDialogCode">
+  <ClientOnly>
+    <div class="x-demo-column" style="width: 300px">
+      <XTimeSelect
+        v-model="deliveryTime"
+        start="08:00"
+        end="20:00"
+        :step-minutes="60"
+        size="lg"
+        clearable
+        prefix="送达时间"
+      />
+      <p class="x-demo-label">当前时间：{{ deliveryTime || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

@@ -1,12 +1,28 @@
+<script setup lang="ts">
+const emptyBasicCode = `<XEmpty description="暂无数据" action-text="刷新" @action="reload" />`
+
+const emptySlotCode = `<XEmpty description="还没有成员">
+  <XButton variant="outline">邀请成员</XButton>
+</XEmpty>`
+</script>
+
 # 空状态 Empty
 
 用于列表、表格、树或容器没有数据时展示占位状态。
 
 ## 基础用法
 
-```vue
-<XEmpty description="暂无数据" action-text="刷新" @action="reload" />
-```
+<XDocDemo title="基础用法" :code="emptyBasicCode">
+  <XEmpty description="暂无数据" action-text="刷新" />
+</XDocDemo>
+
+## 自定义操作
+
+<XDocDemo title="自定义操作" :code="emptySlotCode">
+  <XEmpty description="还没有成员">
+    <XButton variant="outline">邀请成员</XButton>
+  </XEmpty>
+</XDocDemo>
 
 ## Props
 

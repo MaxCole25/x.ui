@@ -1,18 +1,53 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const time = ref('09:30')
+const meetingTime = ref('14:00')
+
+const timePickerBasicCode = `<XTimePicker v-model="time" />`
+
+const timePickerDialogCode = `<XTimePicker
+  v-model="meetingTime"
+  size="lg"
+  clearable
+  prefix="会议时间"
+/>`
+</script>
+
 # 时间选择器 TimePicker
 
 用于输入或选择具体时间。
 
 ## 基础用法
 
-```vue
-<XTimePicker v-model="time" />
-```
+<XDocDemo title="基础用法" :code="timePickerBasicCode">
+  <ClientOnly>
+    <div class="x-demo-column" style="width: 260px">
+      <XTimePicker v-model="time" />
+      <p class="x-demo-label">当前时间：{{ time || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 输入框与弹窗
 
 时间选择器的输入框复用 `XBaseInput`，点击输入框会通过可拖动的 `XDialog` 打开自定义时间选择界面，不使用浏览器原生 `time` 选择器。
 
 时间面板参考 `XDateTimePicker` 的时间选择原理，提供小时、分钟两列竖向数字选择器。滚动列会自动吸附到最近选项，也可以点击数字直接选择，点击“确定”后提交 `HH:mm` 格式的值。
+
+<XDocDemo title="输入框与弹窗" :code="timePickerDialogCode">
+  <ClientOnly>
+    <div class="x-demo-column" style="width: 300px">
+      <XTimePicker
+        v-model="meetingTime"
+        size="lg"
+        clearable
+        prefix="会议时间"
+      />
+      <p class="x-demo-label">当前时间：{{ meetingTime || '暂无' }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

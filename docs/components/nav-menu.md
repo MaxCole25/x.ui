@@ -1,18 +1,8 @@
-# 菜单 NavMenu
-
-`XNavMenu` 是从 NexMod `DashboardNavMenu` 抽离出的独立菜单组件，支持纵向/横向两种菜单模式，并支持多级菜单、收起态与侧边栏隐藏态。
-
-## 基础用法
-
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XNavMenu, type NavMenuItem } from 'x.ui'
-import 'x.ui/style.css'
 
 const activeKey = ref('dashboard')
-
-const items: NavMenuItem[] = [
+const menuItems = [
   { key: 'dashboard', label: '控制台', icon: 'dashboard' },
   {
     key: 'system',
@@ -22,48 +12,89 @@ const items: NavMenuItem[] = [
       { key: 'user', label: '用户管理', icon: 'user' },
       { key: 'role', label: '角色管理', icon: 'shield-user' }
     ]
+  },
+  {
+    key: 'content',
+    label: '内容中心',
+    icon: 'file-list',
+    children: [
+      { key: 'article', label: '文章管理', icon: 'article' },
+      { key: 'comment', label: '评论管理', icon: 'message-3' }
+    ]
   }
 ]
+
+const navMenuBasicCode = `<XNavMenu :items="items" :active-key="activeKey" mode="vertical" @select="(key) => (activeKey = key)" />`
+
+const navMenuStyleCode = `<XNavMenu
+  :items="items"
+  :item-radius="6"
+  :submenu-item-radius="4"
+  :show-submenu-arrow="true"
+  submenu-arrow-icon="ri-arrow-right-s-line"
+/>`
+
+const navMenuScrollCode = `<XNavMenu
+  :items="items"
+  active-key="role"
+  mode="vertical"
+  scrollable
+  :max-height="180"
+/>`
+
+const navMenuSidebarCode = `<aside class="demo-sidebar">
+  <div class="demo-sidebar__brand">x.ui Admin</div>
+  <XNavMenu :items="items" :active-key="activeKey" scrollable accordion />
+</aside>`
+
+const navMenuHiddenCode = `<XNavMenu :items="items" :active-key="activeKey" mode="vertical" hidden />`
+
+const navMenuAccordionCode = `<XNavMenu :items="items" active-key="role" mode="vertical" accordion />`
 </script>
 
-<template>
-  <XNavMenu :items="items" :active-key="activeKey" mode="vertical" @select="(key) => (activeKey = key)" />
-</template>
-```
+# 菜单 NavMenu
+
+`XNavMenu` 是从 NexMod `DashboardNavMenu` 抽离出的独立菜单组件，支持纵向/横向两种菜单模式，并支持多级菜单、收起态与侧边栏隐藏态。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="navMenuBasicCode">
+  <ClientOnly>
+    <div style="width: 240px">
+      <XNavMenu
+        :items="menuItems"
+        :active-key="activeKey"
+        mode="vertical"
+        @select="(key) => { activeKey = key }"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 菜单图标
 
 `NavMenuItem.icon` 支持两种写法：传字符串时会交给 `XIcon` 渲染，可以使用 `dashboard`、`settings-3` 这类语义名，也可以继续传完整 Remix Icon 名称，例如 `ri-dashboard-line`；传 Vue 组件时会通过动态组件渲染，适合接入 `lucide-vue-next`、`@element-plus/icons-vue`、`ant-design-vue` 等第三方图标组件。
 
-```vue
-<script setup lang="ts">
-import { Home, Settings } from 'lucide-vue-next'
-import type { NavMenuItem } from 'x.ui'
-
-const items: NavMenuItem[] = [
-  { key: 'dashboard', label: '控制台', icon: 'dashboard' },
-  { key: 'security', label: '权限管理', icon: 'ri-shield-keyhole-line' },
-  { key: 'home', label: '首页', icon: Home },
-  { key: 'settings', label: '设置', icon: Settings }
-]
-</script>
-```
+上方基础示例中的 `dashboard`、`settings-3`、`user` 等图标名称均会交给 `XIcon` 渲染。
 
 ## 自定义菜单项圆角与子菜单箭头
 
 通过 `item-radius` 控制菜单项圆角，通过 `submenu-item-radius` 控制弹出子菜单项圆角。子菜单箭头默认跟随展开状态自动切换，也可以通过 `show-submenu-arrow` 隐藏，或通过 `submenu-arrow-icon` 统一替换为指定图标。
 
-```vue
-<template>
-  <XNavMenu
-    :items="items"
-    :item-radius="6"
-    :submenu-item-radius="4"
-    :show-submenu-arrow="true"
-    submenu-arrow-icon="ri-arrow-right-s-line"
-  />
-</template>
-```
+<XDocDemo title="自定义菜单项圆角与子菜单箭头" :code="navMenuStyleCode">
+  <ClientOnly>
+    <div style="width: 240px">
+      <XNavMenu
+        :items="menuItems"
+        :active-key="activeKey"
+        :item-radius="6"
+        :submenu-item-radius="4"
+        :show-submenu-arrow="true"
+        submenu-arrow-icon="ri-arrow-right-s-line"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 纵向菜单内部滚动
 
@@ -71,84 +102,65 @@ const items: NavMenuItem[] = [
 
 纵向菜单收起后如果还需要弹出多级子菜单，建议同时开启 `teleported`。这样弹出层会挂载到 `teleport-to` 指定目标，避免被菜单自身或外层滚动容器裁剪。
 
-```vue
-<template>
-  <XNavMenu
-    :items="items"
-    active-key="/security/roles"
-    mode="vertical"
-    scrollable
-    teleported
-    :max-height="300"
-  />
-</template>
-```
+<XDocDemo title="纵向菜单内部滚动" :code="navMenuScrollCode">
+  <ClientOnly>
+    <div style="width: 240px">
+      <XNavMenu
+        :items="menuItems"
+        active-key="role"
+        mode="vertical"
+        scrollable
+        :max-height="180"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 固定侧边栏
 
 固定高度侧边栏中可以让头部保持固定，菜单区域独立滚动，避免页面整体被菜单撑高。
 
-```vue
-<template>
-  <aside class="demo-sidebar">
-    <div class="demo-sidebar__brand">x.ui Admin</div>
-    <XNavMenu
-      :items="items"
-      :active-key="activeKey"
-      mode="vertical"
-      scrollable
-      max-height="calc(100vh - 72px)"
-      accordion
-      @select="(key) => (activeKey = key)"
-    />
-  </aside>
-</template>
-
-<style scoped>
-.demo-sidebar {
-  height: 100vh;
-  overflow: hidden;
-  width: 240px;
-}
-
-.demo-sidebar__brand {
-  height: 72px;
-  line-height: 72px;
-  padding: 0 16px;
-}
-</style>
-```
+<XDocDemo title="固定侧边栏" :code="navMenuSidebarCode">
+  <ClientOnly>
+    <aside style="width: 240px; height: 260px; overflow: hidden; border: 1px solid var(--x-color-border); border-radius: 6px">
+      <div style="height: 48px; line-height: 48px; padding: 0 16px; font-weight: 600">x.ui Admin</div>
+      <XNavMenu
+        :items="menuItems"
+        :active-key="activeKey"
+        mode="vertical"
+        scrollable
+        max-height="212px"
+        accordion
+        @select="(key) => { activeKey = key }"
+      />
+    </aside>
+  </ClientOnly>
+</XDocDemo>
 
 ## 隐藏侧边栏
 
 当外层布局需要完全隐藏侧边栏时，可以传入 `hidden`。它会保留组件实例和受控状态，但让菜单根节点 `display: none`，适合移动端抽屉关闭或后台布局切换。
 
-```vue
-<template>
-  <XNavMenu
-    :items="items"
-    :active-key="activeKey"
-    mode="vertical"
-    hidden
-  />
-</template>
-```
+<XDocDemo title="隐藏侧边栏" :code="navMenuHiddenCode">
+  <ClientOnly>
+    <div style="width: 240px; min-height: 48px; border: 1px dashed var(--x-color-border); padding: 10px">
+      <XNavMenu :items="menuItems" :active-key="activeKey" mode="vertical" hidden />
+      <span class="x-demo-label">菜单已隐藏，但组件状态仍保留。</span>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 手风琴展开
 
 开启 `accordion` 后，纵向菜单同一层级内只会保留一个父菜单展开。`activeKey` 对应的父级路径会默认展开，并在 `activeKey` 变化时自动展开到当前激活项。
 
-```vue
-<template>
-  <XNavMenu
-    :items="items"
-    active-key="/security/roles"
-    mode="vertical"
-    accordion
-    @open-change="(keys) => console.log(keys)"
-  />
-</template>
-```
+<XDocDemo title="手风琴展开" :code="navMenuAccordionCode">
+  <ClientOnly>
+    <div style="width: 240px">
+      <XNavMenu :items="menuItems" active-key="role" mode="vertical" accordion />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

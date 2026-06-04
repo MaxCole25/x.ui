@@ -8,6 +8,7 @@ const current = ref('1-1')
 const currentUserId = ref<number | null>(1001)
 const lastAction = ref('')
 const dropLog = ref('')
+const extraLog = ref('')
 const size = ref<'sm' | 'md' | 'lg'>('md')
 const activeColor = ref('#2f66cf')
 const hoverBackgroundColor = ref('#e0ecff')
@@ -20,7 +21,8 @@ const flags = reactive({
   allowCreate: true,
   allowDelete: true,
   useCustomMenu: false,
-  useCustomMethods: false
+  useCustomMethods: false,
+  useExtraSlot: false
 })
 const data = ref<TreeNodeData[]>([
   {
@@ -53,6 +55,10 @@ const parentStyle = computed<CSSProperties>(() => ({
 
 function onContextAction(action: string, node: TreeNodeData) {
   lastAction.value = `${action}: ${node.label}`
+}
+
+function onNodeExtraClick(node: TreeNodeData) {
+  extraLog.value = `右侧点击: ${node.label}`
 }
 
 function makeNode(label: string): TreeNodeData {
@@ -217,6 +223,10 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
                 自定义方法
                 <input v-model="flags.useCustomMethods" type="checkbox" />
               </label>
+              <label style="display: grid; grid-template-columns: 88px 1fr; gap: 6px; align-items: center">
+                右侧插槽
+                <input v-model="flags.useExtraSlot" type="checkbox" />
+              </label>
             </div>
           </section>
           <section>
@@ -234,12 +244,14 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
               <span>nodeClick: {{ current }}</span>
               <span>contextAction: {{ lastAction || '-' }}</span>
               <span>nodeDrop: {{ dropLog || '-' }}</span>
+              <span>nodeExtraClick: {{ extraLog || '-' }}</span>
             </div>
           </section>
         </div>
 
         <div :style="parentStyle">
           <XTree
+            v-if="!flags.useExtraSlot"
             :tree-data="data"
             :current-tree-key="current"
             :current-user-id="currentUserId"
@@ -254,9 +266,36 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
             :create-node="flags.useCustomMethods ? createNode : undefined"
             :delete-node="flags.useCustomMethods ? deleteNode : undefined"
             @node-click="(node) => (current = String(node.id))"
+            @node-extra-click="onNodeExtraClick"
             @context-action="onContextAction"
             @node-drop="handleNodeDrop"
           />
+          <XTree
+            v-else
+            :tree-data="data"
+            :current-tree-key="current"
+            :current-user-id="currentUserId"
+            :size="size"
+            :active-color="activeColor"
+            :hover-background-color="hoverBackgroundColor"
+            :active-background-color="activeBackgroundColor"
+            :can-create-child-by-node="() => flags.allowCreate"
+            :can-delete-node-by-id="() => flags.allowDelete"
+            :context-menu-items="flags.useCustomMenu ? customContextMenuItems : undefined"
+            :create-root-node="flags.useCustomMethods ? createRootNode : undefined"
+            :create-node="flags.useCustomMethods ? createNode : undefined"
+            :delete-node="flags.useCustomMethods ? deleteNode : undefined"
+            @node-click="(node) => (current = String(node.id))"
+            @node-extra-click="onNodeExtraClick"
+            @context-action="onContextAction"
+            @node-drop="handleNodeDrop"
+          >
+            <template #nodeExtra="{ node }">
+              <button type="button" style="border: 0; background: transparent; color: #2563eb; cursor: pointer; font: inherit; padding: 0">
+                {{ node.authorDisplayName || node.authorUserName || '操作' }}
+              </button>
+            </template>
+          </XTree>
         </div>
       </div>
     </Variant>

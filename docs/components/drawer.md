@@ -1,14 +1,34 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const visible = ref(false)
+
+const drawerBasicCode = `<button type="button" @click="visible = true">打开抽屉</button>
+
+<XDrawer v-model="visible" title="配置面板" panel-size="360px">
+  <div>抽屉内容</div>
+</XDrawer>`
+</script>
+
 # 抽屉 Drawer
 
 从屏幕边缘滑出的容器，适合配置面板、详情面板和页面构建器属性面板。
 
 ## 基础用法
 
-```vue
-<XDrawer v-model="visible" title="配置面板" panel-size="360px">
-  抽屉内容
-</XDrawer>
-```
+<XDocDemo title="基础用法" :code="drawerBasicCode">
+  <ClientOnly>
+    <div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="visible = true"
+      >
+        打开抽屉
+      </button><XDrawer v-model="visible" title="配置面板" panel-size="360px"><div class="x-demo-column"><p>抽屉内容</p><p class="x-demo-label">适合承载配置项、详情说明和操作入口。</p></div></XDrawer>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 

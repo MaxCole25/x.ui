@@ -1,3 +1,61 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const keyword = ref('')
+const city = ref('')
+const cityValue = ref('')
+const customerId = ref<string | number>('')
+const customerKeyword = ref('')
+const remoteCity = ref('')
+
+const cities = [
+  { label: '上海', value: 'shanghai' },
+  { label: '深圳', value: 'shenzhen' },
+  { label: '杭州', value: 'hangzhou' }
+]
+
+const customerOptions = ref([
+  { label: '南通某客户', value: 456 },
+  { label: '上海示例客户', value: 1024 }
+])
+
+const remoteCities = [
+  { name: '上海', id: 'shanghai' },
+  { name: '深圳', id: 'shenzhen' },
+  { name: '杭州', id: 'hangzhou' }
+]
+
+const cityFieldNames = { label: 'name', value: 'id' }
+
+const autocompleteBasicCode = `<XAutocomplete v-model="keyword" placeholder="请输入关键词" clearable />`
+
+const autocompleteOptionsCode = `<XAutocomplete v-model="city" :options="cities" placeholder="请选择城市" />`
+
+const autocompleteSeparatedCode = `<XAutocomplete
+  v-model="customerId"
+  v-model:input-value="customerKeyword"
+  :options="customerOptions"
+  :value-on-input="false"
+  placeholder="请输入ID或名称"
+/>`
+
+const autocompleteDisplayCode = `<XAutocomplete v-model="city" :options="cities" display-field="value" placeholder="显示城市 id" />`
+
+const autocompleteRemoteCode = `<XAutocomplete
+  v-model="city"
+  remote
+  :field-names="cityFieldNames"
+  :remote-method="queryCity"
+  :remote-debounce="300"
+  :remote-min-length="1"
+  placeholder="输入城市关键词"
+/>`
+
+function queryCity(keyword: string) {
+  return remoteCities.filter((item) => item.name.includes(keyword) || item.id.includes(keyword))
+}
+</script>
+
 # 自动补全输入框 Autocomplete
 
 `XAutocomplete` 基于 `XBaseInput` 输入框实现，并在输入框外扩展候选项弹层。默认会展示组件内置候选项，例如输入 `上` 会匹配 `上海`；激活输入框时会按当前已有输入内容筛选候选项。也可以通过 `options` 提供只读候选列表，或开启 `remote` 后按输入内容请求服务端数据。
@@ -9,85 +67,57 @@
 简单输入模式下直接使用 `v-model` 即可，输入内容会同步到 `modelValue`，保持旧版本行为。
 设置 `clearable` 后，有输入内容时鼠标悬停在组件上会在后缀图标位置显示清除图标；其它时候显示下拉图标。
 
-```vue
-<XAutocomplete v-model="keyword" placeholder="请输入关键词" clearable />
-```
+<XDocDemo title="基础用法" :code="autocompleteBasicCode">
+  <div style="width: 240px">
+    <XAutocomplete v-model="keyword" placeholder="请输入关键词" clearable />
+  </div>
+</XDocDemo>
 
 ## 自定义候选列表
 
-```vue
-<script setup lang="ts">
-const cities = [
-  { label: '上海', value: 'shanghai' },
-  { label: '深圳', value: 'shenzhen' },
-  { label: '杭州', value: 'hangzhou' }
-]
-</script>
-
-<template>
-  <XAutocomplete v-model="city" :options="cities" placeholder="请选择城市" />
-</template>
-```
+<XDocDemo title="自定义候选列表" :code="autocompleteOptionsCode">
+  <div style="width: 240px">
+    <XAutocomplete v-model="city" :options="cities" placeholder="请选择城市" />
+  </div>
+</XDocDemo>
 
 ## 选中值与输入文本分离
 
 当组件作为选择器使用时，可以让 `modelValue` 保存真实业务值，例如客户 ID，同时用 `inputValue` 保存输入框显示文本或搜索关键词。设置 `valueOnInput="false"` 后，用户输入只更新 `inputValue`、`input` 和 `query`，点击候选项时才会更新 `modelValue`。
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const customerId = ref<string | number>('')
-const customerKeyword = ref('')
-const customerOptions = ref([
-  { label: '南通某客户', value: 456 }
-])
-
-const searchCustomers = async (keyword: string) => {
-  const response = await fetch(`/api/customers?keyword=${encodeURIComponent(keyword)}`)
-  customerOptions.value = await response.json()
-}
-</script>
-
-<template>
-  <XAutocomplete
-    v-model="customerId"
-    v-model:input-value="customerKeyword"
-    :options="customerOptions"
-    remote
-    remote-trigger="enter"
-    :remote-method="searchCustomers"
-    :value-on-input="false"
-    placeholder="请输入ID或名称"
-  />
-</template>
-```
+<XDocDemo title="选中值与输入文本分离" :code="autocompleteSeparatedCode">
+  <div class="x-demo-column">
+    <div style="width: 280px">
+      <XAutocomplete
+        v-model="customerId"
+        v-model:input-value="customerKeyword"
+        :options="customerOptions"
+        :value-on-input="false"
+        placeholder="请输入ID或名称"
+      />
+    </div>
+    <p class="x-demo-label">当前值：{{ customerId || '暂无' }}，输入文本：{{ customerKeyword || '暂无' }}</p>
+  </div>
+</XDocDemo>
 
 ## 显示选项值
 
 `displayField` 默认显示 `label`。设置为 `value` 后，候选项会显示选项值；如果 `fieldNames.value` 映射的是后端 `id` 字段，就会显示 id。
 
-```vue
-<XAutocomplete v-model="city" :options="cities" display-field="value" placeholder="显示城市 id" />
-```
+<XDocDemo title="显示选项值" :code="autocompleteDisplayCode">
+  <div style="width: 240px">
+    <XAutocomplete v-model="cityValue" :options="cities" display-field="value" placeholder="显示城市 id" />
+  </div>
+</XDocDemo>
 
 ## 服务端输入查询
 
 开启 `remote` 后，组件不再进行本地过滤，会按 `remoteTrigger` 触发 `query` 事件，并可通过 `remoteMethod` 返回服务端候选项。后端字段不是 `label` / `value` 时，可用 `fieldNames` 映射键值数据。
 
-```vue
-<script setup lang="ts">
-const queryCity = async (keyword: string) => {
-  const response = await fetch(`/api/cities?keyword=${encodeURIComponent(keyword)}`)
-  return response.json()
-}
-
-const cityFieldNames = { label: 'name', value: 'id' }
-</script>
-
-<template>
+<XDocDemo title="服务端输入查询" :code="autocompleteRemoteCode">
+  <div style="width: 280px">
   <XAutocomplete
-    v-model="city"
+    v-model="remoteCity"
     remote
     :field-names="cityFieldNames"
     :remote-method="queryCity"
@@ -95,8 +125,8 @@ const cityFieldNames = { label: 'name', value: 'id' }
     :remote-min-length="1"
     placeholder="输入城市关键词"
   />
-</template>
-```
+  </div>
+</XDocDemo>
 
 ## Props
 

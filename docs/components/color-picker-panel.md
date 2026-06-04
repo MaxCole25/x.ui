@@ -1,12 +1,48 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const color = ref('#1264f4')
+const customColor = ref('#7c3aed')
+const customColors = ['#7c3aed', '#0f766e', '#f97316', '#dc2626']
+
+const colorPickerPanelBasicCode = `<XColorPickerPanel v-model="color" />`
+
+const colorPickerPanelCustomCode = `<XColorPickerPanel
+  v-model="color"
+  :colors="['#7c3aed', '#0f766e', '#f97316', '#dc2626']"
+  border-color="#c4b5fd"
+  background-color="#faf5ff"
+/>`
+</script>
+
 # 颜色选择器面板 ColorPickerPanel
 
 用于展示颜色预览、色板和颜色值输入。
 
 ## 基础用法
 
-```vue
-<XColorPickerPanel v-model="color" />
-```
+<XDocDemo title="基础用法" :code="colorPickerPanelBasicCode">
+  <div class="x-demo-column">
+    <XColorPickerPanel v-model="color" />
+    <p class="x-demo-label">当前颜色：{{ color }}</p>
+  </div>
+</XDocDemo>
+
+## 自定义色板
+
+通过 `colors` 控制面板可选色板，也可以使用外观属性调整边框和背景。
+
+<XDocDemo title="自定义色板" :code="colorPickerPanelCustomCode">
+  <div class="x-demo-column">
+    <XColorPickerPanel
+      v-model="customColor"
+      :colors="customColors"
+      border-color="#c4b5fd"
+      background-color="#faf5ff"
+    />
+    <p class="x-demo-label">当前颜色：{{ customColor }}</p>
+  </div>
+</XDocDemo>
 
 ## Props
 

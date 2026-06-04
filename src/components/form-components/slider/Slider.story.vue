@@ -9,7 +9,8 @@ const appearance = reactive({
   max: 100,
   step: 1,
   disabled: false,
-  showValue: true
+  showValue: true,
+  vertical: false
 })
 
 const sample = reactive({
@@ -44,6 +45,7 @@ const sample = reactive({
             :step="appearance.step"
             :disabled="appearance.disabled"
             :show-value="appearance.showValue"
+            :vertical="appearance.vertical"
           />
         </template>
         <template #column-2>
@@ -68,6 +70,10 @@ const sample = reactive({
           <label>
             <input v-model="appearance.showValue" type="checkbox" />
             <span>显示值</span>
+          </label>
+          <label>
+            <input v-model="appearance.vertical" type="checkbox" />
+            <span>竖向显示</span>
           </label>
         </template>
       </ElementStylePlayground>

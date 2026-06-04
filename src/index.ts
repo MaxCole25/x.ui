@@ -23,6 +23,7 @@ import { XDropdownItem } from './components/navigation-components/dropdown-item'
 import { XDropdownMenu } from './components/navigation-components/dropdown-menu'
 import { XEmpty } from './components/display-components/empty'
 import { XFileDisk } from './components/other-components/file-disk'
+import { XFlow, XFlowItem } from './components/basic-components/flow'
 import { XForm, XFormItem } from './components/form-components/form'
 import { XGrid, XGridItem } from './components/basic-components/grid'
 import { XIcon } from './components/basic-components/icon'
@@ -82,6 +83,8 @@ export { XDropdownItem }
 export { XDropdownMenu }
 export { XEmpty }
 export { XFileDisk }
+export { XFlow }
+export { XFlowItem }
 export { XForm }
 export { XFormItem }
 export { XBaseInput }
@@ -201,6 +204,7 @@ export type { DropdownMenuProps } from './components/navigation-components/dropd
 export type { DropdownPlacement, DropdownProps, DropdownTrigger } from './components/navigation-components/dropdown'
 export type { EmptyProps } from './components/display-components/empty'
 export type { FileDiskAdapter, FileDiskClipboardAction, FileDiskClipboardPayload, FileDiskColors, FileDiskCreateFolderPayload, FileDiskDownloadOptions, FileDiskDownloadPayload, FileDiskItem, FileDiskItemType, FileDiskPermission, FileDiskProps, FileDiskRenamePayload, FileDiskTransferPayload, FileDiskUploadPayload, FileDiskViewMode } from './components/other-components/file-disk'
+export type { FlowAlign, FlowItemKey, FlowItemOverflow, FlowItemProps, FlowProps, FlowSize } from './components/basic-components/flow'
 export type {
   FormControlSize,
   FormExpose,
@@ -295,6 +299,8 @@ const components = [
   XTimePicker,
   XTimeSelect,
   XScrollbar,
+  XFlow,
+  XFlowItem,
   XScrollingText,
   XAvatar,
   XTag,

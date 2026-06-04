@@ -1,6 +1,21 @@
 <script setup lang="ts">
-import { XIcon } from '../../src/components/basic-components/icon'
 import IconGallery from '../.vitepress/components/IconGallery.vue'
+
+const iconBasicCode = `<XIcon name="home" />
+<XIcon name="search" />
+<XIcon name="add" />`
+
+const iconVariantCode = `<XIcon name="home" variant="line" />
+<XIcon name="home" variant="fill" />
+<XIcon name="settings-3-line" />`
+
+const iconSizeCode = `<XIcon name="search" size="lg" color="#1264f4" />
+<XIcon name="loading" :icon-size="24" spin title="加载中" />`
+
+const iconOffsetCode = `<XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px" />
+<XIcon name="information-line" color="red" icon-size="14px" offset-y="1px" />`
+
+const iconAccessibilityCode = `<XIcon name="notification-3" title="通知" />`
 </script>
 
 # 图标 Icon
@@ -11,66 +26,52 @@ import IconGallery from '../.vitepress/components/IconGallery.vue'
 
 ## 基础用法
 
-<div class="x-icon-preview-row">
-  <XIcon name="home"></XIcon>
-  <XIcon name="search"></XIcon>
-  <XIcon name="add"></XIcon>
-  <XIcon name="edit"></XIcon>
-  <XIcon name="delete"></XIcon>
-</div>
-
-```vue
-<XIcon name="home" />
-<XIcon name="search" />
-<XIcon name="add" />
-```
+<XDocDemo title="基础用法" :code="iconBasicCode">
+  <div class="x-icon-preview-row">
+    <XIcon name="home"></XIcon>
+    <XIcon name="search"></XIcon>
+    <XIcon name="add"></XIcon>
+    <XIcon name="edit"></XIcon>
+    <XIcon name="delete"></XIcon>
+  </div>
+</XDocDemo>
 
 ## 风格
 
 当传入 `name="home"` 这类不带风格后缀的名称时，组件默认使用 `line` 风格。可通过 `variant="fill"` 切换填充风格。你也可以直接传入完整 Remix Icon 名称，例如 `home-fill`、`settings-3-line`。
 
-<div class="x-icon-preview-row">
-  <XIcon name="home" variant="line" size="lg"></XIcon>
-  <XIcon name="home" variant="fill" size="lg"></XIcon>
-  <XIcon name="settings-3-line" size="lg"></XIcon>
-  <XIcon name="settings-3-fill" size="lg"></XIcon>
-</div>
-
-```vue
-<XIcon name="home" variant="line" />
-<XIcon name="home" variant="fill" />
-<XIcon name="settings-3-line" />
-```
+<XDocDemo title="风格" :code="iconVariantCode">
+  <div class="x-icon-preview-row">
+    <XIcon name="home" variant="line" size="lg"></XIcon>
+    <XIcon name="home" variant="fill" size="lg"></XIcon>
+    <XIcon name="settings-3-line" size="lg"></XIcon>
+    <XIcon name="settings-3-fill" size="lg"></XIcon>
+  </div>
+</XDocDemo>
 
 ## 尺寸、颜色和旋转
 
 `size` 只表示统一 UI 尺寸，支持 `sm`、`md`、`lg`。需要指定图标本身像素大小时使用 `icon-size`，数字会按 `px` 处理。
 
-<div class="x-icon-preview-row">
-  <XIcon name="search" size="sm"></XIcon>
-  <XIcon name="search" size="md"></XIcon>
-  <XIcon name="search" size="lg"></XIcon>
-  <XIcon name="loading" :icon-size="24" color="#1264f4" spin title="加载中"></XIcon>
-</div>
-
-```vue
-<XIcon name="search" size="lg" color="#1264f4" />
-<XIcon name="loading" :icon-size="24" spin title="加载中" />
-```
+<XDocDemo title="尺寸、颜色和旋转" :code="iconSizeCode">
+  <div class="x-icon-preview-row">
+    <XIcon name="search" size="sm"></XIcon>
+    <XIcon name="search" size="md"></XIcon>
+    <XIcon name="search" size="lg"></XIcon>
+    <XIcon name="loading" :icon-size="24" color="#1264f4" spin title="加载中"></XIcon>
+  </div>
+</XDocDemo>
 
 ## 垂直微调
 
 在图标和文字同处一行时，可以通过 `offset-y` 单独微调图标的垂直位置，避免通过相邻文本的 padding 修正基线偏移。负值让图标上移，正值让图标下移。
 
-<div class="x-icon-preview-row">
-  <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px"></XIcon></span>
-  <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="1px"></XIcon></span>
-</div>
-
-```vue
-<XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px" />
-<XIcon name="information-line" color="red" icon-size="14px" offset-y="1px" />
-```
+<XDocDemo title="垂直微调" :code="iconOffsetCode">
+  <div class="x-icon-preview-row">
+    <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px"></XIcon></span>
+    <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="1px"></XIcon></span>
+  </div>
+</XDocDemo>
 
 ## 语义别名
 
@@ -105,9 +106,11 @@ import IconGallery from '../.vitepress/components/IconGallery.vue'
 
 默认情况下，未设置 `title` 的图标会被视为装饰图标，并设置 `aria-hidden="true"`。如果图标本身承担语义，请传入 `title`。
 
-```vue
-<XIcon name="notification-3" title="通知" />
-```
+<XDocDemo title="可访问名称" :code="iconAccessibilityCode">
+  <div class="x-icon-preview-row">
+    <XIcon name="notification-3" title="通知" />
+  </div>
+</XDocDemo>
 
 ## Props
 

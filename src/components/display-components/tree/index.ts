@@ -11,7 +11,8 @@ export type {
   TreeCreateRootNode,
   TreeDeleteNode,
   TreeNodeData,
-  TreeProps
+  TreeProps,
+  TreeSlots
 } from './src/types'
 
 XTree.install = (app: App) => {

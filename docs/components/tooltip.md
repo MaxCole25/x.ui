@@ -1,14 +1,32 @@
+<script setup lang="ts">
+const tooltipBasicCode = `<XTooltip content="保存当前配置">
+  <XButton>保存</XButton>
+</XTooltip>`
+
+const tooltipThemeCode = `<XTooltip
+  content="自定义提示"
+  background-color="#12243a"
+  text-color="#eef4fb"
+  border-color="#203247"
+  border-width="1px"
+>
+  <XButton>查看提示</XButton>
+</XTooltip>`
+</script>
+
 # 文字提示 Tooltip
 
 用于在元素悬停、点击或聚焦时展示简短说明。
 
 ## 基础用法
 
-```vue
-<XTooltip content="保存当前配置">
-  <XButton>保存</XButton>
-</XTooltip>
-```
+<XDocDemo title="基础用法" :code="tooltipBasicCode">
+  <ClientOnly>
+    <XTooltip content="保存当前配置" trigger="click">
+      <XButton>保存</XButton>
+    </XTooltip>
+  </ClientOnly>
+</XDocDemo>
 
 ## Props
 
@@ -35,17 +53,20 @@
 
 Tooltip 支持两种外观定制方式：单个实例可以通过 `backgroundColor`、`textColor`、`borderColor`、`borderWidth` 覆盖；全局主题可以通过 CSS 变量调整默认值。
 
-```vue
-<XTooltip
-  content="自定义提示"
-  background-color="#12243a"
-  text-color="#eef4fb"
-  border-color="#203247"
-  border-width="1px"
->
-  <XButton>查看提示</XButton>
-</XTooltip>
-```
+<XDocDemo title="自定义外观" :code="tooltipThemeCode">
+  <ClientOnly>
+    <XTooltip
+      content="自定义提示"
+      trigger="click"
+      background-color="#12243a"
+      text-color="#eef4fb"
+      border-color="#203247"
+      border-width="1px"
+    >
+      <XButton>查看提示</XButton>
+    </XTooltip>
+  </ClientOnly>
+</XDocDemo>
 
 ```css
 :root {

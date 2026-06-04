@@ -34,6 +34,7 @@ export default defineConfig({
               { text: '砖格 Brick', link: '/components/brick' },
               { text: '卡片 Card', link: '/components/card' },
               { text: '分割线 Divider', link: '/components/divider' },
+              { text: '流式布局 Flow', link: '/components/flow' },
               { text: '宫格 Grid', link: '/components/grid' },
               { text: '图标 Icon', link: '/components/icon' },
               { text: '布局 Layout', link: '/components/layout' },

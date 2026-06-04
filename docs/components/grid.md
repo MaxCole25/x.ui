@@ -1,3 +1,43 @@
+<script setup lang="ts">
+const gridBasicCode = `<XGrid :columns="3" :gap="8">
+  <XGridItem>一</XGridItem>
+  <XGridItem>二</XGridItem>
+  <XGridItem>三</XGridItem>
+</XGrid>`
+
+const gridCountCode = `<XGrid :columns="3" :count="9" :gap="8" height="220px" />
+<XGrid :columns="4" :count="16" :gap="8" height="220px" />`
+
+const gridSpanCode = `<XGrid :columns="4" :gap="10">
+  <XGridItem :col-span="2" background-color="#e0ecff">跨两列</XGridItem>
+  <XGridItem :row-span="2" background-color="#f0fdf4">跨两行</XGridItem>
+  <XGridItem>普通格子</XGridItem>
+  <XGridItem column="1 / 3">指定列线</XGridItem>
+</XGrid>`
+
+const gridAppearanceCode = `<XGrid
+  :columns="3"
+  :gap="12"
+  background-color="#f8fafc"
+  border-color="#94a3b8"
+  :border-width="1"
+  radius="8px"
+  padding="12px"
+>
+  <XGridItem
+    v-for="index in 9"
+    :key="index"
+    background-color="#ffffff"
+    border-color="#d8e2e8"
+    :border-width="1"
+    radius="6px"
+    padding="12px"
+  >
+    {{ index }}
+  </XGridItem>
+</XGrid>`
+</script>
+
 # 宫格 Grid
 
 `XGrid` 用于构建二维宫格和栅格布局，适合九宫格、16 宫格、卡片列表、表单区域分组和需要跨行跨列的局部布局。
@@ -6,53 +46,43 @@
 
 ## 基础用法
 
-```vue
-<script setup lang="ts">
-import { XGrid, XGridItem } from 'x.ui'
-import 'x.ui/style.css'
-</script>
-
-<template>
+<XDocDemo title="基础用法" :code="gridBasicCode">
   <XGrid :columns="3" :gap="8">
     <XGridItem>一</XGridItem>
     <XGridItem>二</XGridItem>
     <XGridItem>三</XGridItem>
   </XGrid>
-</template>
-```
+</XDocDemo>
 
 ## 九宫格和 16 宫格
 
 没有默认插槽内容时，可以通过 `count` 快速生成占位格，方便调试宫格尺寸。
 
-```vue
-<template>
-  <XGrid :columns="3" :count="9" :gap="8" height="280px" />
-  <XGrid :columns="4" :count="16" :gap="8" height="320px" />
-</template>
-```
+<XDocDemo title="九宫格和 16 宫格" :code="gridCountCode">
+  <div class="x-demo-column" style="max-width: 100%">
+    <XGrid :columns="3" :count="9" :gap="8" height="220px" />
+    <XGrid :columns="4" :count="16" :gap="8" height="220px" />
+  </div>
+</XDocDemo>
 
 ## 跨行跨列
 
 `XGridItem` 支持 `span`、`colSpan`、`rowSpan`，也可以通过 `column`、`row` 直接传入 CSS grid line。
 
-```vue
-<template>
+<XDocDemo title="跨行跨列" :code="gridSpanCode">
   <XGrid :columns="4" :gap="10">
     <XGridItem :col-span="2" background-color="#e0ecff">跨两列</XGridItem>
     <XGridItem :row-span="2" background-color="#f0fdf4">跨两行</XGridItem>
     <XGridItem>普通格子</XGridItem>
     <XGridItem column="1 / 3">指定列线</XGridItem>
   </XGrid>
-</template>
-```
+</XDocDemo>
 
 ## 颜色、边框和圆角
 
 容器和格子都公开了常用外观属性，数字尺寸会自动转为 `px`。
 
-```vue
-<template>
+<XDocDemo title="颜色、边框和圆角" :code="gridAppearanceCode">
   <XGrid
     :columns="3"
     :gap="12"
@@ -74,8 +104,7 @@ import 'x.ui/style.css'
       {{ index }}
     </XGridItem>
   </XGrid>
-</template>
-```
+</XDocDemo>
 
 ## Grid Props
 

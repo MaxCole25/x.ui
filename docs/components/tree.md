@@ -1,12 +1,88 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const currentKey = ref('doc-1')
+const treeData = ref([
+  {
+    id: 'group-1',
+    label: '产品文档',
+    type: 'group',
+    children: [
+      { id: 'doc-1', label: '组件规范', type: 'document', authorDisplayName: '张三' },
+      { id: 'doc-2', label: '验收清单', type: 'document', authorDisplayName: '李四' }
+    ]
+  },
+  {
+    id: 'group-2',
+    label: '项目成员',
+    type: 'group',
+    children: [
+      { id: 'user-1', rawId: 1001, label: '王小明', type: 'user', authorId: 1001 }
+    ]
+  }
+])
+
+const treeBasicCode = `<XTree :tree-data="treeData" :current-tree-key="currentKey" @nodeClick="onNodeClick" />`
+
+const treeExtraCode = `<XTree
+  :tree-data="treeData"
+  :current-tree-key="currentKey"
+  @nodeExtraClick="onNodeExtraClick"
+>
+  <template #nodeExtra="{ node }">
+    <button type="button">{{ node.authorDisplayName || '操作' }}</button>
+  </template>
+</XTree>`
+
+const treeContextCode = `<XTree
+  :tree-data="treeData"
+  :context-menu-items="({ node }) => [
+    { action: 'new-root', label: '增加根节点' },
+    { action: 'new-child', label: '新建节点', disabled: !node },
+    { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
+  ]"
+/>`
+</script>
+
 # 树目录 Tree
 
 `XTree` 提供树形目录展示、展开收起、右键菜单、节点新增删除和拖拽落点事件能力。
 
-## 用法
+## 基础用法
 
-```vue
-<XTree :tree-data="treeData" :current-tree-key="currentKey" @nodeClick="onNodeClick" />
-```
+<XDocDemo title="基础用法" :code="treeBasicCode">
+  <ClientOnly>
+    <div style="width: 320px">
+      <XTree
+        :tree-data="treeData"
+        :current-tree-key="currentKey"
+        @nodeClick="(node) => { currentKey = String(node.id) }"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
+
+## 右侧内容
+
+节点右侧默认显示 `authorDisplayName || authorUserName`，用于展示作者或成员名称。需要替换为业务操作区时，可以使用 `nodeExtra` 插槽；点击右侧区域会触发 `nodeExtraClick`，并且不会同时触发 `nodeClick`。
+
+<XDocDemo title="右侧内容" :code="treeExtraCode">
+  <ClientOnly>
+    <div style="width: 320px">
+      <XTree
+        :tree-data="treeData"
+        :current-tree-key="currentKey"
+        @nodeExtraClick="(node) => { currentKey = String(node.id) }"
+      >
+        <template #nodeExtra="{ node }">
+          <button type="button" style="border: 0; background: transparent; color: #2563eb; cursor: pointer; font: inherit; padding: 0">
+            {{ node.authorDisplayName || node.authorUserName || '操作' }}
+          </button>
+        </template>
+      </XTree>
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 ## 右键菜单
 
@@ -18,50 +94,24 @@
 
 可以通过 `createRootNode`、`createNode`、`deleteNode` 接管这三项的具体方法。传入自定义方法后，组件不会再执行内置新增或删除逻辑。
 
-```vue
-<script setup lang="ts">
-import type { TreeNodeData } from 'x.ui'
-
-function createRootNode(treeData: TreeNodeData[]) {
-  const node = { id: Date.now(), label: '业务根节点', isEditing: true }
-  treeData.push(node)
-  return node
-}
-
-function createNode(node: TreeNodeData) {
-  const child = { id: Date.now(), label: '业务节点', isEditing: true }
-  node.children = node.children || []
-  node.children.push(child)
-  return child
-}
-
-function deleteNode(node: TreeNodeData, treeData: TreeNodeData[]) {
-  // 也可以在这里弹确认框、调用接口，再由业务侧更新 treeData
-}
-</script>
-
-<template>
-  <XTree
-    :tree-data="treeData"
-    :create-root-node="createRootNode"
-    :create-node="createNode"
-    :delete-node="deleteNode"
-  />
-</template>
-```
+<XDocDemo title="右键菜单" :code="treeContextCode">
+  <ClientOnly>
+    <div style="width: 320px">
+      <XTree
+        :tree-data="treeData"
+        :context-menu-items="({ node }) => [
+          { action: 'new-root', label: '增加根节点' },
+          { action: 'new-child', label: '新建节点', disabled: !node },
+          { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
+        ]"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 如果需要替换菜单文案、隐藏菜单项或增加业务动作，可以传入 `contextMenuItems`。默认动作建议继续使用 `new-root`、`new-child`、`delete-node`，其中 `new-node` 也会按新建当前节点子节点处理。
 
-```vue
-<XTree
-  :tree-data="treeData"
-  :context-menu-items="({ node }) => [
-    { action: 'new-root', label: '增加根节点' },
-    { action: 'new-child', label: '新建节点', disabled: !node },
-    { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
-  ]"
-/>
-```
+源码示例展示了如何替换菜单文案、禁用菜单项和标记危险操作。
 
 ## Props
 
@@ -122,8 +172,15 @@ function deleteNode(node: TreeNodeData, treeData: TreeNodeData[]) {
 | 事件 | 说明 |
 | --- | --- |
 | `nodeClick` | 点击节点时触发，返回当前节点 |
+| `nodeExtraClick` | 点击节点右侧内容时触发，返回当前节点和原生点击事件 |
 | `nodeDrop` | 拖拽放置时触发，返回拖拽节点、落点节点和落点类型 |
 | `contextAction` | 右键菜单动作执行后触发，返回动作和目标节点 |
+
+## 插槽
+
+| 插槽 | 说明 | 参数 |
+| --- | --- | --- |
+| `nodeExtra` | 自定义节点右侧内容；不传时显示 `authorDisplayName || authorUserName` | `{ node }` |
 
 ## 手动验收建议
 

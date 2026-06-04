@@ -1,8 +1,32 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const enabled = ref(true)
 const notice = ref(false)
+
+const switchBasicCode = `<XSwitch v-model="enabled" />`
+
+const switchTextCode = `<XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />`
+
+const switchLabelPositionCode = `<XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
+<XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />`
+
+const switchSizeCode = `<XSwitch size="sm" model-value />
+<XSwitch model-value />
+<XSwitch size="lg" model-value />`
+
+const switchDisabledCode = `<XSwitch disabled />
+<XSwitch model-value disabled />`
+
+const switchThemeCode = `<XSwitch
+  model-value
+  checked-color="#1264f4"
+  inactive-color="#dcdfe6"
+  thumb-color="#ffffff"
+  button-size="20"
+  font-size="15"
+  font-family="Arial, sans-serif"
+/>`
 </script>
 
 # Switch 开关
@@ -11,90 +35,58 @@ const notice = ref(false)
 
 ## 基础用法
 
-<div class="x-demo-block">
+<XDocDemo title="基础用法" :code="switchBasicCode">
   <div class="x-demo-row">
     <XSwitch v-model="enabled" />
     <span class="x-demo-label">当前值：{{ enabled }}</span>
   </div>
-</div>
-
-```vue
-<script setup>
-import { ref } from 'vue'
-
-const enabled = ref(true)
-</script>
-
-<template>
-  <XSwitch v-model="enabled" />
-</template>
-```
+</XDocDemo>
 
 ## 带文字
 
-<div class="x-demo-block">
+<XDocDemo title="带文字" :code="switchTextCode">
   <div class="x-demo-row">
     <XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />
   </div>
-</div>
-
-```vue
-<XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />
-```
+</XDocDemo>
 
 ## 文字位置
 
-<div class="x-demo-block">
+<XDocDemo title="文字位置" :code="switchLabelPositionCode">
   <div class="x-demo-row">
     <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
     <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />
   </div>
-</div>
-
-```vue
-<XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
-<XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />
-```
+</XDocDemo>
 
 ## 尺寸
 
 显式传入 `size` 时，开关字号由统一尺寸预设接管：`sm` 为 `10px`，`md` 为 `12px`，`lg` 为 `14px`。`XSwitch` 是尺寸特例：为保持视觉比例，轨道宽高按统一尺寸高度的 `80%` 渲染，`sm` 高度为 `17.6px`、`md` 高度为 `24px`、`lg` 高度为 `30.4px`，宽度保持高度的 2 倍。`size` 不接管圆角，轨道默认始终保持左右半圆的胶囊边线。未显式传入 `size` 时，可继续用 `buttonSize`、`fontSize`、`radius` 做局部微调。
 
-<div class="x-demo-block">
+<XDocDemo title="尺寸" :code="switchSizeCode">
   <div class="x-demo-row">
     <XSwitch size="sm" model-value />
     <XSwitch model-value />
     <XSwitch size="lg" model-value />
   </div>
-</div>
-
-```vue
-<XSwitch size="sm" model-value />
-<XSwitch model-value />
-<XSwitch size="lg" model-value />
-```
+</XDocDemo>
 
 ## 禁用状态
 
-<div class="x-demo-block">
+<XDocDemo title="禁用状态" :code="switchDisabledCode">
   <div class="x-demo-row">
     <XSwitch disabled />
     <XSwitch model-value disabled />
   </div>
-</div>
-
-```vue
-<XSwitch disabled />
-<XSwitch model-value disabled />
-```
+</XDocDemo>
 
 ## 业务主题
 
-<div class="x-demo-block">
+<XDocDemo title="业务主题" :code="switchThemeCode">
   <div class="x-demo-row">
     <XSwitch
       model-value
-      color="#1264f4"
+      checked-color="#1264f4"
       inactive-color="#dcdfe6"
       thumb-color="#ffffff"
       button-size="20"
@@ -102,19 +94,7 @@ const enabled = ref(true)
       font-family="Arial, sans-serif"
     />
   </div>
-</div>
-
-```vue
-<XSwitch
-  model-value
-  color="#1264f4"
-  inactive-color="#dcdfe6"
-  thumb-color="#ffffff"
-  button-size="20"
-  font-size="15"
-  font-family="Arial, sans-serif"
-/>
-```
+</XDocDemo>
 
 ## Props
 

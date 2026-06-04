@@ -2506,6 +2506,22 @@ function reorderColumnSetting(key: string, targetKey: string, position: TableReo
   setColumnSettings(sorted.map((setting, order) => ({ ...setting, order })))
 }
 
+function moveColumnSettingToEdge(key: string, edge: 'first' | 'last') {
+  const sorted = getOrderedSettings()
+  const fromIndex = sorted.findIndex((setting) => setting.key === key)
+  if (fromIndex < 0 || (edge === 'first' && fromIndex === 0) || (edge === 'last' && fromIndex === sorted.length - 1)) {
+    return
+  }
+
+  const [movedSetting] = sorted.splice(fromIndex, 1)
+  if (edge === 'first') {
+    sorted.unshift(movedSetting)
+  } else {
+    sorted.push(movedSetting)
+  }
+  setColumnSettings(sorted.map((setting, order) => ({ ...setting, order })))
+}
+
 function resetColumnSettings() {
   setColumnSettings(createDefaultColumnSettings())
 }
@@ -3553,6 +3569,7 @@ defineExpose({
             <span></span>
             <span>显示</span>
             <span class="x-table__column-settings-header-name">列名</span>
+            <span>排序</span>
             <span>冻结</span>
             <span>对齐</span>
             <span>比例%</span>
@@ -3594,6 +3611,26 @@ defineExpose({
               <span class="x-table__column-settings-name" :title="getColumnSettingsLabel(setting.key)">
                 {{ getColumnSettingsLabel(setting.key) }}
               </span>
+              <div class="x-table__column-settings-edge-actions">
+                <button
+                  class="x-table__column-settings-edge-button"
+                  type="button"
+                  :aria-label="`${getColumnSettingsLabel(setting.key)}置顶`"
+                  :title="`${getColumnSettingsLabel(setting.key)}置顶`"
+                  @click="moveColumnSettingToEdge(setting.key, 'first')"
+                >
+                  置顶
+                </button>
+                <button
+                  class="x-table__column-settings-edge-button"
+                  type="button"
+                  :aria-label="`${getColumnSettingsLabel(setting.key)}置底`"
+                  :title="`${getColumnSettingsLabel(setting.key)}置底`"
+                  @click="moveColumnSettingToEdge(setting.key, 'last')"
+                >
+                  置底
+                </button>
+              </div>
               <div class="x-table__column-settings-radio-group x-table__column-settings-radio-group--button">
                 <XRadioButton
                   :model-value="setting.fixed"
@@ -3836,8 +3873,8 @@ defineExpose({
   box-sizing: border-box;
   column-gap: 10px;
   display: grid;
-  grid-template-columns: 28px 52px minmax(120px, 1fr) 84px 84px 84px 92px;
-  min-width: 604px;
+  grid-template-columns: 28px 52px minmax(120px, 1fr) 80px 84px 84px 84px 92px;
+  min-width: 694px;
   width: 100%;
 }
 
@@ -3851,7 +3888,7 @@ defineExpose({
   padding: 0 10px;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 5;
 }
 
 .x-table__column-settings-header span {
@@ -3873,6 +3910,7 @@ defineExpose({
   min-height: 48px;
   padding: 8px 10px;
   position: relative;
+  z-index: 0;
   transition:
     background-color 140ms ease,
     box-shadow 140ms ease,
@@ -3914,7 +3952,7 @@ defineExpose({
   pointer-events: none;
   position: absolute;
   right: 10px;
-  z-index: 2;
+  z-index: 1;
 }
 
 .x-table__column-settings-row.is-drag-over-before::before {
@@ -3967,6 +4005,35 @@ defineExpose({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.x-table__column-settings-edge-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+  justify-self: center;
+  min-width: 0;
+}
+
+.x-table__column-settings-edge-button {
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
+  border-radius: 4px;
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
+  cursor: pointer;
+  font-size: var(--x-table-font-size, 12px);
+  height: 24px;
+  line-height: 1;
+  min-width: 34px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.x-table__column-settings-edge-button:hover,
+.x-table__column-settings-edge-button:focus-visible {
+  border-color: var(--x-color-primary, #1264f4);
+  color: var(--x-color-primary, #1264f4);
+  outline: none;
 }
 
 .x-table__column-settings-radio-group {

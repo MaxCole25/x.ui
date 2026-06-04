@@ -1606,6 +1606,30 @@ describe('元素组件', () => {
     wrapper.unmount()
   })
 
+  it('teleports cascader panel to the configured target', async () => {
+    const host = document.createElement('div')
+    host.id = 'cascader-portal'
+    document.body.appendChild(host)
+    const wrapper = mount(XCascader, {
+      props: {
+        modelValue: [],
+        options: [{ label: '浙江', value: 'zhejiang' }],
+        teleportTo: '#cascader-portal'
+      },
+      attachTo: document.body
+    })
+
+    await wrapper.find('.x-cascader__control').trigger('click')
+    await nextTick()
+
+    const panel = host.querySelector<HTMLElement>('.x-cascader__panel')
+    expect(panel?.classList.contains('is-teleported')).toBe(true)
+    expect(panel?.style.zIndex).toBe(String(overlayZIndex.popper))
+
+    wrapper.unmount()
+    host.remove()
+  })
+
   it('updates slider value', async () => {
     const wrapper = mount(XSlider, {
       props: { modelValue: 10 }
@@ -1613,6 +1637,20 @@ describe('元素组件', () => {
 
     await wrapper.find('input').setValue(20)
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([20])
+  })
+
+  it('supports vertical slider display', () => {
+    const wrapper = mount(XSlider, {
+      props: {
+        modelValue: 30,
+        vertical: true,
+        showValue: true
+      }
+    })
+
+    expect(wrapper.classes()).toContain('x-slider--vertical')
+    expect(wrapper.find('input').attributes('aria-orientation')).toBe('vertical')
+    expect(wrapper.find('.x-slider__value').text()).toBe('30')
   })
 
   it('renders time select options in the custom dialog', async () => {

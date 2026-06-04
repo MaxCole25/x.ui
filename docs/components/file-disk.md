@@ -1,70 +1,26 @@
-# 文件磁盘 FileDisk
-
-`XFileDisk` 用于在相对目录下管理单据附件，提供类似资源管理器的目录浏览、上传、下载、复制、剪切、粘贴和删除能力。组件默认撑满父容器，实际文件读写通过业务侧 `adapter` 对接后端接口，便于按单据、用户或角色控制读、写、删、看权限。
-
-## 基础用法
-
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XFileDisk } from 'x.ui'
-import type { FileDiskAdapter } from 'x.ui'
-import 'x.ui/style.css'
 
 const path = ref('/合同附件')
+const entries = [
+  { id: 'folder-contract', name: '补充协议', type: 'folder', updatedAt: '2026-06-01 10:20' },
+  { id: 'file-contract', name: '销售合同.pdf', type: 'file', extension: 'pdf', size: 245760, updatedAt: '2026-06-02 15:12' },
+  { id: 'file-image', name: '现场照片.png', type: 'file', extension: 'png', size: 98304, updatedAt: '2026-06-02 16:30' }
+]
 
-const adapter: FileDiskAdapter = {
-  list: (path) => fetch(`/api/files?path=${encodeURIComponent(path)}`).then((res) => res.json()),
-  createFolder: (path, name) => fetch('/api/files/folders', { method: 'POST', body: JSON.stringify({ path, name }) }),
-  upload: (path, files, context) => {
-    const form = new FormData()
-    form.append('path', path)
-    files.forEach((file) => form.append('files', file))
-    // 业务侧可以在 XHR / 分片上传中调用 context.onProgress({ file, percent })
-    return fetch('/api/files/upload', { method: 'POST', body: form })
-  },
-  download: (path, items, options) => {
-    return fetch('/api/files/download', {
-      method: 'POST',
-      body: JSON.stringify({ path, items, archive: options.archive })
-    }).then(() => undefined)
-  },
-  remove: (path, items) => fetch('/api/files', { method: 'DELETE', body: JSON.stringify({ path, items }) }),
-  rename: (path, item, name) => fetch('/api/files/rename', { method: 'POST', body: JSON.stringify({ path, item, name }) }),
-  copy: (payload) => fetch('/api/files/copy', { method: 'POST', body: JSON.stringify(payload) }),
-  move: (payload) => fetch('/api/files/move', { method: 'POST', body: JSON.stringify(payload) })
-}
-</script>
+const fileDiskBasicCode = `<XFileDisk
+  v-model="path"
+  title="销售单附件"
+  :entries="entries"
+  :permissions="{ read: true, write: true, delete: true, view: true }"
+/>`
 
-<template>
-  <div style="height: 520px">
-    <XFileDisk
-      v-model="path"
-      title="销售单附件"
-      :adapter="adapter"
-      :permissions="{ read: true, write: true, delete: true, view: true }"
-    />
-  </div>
-</template>
-```
-
-## 权限控制
-
-```vue
-<XFileDisk
+const fileDiskPermissionCode = `<XFileDisk
   :entries="entries"
   :permissions="{ read: true, write: false, delete: false, view: true }"
-/>
-```
+/>`
 
-`read` 控制目录读取，`write` 控制新建目录、上传和粘贴，`delete` 控制删除，`view` 控制双击打开目录或文件。
-
-## 主题配色
-
-通过主题 props 或 `colors` 可以覆盖文件磁盘常用配色，便于和业务系统主题色保持一致。x.ui 默认色保持通用，不内置具体业务系统主题；未传入的字段会继续使用组件默认色或全局设计变量。
-
-```vue
-<XFileDisk
+const fileDiskThemeCode = `<XFileDisk
   :entries="entries"
   background-color="#0f172a"
   text-color="#e2e8f0"
@@ -80,15 +36,70 @@ const adapter: FileDiskAdapter = {
   active-icon-color="#67e8f9"
   empty-background-color="#111827"
   drag-over-background-color="rgba(103, 232, 249, 0.14)"
-  :colors="{
-    primary: '#67e8f9',
-    primarySoft: 'rgba(103, 232, 249, 0.16)',
-    primaryWeak: 'rgba(103, 232, 249, 0.10)',
-    success: '#16a34a',
-    danger: '#dc2626'
-  }"
-/>
-```
+/>`
+</script>
+
+# 文件磁盘 FileDisk
+
+`XFileDisk` 用于在相对目录下管理单据附件，提供类似资源管理器的目录浏览、上传、下载、复制、剪切、粘贴和删除能力。组件默认撑满父容器，实际文件读写通过业务侧 `adapter` 对接后端接口，便于按单据、用户或角色控制读、写、删、看权限。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="fileDiskBasicCode">
+  <ClientOnly>
+    <div style="height: 420px">
+    <XFileDisk
+      v-model="path"
+      title="销售单附件"
+      :entries="entries"
+      :permissions="{ read: true, write: true, delete: true, view: true }"
+    />
+  </div>
+  </ClientOnly>
+</XDocDemo>
+
+## 权限控制
+
+<XDocDemo title="权限控制" :code="fileDiskPermissionCode">
+  <ClientOnly>
+    <div style="height: 360px">
+      <XFileDisk
+        :entries="entries"
+        :permissions="{ read: true, write: false, delete: false, view: true }"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
+
+`read` 控制目录读取，`write` 控制新建目录、上传和粘贴，`delete` 控制删除，`view` 控制双击打开目录或文件。
+
+## 主题配色
+
+通过主题 props 或 `colors` 可以覆盖文件磁盘常用配色，便于和业务系统主题色保持一致。x.ui 默认色保持通用，不内置具体业务系统主题；未传入的字段会继续使用组件默认色或全局设计变量。
+
+<XDocDemo title="主题配色" :code="fileDiskThemeCode">
+  <ClientOnly>
+    <div style="height: 360px">
+      <XFileDisk
+        :entries="entries"
+        background-color="#0f172a"
+        text-color="#e2e8f0"
+        muted-text-color="#94a3b8"
+        border-color="#334155"
+        header-background-color="#111827"
+        toolbar-background-color="#1e293b"
+        item-background-color="#111827"
+        item-hover-background-color="#1e3a5f"
+        item-active-background-color="#155e75"
+        item-active-text-color="#f8fafc"
+        icon-color="#cbd5e1"
+        active-icon-color="#67e8f9"
+        empty-background-color="#111827"
+        drag-over-background-color="rgba(103, 232, 249, 0.14)"
+      />
+    </div>
+  </ClientOnly>
+</XDocDemo>
 
 这些 props 会映射为组件根节点上的 CSS variables，也可以直接通过外部 CSS 覆盖：
 

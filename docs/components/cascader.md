@@ -1,15 +1,11 @@
-# 级联选择器 Cascader
-
-用于从多级树形数据中逐级选择路径，适合省市区、组织层级、业务分类等场景。
-
-## 基础用法
-
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XCascader } from 'x.ui'
 
 const area = ref(['zhejiang', 'hangzhou'])
+const areaWithAffix = ref(['zhejiang', 'ningbo'])
+const areaParent = ref(['zhejiang'])
+const areaValue = ref(['jiangsu', 'nanjing'])
+const remoteArea = ref([])
 
 const areaOptions = [
   {
@@ -26,67 +22,111 @@ const areaOptions = [
     children: [{ label: '南京', value: 'nanjing' }]
   }
 ]
-</script>
 
-<template>
-  <XCascader v-model="area" :options="areaOptions" placeholder="请选择地区" />
-</template>
-```
+const areaFieldNames = { label: 'name', value: 'id', children: 'items' }
 
-## 可清空与前后缀
+const remoteRootOptions = [
+  { name: '浙江', id: 'zhejiang' },
+  { name: '江苏', id: 'jiangsu' }
+]
 
-```vue
-<XCascader
+const remoteChildrenMap = {
+  zhejiang: [
+    { name: '杭州', id: 'hangzhou' },
+    { name: '宁波', id: 'ningbo' }
+  ],
+  jiangsu: [{ name: '南京', id: 'nanjing' }]
+}
+
+const cascaderBasicCode = `<XCascader v-model="area" :options="areaOptions" placeholder="请选择地区" />`
+
+const cascaderAffixCode = `<XCascader
   v-model="area"
   :options="areaOptions"
   prefix="地区"
   suffix="必选"
   clearable
-/>
-```
+/>`
+
+const cascaderParentCode = `<XCascader v-model="area" :options="areaOptions" change-on-select />`
+
+const cascaderDisplayCode = `<XCascader v-model="area" :options="areaOptions" display-field="value" />`
+
+const cascaderRemoteCode = `<XCascader
+  v-model="area"
+  remote
+  :field-names="areaFieldNames"
+  :remote-method="queryArea"
+  placeholder="请选择地区"
+/>`
+
+function queryArea(option?: { value?: string }) {
+  if (!option?.value) return remoteRootOptions
+  return remoteChildrenMap[option.value as keyof typeof remoteChildrenMap] ?? []
+}
+</script>
+
+# 级联选择器 Cascader
+
+用于从多级树形数据中逐级选择路径，适合省市区、组织层级、业务分类等场景。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="cascaderBasicCode">
+  <div style="width: 280px">
+    <XCascader v-model="area" :options="areaOptions" placeholder="请选择地区" />
+  </div>
+</XDocDemo>
+
+## 可清空与前后缀
+
+<XDocDemo title="可清空与前后缀" :code="cascaderAffixCode">
+  <div style="width: 320px">
+    <XCascader
+      v-model="areaWithAffix"
+      :options="areaOptions"
+      prefix="地区"
+      suffix="必选"
+      clearable
+    />
+  </div>
+</XDocDemo>
 
 ## 父级可选
 
 开启 `changeOnSelect` 后，点击非叶子节点也会立即更新绑定值。
 
-```vue
-<XCascader v-model="area" :options="areaOptions" change-on-select />
-```
+<XDocDemo title="父级可选" :code="cascaderParentCode">
+  <div style="width: 280px">
+    <XCascader v-model="areaParent" :options="areaOptions" change-on-select />
+  </div>
+</XDocDemo>
 
 ## 显示选项值
 
 `displayField` 默认显示 `label`。设置为 `value` 后，面板选项和已选路径会显示选项值；如果 `fieldNames.value` 映射的是后端 `id` 字段，就会显示 id。
 
-```vue
-<XCascader v-model="area" :options="areaOptions" display-field="value" />
-```
+<XDocDemo title="显示选项值" :code="cascaderDisplayCode">
+  <div style="width: 280px">
+    <XCascader v-model="areaValue" :options="areaOptions" display-field="value" />
+  </div>
+</XDocDemo>
 
 ## 服务端级联与键值数据
 
 开启 `remote` 后，展开面板时会请求根级选项，点击未加载子级的父节点时会把当前节点和路径传给 `remoteMethod`，用于按需请求下一列。后端字段不是 `label` / `value` / `children` 时，可用 `fieldNames` 映射。
 
-```vue
-<script setup lang="ts">
-const area = ref([])
-const areaFieldNames = { label: 'name', value: 'id', children: 'items' }
-
-const queryArea = async (option, path) => {
-  const parentId = option?.value ?? ''
-  const response = await fetch(`/api/areas?parentId=${parentId}`)
-  return response.json()
-}
-</script>
-
-<template>
+<XDocDemo title="服务端级联与键值数据" :code="cascaderRemoteCode">
+  <div style="width: 280px">
   <XCascader
-    v-model="area"
+    v-model="remoteArea"
     remote
     :field-names="areaFieldNames"
     :remote-method="queryArea"
     placeholder="请选择地区"
   />
-</template>
-```
+  </div>
+</XDocDemo>
 
 ## Props
 
@@ -115,6 +155,7 @@ const queryArea = async (option, path) => {
 | textAlign | 文本对齐 | `'left' \| 'center' \| 'right'` | `left` |
 | separator | 已选路径分隔符 | `string` | ` / ` |
 | changeOnSelect | 是否允许选择父级节点 | `boolean` | `false` |
+| teleportTo | 面板挂载目标。传入选择器（如 `body`）后，级联面板会通过 Teleport 挂载到该目标 | `string` | - |
 | showActiveBorder | 是否显示激活边框 | `boolean` | `true` |
 | id | 控件 id | `string` | - |
 | name | 控件 name | `string` | - |

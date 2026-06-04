@@ -1,29 +1,68 @@
 ﻿# 登录 Login
 
-`XLogin` 用于构建通用登录入口，内置用户名、密码、注册提示、滑块图像验证、字母识别验证、微信登录和短信验证的界面与事件接口。组件不绑定具体认证服务，业务项目可以通过事件接入自己的登录、注册、验证码、微信或短信逻辑。
-
-## 基础用法
-
-```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XLogin } from 'x.ui'
-import 'x.ui/style.css'
 
 const username = ref('')
 const password = ref('')
 const remember = ref(false)
+const themedUsername = ref('admin')
+const themedPassword = ref('')
 
-function handleLogin(payload) {
-  console.log('登录数据', payload)
-}
+function handleLogin() {}
 
-function handleRegister() {
-  console.log('跳转注册页或打开注册弹窗')
-}
+function handleRegister() {}
+
+const loginBasicCode = `<XLogin
+  v-model:username="username"
+  v-model:password="password"
+  v-model:remember="remember"
+  title="系统登录"
+  description="请输入账号和密码继续访问"
+  @login="handleLogin"
+  @register="handleRegister"
+/>`
+
+const loginCaptchaCode = `<XLogin
+  enable-image-captcha
+  enable-letter-captcha
+  enable-wechat-login
+  enable-sms-login
+  letter-captcha-text="A7KQ"
+  @send-sms-code="sendSmsCode"
+  @wechat-login="startWechatLogin"
+  @login="submitLogin"
+/>`
+
+const loginRememberCode = `<XLogin v-model:remember="remember" @login="handleLogin" />`
+
+const loginLogoCode = `<XLogin
+  logo-src="/logo.svg"
+  logo-position="left"
+  title="NexMod 工作台"
+  description="统一身份入口"
+/>`
+
+const loginThemeCode = `<XLogin
+  label-position="left"
+  accent-color="#8a4b12"
+  accent-soft-color="#fff0d7"
+  background-color="#fffaf1"
+  border-color="#e7c892"
+  border-width="2px"
+  radius="16px"
+  width="420px"
+  text-color="#3f2d1b"
+  muted-color="#806b55"
+/>`
 </script>
 
-<template>
+`XLogin` 用于构建通用登录入口，内置用户名、密码、注册提示、滑块图像验证、字母识别验证、微信登录和短信验证的界面与事件接口。组件不绑定具体认证服务，业务项目可以通过事件接入自己的登录、注册、验证码、微信或短信逻辑。
+
+## 基础用法
+
+<XDocDemo title="基础用法" :code="loginBasicCode">
+  <div style="max-width: 420px">
   <XLogin
     v-model:username="username"
     v-model:password="password"
@@ -33,30 +72,26 @@ function handleRegister() {
     @login="handleLogin"
     @register="handleRegister"
   />
-</template>
-```
+  </div>
+</XDocDemo>
 
 ## 启用验证方式
 
 图像验证、字母识别、微信登录、短信验证都可以独立启用。
 
-```vue
-<XLogin
-  enable-image-captcha
-  enable-letter-captcha
-  enable-wechat-login
-  enable-sms-login
-  image-captcha-src="/api/captcha/background"
-  image-captcha-title="拖动下方滑块完成拼图"
-  letter-captcha-text="A7KQ"
-  @refresh-image-captcha="refreshImageCaptcha"
-  @image-captcha-success="verifyImageCaptcha"
-  @refresh-letter-captcha="refreshLetterCaptcha"
-  @send-sms-code="sendSmsCode"
-  @wechat-login="startWechatLogin"
-  @login="submitLogin"
-/>
-```
+<XDocDemo title="启用验证方式" :code="loginCaptchaCode">
+  <div style="max-width: 420px">
+    <XLogin
+      enable-image-captcha
+      enable-letter-captcha
+      enable-wechat-login
+      enable-sms-login
+      letter-captcha-text="A7KQ"
+      title="安全登录"
+      description="示例展示所有验证入口"
+    />
+  </div>
+</XDocDemo>
 
 图像验证是滑块拼图形式。用户拖动滑块后，组件会通过 `image-captcha-change` 暴露滑动百分比，拖动到目标位置后触发 `image-captcha-success`。真实的服务端校验可以在这两个事件中接入。
 
@@ -68,53 +103,50 @@ function handleRegister() {
 
 默认显示“记住我”复选框，支持 `v-model:remember`。点击登录时，`login` 事件的 `LoginSubmitPayload` 会带上 `remember` 字段，业务侧可以据此决定是否记住账号或延长登录状态有效期。
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const remember = ref(true)
-
-function handleLogin(payload) {
-  // payload.remember 为 true 时，业务侧可保存账号或使用更长有效期的会话
-}
-</script>
-
-<template>
-  <XLogin v-model:remember="remember" @login="handleLogin" />
-</template>
-```
+<XDocDemo title="记住我" :code="loginRememberCode">
+  <div style="max-width: 420px">
+    <XLogin v-model:remember="remember" title="记住登录状态" description="勾选后登录事件会携带 remember=true" />
+  </div>
+</XDocDemo>
 
 ## Logo 与标题区域
 
 通过 `logoSrc` 设置 Logo 图片，通过 `logoPosition` 控制 Logo 位置。标题和介绍区域会自动撑满父元素宽度，适合放在不同宽度的登录卡片或布局容器中。
 
-```vue
-<XLogin
-  logo-src="/logo.svg"
-  logo-position="left"
-  title="NexMod 工作台"
-  description="统一身份入口"
-/>
-```
+<XDocDemo title="Logo 与标题区域" :code="loginLogoCode">
+  <div style="max-width: 420px">
+    <XLogin
+      logo-position="left"
+      title="NexMod 工作台"
+      description="统一身份入口"
+      :show-register="false"
+    />
+  </div>
+</XDocDemo>
 
 ## 标签位置和主题色
 
 `labelPosition` 可以控制用户名、密码等表单标签显示在输入框上方或左侧。配色相关属性会映射为组件内部 CSS 变量，适合在业务系统中接入主题色。
 
-```vue
-<XLogin
-  label-position="left"
-  accent-color="#8a4b12"
-  accent-soft-color="#fff0d7"
-  background-color="#fffaf1"
-  border-color="#e7c892"
-  border-width="2px"
-  radius="16px"
-  width="420px"
-  text-color="#3f2d1b"
-  muted-color="#806b55"
-/>
-```
+<XDocDemo title="标签位置和主题色" :code="loginThemeCode">
+  <div style="max-width: 460px">
+    <XLogin
+      v-model:username="themedUsername"
+      v-model:password="themedPassword"
+      label-position="left"
+      accent-color="#8a4b12"
+      accent-soft-color="#fff0d7"
+      background-color="#fffaf1"
+      border-color="#e7c892"
+      border-width="2px"
+      radius="16px"
+      width="420px"
+      text-color="#3f2d1b"
+      muted-color="#806b55"
+      :show-register="false"
+    />
+  </div>
+</XDocDemo>
 
 ## Props
 

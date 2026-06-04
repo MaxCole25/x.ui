@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import type { TreeNodeData, TreeNodeIcon } from './types'
+import type { TreeNodeData, TreeNodeIcon, TreeSlots } from './types'
 
 const props = defineProps<{
   node: TreeNodeData
@@ -12,10 +12,12 @@ const props = defineProps<{
   resolveNodeIcon: (node: TreeNodeData) => TreeNodeIcon
   allowDrag: (node: TreeNodeData) => boolean
   allowDrop: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean
+  stopExtraClick?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'node-click', node: TreeNodeData): void
+  (e: 'node-extra-click', node: TreeNodeData, event: MouseEvent): void
   (e: 'node-drop', draggingNode: TreeNodeData, dropNode: TreeNodeData, dropType: 'before' | 'after' | 'inner'): void
   (e: 'node-contextmenu', event: MouseEvent, node: TreeNodeData): void
   (e: 'drag-start', node: TreeNodeData): void
@@ -23,6 +25,8 @@ const emit = defineEmits<{
   (e: 'toggle', key: string, expanded: boolean, node: TreeNodeData): void
   (e: 'rename', node: TreeNodeData, label: string): void
 }>()
+
+defineSlots<TreeSlots>()
 
 const rowRef = ref<HTMLElement | null>(null)
 const dropPosition = ref<'before' | 'after' | 'inner' | null>(null)
@@ -38,6 +42,7 @@ const nodeIcon = computed(() => props.resolveNodeIcon(props.node))
 const hasCustomIcon = computed(() => typeof nodeIcon.value === 'string' && nodeIcon.value.trim().length > 0)
 const isRemixIcon = computed(() => typeof nodeIcon.value === 'string' && nodeIcon.value.trim().startsWith('ri-'))
 const nodeIconText = computed(() => (typeof nodeIcon.value === 'string' ? nodeIcon.value.trim().slice(0, 1).toUpperCase() : ''))
+const authorText = computed(() => props.node.authorDisplayName || props.node.authorUserName || '')
 const isNodeOwner = computed(() => Number(props.node.authorId ?? 0) > 0 && Number(props.node.authorId ?? 0) === Number(props.currentUserId ?? 0))
 const isMember = computed(() => {
   if (props.currentUserId !== null && props.currentUserId !== undefined) {
@@ -96,6 +101,13 @@ function forwardDragEnd() {
 
 function handleClick() {
   emit('node-click', props.node)
+}
+
+function handleExtraClick(event: MouseEvent) {
+  if (props.stopExtraClick) {
+    event.stopPropagation()
+  }
+  emit('node-extra-click', props.node, event)
 }
 
 function handleContextMenu(event: MouseEvent) {
@@ -211,8 +223,13 @@ function submitRename() {
         @blur="submitRename"
       />
       <span v-else class="x-tree-node__label">{{ props.node.label }}</span>
-      <span v-if="props.node.authorUserName || props.node.authorDisplayName" class="x-tree-node__author">
-        {{ props.node.authorDisplayName || props.node.authorUserName }}
+      <span
+        v-if="$slots.nodeExtra || authorText"
+        class="x-tree-node__author"
+        :class="{ 'is-clickable': props.stopExtraClick }"
+        @click="handleExtraClick"
+      >
+        <slot name="nodeExtra" :node="props.node">{{ authorText }}</slot>
       </span>
     </div>
 
@@ -229,14 +246,20 @@ function submitRename() {
         :resolve-node-icon="props.resolveNodeIcon"
         :allow-drag="props.allowDrag"
         :allow-drop="props.allowDrop"
+        :stop-extra-click="props.stopExtraClick"
         @node-click="emit('node-click', $event)"
+        @node-extra-click="(nodeData, event) => emit('node-extra-click', nodeData, event)"
         @node-drop="forwardNodeDrop"
         @node-contextmenu="forwardNodeContextMenu"
         @drag-start="emit('drag-start', $event)"
         @drag-end="forwardDragEnd"
         @toggle="forwardToggle"
         @rename="forwardRename"
-      />
+      >
+        <template v-if="$slots.nodeExtra" #nodeExtra="{ node: slotNode }">
+          <slot name="nodeExtra" :node="slotNode" />
+        </template>
+      </TreeNode>
     </div>
   </div>
 </template>

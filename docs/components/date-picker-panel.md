@@ -1,12 +1,30 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const date = ref('2026-06-03')
+const festivalDate = ref('2026-10-01')
+
+const datePickerPanelBasicCode = `<XDatePickerPanel v-model="date" />`
+
+const datePickerPanelFestivalCode = `<XDatePickerPanel
+  v-model="date"
+  :year="2026"
+  :month="10"
+/>`
+</script>
+
 # 日期选择器面板 DatePickerPanel
 
 用于展示月份日期网格并选择日期。
 
 ## 基础用法
 
-```vue
-<XDatePickerPanel v-model="date" />
-```
+<XDocDemo title="基础用法" :code="datePickerPanelBasicCode">
+  <div class="x-demo-column" style="max-width: 360px">
+    <XDatePickerPanel v-model="date" />
+    <p class="x-demo-label">当前日期：{{ date || '暂无' }}</p>
+  </div>
+</XDocDemo>
 
 ## Props
 
@@ -22,13 +40,16 @@
 
 面板默认显示中国传统日期信息，包括春节、元宵、端午、中秋、重阳等农历节日，以及小寒、大寒、立春、雨水、惊蛰、春分、清明、谷雨、立夏、小满、芒种、夏至、小暑、大暑、立秋、处暑、白露、秋分、寒露、霜降、立冬、小雪、大雪、冬至二十四节气。面板不显示每年变化的法定放假和调休上班安排。
 
-```vue
-<XDatePickerPanel
-  v-model="date"
-  :year="2026"
-  :month="10"
-/>
-```
+<XDocDemo title="传统日期显示" :code="datePickerPanelFestivalCode">
+  <div class="x-demo-column" style="max-width: 360px">
+    <XDatePickerPanel
+      v-model="festivalDate"
+      :year="2026"
+      :month="10"
+    />
+    <p class="x-demo-label">当前日期：{{ festivalDate || '暂无' }}</p>
+  </div>
+</XDocDemo>
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充
