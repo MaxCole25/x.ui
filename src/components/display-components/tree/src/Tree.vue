@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import TreeNode from './TreeNode.vue'
 import { componentSizePreset } from '../../../_utils/size'
 import type { TreeContextAction, TreeContextMenuItem, TreeNodeData, TreeNodeIcon, TreeProps, TreeSlots } from './types'
@@ -59,6 +59,21 @@ const resolvedContextMenuItems = computed(() => {
 
   return items.filter((item) => item.visible !== false)
 })
+const visibleNodes = computed(() => {
+  const nodes: TreeNodeData[] = []
+  const walk = (items: TreeNodeData[]) => {
+    items.forEach((item) => {
+      nodes.push(item)
+      const key = String(item.id)
+      if (item.children?.length && expandedState.value[key] !== false) {
+        walk(item.children)
+      }
+    })
+  }
+
+  walk(props.treeData || [])
+  return nodes
+})
 
 watch(
   () => props.currentTreeKey,
@@ -90,6 +105,44 @@ watch(
 
 function setCurrentKey(key: string | null) {
   currentKeyState.value = key || ''
+}
+function findVisibleNodeIndex(key: string) {
+  return visibleNodes.value.findIndex((node) => String(node.id) === key)
+}
+function scrollNodeIntoView(key: string) {
+  nextTick(() => {
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('.x-tree-node__row'))
+    rows.find((row) => row.dataset.treeNodeKey === key)?.scrollIntoView?.({ block: 'nearest' })
+  })
+}
+function selectNode(node: TreeNodeData) {
+  const key = String(node.id)
+  currentKeyState.value = key
+  scrollNodeIntoView(key)
+  emit('nodeClick', node)
+}
+function isInteractiveKeyboardTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false
+  return Boolean(target.closest('input, textarea, select, button, a[href], [contenteditable="true"]'))
+}
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+  if (isInteractiveKeyboardTarget(event.target)) return
+
+  const nodes = visibleNodes.value
+  if (!nodes.length) return
+
+  const currentIndex = findVisibleNodeIndex(currentKeyState.value)
+  const nextIndex = currentIndex === -1
+    ? 0
+    : event.key === 'ArrowDown'
+      ? Math.min(currentIndex + 1, nodes.length - 1)
+      : Math.max(currentIndex - 1, 0)
+
+  event.preventDefault()
+  if (nextIndex === currentIndex) return
+
+  selectNode(nodes[nextIndex])
 }
 function setExpanded(key: string, expanded: boolean) {
   expandedState.value = { ...expandedState.value, [key]: expanded }
@@ -252,7 +305,15 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
 </script>
 
 <template>
-  <div class="x-tree" :class="`x-tree--${props.size ?? 'md'}`" :style="resolveTreeStyle()" @contextmenu.prevent.stop="handleRootContextMenu">
+  <div
+    class="x-tree"
+    :class="`x-tree--${props.size ?? 'md'}`"
+    :style="resolveTreeStyle()"
+    role="tree"
+    tabindex="0"
+    @contextmenu.prevent.stop="handleRootContextMenu"
+    @keydown="handleKeydown"
+  >
     <div v-if="!props.treeData.length" class="x-tree__empty">还没有数据</div>
     <TreeNode
       v-for="node in props.treeData"
@@ -267,7 +328,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
       :allow-drag="props.allowDrag"
       :allow-drop="props.allowDrop"
       :stop-extra-click="shouldStopExtraClick"
-      @node-click="emit('nodeClick', $event)"
+      @node-click="selectNode"
       @node-extra-click="(nodeData, event) => emit('nodeExtraClick', nodeData, event)"
       @node-drop="handleNodeDrop"
       @node-contextmenu="(event, nodeData) => openContextMenu(event, nodeData)"

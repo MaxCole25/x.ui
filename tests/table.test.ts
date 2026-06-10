@@ -1818,6 +1818,90 @@ describe('XTable', () => {
     expect(wrapper.emitted('update:selectedRowKeys')?.[0]?.[0]).toEqual([])
   })
 
+  it('marks dirty cells and emits save only from dirty actions', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showDirtyActions: true
+      }
+    })
+
+    const buttons = wrapper.findAll('.x-table__toolbar-icon-button')
+    expect(buttons).toHaveLength(3)
+    expect(buttons[0].attributes('title')).toBe('保存修改')
+    expect(buttons[0].attributes('disabled')).toBeDefined()
+
+    await wrapper.find('.x-table__row--body').findAll('.x-table__cell')[0].trigger('dblclick')
+    const input = wrapper.find('.x-base-input__inner')
+    await input.setValue('控制台')
+    await input.trigger('keydown.enter')
+    await nextTick()
+
+    expect(wrapper.find('.x-table__cell.is-dirty').exists()).toBe(true)
+    expect(wrapper.emitted('cell-change')?.[0]?.[0]).toMatchObject({
+      key: '1',
+      value: '控制台',
+      oldValue: '工作台'
+    })
+    expect(wrapper.emitted('dirty-change')?.[0]?.[0]).toMatchObject({
+      changes: [
+        {
+          rowKey: '1',
+          columnKey: 'name',
+          value: '控制台',
+          oldValue: '工作台'
+        }
+      ]
+    })
+    expect(wrapper.emitted('save')).toBeUndefined()
+
+    await buttons[0].trigger('click')
+    expect(wrapper.emitted('save')?.[0]?.[0]).toMatchObject({
+      changes: [
+        {
+          rowKey: '1',
+          columnKey: 'name',
+          value: '控制台'
+        }
+      ],
+      dirtyRows: [{ id: 1, name: '控制台', status: '启用', count: 12 }]
+    })
+
+    ;(wrapper.vm as unknown as { clearDirtyChanges: (rowKeys?: string[]) => void }).clearDirtyChanges(['1'])
+    await nextTick()
+    expect(wrapper.find('.x-table__cell.is-dirty').exists()).toBe(false)
+  })
+
+  it('resets dirty changes to original cell values', async () => {
+    const wrapper = mount(XTable, {
+      props: {
+        columns,
+        data,
+        editable: true,
+        showDirtyActions: true
+      }
+    })
+
+    await wrapper.find('.x-table__row--body').findAll('.x-table__cell')[0].trigger('dblclick')
+    const input = wrapper.find('.x-base-input__inner')
+    await input.setValue('控制台')
+    await input.trigger('keydown.enter')
+    await nextTick()
+
+    const draftRows = wrapper.emitted('update:data')?.[0]?.[0] as typeof data
+    await wrapper.setProps({ data: draftRows })
+    ;(wrapper.vm as unknown as { resetDirtyChanges: () => void }).resetDirtyChanges()
+    await nextTick()
+
+    const dataEvents = wrapper.emitted('update:data') ?? []
+    const dirtyEvents = wrapper.emitted('dirty-change') ?? []
+    const resetRows = dataEvents[dataEvents.length - 1]?.[0] as typeof data
+    expect(resetRows[0].name).toBe('工作台')
+    expect(dirtyEvents[dirtyEvents.length - 1]?.[0]).toMatchObject({ changes: [] })
+  })
+
   it('copies selected cell text from the context menu and keyboard shortcut', async () => {
     const { clipboard, restore } = mockClipboard()
     const wrapper = mount(XTable, {
@@ -2402,6 +2486,66 @@ describe('XTable', () => {
       value: 30,
       oldValue: 12
     })
+  })
+
+  it('keeps teleported XSelect editor open until an option commits the edited value', async () => {
+    const { wrapper, cleanup } = mountWithHost({
+      props: {
+        columns,
+        data,
+        editable: true
+      },
+      slots: {
+        'editor-status': ({
+          modelValue,
+          updateModelValue,
+          commitValue
+        }: {
+          modelValue: unknown
+          updateModelValue: (value: string | number | undefined) => void
+          commitValue: (value: string | number | undefined) => void
+        }) => h(XSelect, {
+          modelValue: modelValue as string,
+          options: [
+            { label: '启用', value: '启用' },
+            { label: '停用', value: '停用' }
+          ],
+          'onUpdate:modelValue': (value) => updateModelValue(value as string),
+          onChange: (value) => commitValue(value as string)
+        })
+      }
+    })
+
+    try {
+      const statusCell = wrapper.find('.x-table__row--body').findAll('.x-table__cell')[1]
+      await statusCell.trigger('dblclick')
+      await wrapper.findComponent(XSelect).find('.x-select__control').trigger('click')
+
+      const dropdown = await waitForPositionedDropdown('.x-select__dropdown.is-teleported')
+      expect(wrapper.element.contains(dropdown)).toBe(false)
+
+      const disabledOption = Array.from(dropdown.querySelectorAll<HTMLButtonElement>('.x-option'))
+        .find((option) => option.textContent?.includes('停用'))
+      expect(disabledOption).toBeDefined()
+
+      disabledOption?.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+      await nextTick()
+
+      expect(wrapper.find('.x-table__cell-editor').exists()).toBe(true)
+
+      disabledOption?.click()
+      await nextTick()
+
+      const updatedRows = wrapper.emitted('update:data')?.[0]?.[0] as typeof data
+      expect(updatedRows[0]).toMatchObject({ id: 1, status: '停用' })
+      expect(wrapper.emitted('cell-change')?.[0]?.[0]).toMatchObject({
+        column: expect.objectContaining({ key: 'status' }),
+        value: '停用',
+        oldValue: '启用'
+      })
+    } finally {
+      cleanup()
+    }
   })
 
   it('returns focus to table after committing cell editing with enter', async () => {

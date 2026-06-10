@@ -241,7 +241,7 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
           <section>
             <strong style="display: block; margin-bottom: 6px; font-size: 13px">事件</strong>
             <div style="display: grid; grid-template-columns: repeat(4, 180px); gap: 8px; font-size: 12px; color: #64748b">
-              <span>nodeClick: {{ current }}</span>
+              <span>nodeClick/键盘选择: {{ current }}</span>
               <span>contextAction: {{ lastAction || '-' }}</span>
               <span>nodeDrop: {{ dropLog || '-' }}</span>
               <span>nodeExtraClick: {{ extraLog || '-' }}</span>

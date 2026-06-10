@@ -488,6 +488,57 @@ describe('元素组件', () => {
     expect(wrapper.findAll('.x-autocomplete__option').map((option) => option.text())).toEqual(['南京', '南通'])
   })
 
+  it('highlights the first enabled autocomplete option while typing and selects it with enter', async () => {
+    const wrapper = mountAutocomplete({
+      props: {
+        modelValue: '',
+        options: [
+          { label: '上海', value: 'shanghai' },
+          { label: '南京', value: 'nanjing' },
+          { label: '南通', value: 'nantong' }
+        ]
+      }
+    })
+    const input = wrapper.find('input')
+
+    await input.trigger('focus')
+    await input.setValue('南')
+
+    const activeOption = wrapper.find('.x-autocomplete__option.is-active')
+    expect(activeOption.exists()).toBe(true)
+    expect(activeOption.text()).toBe('南京')
+
+    await input.trigger('keydown', { key: 'Enter', code: 'Enter', keyCode: 13 })
+
+    expect(wrapper.emitted('select')?.[0]?.[0]).toMatchObject({ label: '南京', value: 'nanjing' })
+    const changeEvents = wrapper.emitted('change') ?? []
+    expect(changeEvents[changeEvents.length - 1]).toEqual(['nanjing'])
+  })
+
+  it('skips disabled autocomplete options when highlighting the first match', async () => {
+    const wrapper = mountAutocomplete({
+      props: {
+        modelValue: '',
+        options: [
+          { label: '南京', value: 'nanjing', disabled: true },
+          { label: '南通', value: 'nantong' }
+        ]
+      }
+    })
+    const input = wrapper.find('input')
+
+    await input.trigger('focus')
+    await input.setValue('南')
+
+    const activeOption = wrapper.find('.x-autocomplete__option.is-active')
+    expect(activeOption.exists()).toBe(true)
+    expect(activeOption.text()).toBe('南通')
+
+    await input.trigger('keydown', { key: 'Enter', code: 'Enter', keyCode: 13 })
+
+    expect(wrapper.emitted('select')?.[0]?.[0]).toMatchObject({ label: '南通', value: 'nantong' })
+  })
+
   it('filters autocomplete remote fallback options by existing input value when focused', async () => {
     const wrapper = mountAutocomplete({
       props: {
@@ -728,7 +779,6 @@ describe('元素组件', () => {
     })
 
     await wrapper.find('input').trigger('focus')
-    await wrapper.find('input').trigger('keydown', { key: 'ArrowDown' })
     await nextTick()
     expect(wrapper.findAll('.x-autocomplete__option')[0].classes()).toContain('is-active')
 
@@ -876,7 +926,6 @@ describe('元素组件', () => {
     const input = wrapper.find('input')
     await input.trigger('focus')
     await input.setValue('叶')
-    await input.trigger('keydown', { key: 'ArrowDown' })
     await input.trigger('keydown', { key: 'Enter' })
 
     const modelEvents = wrapper.emitted('update:modelValue') ?? []
@@ -900,7 +949,6 @@ describe('元素组件', () => {
     const input = wrapper.find('input')
     await input.trigger('focus')
     await input.setValue('叶')
-    await input.trigger('keydown', { key: 'ArrowDown' })
     await input.trigger('keyup', { key: 'Enter' })
 
     const modelEvents = wrapper.emitted('update:modelValue') ?? []

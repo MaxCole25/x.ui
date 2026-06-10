@@ -187,7 +187,11 @@ function submitRename() {
         'is-drop-inner': dropPosition === 'inner'
       }"
       :style="{ paddingLeft: `calc(var(--x-tree-row-padding-right, 8px) + ${props.depth} * var(--x-tree-indent-size, 16px))` }"
+      :data-tree-node-key="nodeKey"
       :draggable="props.allowDrag(props.node)"
+      :aria-expanded="hasChildren ? (expanded ? 'true' : 'false') : undefined"
+      :aria-selected="isCurrent ? 'true' : 'false'"
+      role="treeitem"
       @click.stop="handleClick"
       @contextmenu.prevent.stop="handleContextMenu"
       @dragstart="handleDragStart"

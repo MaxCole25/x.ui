@@ -136,6 +136,25 @@ export interface TableCellChangePayload<Row extends Record<string, unknown> = Re
   oldValue: unknown
 }
 
+export interface TableRowPatchPayload {
+  rowKey?: string | number
+  rowIndex?: number
+  patch: Record<string, unknown>
+}
+
+export interface TableDirtyCellChange<Row extends Record<string, unknown> = Record<string, unknown>> extends TableCellChangePayload<Row> {
+  rowKey: string
+  columnKey: string
+}
+
+export interface TableDirtyChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> {
+  changes: TableDirtyCellChange<Row>[]
+  rows: Row[]
+  dirtyRows: Row[]
+}
+
+export interface TableSavePayload<Row extends Record<string, unknown> = Record<string, unknown>> extends TableDirtyChangePayload<Row> {}
+
 export interface TableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
   mode: TableExcelExportMode
   fileName: string
@@ -170,8 +189,12 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   showSelection?: boolean
   showSelectionColumn?: boolean
   editable?: boolean
+  showDirtyActions?: boolean
   showAppendRowButton?: boolean
   showDeleteSelectedRowsButton?: boolean
+  saveDirtyButtonLabel?: string
+  clearDirtyButtonLabel?: string
+  resetDirtyButtonLabel?: string
   appendRowButtonLabel?: string
   deleteSelectedRowsButtonLabel?: string
   rowDraggable?: boolean
@@ -218,13 +241,17 @@ export type XlTableColumnSettingsDialogMode = TableColumnSettingsDialogMode
 export type XlTableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableAppendRowPayload<Row>
 export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
 export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>
+export type XlTableDirtyCellChange<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyCellChange<Row>
+export type XlTableDirtyChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyChangePayload<Row>
 export type XlTableExcelExportMode = TableExcelExportMode
 export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
 export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>
 export type XlTablePaginationChangePayload = TablePaginationChangePayload
 export type XlTablePaginationMode = TablePaginationMode
+export type XlTableRowPatchPayload = TableRowPatchPayload
 export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>
 export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>
+export type XlTableSavePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableSavePayload<Row>
 export type XlTableSorter = TableSorter
 export type XlTableSortOrder = TableSortOrder
 export type XlTableSummaryAggregator = TableSummaryAggregator

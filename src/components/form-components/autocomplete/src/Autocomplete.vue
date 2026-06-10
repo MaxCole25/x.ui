@@ -382,8 +382,8 @@ const handleUpdate = (value: string | number) => {
   } else if (props.valueOnInput) {
     emit('update:modelValue', value)
   }
-  activeOptionIndex.value = -1
   open.value = canOpen.value
+  ensureActiveOption()
   void nextTick().then(updateDropdownPosition)
 }
 
@@ -392,6 +392,7 @@ const handleInput = (value: string | number) => {
   emit('input', value)
   scheduleRemoteQuery(String(value))
   open.value = canOpen.value
+  ensureActiveOption()
   void nextTick().then(updateDropdownPosition)
 }
 
@@ -415,6 +416,7 @@ const handleFocus = (event: FocusEvent) => {
   const target = event.target as HTMLInputElement | null
   currentInputValue.value = String(target?.value ?? displayInputValue.value)
   open.value = canOpen.value
+  ensureActiveOption()
   void nextTick().then(updateDropdownPosition)
   emit('focus', event)
 }
@@ -422,6 +424,7 @@ const handleFocus = (event: FocusEvent) => {
 const openDropdown = () => {
   if (!canOpen.value) return
   open.value = true
+  ensureActiveOption()
   void nextTick().then(updateDropdownPosition)
 }
 
@@ -434,6 +437,20 @@ const handleBlur = (event: FocusEvent) => {
 }
 
 const getFirstEnabledOptionIndex = () => visibleOptions.value.findIndex((option) => !option.disabled)
+
+const ensureActiveOption = () => {
+  if (!open.value || isLoading.value) {
+    activeOptionIndex.value = -1
+    return
+  }
+
+  const currentOption = visibleOptions.value[activeOptionIndex.value]
+  if (currentOption && !currentOption.disabled) {
+    return
+  }
+
+  activeOptionIndex.value = getFirstEnabledOptionIndex()
+}
 
 const moveActiveOption = (direction: 1 | -1) => {
   const options = visibleOptions.value
@@ -523,10 +540,8 @@ const selectSuggestion = (suggestion: AutocompleteOption) => {
   open.value = false
 }
 
-watch(visibleOptions, (options) => {
-  if (activeOptionIndex.value >= options.length || options[activeOptionIndex.value]?.disabled) {
-    activeOptionIndex.value = -1
-  }
+watch(visibleOptions, () => {
+  ensureActiveOption()
 })
 
 watch(

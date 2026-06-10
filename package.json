@@ -12,10 +12,10 @@
   },
   "main": "./dist/x-ui.js",
   "module": "./dist/x-ui.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/x-ui.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/x-ui.d.ts",
       "import": "./dist/x-ui.js"
     },
     "./core": {

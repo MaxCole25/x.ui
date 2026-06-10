@@ -10,10 +10,12 @@ import type {
   TableColumn,
   TableColumnResizePayload,
   TableColumnSettingsDialogMode,
+  TableDirtyChangePayload,
   TablePaginationChangePayload,
   TablePaginationMode,
   TableRowClickPayload,
   TableRowReorderPayload,
+  TableSavePayload,
   TableSelectionMode
 } from './src/types'
 import type { XSize } from '../../_utils/size'
@@ -76,6 +78,7 @@ const parentState = reactive({
   actionsWidth: 160,
   showSelectionColumn: true,
   editable: false,
+  showDirtyActions: false,
   columnResizable: true,
   columnSettingsDialog: 'auto' as TableColumnSettingsDialogMode,
   columnSettingsDialogTitle: '列设置',
@@ -159,6 +162,14 @@ function handleExcelExport(payload: { mode: 'raw' | 'formatted' }) {
 function handleExcelImport(payload: { rows: Record<string, unknown>[] }) {
   rows.value = payload.rows as DemoRow[]
   rowEventText.value = `已导入 Excel：${payload.rows.length} 条`
+}
+
+function handleDirtyChange(payload: TableDirtyChangePayload) {
+  rowEventText.value = `脏单元格：${payload.changes.length} 个`
+}
+
+function handleSave(payload: TableSavePayload) {
+  rowEventText.value = `保存修改：${payload.changes.length} 个单元格 / ${payload.dirtyRows.length} 行`
 }
 
 function getEditorNumberValue(value: string | number | undefined) {
@@ -335,6 +346,10 @@ function updateSize(value: string | number | boolean) {
             <span>可编辑</span>
             <XSwitch v-model="parentState.editable" size="sm" />
           </div>
+          <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.editable }">
+            <span>脏数据按钮</span>
+            <XSwitch v-model="parentState.showDirtyActions" size="sm" :disabled="!parentState.editable" />
+          </div>
           <div class="table-story__control-item">
             <span>列宽拖拽</span>
             <XSwitch v-model="parentState.columnResizable" size="sm" />
@@ -509,6 +524,7 @@ function updateSize(value: string | number | boolean) {
             :show-selection="parentState.selectable"
             :show-selection-column="parentState.showSelectionColumn"
             :editable="parentState.editable"
+            :show-dirty-actions="parentState.showDirtyActions"
             :column-resizable="parentState.columnResizable"
             show-column-settings
             :column-settings-dialog="parentState.columnSettingsDialog"
@@ -552,6 +568,8 @@ function updateSize(value: string | number | boolean) {
             @pagination-change="handlePaginationChange"
             @excel-export="handleExcelExport"
             @excel-import="handleExcelImport"
+            @dirty-change="handleDirtyChange"
+            @save="handleSave"
           >
             <template #editor-category="{ modelValue, updateModelValue, commitValue }">
               <XSelect

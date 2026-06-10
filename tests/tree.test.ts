@@ -22,6 +22,95 @@ describe('XTree', () => {
     expect(wrapper.text()).toContain('节点A')
   })
 
+  it('exposes keyboard tree semantics on the root and node rows', () => {
+    const wrapper = mount(XTree, {
+      props: {
+        currentTreeKey: '1',
+        treeData: [{ id: '1', label: '节点A', children: [{ id: '1-1', label: '节点A-1' }] }]
+      }
+    })
+
+    const row = wrapper.find('.x-tree-node__row')
+    expect(wrapper.attributes('role')).toBe('tree')
+    expect(wrapper.attributes('tabindex')).toBe('0')
+    expect(row.attributes('role')).toBe('treeitem')
+    expect(row.attributes('aria-selected')).toBe('true')
+    expect(row.attributes('aria-expanded')).toBe('true')
+  })
+
+  it('selects visible nodes with arrow down and arrow up', async () => {
+    const wrapper = mount(XTree, {
+      props: {
+        currentTreeKey: '1-1',
+        treeData: [
+          {
+            id: '1',
+            label: '节点A',
+            children: [
+              { id: '1-1', label: '节点A-1' },
+              { id: '1-2', label: '节点A-2' }
+            ]
+          },
+          { id: '2', label: '节点B' }
+        ]
+      }
+    })
+
+    await wrapper.trigger('keydown', { key: 'ArrowDown' })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('nodeClick')?.[0]?.[0]).toMatchObject({ id: '1-2', label: '节点A-2' })
+    expect(wrapper.findAll('.x-tree-node__row')[2].classes()).toContain('is-current')
+
+    await wrapper.trigger('keydown', { key: 'ArrowUp' })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('nodeClick')?.[1]?.[0]).toMatchObject({ id: '1-1', label: '节点A-1' })
+    expect(wrapper.findAll('.x-tree-node__row')[1].classes()).toContain('is-current')
+  })
+
+  it('skips collapsed children when selecting with arrow keys', async () => {
+    const wrapper = mount(XTree, {
+      props: {
+        currentTreeKey: '1',
+        treeData: [
+          {
+            id: '1',
+            label: '节点A',
+            children: [{ id: '1-1', label: '节点A-1' }]
+          },
+          { id: '2', label: '节点B' }
+        ]
+      }
+    })
+
+    await wrapper.find('.x-tree-node__toggle').trigger('click')
+    await wrapper.vm.$nextTick()
+    await wrapper.trigger('keydown', { key: 'ArrowDown' })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('nodeClick')?.[0]?.[0]).toMatchObject({ id: '2', label: '节点B' })
+    expect(wrapper.findAll('.x-tree-node__row')[1].classes()).toContain('is-current')
+  })
+
+  it('does not select nodes with arrow keys from a rename input', async () => {
+    const wrapper = mount(XTree, {
+      props: {
+        currentTreeKey: '1',
+        treeData: [
+          { id: '1', label: '节点A', isEditing: true },
+          { id: '2', label: '节点B' }
+        ]
+      }
+    })
+
+    await wrapper.find('.x-tree-node__edit-input').trigger('keydown', { key: 'ArrowDown' })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('nodeClick')).toBeUndefined()
+    expect(wrapper.findAll('.x-tree-node__row')[0].classes()).toContain('is-current')
+  })
+
   it('renders custom remix icon from node data', () => {
     const wrapper = mount(XTree, {
       props: {

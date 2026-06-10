@@ -1876,7 +1876,8 @@
   border-color: var(--x-select-hover-border-color);
 }
 
-.x-select.is-open:not(.is-active-border-hidden) .x-base-input {
+.x-select.is-open:not(.is-active-border-hidden) .x-base-input,
+.x-select.is-focused:not(.is-active-border-hidden) .x-base-input {
   border-color: var(--x-select-active-border-color);
   box-shadow: none;
 }

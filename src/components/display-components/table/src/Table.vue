@@ -15,6 +15,8 @@ import type {
   TableColumnResizePayload,
   TableColumnSetting,
   TableDeleteSelectedRowsPayload,
+  TableDirtyCellChange,
+  TableDirtyChangePayload,
   TableExcelExportMode,
   TableExcelExportPayload,
   TableExcelImportPayload,
@@ -23,9 +25,11 @@ import type {
   TablePaginationMode,
   TablePaginationState,
   TableProps,
+  TableRowPatchPayload,
   TableRowClickPayload,
   TableReorderPosition,
   TableRowReorderPayload,
+  TableSavePayload,
   TableSelectionMode,
   TableSorter,
   TableSummaryContext,
@@ -47,8 +51,12 @@ const props = withDefaults(defineProps<TableProps>(), {
   showSelection: false,
   showSelectionColumn: true,
   editable: false,
+  showDirtyActions: false,
   showAppendRowButton: false,
   showDeleteSelectedRowsButton: false,
+  saveDirtyButtonLabel: '保存修改',
+  clearDirtyButtonLabel: '标记已保存',
+  resetDirtyButtonLabel: '撤销修改',
   appendRowButtonLabel: '新建行数据',
   deleteSelectedRowsButtonLabel: '删除选择行',
   rowDraggable: false,
@@ -87,6 +95,8 @@ const emit = defineEmits<{
     value: { keys: string[]; cells: Array<{ row: Record<string, unknown>; value: unknown; column: TableColumn; rowIndex: number }> }
   ): void
   (e: 'cell-change', value: TableCellChangePayload): void
+  (e: 'dirty-change', value: TableDirtyChangePayload): void
+  (e: 'save', value: TableSavePayload): void
   (e: 'row-reorder', value: TableRowReorderPayload): void
   (e: 'append-row', value: TableAppendRowPayload): void
   (e: 'delete-selected-rows', value: TableDeleteSelectedRowsPayload): void
@@ -321,9 +331,13 @@ const normalizedSelectedRowKeys = computed(() => (props.selectedRowKeys ?? []).m
 const normalizedSelectedCellKeys = computed(() => props.selectedCellKeys ?? [])
 const internalSelectedRowKeys = ref<string[]>([])
 const internalSelectedCellKeys = ref<string[]>([])
+const dirtyCellMap = ref<Record<string, TableDirtyCellChange>>({})
 const previewSelectedCellKeys = ref<string[] | null>(null)
 const activeSelectedRowKeys = computed(() => internalSelectedRowKeys.value)
 const activeSelectedCellKeys = computed(() => previewSelectedCellKeys.value ?? internalSelectedCellKeys.value)
+const dirtyChanges = computed(() => Object.values(dirtyCellMap.value))
+const dirtyRows = computed(() => getDirtyRows(dirtyChanges.value))
+const isDirtyActionsVisible = computed(() => props.editable && props.showDirtyActions)
 const isRowMutationToolbarVisible = computed(() => props.editable && (props.showAppendRowButton || props.showDeleteSelectedRowsButton))
 const isAppendRowButtonDisabled = computed(() => !isContextRowMutationEnabled.value)
 const isDeleteSelectedRowsButtonDisabled = computed(() => !isContextRowMutationEnabled.value || activeSelectedRowKeys.value.length === 0)
@@ -538,6 +552,10 @@ function isCellSelected(row: Record<string, unknown>, rowIndex: number, column: 
   return selectedCellKeySet.value.has(getCellSelectionKey(row, rowIndex, column))
 }
 
+function isCellDirty(row: Record<string, unknown>, rowIndex: number, column: TableColumn) {
+  return Boolean(dirtyCellMap.value[getCellSelectionKey(row, rowIndex, column)])
+}
+
 function isCellSelectionHandleVisible(rowIndex: number, columnIndex: number) {
   const range = selectedCellRange.value
   const handleColumnIndex = cellSelectionHandleCorner.value === 'bottom-left' ? range?.minColumnIndex : range?.maxColumnIndex
@@ -555,6 +573,7 @@ function getCellSelectionClasses(row: Record<string, unknown>, rowIndex: number,
   if (editing) {
     return {
       'is-cell-selectable': isCellSelectionEnabled.value,
+      'is-dirty': isCellDirty(row, rowIndex, column),
       'is-editing': true
     }
   }
@@ -563,6 +582,7 @@ function getCellSelectionClasses(row: Record<string, unknown>, rowIndex: number,
   if (!selected) {
     return {
       'is-cell-selectable': isCellSelectionEnabled.value,
+      'is-dirty': isCellDirty(row, rowIndex, column),
       'is-editing': false
     }
   }
@@ -574,6 +594,7 @@ function getCellSelectionClasses(row: Record<string, unknown>, rowIndex: number,
 
   return {
     'is-cell-selectable': isCellSelectionEnabled.value,
+    'is-dirty': isCellDirty(row, rowIndex, column),
     'is-editing': false,
     'is-selected-cell': true,
     'is-selected-cell-adjacent-top': previousRow ? isCellSelected(previousRow, rowIndex - 1, column) : false,
@@ -921,6 +942,17 @@ function focusTableRoot() {
   })
 }
 
+function findCellEditorFocusTarget(cell: HTMLElement | null, rowIndex: number, column: TableColumn) {
+  const selector = `[data-x-table-cell-row-index="${rowIndex}"][data-x-table-cell-column-index="${columnIndexByKey.value.get(column.key)}"]`
+  const root = cell ?? tableRootRef.value?.querySelector<HTMLElement>(selector) ?? null
+  return (
+    root?.querySelector<HTMLInputElement>('.x-base-input__inner') ??
+    root?.querySelector<HTMLElement>('.x-select__control') ??
+    root?.querySelector<HTMLElement>('[tabindex]:not([tabindex="-1"])') ??
+    root?.querySelector<HTMLElement>('input:not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled)')
+  )
+}
+
 function beginCellEdit(
   row: Record<string, unknown>,
   rowIndex: number,
@@ -936,16 +968,15 @@ function beginCellEdit(
   editingCellValue.value = initialValue ?? normalizeInputValue(getCellValue(row, column))
 
   nextTick(() => {
-    const input =
-      cell?.querySelector<HTMLInputElement>('.x-base-input__inner') ??
-      tableRootRef.value?.querySelector<HTMLInputElement>(
-        `[data-x-table-cell-row-index="${rowIndex}"][data-x-table-cell-column-index="${columnIndexByKey.value.get(column.key)}"] .x-base-input__inner`
-      )
-    input?.focus()
-    if (initialValue === undefined) {
-      input?.select()
-    } else {
-      input?.setSelectionRange(initialValue.length, initialValue.length)
+    const target = findCellEditorFocusTarget(cell ?? null, rowIndex, column)
+    target?.focus({ preventScroll: true })
+
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      if (initialValue === undefined) {
+        target.select()
+      } else {
+        target.setSelectionRange(initialValue.length, initialValue.length)
+      }
     }
   })
 }
@@ -999,7 +1030,7 @@ function commitCellEdit() {
   const rows = props.data.map((item, index) => (index === rowIndex ? { ...item, [column.key]: value } : item))
   const nextRow = rows[rowIndex]
   emit('update:data', rows)
-  emit('cell-change', {
+  emitCellChange({
     row: nextRow,
     rows,
     rowIndex,
@@ -1008,6 +1039,176 @@ function commitCellEdit() {
     value,
     oldValue
   })
+}
+
+function commitRowPatch(payload: TableRowPatchPayload) {
+  const rowIndex = resolveRowPatchIndex(payload)
+  if (rowIndex === undefined) return
+
+  const row = props.data[rowIndex]
+  if (!row) return
+
+  const changes = Object.entries(payload.patch)
+    .map(([columnKey, value]) => {
+      const column = props.columns.find((item) => item.key === columnKey)
+      if (!column || isReadonlyColumn(column)) return null
+      const oldValue = getCellValue(row, column)
+      if (Object.is(value, oldValue)) return null
+      return { column, value, oldValue }
+    })
+    .filter((item): item is { column: TableColumn; value: unknown; oldValue: unknown } => item !== null)
+
+  if (changes.length === 0) return
+
+  const nextPatch = Object.fromEntries(changes.map((change) => [change.column.key, change.value]))
+  const rows = props.data.map((item, index) => (index === rowIndex ? { ...item, ...nextPatch } : item))
+  const nextRow = rows[rowIndex]
+  emit('update:data', rows)
+  changes.forEach((change) => {
+    emitCellChange({
+      row: nextRow,
+      rows,
+      rowIndex,
+      column: change.column,
+      key: getRowKey(nextRow, rowIndex),
+      value: change.value,
+      oldValue: change.oldValue
+    })
+  })
+}
+
+function resolveRowPatchIndex(payload: TableRowPatchPayload) {
+  if (payload.rowKey !== undefined && payload.rowKey !== null) {
+    const rowKey = String(payload.rowKey)
+    const rowIndex = rowIndexByKey.value.get(rowKey)
+    if (rowIndex !== undefined) return rowIndex
+  }
+
+  if (
+    payload.rowIndex !== undefined &&
+    Number.isInteger(payload.rowIndex) &&
+    payload.rowIndex >= 0 &&
+    payload.rowIndex < props.data.length
+  ) {
+    return payload.rowIndex
+  }
+
+  return undefined
+}
+
+function emitCellChange(change: TableCellChangePayload) {
+  updateDirtyCell(change)
+  emit('cell-change', change)
+}
+
+function updateDirtyCell(change: TableCellChangePayload) {
+  const rowKey = getRowKey(change.row, change.rowIndex)
+  const columnKey = change.column.key
+  const dirtyKey = `${rowKey}::${columnKey}`
+  const existing = dirtyCellMap.value[dirtyKey]
+  const oldValue = existing?.oldValue ?? change.oldValue
+
+  if (Object.is(change.value, oldValue)) {
+    if (existing) {
+      const next = { ...dirtyCellMap.value }
+      delete next[dirtyKey]
+      dirtyCellMap.value = next
+      emitDirtyChange()
+    }
+    return
+  }
+
+  dirtyCellMap.value = {
+    ...dirtyCellMap.value,
+    [dirtyKey]: {
+      ...change,
+      oldValue,
+      rowKey,
+      columnKey
+    }
+  }
+  emitDirtyChange()
+}
+
+function emitDirtyChange() {
+  emit('dirty-change', createDirtyPayload())
+}
+
+function createDirtyPayload(): TableDirtyChangePayload {
+  const changes = dirtyChanges.value.map((change) => ({ ...change, row: { ...change.row } }))
+  return {
+    changes,
+    rows: props.data,
+    dirtyRows: dirtyRows.value
+  }
+}
+
+function getDirtyRows(changes: TableDirtyCellChange[]) {
+  const rowMap = new Map<string, Record<string, unknown>>()
+  changes.forEach((change) => {
+    rowMap.set(change.rowKey, change.row)
+  })
+  return [...rowMap.values()]
+}
+
+function save() {
+  emit('save', createDirtyPayload())
+}
+
+function clearDirtyChanges(rowKeys?: Array<string | number>) {
+  if (!rowKeys || rowKeys.length === 0) {
+    if (dirtyChanges.value.length === 0) return
+    dirtyCellMap.value = {}
+    emitDirtyChange()
+    return
+  }
+
+  const targetKeys = new Set(rowKeys.map((key) => String(key)))
+  const next = Object.fromEntries(
+    Object.entries(dirtyCellMap.value).filter(([, change]) => !targetKeys.has(change.rowKey))
+  )
+  if (Object.keys(next).length !== Object.keys(dirtyCellMap.value).length) {
+    dirtyCellMap.value = next
+    emitDirtyChange()
+  }
+}
+
+function handleSaveDirtyChangesButtonClick() {
+  save()
+}
+
+function handleClearDirtyChangesButtonClick() {
+  clearDirtyChanges()
+}
+
+function handleResetDirtyChangesButtonClick() {
+  resetDirtyChanges()
+}
+
+function resetDirtyChanges(rowKeys?: Array<string | number>) {
+  const targetKeys = rowKeys ? new Set(rowKeys.map((key) => String(key))) : undefined
+  const changes = dirtyChanges.value.filter((change) => !targetKeys || targetKeys.has(change.rowKey))
+  if (changes.length === 0) return
+
+  const rows = props.data.map((row, rowIndex) => {
+    const rowKey = getRowKey(row, rowIndex)
+    const rowChanges = changes.filter((change) => change.rowKey === rowKey)
+    if (rowChanges.length === 0) {
+      return row
+    }
+
+    const nextRow = { ...row }
+    rowChanges.forEach((change) => {
+      nextRow[change.columnKey] = change.oldValue
+    })
+    return nextRow
+  })
+  emit('update:data', rows)
+  clearDirtyChanges(rowKeys)
+}
+
+function getDirtyChanges() {
+  return dirtyChanges.value.map((change) => ({ ...change, row: { ...change.row } }))
 }
 
 function commitCellEditAndFocusTable() {
@@ -1035,6 +1236,10 @@ function handleCellEditOutsidePointerDown(event: PointerEvent) {
 
   const target = event.target as HTMLElement | null
   if (target?.closest('.x-table__cell-editor')) {
+    return
+  }
+
+  if (target?.closest('.x-select__dropdown.is-teleported')) {
     return
   }
 
@@ -1318,7 +1523,7 @@ function pasteClipboardTextToCells(text: string) {
   emit('update:data', rows)
   changedCells.forEach((cell) => {
     const row = rows[cell.rowIndex]
-    emit('cell-change', {
+    emitCellChange({
       row,
       rows,
       rowIndex: cell.rowIndex,
@@ -3026,9 +3231,24 @@ watch(
   { immediate: true }
 )
 
+function pruneDirtyChanges() {
+  if (dirtyChanges.value.length === 0) return
+
+  const rowKeys = new Set(props.data.map((row, rowIndex) => getRowKey(row, rowIndex)))
+  const columnKeys = new Set(props.columns.map((column) => column.key))
+  const next = Object.fromEntries(
+    Object.entries(dirtyCellMap.value).filter(([, change]) => rowKeys.has(change.rowKey) && columnKeys.has(change.columnKey))
+  )
+  if (Object.keys(next).length !== Object.keys(dirtyCellMap.value).length) {
+    dirtyCellMap.value = next
+    emitDirtyChange()
+  }
+}
+
 watch(
   () => [props.data, props.columns, props.showActions, props.actionsWidth, props.showPagination, normalizedCurrentPage.value, normalizedPageSize.value, internalColumnSettings.value, activeSorter.value],
   () => {
+    pruneDirtyChanges()
     nextTick(syncScrollState)
   },
   { deep: true }
@@ -3042,6 +3262,11 @@ defineExpose({
   getPagination: () => ({ ...paginationState.value }),
   setPage,
   setPageSize,
+  commitRowPatch,
+  save,
+  clearDirtyChanges,
+  resetDirtyChanges,
+  getDirtyChanges,
   exportExcel,
   importExcelFile
 })
@@ -3057,9 +3282,42 @@ defineExpose({
     tabindex="0"
     @keydown.capture="handleTableKeydown"
   >
-    <div v-if="$slots.top || isRowMutationToolbarVisible || showColumnSettings" class="x-table__top">
+    <div v-if="$slots.top || isDirtyActionsVisible || isRowMutationToolbarVisible || showColumnSettings" class="x-table__top">
       <div v-if="$slots.top" class="x-table__top-slot">
         <slot name="top" v-bind="slotScope" />
+      </div>
+      <div v-if="isDirtyActionsVisible" class="x-table__dirty-actions" aria-label="脏数据操作">
+        <button
+          class="x-table__toolbar-icon-button"
+          type="button"
+          :aria-label="saveDirtyButtonLabel"
+          :title="saveDirtyButtonLabel"
+          :disabled="dirtyChanges.length === 0"
+          @click="handleSaveDirtyChangesButtonClick"
+        >
+          <i class="ri-save-3-line" aria-hidden="true"></i>
+          <span class="x-table__toolbar-button-count" aria-hidden="true">{{ dirtyChanges.length }}</span>
+        </button>
+        <button
+          class="x-table__toolbar-icon-button"
+          type="button"
+          :aria-label="clearDirtyButtonLabel"
+          :title="clearDirtyButtonLabel"
+          :disabled="dirtyChanges.length === 0"
+          @click="handleClearDirtyChangesButtonClick"
+        >
+          <i class="ri-check-line" aria-hidden="true"></i>
+        </button>
+        <button
+          class="x-table__toolbar-icon-button"
+          type="button"
+          :aria-label="resetDirtyButtonLabel"
+          :title="resetDirtyButtonLabel"
+          :disabled="dirtyChanges.length === 0"
+          @click="handleResetDirtyChangesButtonClick"
+        >
+          <i class="ri-arrow-go-back-line" aria-hidden="true"></i>
+        </button>
       </div>
       <div v-if="isRowMutationToolbarVisible" class="x-table__row-mutation-actions" aria-label="行操作">
         <button
@@ -3788,11 +4046,15 @@ defineExpose({
   min-width: 0;
 }
 
+.x-table__dirty-actions,
 .x-table__row-mutation-actions {
   align-items: center;
   display: inline-flex;
   flex: 0 0 auto;
   gap: 8px;
+}
+
+.x-table__dirty-actions {
   margin-left: auto;
 }
 
@@ -3815,8 +4077,30 @@ defineExpose({
   width: var(--x-table-control-height, 30px);
 }
 
+.x-table__dirty-actions + .x-table__row-mutation-actions,
+.x-table__dirty-actions + .x-table__column-settings-button,
 .x-table__row-mutation-actions + .x-table__column-settings-button {
   margin-left: 0;
+}
+
+.x-table__dirty-actions .x-table__toolbar-icon-button,
+.x-table__row-mutation-actions .x-table__toolbar-icon-button {
+  margin-left: 0;
+}
+
+.x-table__toolbar-button-count {
+  align-items: center;
+  background: var(--x-color-primary, #1264f4);
+  border-radius: 999px;
+  color: var(--x-color-primary-foreground, #fff);
+  display: inline-flex;
+  font-size: 10px;
+  height: 16px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: 2px;
+  min-width: 16px;
+  padding: 0 4px;
 }
 
 .x-table__toolbar-icon-button--danger {
@@ -4392,8 +4676,19 @@ defineExpose({
   min-width: 0;
   overflow: hidden;
   padding: var(--x-table-cell-padding, 0 8px);
+  position: relative;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.x-table__cell.is-dirty::after {
+  border-right: 7px solid var(--x-color-warning, #f59e0b);
+  border-top: 7px solid var(--x-color-warning, #f59e0b);
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .x-table__cell + .x-table__cell {

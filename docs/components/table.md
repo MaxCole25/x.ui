@@ -96,6 +96,7 @@ const tableEditableCode = `<XTable
   v-model:selected-row-keys="selectedRowKeys"
   :columns="columns"
   editable
+  show-dirty-actions
   show-selection
   show-append-row-button
   show-delete-selected-rows-button
@@ -344,7 +345,9 @@ const tableSizeCode = `<XTable :columns="columns" :data="rows" size="sm" :row-he
 
 ## 可编辑行工具栏
 
-开启 `editable` 后，可以通过 `show-append-row-button` 和 `show-delete-selected-rows-button` 在表顶显示内置图标按钮。`新建行数据` 会在末尾追加一行空数据；`删除选择行` 会删除左侧选择列勾选的行。两个操作都会通过 `update:data` 抛出最新数据，适合和 `v-model:data` 搭配使用。为避免分页数据和全量数据不一致，开启分页时按钮会禁用。
+开启 `editable` 后，单元格编辑提交会先形成脏单元格标记，并通过 `cell-change`、`dirty-change` 抛出变化；不会自动保存到后端。开启 `show-dirty-actions` 后，表顶会显示保存修改、标记已保存、撤销修改三个图标按钮。保存按钮会触发 `save` 事件，业务侧可在保存成功后调用 `clearDirtyChanges()` 清除脏标记；撤销按钮会调用 `resetDirtyChanges()` 恢复旧值。
+
+还可以通过 `show-append-row-button` 和 `show-delete-selected-rows-button` 在表顶显示内置行操作图标按钮。`新建行数据` 会在末尾追加一行空数据；`删除选择行` 会删除左侧选择列勾选的行。两个操作都会通过 `update:data` 抛出最新数据，适合和 `v-model:data` 搭配使用。为避免分页数据和全量数据不一致，开启分页时按钮会禁用。
 
 <XDocDemo title="可编辑行工具栏" :code="tableEditableCode">
   <ClientOnly>
@@ -353,6 +356,7 @@ const tableSizeCode = `<XTable :columns="columns" :data="rows" size="sm" :row-he
       v-model:selected-row-keys="selectedRowKeys"
       :columns="columns"
       editable
+      show-dirty-actions
       show-selection
       show-append-row-button
       show-delete-selected-rows-button
@@ -438,8 +442,12 @@ body,
 | showSelection | 表格是否可选 | `boolean` | `false` |
 | showSelectionColumn | 是否显示左侧选择行列，可和单元格选择同时使用 | `boolean` | `true` |
 | editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |
+| showDirtyActions | `editable` 时是否在表顶显示保存、标记已保存和撤销修改图标按钮 | `boolean` | `false` |
 | showAppendRowButton | `editable` 时是否在表顶显示新建行数据图标按钮 | `boolean` | `false` |
 | showDeleteSelectedRowsButton | `editable` 时是否在表顶显示删除选择行图标按钮 | `boolean` | `false` |
+| saveDirtyButtonLabel | 保存修改图标按钮的 `aria-label` 和 `title` | `string` | `'保存修改'` |
+| clearDirtyButtonLabel | 标记已保存图标按钮的 `aria-label` 和 `title` | `string` | `'标记已保存'` |
+| resetDirtyButtonLabel | 撤销修改图标按钮的 `aria-label` 和 `title` | `string` | `'撤销修改'` |
 | appendRowButtonLabel | 新建行数据图标按钮的 `aria-label` 和 `title` | `string` | `'新建行数据'` |
 | deleteSelectedRowsButtonLabel | 删除选择行图标按钮的 `aria-label` 和 `title` | `string` | `'删除选择行'` |
 | rowDraggable | 是否开启行拖拽排序 | `boolean` | `false` |
@@ -526,6 +534,8 @@ body,
 | cell-selection-change | 选中单元格变化时触发，包含选中 key 和单元格数据 | `{ keys, cells }` |
 | update:data | 单元格编辑提交后触发，支持 `v-model:data` | `Record<string, unknown>[]` |
 | cell-change | 单元格编辑提交后触发，包含当前行、全量行、列和值变化 | `TableCellChangePayload` |
+| dirty-change | 脏单元格变化时触发，包含全部脏单元格、当前数据和脏行 | `TableDirtyChangePayload` |
+| save | 点击保存修改按钮或调用 `save()` 时触发，业务侧决定如何落库 | `TableSavePayload` |
 | append-row | 通过表顶按钮、右键菜单或快捷键追加行后触发 | `TableAppendRowPayload` |
 | delete-selected-rows | 通过表顶按钮删除选中行后触发 | `TableDeleteSelectedRowsPayload` |
 | excel-export | 右键菜单导出 Excel 后触发，包含导出模式、行数据和列配置 | `TableExcelExportPayload` |
@@ -560,6 +570,10 @@ body,
 | getPagination | 获取当前分页状态 | `() => TablePaginationState` |
 | setPage | 设置当前页，并触发分页事件 | `(page: number) => void` |
 | setPageSize | 设置每页条数，并触发分页事件 | `(pageSize: number) => void` |
+| save | 提交当前脏数据并触发 `save` 事件 | `() => void` |
+| clearDirtyChanges | 清除全部脏标记，或按行 key 清除指定行脏标记 | `(rowKeys?: Array<string \| number>) => void` |
+| resetDirtyChanges | 撤销全部脏数据，或按行 key 撤销指定行脏数据 | `(rowKeys?: Array<string \| number>) => void` |
+| getDirtyChanges | 获取当前脏单元格列表 | `() => TableDirtyCellChange[]` |
 | exportExcel | 导出 Excel，`raw` 为默认字段值，`formatted` 为格式化文字 | `(mode: 'raw' \| 'formatted') => Promise<void>` |
 | importExcelFile | 导入指定 Excel 文件，只有 `editable` 为 `true` 时会更新数据 | `(file: File) => Promise<void>` |
 

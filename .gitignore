@@ -7,3 +7,11 @@ coverage
 *.local
 *.log
 *.timestamp-*.mjs
+.codex-*.log
+histoire-*.log
+histoire-*.err.log
+vitepress-*.log
+*.png
+*.svg
+*.xlsx
+.tmp-*

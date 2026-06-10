@@ -1,5 +1,4 @@
-import { writeFileSync } from 'node:fs'
-import { basename, dirname, join, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
 import { defineConfig } from 'vite'
@@ -15,14 +14,7 @@ export default defineConfig(() => {
           entryRoot: 'src',
           include: ['src'],
           insertTypesEntry: true,
-          rollupTypes: true,
-          afterBuild: (emittedFiles) => {
-            for (const [filePath, content] of emittedFiles) {
-              if (basename(filePath) === 'x-ui.d.ts') {
-                writeFileSync(join(dirname(filePath), 'index.d.ts'), content, 'utf8')
-              }
-            }
-          }
+          rollupTypes: true
         })
     ],
     build: isHistoire

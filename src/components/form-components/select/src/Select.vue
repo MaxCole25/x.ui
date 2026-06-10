@@ -53,6 +53,7 @@ const formItem = inject(formItemContextKey, null)
 const selectRef = ref<HTMLElement | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
+const isFocused = ref(false)
 const slotOptions = ref<SelectOptionRecord[]>([])
 const remoteOptions = ref<SelectOptionRecord[]>([])
 const remoteLoading = ref(false)
@@ -335,10 +336,12 @@ const removePositionListeners = () => {
 }
 
 const handleFocus = (event: FocusEvent) => {
+  isFocused.value = true
   emit('focus', event)
 }
 
 const handleBlur = (event: FocusEvent) => {
+  isFocused.value = false
   window.setTimeout(() => {
     isOpen.value = false
   }, 120)
@@ -434,6 +437,7 @@ onBeforeUnmount(() => {
       `x-select--${props.status}`,
       {
         'is-open': isOpen,
+        'is-focused': isFocused,
         'is-disabled': mergedDisabled,
         'is-readonly': props.readonly,
         'is-multiple': props.multiple,
