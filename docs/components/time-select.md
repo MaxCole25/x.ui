@@ -2,19 +2,38 @@
 import { ref } from 'vue'
 
 const time = ref('09:30')
-const deliveryTime = ref('10:00')
 
-const timeSelectBasicCode = `<XTimeSelect v-model="time" start="09:00" end="18:00" :step-minutes="30" />`
+const deliveryTime = ref('18:00')
 
-const timeSelectDialogCode = `<XTimeSelect
-  v-model="deliveryTime"
-  start="08:00"
-  end="20:00"
-  :step-minutes="60"
-  size="lg"
-  clearable
-  prefix="送达时间"
-/>`
+const timeSelectBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const time = ref('09:30')
+<\/script>
+
+<div class="x-demo-column" style="width: 280px">
+      <XTimeSelect v-model="time" start="09:00" end="18:00" :step-minutes="30" />
+      <p class="x-demo-label">当前时间：{{ time || '暂无' }}</p>
+    </div>`
+
+const timeSelectDialogCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const deliveryTime = ref('18:00')
+<\/script>
+
+<div class="x-demo-column" style="width: 300px">
+      <XTimeSelect
+        v-model="deliveryTime"
+        start="08:00"
+        end="20:00"
+        :step-minutes="60"
+        size="lg"
+        clearable
+        prefix="送达时间"
+      />
+      <p class="x-demo-label">当前时间：{{ deliveryTime || '暂无' }}</p>
+    </div>`
 </script>
 
 # 时间选择 TimeSelect

@@ -1,56 +1,99 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { use, registerTheme } from 'echarts/core'
-import { LineChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent } from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
-import type { EChartsCoreOption } from 'echarts/core'
+import { ref } from 'vue'
 
-use([LineChart, GridComponent, TooltipComponent, CanvasRenderer])
-
-registerTheme('x-doc-chart-dark', {
-  backgroundColor: '#0b1726',
-  textStyle: { color: '#eef4fb' }
-})
+const chartOption = {
+  tooltip: {},
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'bar', data: [18, 32, 26] }]
+}
 
 const chartReadyText = ref('等待图表初始化')
 
-const chartOption = computed<EChartsCoreOption>(() => ({
-  tooltip: { trigger: 'axis' },
-  grid: { left: 32, right: 24, top: 24, bottom: 32, containLabel: true },
-  xAxis: { type: 'category', data: ['一月', '二月', '三月', '四月'] },
+const chartDarkOption = {
+  textStyle: { color: '#e5e7eb' },
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
   yAxis: { type: 'value' },
-  series: [{ type: 'line', smooth: true, data: [12, 24, 18, 32] }]
-}))
+  series: [{ type: 'line', data: [12, 28, 22] }]
+}
 
-const chartDarkOption = computed<EChartsCoreOption>(() => ({
-  tooltip: { trigger: 'axis' },
-  grid: { left: 32, right: 24, top: 24, bottom: 32, containLabel: true },
-  xAxis: { type: 'category', data: ['周一', '周二', '周三'] },
+const chartBasicCode = `\x3Cscript setup lang="ts">
+const chartOption = {
+  tooltip: {},
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
   yAxis: { type: 'value' },
-  series: [{ type: 'line', data: [8, 18, 14] }]
-}))
+  series: [{ type: 'bar', data: [18, 32, 26] }]
+}
+<\/script>
 
-const chartBasicCode = `<XChart :option="option" height="260px" />`
+<XChart :option="chartOption" height="260px" />`
 
-const chartEventsCode = `<XChart
-  :option="option"
-  :events="{ click: handleClick }"
-  @ready="chart = $event"
-/>`
+const chartEventsCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const chartLoadingCode = `<XChart
-  :option="option"
-  loading
-  :loading-options="{ text: '加载中' }"
-  :autoresize="{ throttle: 80 }"
-/>`
+const chartOption = {
+  tooltip: {},
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'bar', data: [18, 32, 26] }]
+}
 
-const chartThemeCode = `<XChart :option="option" theme="x-dashboard-dark" background-color="#0b1726" />`
+const chartReadyText = ref('等待图表初始化')
+<\/script>
 
-const chartExposeCode = `const chartRef = ref<ChartExpose>()
-chartRef.value?.setOption(option, { notMerge: true })
-chartRef.value?.resize()`
+<div class="x-demo-column">
+      <XChart
+        :option="chartOption"
+        height="240px"
+        :events="{ click: () => { chartReadyText = '已接收到 click 事件' } }"
+        @ready="chartReadyText = '图表已初始化'"
+      />
+      <p class="x-demo-label">{{ chartReadyText }}</p>
+    </div>`
+
+const chartLoadingCode = `\x3Cscript setup lang="ts">
+const chartOption = {
+  tooltip: {},
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'bar', data: [18, 32, 26] }]
+}
+<\/script>
+
+<XChart
+      :option="chartOption"
+      loading
+      :loading-options="{ text: '加载中' }"
+      :autoresize="{ throttle: 80 }"
+      height="220px"
+    />`
+
+const chartThemeCode = `\x3Cscript setup lang="ts">
+const chartDarkOption = {
+  textStyle: { color: '#e5e7eb' },
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'line', data: [12, 28, 22] }]
+}
+<\/script>
+
+<XChart
+      :option="chartDarkOption"
+      theme="x-doc-chart-dark"
+      background-color="#0b1726"
+      height="220px"
+    />`
+
+const chartExposeCode = `\x3Cscript setup lang="ts">
+const chartOption = {
+  tooltip: {},
+  xAxis: { type: 'category', data: ['一月', '二月', '三月'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'bar', data: [18, 32, 26] }]
+}
+<\/script>
+
+<XChart :option="chartOption" height="220px" />`
 </script>
 
 # 图表 Chart

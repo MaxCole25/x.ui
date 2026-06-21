@@ -159,9 +159,9 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 | `import-markdown` | 导入 Markdown 文件 |
 | `undo` / `redo` | 撤销、重做 |
 | `bold` / `italic` / `underline` / `strike` | 加粗、斜体、下划线、删除线 |
-| `code` / `subscript` / `superscript` / `clear-formatting` | 行内代码、下标、上标、清除格式 |
+| `code` / `subscript` / `superscript` / `clear-formatting` / `format-painter` | 行内代码、下标、上标、清除格式、格式刷 |
 | `font-family` / `font-size` | 字体、字号 |
-| `text-color` / `highlight` | 文字颜色、高亮颜色 |
+| `text-color` / `highlight` | 文字颜色、高亮颜色，面板内包含常用预设颜色和自定义色 |
 | `heading` | 正文、一级/二级/三级标题 |
 | `bullet-list` / `ordered-list` / `task-list` | 无序列表、有序列表、任务列表 |
 | `blockquote` | 引用段落 |
@@ -178,7 +178,8 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 
 - 检查粗体、斜体、下划线、删除线、行内代码、上下标和清除格式。
 - 检查标题、无序列表、有序列表、任务列表、引用和代码块。
-- 检查字体、字号、文字颜色、高亮颜色和段落对齐；文字颜色和高亮颜色的原生色卡应从图标按钮附近弹出。
+- 检查字体、字号、文字颜色、高亮颜色和段落对齐；文字颜色和高亮颜色面板应从图标按钮附近弹出，并能选择预设常用颜色或自定义颜色。
+- 选中一段带格式文本后点击格式刷，再选中另一段文字，确认常见内联格式和段落/标题对齐能单次复制过去。
 - 检查插入水平线、链接、图片、附件和表格操作。
 - 复制本地图片或截图后直接粘贴，确认图片能进入编辑器；关闭 `pasteImages` 后应不再拦截粘贴图片。
 - 检查引用段落是否有明显的左侧色条、背景色和引号装饰。

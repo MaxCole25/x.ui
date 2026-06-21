@@ -1,22 +1,32 @@
 <script setup lang="ts">
-const layoutBasicCode = `<XLayout
-  mode="top-sidebar"
-  :full-height="false"
-  :sidebar-width="180"
-  sidebar-padding="8px 12px"
->
-  <template #topbar>顶部区域</template>
-  <template #sidebar>侧栏区域</template>
-  主内容区域
-  <template #footer>底部区域</template>
-</XLayout>`
+const layoutBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const layoutModeCode = `<XLayout mode="sidebar-top" :full-height="false" :sidebar-width="160">
-  <template #topbar>顶部区域</template>
-  <template #sidebar>贯穿侧栏</template>
-  内容区域
-  <template #footer>底部区域</template>
-</XLayout>`
+<div style="height: 320px">
+    <XLayout
+      mode="top-sidebar"
+      :full-height="false"
+      :sidebar-width="180"
+      sidebar-padding="8px 12px"
+    >
+      <template #topbar>顶部区域</template>
+      <template #sidebar>侧栏区域</template>
+      主内容区域
+      <template #footer>底部区域</template>
+    </XLayout>
+  </div>`
+
+const layoutModeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div style="height: 300px">
+    <XLayout mode="sidebar-top" :full-height="false" :sidebar-width="160">
+      <template #topbar>顶部区域</template>
+      <template #sidebar>贯穿侧栏</template>
+      内容区域
+      <template #footer>底部区域</template>
+    </XLayout>
+  </div>`
 </script>
 
 # 布局 Layout

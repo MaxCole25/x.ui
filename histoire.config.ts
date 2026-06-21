@@ -8,8 +8,7 @@ export default defineConfig({
   ],
   storyIgnored: [
     '**/node_modules/**',
-    '**/dist/**',
-    'src/components/other-components/page-builder/PageBuilder.story.vue'
+    '**/dist/**'
   ],
   tree: {
     groups: [

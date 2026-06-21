@@ -15,6 +15,7 @@ export const RICH_TEXT_EDITOR_TOOLBAR_BUTTONS = [
   'subscript',
   'superscript',
   'clear-formatting',
+  'format-painter',
   'font-family',
   'font-size',
   'text-color',

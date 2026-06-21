@@ -1,35 +1,62 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const buttonVariantCode = `<XButton>主要按钮</XButton>
-<XButton variant="outline">描边按钮</XButton>
-<XButton variant="ghost">文本按钮</XButton>`
+function handleClick() {
+  clickCount.value += 1
+}
 
-const buttonSizeCode = `<XButton>默认宽度</XButton>
-<XButton width="100%">撑满父元素</XButton>
-<XButton width="160px" height="40px" radius="12px">固定宽高</XButton>
-<XButton variant="outline" width="160px" :border-width="2" border-color="#16a34a">自定义边框</XButton>
-<XButton variant="outline" width="32px" height="32px" padding="0" radius="999px" :lift-on-hover="false">+</XButton>`
-
-const buttonStateCode = `<XButton loading>加载中</XButton>
-<XButton disabled>禁用状态</XButton>`
-
-const buttonSlotCode = `<XButton width="180px">
-  <template #prefix>+</template>
-  新建
-</XButton>
-
-<XButton width="220px" variant="outline">
-  保存
-  <template #suffix>Ctrl+S</template>
-</XButton>`
-
-const buttonClickCode = `<XButton @click="handleClick">保存</XButton>`
 const clickCount = ref(0)
+
+const buttonVariantCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XButton>主要按钮</XButton>
+    <XButton variant="outline">描边按钮</XButton>
+    <XButton variant="ghost">文本按钮</XButton>
+  </div>`
+
+const buttonSizeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XButton>默认宽度</XButton>
+    <XButton width="100%">撑满父元素</XButton>
+    <XButton width="160px" height="40px" radius="12px">固定宽高</XButton>
+    <XButton variant="outline" width="160px" :border-width="2" border-color="#16a34a">自定义边框</XButton>
+    <XButton variant="outline" width="32px" height="32px" padding="0" radius="999px" :lift-on-hover="false">+</XButton>
+  </div>`
+
+const buttonStateCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XButton loading>加载中</XButton>
+    <XButton disabled>禁用状态</XButton>
+  </div>`
+
+const buttonSlotCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XButton width="180px"><template #prefix>+</template>新建</XButton>
+    <XButton width="220px" variant="outline">保存<template #suffix>Ctrl+S</template></XButton>
+  </div>`
+
+const buttonClickCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
 function handleClick() {
   clickCount.value += 1
 }
+
+const clickCount = ref(0)
+<\/script>
+
+<div class="x-demo-row">
+    <XButton @click="handleClick">保存</XButton>
+    <span>点击次数：{{ clickCount }}</span>
+  </div>`
 </script>
 
 # 按钮 Button
@@ -119,7 +146,7 @@ function handleClick() {
 | `activeBackgroundColor` | 按下激活时的背景色 | `string` | 按按钮类型决定 |
 | `activeBorderColor` | 按下激活时的边框色 | `string` | 按按钮类型决定 |
 | `activeTextColor` | 按下激活时的文字色 | `string` | 当前文字色 |
-| `liftOnHover` | 是否在悬浮时轻微上移；紧凑工具栏或可能被裁剪的容器内可设为 `false` | `boolean` | `true` |
+| `liftOnHover` | 是否在悬浮时轻微上移；需要悬浮上移反馈时可设为 `true` | `boolean` | `false` |
 | `disabled` | 是否禁用 | `boolean` | `false` |
 | `loading` | 是否加载中 | `boolean` | `false` |
 
@@ -137,7 +164,7 @@ function handleClick() {
 - 修改 `宽度`、`高度`、`边框粗细`、`边框颜色`、`背景色` 和 `文字色`，确认默认 `120px` 宽度、撑满父元素宽度和自定义宽度都符合预期。
 - 修改激活背景色、边框色、文字色，确认按下按钮时颜色符合预期。
 - 添加前缀和后缀内容，确认文字顺序和间距符合预期。
-- 设置 `:lift-on-hover="false"`，确认悬浮颜色反馈保留但按钮不再上移。
+- 设置 `:lift-on-hover="true"`，确认悬浮时按钮会轻微上移。
 - 勾选 `加载中`，确认按钮不可重复点击，并出现加载图标。
 - 勾选 `禁用`，确认按钮不可点击，视觉上有明确禁用态。
 - 在桌面和移动端宽度下检查按钮文本是否溢出。

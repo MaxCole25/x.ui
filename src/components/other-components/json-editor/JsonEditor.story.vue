@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue'
 import { XJsonEditor } from './index'
 import '../../../styles/index.css'
 
-const json = ref('{\n  "name": "x.ui",\n  "version": "0.1.0"\n}')
+const json = ref('{\n  "name": "xl.ui",\n  "version": "0.1.0"\n}')
 const state = reactive({
   title: 'JSON 数据对象',
   resizable: true

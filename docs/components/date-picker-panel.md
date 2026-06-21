@@ -1,16 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const date = ref('2026-06-03')
-const festivalDate = ref('2026-10-01')
+const date = ref('2026-06-18')
 
-const datePickerPanelBasicCode = `<XDatePickerPanel v-model="date" />`
+const festivalDate = ref('2026-06-18')
 
-const datePickerPanelFestivalCode = `<XDatePickerPanel
-  v-model="date"
-  :year="2026"
-  :month="10"
-/>`
+const datePickerPanelBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const date = ref('2026-06-18')
+<\/script>
+
+<div class="x-demo-column" style="max-width: 360px">
+    <XDatePickerPanel v-model="date" />
+    <p class="x-demo-label">当前日期：{{ date || '暂无' }}</p>
+  </div>`
+
+const datePickerPanelFestivalCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const festivalDate = ref('2026-06-18')
+<\/script>
+
+<div class="x-demo-column" style="max-width: 360px">
+    <XDatePickerPanel
+      v-model="festivalDate"
+      :year="2026"
+      :month="10"
+    />
+    <p class="x-demo-label">当前日期：{{ festivalDate || '暂无' }}</p>
+  </div>`
 </script>
 
 # 日期选择器面板 DatePickerPanel

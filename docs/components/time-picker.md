@@ -2,16 +2,35 @@
 import { ref } from 'vue'
 
 const time = ref('09:30')
-const meetingTime = ref('14:00')
 
-const timePickerBasicCode = `<XTimePicker v-model="time" />`
+const meetingTime = ref('09:30')
 
-const timePickerDialogCode = `<XTimePicker
-  v-model="meetingTime"
-  size="lg"
-  clearable
-  prefix="会议时间"
-/>`
+const timePickerBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const time = ref('09:30')
+<\/script>
+
+<div class="x-demo-column" style="width: 260px">
+      <XTimePicker v-model="time" />
+      <p class="x-demo-label">当前时间：{{ time || '暂无' }}</p>
+    </div>`
+
+const timePickerDialogCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const meetingTime = ref('09:30')
+<\/script>
+
+<div class="x-demo-column" style="width: 300px">
+      <XTimePicker
+        v-model="meetingTime"
+        size="lg"
+        clearable
+        prefix="会议时间"
+      />
+      <p class="x-demo-label">当前时间：{{ meetingTime || '暂无' }}</p>
+    </div>`
 </script>
 
 # 时间选择器 TimePicker

@@ -538,7 +538,7 @@
   align-items: center;
   border-top-width: var(--x-divider-thickness, var(--x-element-border-width, 1px));
   display: flex;
-  margin: var(--x-divider-spacing, 16px) 0;
+  margin: var(--x-divider-margin, 16px) 0;
   width: 100%;
 }
 
@@ -546,7 +546,7 @@
   border-left-width: var(--x-divider-thickness, var(--x-element-border-width, 1px));
   display: inline-block;
   height: 1em;
-  margin: 0 var(--x-divider-spacing, 8px);
+  margin: 0 var(--x-divider-margin, 8px);
   vertical-align: middle;
 }
 
@@ -1848,6 +1848,175 @@
 }
 
 .x-base-input__clear:hover {
+  color: var(--x-color-info);
+}
+
+.x-textarea {
+  --x-textarea-color: var(--x-form-color, var(--x-color-primary));
+  --x-textarea-active-border-color: var(--x-textarea-color);
+  --x-textarea-border-color: var(--x-form-border-color, #dcdfe6);
+  --x-textarea-hover-border-color: var(--x-form-hover-border-color, #c0c4cc);
+  --x-textarea-radius: var(--x-form-radius, 6px);
+  --x-textarea-bg: var(--x-color-surface);
+  background: var(--x-textarea-bg);
+  border: var(--x-textarea-border-width, 1px) solid var(--x-textarea-border-color);
+  border-radius: var(--x-textarea-radius);
+  box-sizing: border-box;
+  color: var(--x-textarea-text-color, var(--x-color-text));
+  display: inline-flex;
+  font-family: var(--x-textarea-font-family, var(--x-font-family));
+  font-size: var(--x-textarea-font-size, 12px);
+  max-width: 100%;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  position: relative;
+  transition: border-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: var(--x-textarea-width, 100%);
+}
+
+.x-textarea:hover:not(.is-disabled) {
+  border-color: var(--x-textarea-hover-border-color);
+}
+
+.x-textarea:not(.is-active-border-hidden):focus-within,
+.x-textarea:not(.is-active-border-hidden).x-textarea--default:focus-within,
+.x-textarea:not(.is-active-border-hidden).x-textarea--success:focus-within,
+.x-textarea:not(.is-active-border-hidden).x-textarea--warning:focus-within,
+.x-textarea:not(.is-active-border-hidden).x-textarea--error:focus-within {
+  border-color: var(--x-textarea-active-border-color);
+  box-shadow: none;
+}
+
+.x-textarea.is-active-border-hidden:hover:not(.is-disabled),
+.x-textarea.is-active-border-hidden:focus-within {
+  border-color: var(--x-textarea-border-color);
+  box-shadow: none;
+}
+
+.x-textarea.is-disabled {
+  background: var(--x-textarea-disabled-bg, var(--x-form-disabled-bg, var(--x-color-disabled-bg)));
+  color: var(--x-textarea-disabled-text-color, var(--x-form-disabled-text, var(--x-color-disabled-text)));
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.x-textarea--error {
+  border-color: var(--x-color-danger);
+}
+
+.x-textarea--warning {
+  border-color: var(--x-color-warning);
+}
+
+.x-textarea--success {
+  border-color: var(--x-color-success);
+}
+
+.x-textarea--sm {
+  --x-textarea-radius: var(--x-form-radius, 4px);
+  font-size: var(--x-textarea-font-size, 10px);
+}
+
+.x-textarea--md {
+  --x-textarea-radius: var(--x-form-radius, 6px);
+  font-size: var(--x-textarea-font-size, 12px);
+}
+
+.x-textarea--lg {
+  --x-textarea-radius: var(--x-form-radius, 8px);
+  font-size: var(--x-textarea-font-size, 14px);
+}
+
+.x-textarea__inner {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  color: inherit;
+  display: block;
+  flex: 1 1 auto;
+  font: inherit;
+  height: var(--x-textarea-height, auto);
+  line-height: 1.5;
+  min-height: calc(var(--x-textarea-rows, 3) * 1.5em + 2 * 8px);
+  min-width: 0;
+  outline: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: var(--x-textarea-padding, 8px);
+  resize: vertical;
+  scrollbar-color: rgba(100, 116, 139, 0.36) transparent;
+  scrollbar-width: thin;
+  text-align: var(--x-textarea-text-align, left);
+  white-space: pre-wrap;
+  width: 100%;
+  word-break: break-word;
+}
+
+.x-textarea.has-clear .x-textarea__inner {
+  padding-right: calc(20px + 8px);
+}
+
+.x-textarea.has-max-rows .x-textarea__inner {
+  max-height: calc(var(--x-textarea-max-rows) * 1.5em + 2 * 8px);
+}
+
+.x-textarea.is-nowrap .x-textarea__inner {
+  overflow-x: hidden;
+  white-space: pre;
+  word-break: normal;
+}
+
+.x-textarea__inner:focus,
+.x-textarea__inner:focus-visible {
+  outline: none !important;
+  outline-offset: 0;
+}
+
+.x-textarea__inner::placeholder {
+  color: #a8abb2;
+}
+
+.x-textarea__inner:disabled {
+  cursor: not-allowed;
+  resize: none;
+}
+
+.x-textarea__clear {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--x-textarea-clear-icon-color, #a8abb2);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 20px;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  transition:
+    color 160ms cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: 20px;
+}
+
+.x-textarea:hover:not(.is-disabled) .x-textarea__clear.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.x-textarea__clear i {
+  font-size: var(--x-textarea-clear-icon-size, 18px);
+  line-height: 1;
+}
+
+.x-textarea__clear:hover {
   color: var(--x-color-info);
 }
 
@@ -4545,7 +4714,7 @@
 }
 
 .x-text {
-  align-items: center;
+  align-items: var(--x-text-vertical-align, center);
   background: var(--x-text-bg, var(--x-element-bg, transparent));
   border: var(--x-text-border-width, var(--x-element-border-width, 0)) solid var(--x-text-border-color, var(--x-element-border-color, transparent));
   border-radius: var(--x-text-radius, 0);
@@ -4564,23 +4733,23 @@
 
 .x-text--sm {
   font-size: var(--x-text-font-size, 10px);
-  line-height: 1.5;
+  line-height: var(--x-text-line-height, 1.5);
 }
 
 .x-text--md {
   font-size: var(--x-text-font-size, 12px);
-  line-height: 1.55;
+  line-height: var(--x-text-line-height, 1.55);
 }
 
 .x-text--lg {
   font-size: var(--x-text-font-size, 14px);
-  line-height: 1.55;
+  line-height: var(--x-text-line-height, 1.55);
 }
 
 .x-text--title {
   font-size: var(--x-text-font-size, 20px);
   font-weight: 700;
-  line-height: 1.35;
+  line-height: var(--x-text-line-height, 1.35);
 }
 
 .x-text--muted {
@@ -4610,7 +4779,7 @@
 }
 
 .x-text.is-auto-height {
-  height: 100%;
+  height: auto;
   min-height: 0;
 }
 

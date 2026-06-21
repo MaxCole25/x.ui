@@ -1,41 +1,55 @@
 <script setup lang="ts">
-const gridBasicCode = `<XGrid :columns="3" :gap="8">
-  <XGridItem>一</XGridItem>
-  <XGridItem>二</XGridItem>
-  <XGridItem>三</XGridItem>
-</XGrid>`
+const gridBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const gridCountCode = `<XGrid :columns="3" :count="9" :gap="8" height="220px" />
-<XGrid :columns="4" :count="16" :gap="8" height="220px" />`
+<XGrid :columns="3" :gap="8">
+    <XGridItem>一</XGridItem>
+    <XGridItem>二</XGridItem>
+    <XGridItem>三</XGridItem>
+  </XGrid>`
 
-const gridSpanCode = `<XGrid :columns="4" :gap="10">
-  <XGridItem :col-span="2" background-color="#e0ecff">跨两列</XGridItem>
-  <XGridItem :row-span="2" background-color="#f0fdf4">跨两行</XGridItem>
-  <XGridItem>普通格子</XGridItem>
-  <XGridItem column="1 / 3">指定列线</XGridItem>
-</XGrid>`
+const gridCountCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const gridAppearanceCode = `<XGrid
-  :columns="3"
-  :gap="12"
-  background-color="#f8fafc"
-  border-color="#94a3b8"
-  :border-width="1"
-  radius="8px"
-  padding="12px"
->
-  <XGridItem
-    v-for="index in 9"
-    :key="index"
-    background-color="#ffffff"
-    border-color="#d8e2e8"
+<div class="x-demo-column" style="max-width: 100%">
+    <XGrid :columns="3" :count="9" :gap="8" height="220px" />
+    <XGrid :columns="4" :count="16" :gap="8" height="220px" />
+  </div>`
+
+const gridSpanCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XGrid :columns="4" :gap="10">
+    <XGridItem :col-span="2" background-color="#e0ecff">跨两列</XGridItem>
+    <XGridItem :row-span="2" background-color="#f0fdf4">跨两行</XGridItem>
+    <XGridItem>普通格子</XGridItem>
+    <XGridItem column="1 / 3">指定列线</XGridItem>
+  </XGrid>`
+
+const gridAppearanceCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XGrid
+    :columns="3"
+    :gap="12"
+    background-color="#f8fafc"
+    border-color="#94a3b8"
     :border-width="1"
-    radius="6px"
+    radius="8px"
     padding="12px"
   >
-    {{ index }}
-  </XGridItem>
-</XGrid>`
+    <XGridItem
+      v-for="index in 9"
+      :key="index"
+      background-color="#ffffff"
+      border-color="#d8e2e8"
+      :border-width="1"
+      radius="6px"
+      padding="12px"
+    >
+      {{ index }}
+    </XGridItem>
+  </XGrid>`
 </script>
 
 # 宫格 Grid

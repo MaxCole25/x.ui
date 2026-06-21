@@ -49,7 +49,7 @@
       <button v-if="hasTool('strike')" type="button" title="删除线" :class="{ active: isActive('strike') }" :disabled="readonly" @click="toggleStrike">
         <i class="ri-strikethrough"></i>
       </button>
-      <span v-if="hasAnyTools(['code', 'subscript', 'superscript', 'clear-formatting'])" class="xl-toolbar__divider xl-toolbar__divider--inline" aria-hidden="true"></span>
+      <span v-if="hasAnyTools(['code', 'subscript', 'superscript', 'clear-formatting', 'format-painter'])" class="xl-toolbar__divider xl-toolbar__divider--inline" aria-hidden="true"></span>
       <button v-if="hasTool('code')" type="button" title="行内代码" :class="{ active: isActive('code') }" :disabled="readonly" @click="toggleCode">
         <i class="ri-code-s-slash-line"></i>
       </button>
@@ -61,6 +61,15 @@
       </button>
       <button v-if="hasTool('clear-formatting')" type="button" title="清除格式" :disabled="readonly" @click="clearFormatting">
         <i class="ri-eraser-line"></i>
+      </button>
+      <button
+        v-if="hasTool('format-painter')"
+        type="button"
+        title="格式刷"
+        :disabled="readonly"
+        @click="toggleFormatPainter"
+      >
+        <i class="ri-brush-3-line"></i>
       </button>
     </div>
 
@@ -105,37 +114,69 @@
         </div>
       </div>
 
-      <span v-if="hasTool('text-color')" class="xl-toolbar__color-picker" :class="{ 'is-disabled': readonly }" title="文字颜色">
-        <button type="button" tabindex="-1" :disabled="readonly" aria-hidden="true">
+      <div v-if="hasTool('text-color')" class="xl-toolbar__menu xl-toolbar__color-menu">
+        <button type="button" class="xl-toolbar__menu-trigger" title="文字颜色" :disabled="readonly" @click="toggleMenu('textColor')">
           <i class="ri-palette-line"></i>
         </button>
-        <input
-          ref="textColorInput"
-          type="color"
-          class="xl-toolbar__color-input"
-          :disabled="readonly"
-          aria-label="文字颜色"
-          @click="closeOpenMenu"
-          @focus="closeOpenMenu"
-          @input="setTextColor"
-        />
-      </span>
+        <div v-if="openMenu === 'textColor'" class="xl-toolbar__menu-dropdown xl-toolbar__color-panel">
+          <button type="button" class="xl-toolbar__color-reset" @click="selectTextColor('')">默认文字</button>
+          <div class="xl-toolbar__color-grid" aria-label="文字颜色预设">
+            <button
+              v-for="color in textColorPresets"
+              :key="color.value"
+              type="button"
+              class="xl-toolbar__color-swatch"
+              :class="{ active: currentTextColor === color.value }"
+              :title="color.label"
+              :style="{ backgroundColor: color.value, '--xl-toolbar-color-swatch': color.value }"
+              @click="selectTextColor(color.value)"
+            ></button>
+          </div>
+          <label class="xl-toolbar__color-custom">
+            <span>自定义</span>
+            <input
+              ref="textColorInput"
+              type="color"
+              class="xl-toolbar__color-input"
+              :disabled="readonly"
+              aria-label="文字颜色"
+              @input="setTextColor"
+            />
+          </label>
+        </div>
+      </div>
 
-      <span v-if="hasTool('highlight')" class="xl-toolbar__color-picker" :class="{ 'is-disabled': readonly }" title="高亮颜色">
-        <button type="button" tabindex="-1" :disabled="readonly" aria-hidden="true">
+      <div v-if="hasTool('highlight')" class="xl-toolbar__menu xl-toolbar__color-menu">
+        <button type="button" class="xl-toolbar__menu-trigger" title="高亮颜色" :disabled="readonly" @click="toggleMenu('highlight')">
           <i class="ri-mark-pen-line"></i>
         </button>
-        <input
-          ref="highlightColorInput"
-          type="color"
-          class="xl-toolbar__color-input"
-          :disabled="readonly"
-          aria-label="高亮颜色"
-          @click="closeOpenMenu"
-          @focus="closeOpenMenu"
-          @input="setHighlight"
-        />
-      </span>
+        <div v-if="openMenu === 'highlight'" class="xl-toolbar__menu-dropdown xl-toolbar__color-panel">
+          <button type="button" class="xl-toolbar__color-reset" @click="selectHighlightColor('')">清除高亮</button>
+          <div class="xl-toolbar__color-grid" aria-label="高亮颜色预设">
+            <button
+              v-for="color in highlightColorPresets"
+              :key="color.value"
+              type="button"
+              class="xl-toolbar__color-swatch"
+              :class="{ active: currentHighlightColor === color.value }"
+              :title="color.label"
+              :style="{ backgroundColor: color.value, '--xl-toolbar-color-swatch': color.value }"
+              @click="selectHighlightColor(color.value)"
+            ></button>
+          </div>
+          <label class="xl-toolbar__color-custom">
+            <span>自定义</span>
+            <input
+              ref="highlightColorInput"
+              type="color"
+              class="xl-toolbar__color-input"
+              :disabled="readonly"
+              aria-label="高亮颜色"
+              @input="setHighlight"
+            />
+          </label>
+        </div>
+      </div>
     </div>
 
     <span v-if="showFontGroup && showBlockGroup" class="xl-toolbar__divider"></span>
@@ -278,7 +319,34 @@ const toolbarButtonSet = computed(() => new Set(props.toolbarButtons ?? RICH_TEX
 const textColorInput = ref<HTMLInputElement | null>(null)
 const highlightColorInput = ref<HTMLInputElement | null>(null)
 const toolbarRef = ref<HTMLElement | null>(null)
-const openMenu = ref<null | 'fontFamily' | 'fontSize' | 'heading' | 'table'>(null)
+
+type ToolbarMenu = 'fontFamily' | 'fontSize' | 'textColor' | 'highlight' | 'heading' | 'table'
+
+interface FormatSnapshot {
+  bold: boolean
+  italic: boolean
+  underline: boolean
+  strike: boolean
+  code: boolean
+  subscript: boolean
+  superscript: boolean
+  fontFamily: string
+  fontSize: string
+  textColor: string
+  highlightColor: string
+  heading: '' | '1' | '2' | '3'
+  textAlign: '' | 'left' | 'center' | 'right' | 'justify'
+  list: '' | 'ordered' | 'bullet' | 'task'
+  blockquote: boolean
+  sourceFrom: number
+  sourceTo: number
+}
+
+const openMenu = ref<null | ToolbarMenu>(null)
+const formatSnapshot = ref<FormatSnapshot | null>(null)
+const isApplyingFormat = ref(false)
+let applyFormatFrame = 0
+const formatPainterCursorClass = 'xl-format-painter-cursor'
 const readonly = computed(() => props.readonly)
 
 const fontFamilyOptions = [
@@ -308,11 +376,41 @@ const headingOptions = [
   { label: '三级标题', value: '3', style: { fontSize: '16px', fontWeight: '700', lineHeight: '1.35' } }
 ] as const
 
+const textColorPresets = [
+  { label: '黑色', value: '#000000' },
+  { label: '深灰', value: '#374151' },
+  { label: '灰色', value: '#6b7280' },
+  { label: '白色', value: '#ffffff' },
+  { label: '红色', value: '#ef4444' },
+  { label: '橙色', value: '#f97316' },
+  { label: '黄色', value: '#eab308' },
+  { label: '绿色', value: '#22c55e' },
+  { label: '青色', value: '#06b6d4' },
+  { label: '蓝色', value: '#3b82f6' },
+  { label: '紫色', value: '#8b5cf6' },
+  { label: '粉色', value: '#ec4899' }
+] as const
+
+const highlightColorPresets = [
+  { label: '浅黄', value: '#fef3c7' },
+  { label: '浅橙', value: '#ffedd5' },
+  { label: '浅红', value: '#fee2e2' },
+  { label: '浅粉', value: '#fce7f3' },
+  { label: '浅紫', value: '#ede9fe' },
+  { label: '浅蓝', value: '#dbeafe' },
+  { label: '浅青', value: '#cffafe' },
+  { label: '浅绿', value: '#dcfce7' },
+  { label: '浅灰', value: '#f3f4f6' },
+  { label: '亮黄', value: '#fde047' },
+  { label: '亮绿', value: '#86efac' },
+  { label: '亮蓝', value: '#93c5fd' }
+] as const
+
 const canUndo = computed(() => !readonly.value && (props.editor?.can().chain().focus().undo().run() ?? false))
 const canRedo = computed(() => !readonly.value && (props.editor?.can().chain().focus().redo().run() ?? false))
 const showSaveGroup = computed(() => hasAnyTools(['save', 'import-markdown']))
 const showHistoryGroup = computed(() => hasAnyTools(['undo', 'redo']))
-const showInlineGroup = computed(() => hasAnyTools(['bold', 'italic', 'underline', 'strike', 'code', 'subscript', 'superscript', 'clear-formatting']))
+const showInlineGroup = computed(() => hasAnyTools(['bold', 'italic', 'underline', 'strike', 'code', 'subscript', 'superscript', 'clear-formatting', 'format-painter']))
 const showFontGroup = computed(() => hasAnyTools(['font-family', 'font-size', 'text-color', 'highlight']))
 const showBlockGroup = computed(() => hasAnyTools(['heading', 'bullet-list', 'ordered-list', 'task-list', 'blockquote', 'code-block']))
 const showOutlineGroup = computed(() => props.showOutline && hasTool('outline'))
@@ -320,6 +418,8 @@ const showAlignGroup = computed(() => hasTool('align'))
 const showInsertGroup = computed(() => hasAnyTools(['horizontal-rule', 'link', 'image', 'attachment', 'table']))
 const currentFontFamily = computed(() => String(props.editor?.getAttributes('textStyle').fontFamily || ''))
 const currentFontSize = computed(() => String(props.editor?.getAttributes('textStyle').fontSize || ''))
+const currentTextColor = computed(() => normalizeColor(String(props.editor?.getAttributes('textStyle').color || '')))
+const currentHighlightColor = computed(() => normalizeColor(String(props.editor?.getAttributes('highlight').color || '')))
 const currentHeading = computed(() => {
   if (!props.editor?.isActive('heading')) {
     return 'paragraph'
@@ -417,7 +517,7 @@ function setFontSize(size: string) {
   })
 }
 
-function toggleMenu(name: 'fontFamily' | 'fontSize' | 'heading' | 'table') {
+function toggleMenu(name: ToolbarMenu) {
   if (readonly.value) {
     return
   }
@@ -450,11 +550,79 @@ watch(openMenu, (value) => {
   document.removeEventListener('pointerdown', handleDocumentPointerDown)
 })
 
+watch(readonly, (value) => {
+  if (value) {
+    setFormatSnapshot(null)
+  }
+})
+
 onBeforeUnmount(() => {
   if (typeof document !== 'undefined') {
     document.removeEventListener('pointerdown', handleDocumentPointerDown)
   }
+
+  cancelApplyFormatFrame()
+  setFormatPainterCursor(false)
 })
+
+watch(
+  () => props.editor,
+  (editor, _previousEditor, onCleanup) => {
+    if (!editor) {
+      return
+    }
+
+    const editorDom = editor.view.dom
+    const scheduleApply = () => scheduleFormatPainterApply(editor)
+
+    editorDom.addEventListener('mouseup', scheduleApply)
+    editorDom.addEventListener('keyup', scheduleApply)
+    setFormatPainterCursor(formatSnapshot.value !== null)
+    onCleanup(() => {
+      editorDom.removeEventListener('mouseup', scheduleApply)
+      editorDom.removeEventListener('keyup', scheduleApply)
+      editorDom.classList.remove(formatPainterCursorClass)
+      cancelApplyFormatFrame()
+    })
+  },
+  { immediate: true }
+)
+
+function setFormatPainterCursor(active: boolean) {
+  props.editor?.view.dom.classList.toggle(formatPainterCursorClass, active)
+
+  if (typeof document !== 'undefined') {
+    document.body.classList.toggle(formatPainterCursorClass, active)
+  }
+}
+
+function setFormatSnapshot(snapshot: FormatSnapshot | null) {
+  formatSnapshot.value = snapshot
+  setFormatPainterCursor(snapshot !== null)
+}
+
+function cancelApplyFormatFrame() {
+  if (!applyFormatFrame || typeof cancelAnimationFrame === 'undefined') {
+    applyFormatFrame = 0
+    return
+  }
+
+  cancelAnimationFrame(applyFormatFrame)
+  applyFormatFrame = 0
+}
+
+function scheduleFormatPainterApply(editor: Editor) {
+  if (!formatSnapshot.value || readonly.value || typeof requestAnimationFrame === 'undefined') {
+    applyFormatPainterOnSelection(editor)
+    return
+  }
+
+  cancelApplyFormatFrame()
+  applyFormatFrame = requestAnimationFrame(() => {
+    applyFormatFrame = 0
+    applyFormatPainterOnSelection(editor)
+  })
+}
 
 function selectFontFamily(font: string) {
   setFontFamily(font)
@@ -480,15 +648,199 @@ function closeOpenMenu() {
 }
 
 function setTextColor(event: Event) {
-  closeOpenMenu()
   const target = event.target as HTMLInputElement
-  run(() => props.editor?.chain().focus().setColor(target.value).run())
+  selectTextColor(target.value)
 }
 
 function setHighlight(event: Event) {
-  closeOpenMenu()
   const target = event.target as HTMLInputElement
-  run(() => props.editor?.chain().focus().setHighlight({ color: target.value }).run())
+  selectHighlightColor(target.value)
+}
+
+function normalizeColor(color: string) {
+  return color.trim().toLowerCase()
+}
+
+function selectTextColor(color: string) {
+  closeOpenMenu()
+  run(() => {
+    if (!color) {
+      props.editor?.chain().focus().unsetColor().run()
+      return
+    }
+
+    props.editor?.chain().focus().setColor(color).run()
+  })
+}
+
+function selectHighlightColor(color: string) {
+  closeOpenMenu()
+  run(() => {
+    if (!color) {
+      props.editor?.chain().focus().unsetHighlight().run()
+      return
+    }
+
+    props.editor?.chain().focus().setHighlight({ color }).run()
+  })
+}
+
+function captureFormatSnapshot(): FormatSnapshot | null {
+  const editor = props.editor
+  if (!editor) {
+    return null
+  }
+
+  const selection = editor.state.selection
+  const textStyle = editor.getAttributes('textStyle')
+  const highlight = editor.getAttributes('highlight')
+  const paragraphAlign = editor.isActive('paragraph') ? String(editor.getAttributes('paragraph').textAlign || '') : ''
+  const headingAlign = editor.isActive('heading') ? String(editor.getAttributes('heading').textAlign || '') : ''
+  const headingLevel = editor.isActive('heading') ? String(editor.getAttributes('heading').level || '') : ''
+  const list = getActiveList(editor)
+
+  return {
+    bold: editor.isActive('bold'),
+    italic: editor.isActive('italic'),
+    underline: editor.isActive('underline'),
+    strike: editor.isActive('strike'),
+    code: editor.isActive('code'),
+    subscript: editor.isActive('subscript'),
+    superscript: editor.isActive('superscript'),
+    fontFamily: String(textStyle.fontFamily || ''),
+    fontSize: String(textStyle.fontSize || ''),
+    textColor: String(textStyle.color || ''),
+    highlightColor: String(highlight.color || ''),
+    heading: headingLevel === '1' || headingLevel === '2' || headingLevel === '3' ? headingLevel : '',
+    textAlign: isKnownTextAlign(headingAlign) ? headingAlign : isKnownTextAlign(paragraphAlign) ? paragraphAlign : '',
+    list,
+    blockquote: editor.isActive('blockquote'),
+    sourceFrom: selection.from,
+    sourceTo: selection.to
+  }
+}
+
+function getActiveList(editor: Editor): FormatSnapshot['list'] {
+  if (editor.isActive('orderedList')) {
+    return 'ordered'
+  }
+  if (editor.isActive('bulletList')) {
+    return 'bullet'
+  }
+  if (editor.isActive('taskList')) {
+    return 'task'
+  }
+
+  return ''
+}
+
+function isKnownTextAlign(value: string): value is FormatSnapshot['textAlign'] {
+  return value === '' || value === 'left' || value === 'center' || value === 'right' || value === 'justify'
+}
+
+function toggleFormatPainter() {
+  if (readonly.value) {
+    return
+  }
+
+  if (formatSnapshot.value) {
+    setFormatSnapshot(null)
+    return
+  }
+
+  setFormatSnapshot(captureFormatSnapshot())
+  openMenu.value = null
+}
+
+function applyFormatPainterOnSelection(editor: Editor) {
+  const snapshot = formatSnapshot.value
+  const selection = editor.state.selection
+
+  if (!snapshot || isApplyingFormat.value || selection.empty) {
+    return
+  }
+
+  if (selection.from === snapshot.sourceFrom && selection.to === snapshot.sourceTo) {
+    return
+  }
+
+  try {
+    isApplyingFormat.value = true
+    applyFormatSnapshot(editor, snapshot)
+    setFormatSnapshot(null)
+  } finally {
+    isApplyingFormat.value = false
+  }
+}
+
+function applyFormatSnapshot(editor: Editor, snapshot: FormatSnapshot) {
+  const targetList = getActiveList(editor)
+  let blockChain = editor.chain().focus()
+
+  if (snapshot.list && targetList !== snapshot.list) {
+    blockChain = blockChain.setParagraph()
+
+    if (snapshot.list === 'ordered') {
+      blockChain = blockChain.toggleOrderedList()
+    } else if (snapshot.list === 'bullet') {
+      blockChain = blockChain.toggleBulletList()
+    } else if (snapshot.list === 'task') {
+      blockChain = blockChain.toggleTaskList()
+    }
+  } else if (!targetList) {
+    if (snapshot.heading) {
+      blockChain = blockChain.setNode('heading', { level: Number(snapshot.heading) as 1 | 2 | 3 })
+    } else {
+      blockChain = blockChain.setParagraph()
+    }
+  }
+
+  if (snapshot.blockquote && !editor.isActive('blockquote')) {
+    blockChain = blockChain.toggleBlockquote()
+  }
+  if (snapshot.textAlign) {
+    blockChain = blockChain.setTextAlign(snapshot.textAlign)
+  }
+
+  blockChain.run()
+
+  let inlineChain = editor.chain().focus().unsetAllMarks()
+
+  if (snapshot.bold) {
+    inlineChain = inlineChain.toggleBold()
+  }
+  if (snapshot.italic) {
+    inlineChain = inlineChain.toggleItalic()
+  }
+  if (snapshot.underline) {
+    inlineChain = inlineChain.toggleUnderline()
+  }
+  if (snapshot.strike) {
+    inlineChain = inlineChain.toggleStrike()
+  }
+  if (snapshot.code) {
+    inlineChain = inlineChain.toggleCode()
+  }
+  if (snapshot.subscript) {
+    inlineChain = inlineChain.toggleSubscript()
+  }
+  if (snapshot.superscript) {
+    inlineChain = inlineChain.toggleSuperscript()
+  }
+  if (snapshot.fontFamily) {
+    inlineChain = inlineChain.setFontFamily(snapshot.fontFamily)
+  }
+  if (snapshot.fontSize) {
+    inlineChain = inlineChain.setFontSize(snapshot.fontSize)
+  }
+  if (snapshot.textColor) {
+    inlineChain = inlineChain.setColor(snapshot.textColor)
+  }
+  if (snapshot.highlightColor) {
+    inlineChain = inlineChain.setHighlight({ color: snapshot.highlightColor })
+  }
+
+  inlineChain.run()
 }
 
 function setHeading(level: 1 | 2 | 3) {

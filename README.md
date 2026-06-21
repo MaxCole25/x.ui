@@ -1,4 +1,4 @@
-# x.ui
+# xl.ui
 
 A Vue 3 UI component library foundation.
 
@@ -14,13 +14,13 @@ pnpm test
 ## Usage
 
 ```bash
-pnpm add @x-soft88/x-ui
+pnpm add xl.ui
 ```
 
 ```ts
 import { createApp } from 'vue'
-import XUi from '@x-soft88/x-ui'
-import '@x-soft88/x-ui/style.css'
+import XUi from 'xl.ui'
+import 'xl.ui/style.css'
 
 import App from './App.vue'
 

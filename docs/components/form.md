@@ -1,29 +1,15 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 
-const formRef = ref()
-const form = reactive({
-  username: '',
-  password: '',
-  status: 'todo',
-  enabled: true,
-  hasDrawing: true,
-  reviewed: false,
-  archived: true,
-  remark: '<p>固定高度容器中的备注内容。</p>'
-})
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
 
-const result = ref('等待校验')
-const rules = {
-  username: [
-    { required: true, message: '请输入用户名' },
-    { min: 2, message: '用户名至少 2 个字符' }
-  ],
-  password: [
-    { required: true, message: '请输入密码' },
-    { min: 6, message: '密码至少 6 个字符' }
-  ]
-}
+const rules = { username: [{ required: true, message: '请输入用户名称' }] }
+
+const username = ref('')
+
+const password = ref('')
+
+const status = ref('enabled')
 
 const statusOptions = [
   { label: '待处理', value: 'todo' },
@@ -31,81 +17,200 @@ const statusOptions = [
   { label: '已完成', value: 'done' }
 ]
 
-const validate = async () => {
-  result.value = await formRef.value?.validate() ? '校验通过' : '校验未通过'
+const enabled = ref(true)
+
+function validate() {
+  result.value = '已触发表单校验'
 }
 
-const reset = () => {
-  formRef.value?.resetFields()
-  result.value = '已重置'
+function reset() {
+  form.value = { username: '', password: '', status: 'enabled', remark: '' }
 }
 
-const formBasicCode = `<XForm ref="formRef" :model="form" :rules="rules" label-width="96px">
-  <XFormItem label="用户名" prop="username" required>
-    <XInput v-model="form.username" placeholder="请输入用户名" clearable />
-  </XFormItem>
-  <XFormItem label="密码" prop="password" required help="密码不少于 6 个字符。">
-    <XInput v-model="form.password" type="password" placeholder="请输入密码" />
-  </XFormItem>
-  <XFormItem label="状态" prop="status">
-    <XSelect v-model="form.status" :options="statusOptions" />
-  </XFormItem>
-</XForm>`
+const result = ref('')
 
-const formInheritCode = `<XForm size="sm" disabled>
-  <XFormItem label="用户名">
-    <XInput model-value="整表禁用" />
-  </XFormItem>
-  <XFormItem label="状态">
-    <XSelect model-value="todo" :options="statusOptions" />
-  </XFormItem>
-</XForm>`
+const hasDrawing = ref(false)
 
-const formSlotCode = `<XForm label-position="top">
-  <XFormItem prop="username" error="用户名称需要保持唯一。">
-    <template #label>用户名称</template>
-    <XInput v-model="form.username" placeholder="请输入用户名称" status="error" />
-    <template #error>用户名称需要保持唯一。</template>
-  </XFormItem>
-  <XFormItem label="备注">
-    <XInput placeholder="请输入备注" />
-    <template #help>帮助文本可用来解释字段填写规则。</template>
-  </XFormItem>
-</XForm>`
+const reviewed = ref(false)
 
-const formCompactCode = `<XFormItem label="含图纸" label-position="left" label-width="58px" size="sm" align="center">
-  <XSwitch v-model="form.hasDrawing" size="md" label-position="inside" active-text="是" inactive-text="否" />
-</XFormItem>`
+const archived = ref(false)
 
-const formAlignCode = `<XForm label-position="left" label-width="86px">
-  <XFormItem label="含税" content-justify="end">
-    <XSwitch v-model="form.enabled" />
-  </XFormItem>
-  <XFormItem label="付款方式" content-align="center">
-    <XInput v-model="form.status" text-align="center" />
-  </XFormItem>
-</XForm>`
+const remark = ref('')
 
-const formFullHeightCode = `<div style="height: 320px; min-height: 0">
-  <XFormItem label="备注" label-position="top" content-full-height>
-    <XRichTextEditor v-model="form.remark" full-height :show-outline="false" />
-  </XFormItem>
-</div>`
+const formBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const formThemeCode = `<XFormItem
-  label="审批人"
-  required
-  help="暗色主题辅助说明"
-  label-text-color="#dbeafe"
-  content-text-color="#f8fafc"
-  background-color="#111827"
-  border-color="#334155"
-  required-mark-color="#fb7185"
-  hint-text-color="#94a3b8"
-  style="--x-form-item-border-width: 1px;"
->
-  <XInput v-model="form.username" background-color="#0f172a" border-color="#475569" text-color="#f8fafc" />
-</XFormItem>`
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
+
+const rules = { username: [{ required: true, message: '请输入用户名称' }] }
+
+const username = ref('')
+
+const password = ref('')
+
+const status = ref('enabled')
+
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+
+const enabled = ref(true)
+
+function validate() {
+  result.value = '已触发表单校验'
+}
+
+function reset() {
+  form.value = { username: '', password: '', status: 'enabled', remark: '' }
+}
+
+const result = ref('')
+<\/script>
+
+<XForm ref="formRef" :model="form" :rules="rules" label-width="96px" style="max-width: 560px">
+    <XFormItem label="用户名" prop="username" required>
+      <XInput v-model="form.username" placeholder="请输入用户名" clearable />
+    </XFormItem>
+    <XFormItem label="密码" prop="password" required help="密码不少于 6 个字符。">
+      <XInput v-model="form.password" type="password" placeholder="请输入密码" />
+    </XFormItem>
+    <XFormItem label="状态" prop="status">
+      <XSelect v-model="form.status" :options="statusOptions" />
+    </XFormItem>
+    <XFormItem label="启用">
+      <XSwitch v-model="form.enabled" active-text="启用" inactive-text="停用" />
+    </XFormItem>
+    <XFormItem label="操作">
+      <div class="x-demo-row" style="margin: 0">
+        <XButton style="width: auto" @click="validate">校验</XButton>
+        <XButton variant="outline" style="width: auto" @click="reset">重置</XButton>
+        <span>{{ result }}</span>
+      </div>
+    </XFormItem>
+  </XForm>`
+
+const formInheritCode = `\x3Cscript setup lang="ts">
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<XForm size="sm" disabled style="max-width: 520px">
+    <XFormItem label="用户名">
+      <XInput model-value="整表禁用" />
+    </XFormItem>
+    <XFormItem label="状态">
+      <XSelect model-value="todo" :options="statusOptions" />
+    </XFormItem>
+  </XForm>`
+
+const formSlotCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
+
+const username = ref('')
+<\/script>
+
+<XForm label-position="top" style="max-width: 420px">
+    <XFormItem prop="username" error="用户名称需要保持唯一。">
+      <template #label>用户名称</template>
+      <XInput v-model="form.username" placeholder="请输入用户名称" status="error" />
+      <template #error>用户名称需要保持唯一。</template>
+    </XFormItem>
+    <XFormItem label="备注">
+      <XInput placeholder="请输入备注" />
+      <template #help>帮助文本可用来解释字段填写规则。</template>
+    </XFormItem>
+  </XForm>`
+
+const formCompactCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
+
+const hasDrawing = ref(false)
+
+const reviewed = ref(false)
+
+const archived = ref(false)
+<\/script>
+
+<div class="x-demo-row" style="align-items: center; flex-wrap: wrap; gap: 12px 18px; margin: 0">
+    <XFormItem label="含图纸" label-position="left" label-width="58px" size="sm" align="center">
+      <XSwitch v-model="form.hasDrawing" size="md" label-position="inside" active-text="是" inactive-text="否" />
+    </XFormItem>
+    <XFormItem label="已复核" label-position="left" label-width="58px" size="sm" align="center">
+      <XSwitch v-model="form.reviewed" size="md" label-position="inside" active-text="是" inactive-text="否" />
+    </XFormItem>
+    <XFormItem label="已归档" label-position="left" label-width="58px" size="sm" align="center">
+      <XSwitch v-model="form.archived" size="md" label-position="inside" active-text="是" inactive-text="否" />
+    </XFormItem>
+  </div>`
+
+const formAlignCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
+
+const enabled = ref(true)
+
+const status = ref('enabled')
+<\/script>
+
+<XForm label-position="left" label-width="86px" style="max-width: 360px">
+    <XFormItem label="含税" content-justify="end">
+      <XSwitch v-model="form.enabled" />
+    </XFormItem>
+    <XFormItem label="付款方式" content-align="center">
+      <XInput v-model="form.status" text-align="center" />
+    </XFormItem>
+  </XForm>`
+
+const formFullHeightCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
+
+const remark = ref('')
+<\/script>
+
+<div style="height: 320px; min-height: 0; max-width: 640px">
+      <XFormItem label="备注" label-position="top" content-full-height>
+        <XRichTextEditor v-model="form.remark" full-height :show-outline="false" />
+      </XFormItem>
+    </div>`
+
+const formThemeCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const form = ref({ username: '', password: '', status: 'enabled', remark: '' })
+
+const username = ref('')
+<\/script>
+
+<div style="background: #020617; border: 1px solid #1e293b; border-radius: 6px; padding: 16px">
+    <XForm label-position="left" label-width="86px" style="max-width: 520px">
+      <XFormItem
+        label="审批人"
+        required
+        help="通过 props 覆盖当前表单项配色。"
+        label-text-color="#dbeafe"
+        content-text-color="#f8fafc"
+        background-color="#111827"
+        border-color="#334155"
+        required-mark-color="#fb7185"
+        hint-text-color="#94a3b8"
+        style="--x-form-item-border-width: 1px; border-radius: 6px; padding: 10px 12px;"
+      >
+        <XInput v-model="form.username" background-color="#0f172a" border-color="#475569" text-color="#f8fafc" placeholder="请输入审批人" />
+      </XFormItem>
+    </XForm>
+  </div>`
 </script>
 
 # Form 表单

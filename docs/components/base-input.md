@@ -1,82 +1,108 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
-const inputBasic = ref('')
-const inputAmount = ref(128)
-const inputFormattedAmount = ref(9200)
+const inputBasic = ref('x.ui')
+
 const inputClearable = ref('可清空内容')
 
-const baseInputBasicCode = `<script setup>
-import { ref } from 'vue'
-
-const value = ref('')
-<\/script>
-
-<template>
-  <XBaseInput v-model="value" placeholder="请输入名称" />
-</template>`
-
-const baseInputClearableCode = `<XBaseInput v-model="value" placeholder="请输入内容" clearable />`
-
-const baseInputFormatterCode = `<script setup>
-import { ref } from 'vue'
-
-const amount = ref(9200)
+const inputFormattedAmount = ref('12345')
 
 function formatCurrency(value) {
-  const n = Number(value ?? 0)
-  return Number.isFinite(n)
-    ? \`￥\${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\`
-    : '￥0.00'
+  return value ? '?' + String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
 }
 
 function parseCurrency(value) {
-  const n = Number(String(value ?? '').replace(/[¥￥,\\s]/g, ''))
-  return Number.isFinite(n) ? n : 0
+  return String(value).replace(/[^\d.]/g, '')
 }
+
+const inputAmount = ref('12345')
+
+const baseInputBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const inputBasic = ref('x.ui')
 <\/script>
 
-<template>
-  <XBaseInput
-    v-model="amount"
-    text-align="right"
-    type="number"
-    :formatter="formatCurrency"
-    :parser="parseCurrency"
-  />
-</template>`
+<div class="x-demo-column">
+    <div style="width: 240px">
+      <XBaseInput v-model="inputBasic" placeholder="请输入名称" />
+    </div>
+    <p class="x-demo-label">当前输入：{{ inputBasic || '暂无' }}</p>
+  </div>`
 
-const baseInputAffixCode = `<XBaseInput v-model="amount" type="number" prefix="￥" suffix="元" />`
+const baseInputClearableCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const baseInputAppearanceCode = `<XBaseInput
-  active-border-color="#2563eb"
-  border-color="#dc2626"
-  background-color="#f0fdf4"
-  text-color="#000000"
-  clear-icon-color="#67c23a"
-  clear-icon-size="18px"
-  font-size="12px"
-  width="320px"
-  height="40px"
-  auto-height
-  radius="8px"
-  padding="5px 10px"
-  text-align="center"
-  clearable
-  model-value="外层 div 承载边框"
-/>`
+const inputClearable = ref('可清空内容')
+<\/script>
+
+<div class="x-demo-column">
+    <div style="width: 240px">
+      <XBaseInput v-model="inputClearable" placeholder="请输入内容" clearable />
+    </div>
+  </div>`
+
+const baseInputFormatterCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const inputFormattedAmount = ref('12345')
 
 function formatCurrency(value) {
-  const n = Number(value ?? 0)
-  return Number.isFinite(n)
-    ? `￥${n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    : '￥0.00'
+  return value ? '?' + String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
 }
 
 function parseCurrency(value) {
-  const n = Number(String(value ?? '').replace(/[¥￥,\s]/g, ''))
-  return Number.isFinite(n) ? n : 0
+  return String(value).replace(/[^\d.]/g, '')
 }
+<\/script>
+
+<div class="x-demo-column">
+    <div style="width: 240px">
+      <XBaseInput
+        v-model="inputFormattedAmount"
+        text-align="right"
+        type="number"
+        :formatter="formatCurrency"
+        :parser="parseCurrency"
+      />
+    </div>
+    <p class="x-demo-label">真实值：{{ inputFormattedAmount }}</p>
+  </div>`
+
+const baseInputAffixCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const inputAmount = ref('12345')
+<\/script>
+
+<div class="x-demo-column">
+    <div style="width: 240px">
+      <XBaseInput v-model="inputAmount" type="number" prefix="￥" suffix="元" />
+    </div>
+  </div>`
+
+const baseInputAppearanceCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-column">
+    <XBaseInput
+      active-border-color="#2563eb"
+      border-color="#dc2626"
+      background-color="#f0fdf4"
+      text-color="#000000"
+      clear-icon-color="#67c23a"
+      clear-icon-size="18px"
+      font-size="12px"
+      width="320px"
+      height="40px"
+      auto-height
+      radius="8px"
+      padding="5px 10px"
+      text-align="center"
+      clearable
+      model-value="外层 div 承载边框"
+    />
+  </div>`
 </script>
 
 # BaseInput 基础输入框

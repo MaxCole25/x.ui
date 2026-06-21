@@ -1,6 +1,6 @@
 # 组件测试
 
-x.ui 的组件测试分两类：一种是自动化测试，另一种是文档站里的手动预览测试。
+xl.ui 的组件测试分两类：一种是自动化测试，另一种是文档站里的手动预览测试。
 
 ## Histoire 手动预览测试
 
@@ -52,7 +52,7 @@ http://localhost:5173/components/button.html
 
 ## 自动化测试
 
-x.ui 使用 Vitest 和 Vue Test Utils 编写自动化测试。
+xl.ui 使用 Vitest 和 Vue Test Utils 编写自动化测试。
 
 运行全部测试：
 

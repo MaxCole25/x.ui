@@ -1,16 +1,26 @@
 <script setup lang="ts">
-const loadingDirectiveCode = `<div v-loading="loading" class="panel">
-  正在加载的数据区域
-</div>`
+const loadingDirectiveCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const loadingComponentCode = `<div style="position: relative; min-height: 160px">
-  <XLoading model-value text="加载中" />
-</div>`
+<div style="position: relative; min-height: 120px; border: 1px dashed var(--x-color-border); border-radius: 6px; padding: 16px">
+    <p>正在加载的数据区域</p>
+    <XLoading model-value text="加载中" />
+  </div>`
 
-const loadingServiceCode = `import { XLoadingService } from 'x.ui'
+const loadingComponentCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const loading = XLoadingService({ text: '提交中' })
-setTimeout(() => loading.close(), 1200)`
+<div style="position: relative; min-height: 160px">
+    <XLoading model-value text="加载中" />
+  </div>`
+
+const loadingServiceCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div style="position: relative; min-height: 120px; border: 1px dashed var(--x-color-border); border-radius: 6px; padding: 16px">
+    <p>服务调用会把加载层挂载到指定目标或全屏区域。</p>
+    <XLoading model-value text="提交中" background-color="rgba(255, 255, 255, 0.68)" />
+  </div>`
 </script>
 
 # Loading 加载

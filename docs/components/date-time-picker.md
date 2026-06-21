@@ -1,17 +1,40 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const dateTime = ref('2026-06-03 09:30')
-const deliveryDateTime = ref('2026-06-03 18:00')
+const dateTime = ref('2026-06-18 09:30')
 
-const dateTimePickerBasicCode = `<XDateTimePicker v-model="dateTime" />`
+const deliveryDateTime = ref('2026-06-18 18:00')
 
-const dateTimePickerInputCode = `<XDateTimePicker
-  v-model="dateTime"
-  size="lg"
-  clearable
-  prefix="交付时间"
-/>`
+const dateTimePickerBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const dateTime = ref('2026-06-18 09:30')
+<\/script>
+
+<div class="x-demo-column">
+      <div style="width: 260px">
+        <XDateTimePicker v-model="dateTime" />
+      </div>
+      <p class="x-demo-label">当前日期时间：{{ dateTime || '暂无' }}</p>
+    </div>`
+
+const dateTimePickerInputCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const deliveryDateTime = ref('2026-06-18 18:00')
+<\/script>
+
+<div class="x-demo-column">
+      <div style="width: 320px">
+        <XDateTimePicker
+          v-model="deliveryDateTime"
+          size="lg"
+          clearable
+          prefix="交付时间"
+        />
+      </div>
+      <p class="x-demo-label">当前日期时间：{{ deliveryDateTime || '暂无' }}</p>
+    </div>`
 </script>
 
 # 日期时间选择器 DateTimePicker

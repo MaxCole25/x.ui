@@ -1,38 +1,53 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const command = ref('等待选择')
+const command = ref('')
 
-const dropdownBasicCode = `<XDropdown @command="handleCommand">
-  <XButton>更多</XButton>
-  <template #dropdown>
-    <div class="demo-dropdown-menu">
-      <button class="demo-dropdown-item" @click="handleCommand('edit')">编辑</button>
-      <button class="demo-dropdown-item is-danger" @click="handleCommand('delete')">删除</button>
-    </div>
-  </template>
-</XDropdown>`
+const dropdownBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const dropdownMenuCode = `<XDropdown trigger="click" popper-width="180px">
-  <XButton>打开菜单</XButton>
-  <template #dropdown>
-    <div class="demo-dropdown-menu">
-      <button class="demo-dropdown-item">编辑</button>
-      <button class="demo-dropdown-item is-danger">删除</button>
-    </div>
-  </template>
-</XDropdown>`
+const command = ref('')
+<\/script>
 
-const dropdownItemCode = `<XDropdown trigger="click" :hide-on-click="false">
-  <XButton>更多操作</XButton>
-  <template #dropdown>
-    <div class="demo-dropdown-menu">
-      <button class="demo-dropdown-item">复制</button>
-      <button class="demo-dropdown-item is-disabled" disabled>已禁用</button>
-      <button class="demo-dropdown-item is-danger">删除</button>
-    </div>
-  </template>
-</XDropdown>`
+<div class="x-demo-column" style="width: 180px">
+      <XDropdown trigger="click" @command="(value) => { command = String(value) }">
+        <XButton>更多</XButton>
+        <template #dropdown>
+          <div style="display: flex; min-width: 136px; flex-direction: column; gap: 4px; padding: 6px">
+            <button type="button" class="x-demo-action" @click="command = '编辑'">编辑</button>
+            <button type="button" class="x-demo-action" style="color: #d92d20" @click="command = '删除'">删除</button>
+          </div>
+        </template>
+      </XDropdown>
+      <p class="x-demo-label">当前命令：{{ command }}</p>
+    </div>`
+
+const dropdownMenuCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XDropdown trigger="click" popper-width="180px">
+      <XButton>打开菜单</XButton>
+      <template #dropdown>
+        <div style="display: flex; min-width: 160px; max-height: 180px; flex-direction: column; gap: 4px; padding: 6px">
+          <button type="button" class="x-demo-action">编辑</button>
+          <button type="button" class="x-demo-action" style="color: #d92d20">删除</button>
+        </div>
+      </template>
+    </XDropdown>`
+
+const dropdownItemCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XDropdown trigger="click" :hide-on-click="false">
+      <XButton>更多操作</XButton>
+      <template #dropdown>
+        <div style="display: flex; min-width: 160px; flex-direction: column; gap: 4px; padding: 6px">
+          <button type="button" class="x-demo-action">复制</button>
+          <button type="button" class="x-demo-action" disabled style="opacity: 0.45">已禁用</button>
+          <button type="button" class="x-demo-action" style="color: #d92d20">删除</button>
+        </div>
+      </template>
+    </XDropdown>`
 </script>
 
 # 下拉菜单 Dropdown

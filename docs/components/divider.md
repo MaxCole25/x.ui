@@ -1,17 +1,28 @@
 <script setup lang="ts">
-const dividerBasicCode = `<XDivider>标题</XDivider>`
+const dividerBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const dividerVerticalCode = `<span>文本</span>
-<XDivider direction="vertical" />
-<span>文本</span>`
+<XDivider>标题</XDivider>`
 
-const dividerStyleCode = `<XDivider content-position="left" border-style="dashed" border-color="#0e7490">
-  左侧标题
-</XDivider>
+const dividerVerticalCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-<XDivider content-position="right" border-style="dotted" :thickness="2" text-color="#7c3aed">
-  右侧标题
-</XDivider>`
+<div class="x-demo-row">
+    <span>文本</span>
+    <XDivider direction="vertical" />
+    <span>文本</span>
+  </div>`
+
+const dividerStyleCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XDivider content-position="left" border-style="dashed" border-color="#0e7490">
+    左侧标题
+  </XDivider>
+
+  <XDivider content-position="right" border-style="dotted" :thickness="2" text-color="#7c3aed">
+    右侧标题
+  </XDivider>`
 </script>
 
 # 分割线 Divider
@@ -58,7 +69,7 @@ const dividerStyleCode = `<XDivider content-position="left" border-style="dashed
 | contentPosition | 文本位置 | `left \| center \| right` | `center` |
 | borderStyle | 线型 | `solid \| dashed \| dotted` | `solid` |
 | thickness | 分割线粗细，数字按 px 处理 | `number \| string` | `1px` |
-| spacing | 外边距间距 | `number \| string` | 水平 `16px`，垂直 `8px` |
+| margin | 外边距，数字按 px 处理 | `number \| string` | 水平 `16px`，垂直 `8px` |
 
 ## Slots
 

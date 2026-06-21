@@ -1,4 +1,18 @@
 import type { App, Plugin } from 'vue'
+import { XBadge } from './components/display-components/badge'
+import { XCollapse } from './components/display-components/collapse'
+import { XDescriptions } from './components/display-components/descriptions'
+import { XProgress } from './components/display-components/progress'
+import { XSkeleton } from './components/display-components/skeleton'
+import { XStatistic } from './components/display-components/statistic'
+import { XUpload } from './components/form-components/upload'
+import { XBreadcrumb } from './components/navigation-components/breadcrumb'
+import { XPagination } from './components/navigation-components/pagination'
+import { XSteps } from './components/navigation-components/steps'
+import { XAlert } from './components/feedback-components/alert'
+import { XNotification, XNotificationComponent } from './components/feedback-components/notification'
+import { XPopover } from './components/feedback-components/popover'
+import { XPopconfirm } from './components/feedback-components/popconfirm'
 import { XAutocomplete } from './components/form-components/autocomplete'
 import { XAvatar } from './components/display-components/avatar'
 import { XBaseInput } from './components/basic-components/base-input'
@@ -15,6 +29,7 @@ import { XDatePicker } from './components/form-components/date-picker'
 import { XDatePickerPanel } from './components/form-components/date-picker-panel'
 import { XDateTimePicker } from './components/form-components/date-time-picker'
 import { XDataTableSettings } from './components/other-components/data-table-settings'
+import { XTableColumnSettings } from './components/other-components/table-column-settings'
 import { XDialog } from './components/feedback-components/dialog'
 import { XDivider } from './components/basic-components/divider'
 import { XDrawer } from './components/feedback-components/drawer'
@@ -27,8 +42,10 @@ import { XFlow, XFlowItem } from './components/basic-components/flow'
 import { XForm, XFormItem } from './components/form-components/form'
 import { XGrid, XGridItem } from './components/basic-components/grid'
 import { XIcon } from './components/basic-components/icon'
+import { XIconSelect } from './components/form-components/icon-select'
 import { XInput } from './components/form-components/input'
 import { XInputNumber } from './components/form-components/input-number'
+import { XTextarea } from './components/form-components/textarea'
 import { XJsonEditor } from './components/other-components/json-editor'
 import { XLayout } from './components/basic-components/layout'
 import { XLogin } from './components/other-components/login'
@@ -36,7 +53,6 @@ import { XLoading, vLoading, XLoadingService } from './components/feedback-compo
 import { XMessage, XMessageComponent } from './components/feedback-components/message'
 import { XMessageBox, XMessageBoxComponent } from './components/feedback-components/message-box'
 import { XNavMenu } from './components/navigation-components/nav-menu'
-import { XPageBuilder } from './components/other-components/page-builder'
 import { XRadio, XRadioButton } from './components/form-components/radio'
 import { XRichTextEditor } from './components/other-components/rich-text-editor'
 import { XScrollbar } from './components/basic-components/scrollbar'
@@ -59,6 +75,20 @@ export type { ComponentSizePreset, XSize } from './components/_utils/size'
 export { overlayZIndex } from './components/_utils/zIndex'
 export type { OverlayZIndexName } from './components/_utils/zIndex'
 
+export { XBadge }
+export { XCollapse }
+export { XDescriptions }
+export { XProgress }
+export { XSkeleton }
+export { XStatistic }
+export { XUpload }
+export { XBreadcrumb }
+export { XPagination }
+export { XSteps }
+export { XAlert }
+export { XNotification, XNotificationComponent }
+export { XPopover }
+export { XPopconfirm }
 export { XAutocomplete }
 export { XAvatar }
 export { XButton }
@@ -75,6 +105,7 @@ export { XDatePicker }
 export { XDatePickerPanel }
 export { XDateTimePicker }
 export { XDataTableSettings }
+export { XTableColumnSettings }
 export { XDialog }
 export { XDivider }
 export { XDrawer }
@@ -92,8 +123,10 @@ export { XGrid }
 export { XGridItem }
 export { XIcon }
 export { iconAliases } from './components/basic-components/icon'
+export { XIconSelect }
 export { XInput }
 export { XInputNumber }
+export { XTextarea }
 export { XJsonEditor }
 export { XLayout }
 export { XLogin }
@@ -102,7 +135,6 @@ export { XMessage, XMessageComponent }
 export { XMessageBox, XMessageBoxComponent }
 export { XNavMenu }
 export { XOption }
-export { XPageBuilder }
 export { XRadio }
 export { XRadioButton }
 export { XRichTextEditor }
@@ -121,15 +153,6 @@ export { XTimeSelect }
 export { XTooltip }
 export { XTree }
 export { RICH_TEXT_EDITOR_TOOLBAR_BUTTONS } from './components/other-components/rich-text-editor'
-export {
-  clonePageBuilderSchema,
-  createDefaultPageBuilderSchema,
-  createPageBuilderNode,
-  getPageBuilderWidget,
-  isPageBuilderContainer,
-  pageBuilderCategoryLabels,
-  pageBuilderWidgets
-} from './components/other-components/page-builder'
 
 export type {
   AutocompleteExpose,
@@ -180,6 +203,7 @@ export type {
   DataTableSettingsSavePayload,
   DataTableSettingsTable
 } from './components/other-components/data-table-settings'
+export type { TableColumnSettingsExpose, TableColumnSettingsProps } from './components/other-components/table-column-settings'
 export type {
   PickerButtonThemeProps,
   PickerCalendarThemeProps,
@@ -226,8 +250,10 @@ export type {
 } from './components/form-components/form'
 export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridSize } from './components/basic-components/grid'
 export type { IconProps, IconSize, IconVariant } from './components/basic-components/icon'
+export type { IconSelectCategoryName, IconSelectIconInfo, IconSelectProps } from './components/form-components/icon-select'
 export type { InputNumberProps } from './components/form-components/input-number'
 export type { InputProps, InputSize, InputTextAlign, InputType } from './components/form-components/input'
+export type { TextareaProps, TextareaSize, TextareaStatus, TextareaTextAlign } from './components/form-components/textarea'
 export type { JsonEditorProps } from './components/other-components/json-editor'
 export type { LayoutMode, LayoutProps } from './components/basic-components/layout'
 export type { LoginLabelPosition, LoginLogoPosition, LoginProps, LoginSize, LoginSubmitPayload } from './components/other-components/login'
@@ -235,7 +261,6 @@ export type { LoadingInstance, LoadingOptions, LoadingProps } from './components
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
 export type { MessageBoxAction, MessageBoxOptions, MessageBoxProps, MessageBoxType } from './components/feedback-components/message-box'
 export type { NavMenuItem, NavMenuMode, NavMenuProps } from './components/navigation-components/nav-menu'
-export type { PageBuilderCanvasSchema, PageBuilderLayoutSchema, PageBuilderNodeSchema, PageBuilderNodeType, PageBuilderProps, PageBuilderSchema, PageBuilderWidgetCategory, PageBuilderWidgetDefinition } from './components/other-components/page-builder'
 export type { RadioButtonProps, RadioProps, RadioSize } from './components/form-components/radio'
 export type { RichTextEditorExpose, RichTextEditorProps, RichTextEditorTheme, RichTextEditorToolbarButton, RichTextEditorValue, UploadResult } from './components/other-components/rich-text-editor'
 export type { ScrollbarProps } from './components/basic-components/scrollbar'
@@ -260,16 +285,13 @@ export type {
   TableColumn,
   TableColumnResizePayload,
   TableColumnSetting,
-  TableColumnSettingsDialogMode,
   TableDeleteSelectedRowsPayload,
   TableDirtyCellChange,
   TableDirtyChangePayload,
   TableExcelExportMode,
   TableExcelExportPayload,
   TableExcelImportPayload,
-  TablePaginationChangePayload,
-  TablePaginationMode,
-  TablePaginationState,
+  TableFixed,
   TableProps,
   TableReorderPosition,
   TableRowClickPayload,
@@ -287,15 +309,12 @@ export type {
   XlTableAppendRowPayload,
   XlTableColumn,
   XlTableColumnResizePayload,
-  XlTableColumnSettingsDialogMode,
   XlTableDeleteSelectedRowsPayload,
   XlTableDirtyCellChange,
   XlTableDirtyChangePayload,
   XlTableExcelExportMode,
   XlTableExcelExportPayload,
   XlTableExcelImportPayload,
-  XlTablePaginationChangePayload,
-  XlTablePaginationMode,
   XlTableProps,
   XlTableRowClickPayload,
   XlTableSavePayload,
@@ -333,6 +352,7 @@ const components = [
   XText,
   XBaseInput,
   XInput,
+  XTextarea,
   XInputNumber,
   XAutocomplete,
   XSelect,
@@ -349,6 +369,7 @@ const components = [
   XDatePicker,
   XDateTimePicker,
   XDataTableSettings,
+  XTableColumnSettings,
   XTimePicker,
   XTimeSelect,
   XScrollbar,
@@ -369,11 +390,11 @@ const components = [
   XGrid,
   XGridItem,
   XIcon,
+  XIconSelect,
   XDialog,
   XFileDisk,
   XLayout,
   XNavMenu,
-  XPageBuilder,
   XTree,
   XTabs,
   XTable,
@@ -393,6 +414,7 @@ const XUi: Plugin = {
     app.directive('loading', vLoading)
     app.config.globalProperties.$message = XMessage
     app.config.globalProperties.$messageBox = XMessageBox
+    app.config.globalProperties.$notification = XNotification
     app.config.globalProperties.$loading = XLoadingService
   }
 }

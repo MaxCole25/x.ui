@@ -456,7 +456,6 @@ defineExpose({
       :empty-text="emptyText"
       :row-draggable="true"
       :show-actions="false"
-      :show-pagination="false"
       :column-resizable="true"
       :fill-height="true"
       :panel-background-color="backgroundColor"

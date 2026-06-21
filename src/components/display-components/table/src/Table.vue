@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
 import type { CSSProperties, StyleValue } from 'vue'
 import { XBaseInput } from '../../../basic-components/base-input'
-import { XDialog } from '../../../feedback-components/dialog'
-import { XCheckbox } from '../../../form-components/checkbox'
-import { XInputNumber } from '../../../form-components/input-number'
-import { XRadioButton } from '../../../form-components/radio'
 import { componentSizePreset } from '../../../_utils/size'
 import type {
   TableAlign,
@@ -21,9 +17,6 @@ import type {
   TableExcelExportPayload,
   TableExcelImportPayload,
   TableFixed,
-  TablePaginationChangePayload,
-  TablePaginationMode,
-  TablePaginationState,
   TableProps,
   TableRowPatchPayload,
   TableRowClickPayload,
@@ -32,13 +25,10 @@ import type {
   TableSavePayload,
   TableSelectionMode,
   TableSorter,
-  TableSummaryContext,
-  TableTopSlotScope
+  TableSummaryContext
 } from './types'
 
 defineOptions({ name: 'XTable', inheritAttrs: false })
-
-const instance = getCurrentInstance()
 
 const props = withDefaults(defineProps<TableProps>(), {
   rowKey: 'id',
@@ -61,15 +51,6 @@ const props = withDefaults(defineProps<TableProps>(), {
   deleteSelectedRowsButtonLabel: '删除选择行',
   rowDraggable: false,
   columnResizable: true,
-  showColumnSettings: false,
-  columnSettingsDialog: 'auto',
-  columnSettingsDialogTitle: '列设置',
-  columnSettingsDialogWidth: 760,
-  columnSettingsDialogHeight: 620,
-  showPagination: false,
-  paginationMode: 'client',
-  currentPage: 1,
-  pageSize: 10,
   size: undefined,
   rowHeight: undefined,
   selectionMode: 'row',
@@ -81,7 +62,6 @@ const emit = defineEmits<{
   (e: 'update:data', value: Record<string, unknown>[]): void
   (e: 'update:columnSettings', value: TableColumnSetting[]): void
   (e: 'column-settings-change', value: TableColumnSetting[]): void
-  (e: 'column-settings-click', value: TableColumnSetting[]): void
   (e: 'update:sorter', value: TableSorter): void
   (e: 'sort-change', value: TableSorter): void
   (e: 'update:selectedRowKeys', value: string[]): void
@@ -103,11 +83,6 @@ const emit = defineEmits<{
   (e: 'row-click', value: TableRowClickPayload): void
   (e: 'row-dblclick', value: TableRowClickPayload): void
   (e: 'column-resize', value: TableColumnResizePayload): void
-  (e: 'update:currentPage', value: number): void
-  (e: 'update:pageSize', value: number): void
-  (e: 'page-change', value: TablePaginationChangePayload): void
-  (e: 'page-size-change', value: TablePaginationChangePayload): void
-  (e: 'pagination-change', value: TablePaginationChangePayload): void
   (e: 'excel-export', value: TableExcelExportPayload): void
   (e: 'excel-import', value: TableExcelImportPayload): void
 }>()
@@ -133,25 +108,13 @@ const autoFitColumnWidthBuffer = 12
 const internalColumnSettings = ref<TableColumnSetting[]>([])
 const internalSorter = ref<TableSorter | null>(null)
 const tableWidth = ref(0)
-const internalCurrentPage = ref(1)
-const internalPageSize = ref(10)
 const attrs = useAttrs()
 
-const normalizedPaginationMode = computed<TablePaginationMode>(() => props.paginationMode ?? 'client')
-const normalizedPageSizes = computed(() => normalizePageSizes(props.pageSizes))
-const normalizedPageSize = computed(() => Math.max(1, normalizeInteger(internalPageSize.value, 10)))
-const paginationTotal = computed(() => {
-  const total = props.total === undefined ? props.data.length : normalizeInteger(props.total, 0)
-  return Math.max(0, total)
-})
-const paginationPageCount = computed(() => Math.max(1, Math.ceil(paginationTotal.value / normalizedPageSize.value)))
-const normalizedCurrentPage = computed(() => clampPage(internalCurrentPage.value))
-const clientPageStartIndex = computed(() => (normalizedCurrentPage.value - 1) * normalizedPageSize.value)
 const activeSorter = computed(() => normalizeSorter(internalSorter.value))
 const sortedIndexedRows = computed(() => {
   const rows = props.data.map((row, rowIndex) => ({ row, rowIndex }))
   const sorter = activeSorter.value
-  if (!sorter || normalizedPaginationMode.value === 'server') {
+  if (!sorter) {
     return rows
   }
 
@@ -163,13 +126,7 @@ const sortedIndexedRows = computed(() => {
   return [...rows].sort((left, right) => compareRowsByColumn(left.row, right.row, column, sorter.order))
 })
 const sortedData = computed(() => sortedIndexedRows.value.map((item) => item.row))
-const visibleIndexedRows = computed(() => {
-  if (!props.showPagination || normalizedPaginationMode.value === 'server') {
-    return sortedIndexedRows.value
-  }
-
-  return sortedIndexedRows.value.slice(clientPageStartIndex.value, clientPageStartIndex.value + normalizedPageSize.value)
-})
+const visibleIndexedRows = computed(() => sortedIndexedRows.value)
 const visibleData = computed(() => visibleIndexedRows.value.map((item) => item.row))
 const visibleRows = computed(() =>
   visibleIndexedRows.value.map(({ row, rowIndex }) => ({
@@ -177,15 +134,6 @@ const visibleRows = computed(() =>
     rowIndex
   }))
 )
-const paginationState = computed<TablePaginationState>(() => ({
-  currentPage: normalizedCurrentPage.value,
-  pageSize: normalizedPageSize.value,
-  total: paginationTotal.value,
-  pageCount: paginationPageCount.value,
-  mode: normalizedPaginationMode.value
-}))
-const paginationPageItems = computed(() => createPaginationPageItems(normalizedCurrentPage.value, paginationPageCount.value))
-const isPaginationVisible = computed(() => props.showPagination)
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
 const tableStyle = computed<CSSProperties>(() => {
@@ -195,8 +143,6 @@ const tableStyle = computed<CSSProperties>(() => {
     ? controlHeight
     : formatCssSize(props.rowHeight)
   setCssVariable(style, '--x-table-panel-background', props.panelBackgroundColor)
-  setCssVariable(style, '--x-table-top-background', props.topBackgroundColor ?? props.panelBackgroundColor)
-  setCssVariable(style, '--x-table-bottom-background', props.bottomBackgroundColor ?? props.panelBackgroundColor)
   setCssVariable(style, '--x-table-header-background', props.headerBackgroundColor)
   setCssVariable(style, '--x-table-header-text-color', props.headerTextColor)
   setCssVariable(style, '--x-table-body-background', props.bodyBackgroundColor)
@@ -246,10 +192,6 @@ const resolvedColumns = computed<ResolvedColumn[]>(() => {
   return columns
 })
 
-const orderedColumnSettings = computed(() => getOrderedSettings())
-const columnSettingsDialogVisible = ref(false)
-const draggingColumnSettingKey = ref('')
-const columnSettingDragTarget = ref<{ key: string; position: TableReorderPosition } | null>(null)
 const isSummaryRowVisible = computed(() => Boolean(props.summaryRow) && resolvedColumns.value.length > 0)
 const summarySourceRows = computed(() => (props.summaryScope === 'all' ? props.data : visibleData.value))
 const summaryContext = computed<TableSummaryContext>(() => ({
@@ -284,23 +226,6 @@ const gridTemplateColumns = computed(() => {
   return tracks.join(' ')
 })
 
-const slotScope = computed<TableTopSlotScope>(() => ({
-  columns: props.columns,
-  data: props.data,
-  visibleData: visibleData.value,
-  columnSettings: getOrderedSettings().map((setting) => ({ ...setting })),
-  selectedRowKeys: activeSelectedRowKeys.value,
-  selectedCellKeys: normalizedSelectedCellKeys.value,
-  pagination: paginationState.value,
-  sorter: activeSorter.value,
-  updateColumnSetting,
-  moveColumnSetting,
-  reorderColumnSetting,
-  resetColumnSettings,
-  setPage,
-  setPageSize
-}))
-
 const tableRootRef = ref<HTMLElement | null>(null)
 const headerViewportRef = ref<HTMLElement | null>(null)
 const bodyViewportRef = ref<HTMLElement | null>(null)
@@ -326,7 +251,7 @@ const isRowSelectionColumnVisible = computed(() => props.showSelection && props.
 const isCellSelectionEnabled = computed(() => props.showSelection && normalizedSelectionMode.value === 'cell')
 const isCellCopyEnabled = computed(() => isCellSelectionEnabled.value)
 const isCellPasteEnabled = computed(() => props.editable && isCellSelectionEnabled.value)
-const isContextRowMutationEnabled = computed(() => props.editable && !props.showPagination)
+const isContextRowMutationEnabled = computed(() => props.editable)
 const normalizedSelectedRowKeys = computed(() => (props.selectedRowKeys ?? []).map((key) => String(key)))
 const normalizedSelectedCellKeys = computed(() => props.selectedCellKeys ?? [])
 const internalSelectedRowKeys = ref<string[]>([])
@@ -2240,95 +2165,6 @@ function getVerticalTrackSize() {
   return Math.max(scrollbarThumbMinSize, scrollState.value.clientHeight - scrollbarTrackInset * 2)
 }
 
-function normalizeInteger(value: number | undefined, fallback: number) {
-  const next = Number(value)
-  return Number.isFinite(next) ? Math.floor(next) : fallback
-}
-
-function normalizePageSizes(pageSizes: number[] | undefined) {
-  const sizes = (pageSizes && pageSizes.length > 0 ? pageSizes : [10, 20, 50, 100])
-    .map((size) => normalizeInteger(size, 0))
-    .filter((size) => size > 0)
-  return sizes.length > 0 ? [...new Set(sizes)] : [10]
-}
-
-function clampPage(page: number) {
-  const next = Math.max(1, normalizeInteger(page, 1))
-  return Math.min(next, paginationPageCount.value)
-}
-
-function createPaginationPageItems(currentPage: number, pageCount: number) {
-  if (pageCount <= 7) {
-    return Array.from({ length: pageCount }, (_, index) => index + 1)
-  }
-
-  const pages: Array<number | 'ellipsis'> = [1]
-  let start = currentPage - 1
-  let end = currentPage + 1
-
-  if (currentPage <= 4) {
-    start = 2
-    end = 5
-  } else if (currentPage >= pageCount - 3) {
-    start = pageCount - 4
-    end = pageCount - 1
-  }
-
-  if (start > 2) {
-    pages.push('ellipsis')
-  }
-
-  for (let page = Math.max(2, start); page <= Math.min(pageCount - 1, end); page += 1) {
-    pages.push(page)
-  }
-
-  if (end < pageCount - 1) {
-    pages.push('ellipsis')
-  }
-
-  pages.push(pageCount)
-  return pages
-}
-
-function emitPaginationChange(page: number, pageSize: number, pageSizeChanged = false) {
-  const payload: TablePaginationChangePayload = {
-    currentPage: page,
-    pageSize,
-    total: paginationTotal.value,
-    pageCount: paginationPageCount.value,
-    mode: normalizedPaginationMode.value,
-    pageSizeChanged
-  }
-
-  emit('pagination-change', payload)
-  emit('page-change', payload)
-  if (pageSizeChanged) {
-    emit('page-size-change', payload)
-  }
-}
-
-function setPage(page: number) {
-  const nextPage = clampPage(page)
-  internalCurrentPage.value = nextPage
-  emit('update:currentPage', nextPage)
-  emitPaginationChange(nextPage, normalizedPageSize.value)
-  nextTick(syncScrollState)
-}
-
-function setPageSize(pageSize: number) {
-  const nextPageSize = Math.max(1, normalizeInteger(pageSize, normalizedPageSize.value))
-  internalPageSize.value = nextPageSize
-  internalCurrentPage.value = 1
-  emit('update:pageSize', nextPageSize)
-  emit('update:currentPage', 1)
-  emitPaginationChange(1, nextPageSize, true)
-  nextTick(syncScrollState)
-}
-
-function handlePageSizeChange(event: Event) {
-  setPageSize(Number((event.target as HTMLSelectElement).value))
-}
-
 function isColumnSortable(column: TableColumn) {
   return column.sortable === true
 }
@@ -2380,9 +2216,6 @@ function toggleColumnSort(column: TableColumn) {
   internalSorter.value = normalizeSorter(nextSorter)
   emit('update:sorter', nextSorter)
   emit('sort-change', nextSorter)
-  if (normalizedPaginationMode.value === 'client') {
-    setPage(1)
-  }
 }
 
 function normalizeSorter(sorter: TableSorter | null | undefined): TableSorter | null {
@@ -2671,181 +2504,8 @@ function updateColumnSetting(key: string, setting: Partial<TableColumnSetting>) 
   setColumnSettings(next)
 }
 
-function moveColumnSetting(key: string, direction: 'up' | 'down') {
-  const sorted = [...internalColumnSettings.value].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-  const index = sorted.findIndex((setting) => setting.key === key)
-  const targetIndex = direction === 'up' ? index - 1 : index + 1
-  if (index < 0 || targetIndex < 0 || targetIndex >= sorted.length) {
-    return
-  }
-
-  const current = sorted[index]
-  sorted[index] = sorted[targetIndex]
-  sorted[targetIndex] = current
-  setColumnSettings(sorted.map((setting, order) => ({ ...setting, order })))
-}
-
-function reorderColumnSetting(key: string, targetKey: string, position: TableReorderPosition) {
-  if (key === targetKey) {
-    return
-  }
-
-  const sorted = getOrderedSettings()
-  const fromIndex = sorted.findIndex((setting) => setting.key === key)
-  const targetIndex = sorted.findIndex((setting) => setting.key === targetKey)
-  if (fromIndex < 0 || targetIndex < 0) {
-    return
-  }
-
-  const [movedSetting] = sorted.splice(fromIndex, 1)
-  let toIndex = targetIndex + (position === 'after' ? 1 : 0)
-  if (fromIndex < toIndex) {
-    toIndex -= 1
-  }
-
-  if (fromIndex === toIndex) {
-    return
-  }
-
-  sorted.splice(toIndex, 0, movedSetting)
-  setColumnSettings(sorted.map((setting, order) => ({ ...setting, order })))
-}
-
-function moveColumnSettingToEdge(key: string, edge: 'first' | 'last') {
-  const sorted = getOrderedSettings()
-  const fromIndex = sorted.findIndex((setting) => setting.key === key)
-  if (fromIndex < 0 || (edge === 'first' && fromIndex === 0) || (edge === 'last' && fromIndex === sorted.length - 1)) {
-    return
-  }
-
-  const [movedSetting] = sorted.splice(fromIndex, 1)
-  if (edge === 'first') {
-    sorted.unshift(movedSetting)
-  } else {
-    sorted.push(movedSetting)
-  }
-  setColumnSettings(sorted.map((setting, order) => ({ ...setting, order })))
-}
-
 function resetColumnSettings() {
   setColumnSettings(createDefaultColumnSettings())
-}
-
-function openColumnSettings() {
-  if (props.columnSettingsDialog === false) {
-    return false
-  }
-
-  columnSettingsDialogVisible.value = true
-  return true
-}
-
-function handleColumnSettingsClick() {
-  emit('column-settings-click', getOrderedSettings().map((setting) => ({ ...setting })))
-  if (shouldOpenBuiltInColumnSettingsDialog()) {
-    columnSettingsDialogVisible.value = true
-  }
-}
-
-function shouldOpenBuiltInColumnSettingsDialog() {
-  if (props.columnSettingsDialog === true) {
-    return true
-  }
-
-  if (props.columnSettingsDialog === false) {
-    return false
-  }
-
-  return !hasExternalColumnSettingsClickListener()
-}
-
-function hasExternalColumnSettingsClickListener() {
-  const vnodeProps = instance?.vnode.props as Record<string, unknown> | null | undefined
-  const listener = vnodeProps?.onColumnSettingsClick
-  return Array.isArray(listener) ? listener.length > 0 : typeof listener === 'function'
-}
-
-function getColumnSettingsColumn(key: string) {
-  return props.columns.find((column) => column.key === key)
-}
-
-function getColumnSettingsLabel(key: string) {
-  return getColumnSettingsColumn(key)?.label ?? key
-}
-
-function getColumnSettingsWidth(key: string) {
-  const width = getColumnSettingsColumn(key)?.width
-  return typeof width === 'number' ? width : undefined
-}
-
-function getColumnSettingsAlign(key: string) {
-  return getColumnSettingsColumn(key)?.align ?? 'left'
-}
-
-function updateColumnSettingVisible(key: string, value: boolean | Array<string | number | boolean>) {
-  updateColumnSetting(key, { hidden: !Boolean(value) })
-}
-
-function updateColumnSettingFixed(key: string, value: string | number | boolean) {
-  updateColumnSetting(key, { fixed: value as TableFixed })
-}
-
-function updateColumnSettingAlign(key: string, value: string | number | boolean) {
-  updateColumnSetting(key, { align: value as TableAlign })
-}
-
-function updateColumnSettingWidth(key: string, value: number | undefined) {
-  updateColumnSetting(key, { width: value })
-}
-
-function updateColumnSettingWidthRatio(key: string, value: number | undefined) {
-  updateColumnSetting(key, { widthRatio: value })
-}
-
-function startColumnSettingDrag(key: string, event: DragEvent) {
-  draggingColumnSettingKey.value = key
-  columnSettingDragTarget.value = null
-  event.dataTransfer?.setData('text/plain', key)
-  if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
-  }
-}
-
-function updateColumnSettingDragTarget(key: string, event: DragEvent) {
-  if (!draggingColumnSettingKey.value || draggingColumnSettingKey.value === key) {
-    return
-  }
-
-  event.preventDefault()
-  const target = event.currentTarget as HTMLElement
-  const rect = target.getBoundingClientRect()
-  columnSettingDragTarget.value = {
-    key,
-    position: event.clientY < rect.top + rect.height / 2 ? 'before' : 'after'
-  }
-  if (event.dataTransfer) {
-    event.dataTransfer.dropEffect = 'move'
-  }
-}
-
-function dropColumnSetting(targetKey: string, event: DragEvent) {
-  if (!draggingColumnSettingKey.value) {
-    return
-  }
-
-  event.preventDefault()
-  const position = columnSettingDragTarget.value?.key === targetKey ? columnSettingDragTarget.value.position : 'after'
-  reorderColumnSetting(draggingColumnSettingKey.value, targetKey, position)
-  resetColumnSettingDrag()
-}
-
-function isColumnSettingDragOver(key: string, position: TableReorderPosition) {
-  return columnSettingDragTarget.value?.key === key && columnSettingDragTarget.value.position === position
-}
-
-function resetColumnSettingDrag() {
-  draggingColumnSettingKey.value = ''
-  columnSettingDragTarget.value = null
 }
 
 function setColumnSettings(settings: TableColumnSetting[]) {
@@ -3165,35 +2825,6 @@ watch(
 )
 
 watch(
-  () => props.currentPage,
-  (page) => {
-    internalCurrentPage.value = Math.max(1, normalizeInteger(page, 1))
-  },
-  { immediate: true }
-)
-
-watch(
-  () => props.pageSize,
-  (pageSize) => {
-    internalPageSize.value = Math.max(1, normalizeInteger(pageSize, 10))
-  },
-  { immediate: true }
-)
-
-watch(
-  () => [paginationTotal.value, normalizedPageSize.value],
-  () => {
-    const nextPage = clampPage(internalCurrentPage.value)
-    if (nextPage !== internalCurrentPage.value) {
-      internalCurrentPage.value = nextPage
-      emit('update:currentPage', nextPage)
-    }
-    nextTick(syncScrollState)
-  },
-  { immediate: true }
-)
-
-watch(
   normalizedSelectedRowKeys,
   (keys) => {
     internalSelectedRowKeys.value = [...keys]
@@ -3246,7 +2877,7 @@ function pruneDirtyChanges() {
 }
 
 watch(
-  () => [props.data, props.columns, props.showActions, props.actionsWidth, props.showPagination, normalizedCurrentPage.value, normalizedPageSize.value, internalColumnSettings.value, activeSorter.value],
+  () => [props.data, props.columns, props.showActions, props.actionsWidth, internalColumnSettings.value, activeSorter.value],
   () => {
     pruneDirtyChanges()
     nextTick(syncScrollState)
@@ -3258,10 +2889,6 @@ defineExpose({
   getColumnSettings: () => internalColumnSettings.value.map((setting) => ({ ...setting })),
   setColumnSettings,
   resetColumnSettings,
-  openColumnSettings,
-  getPagination: () => ({ ...paginationState.value }),
-  setPage,
-  setPageSize,
   commitRowPatch,
   save,
   clearDirtyChanges,
@@ -3282,10 +2909,7 @@ defineExpose({
     tabindex="0"
     @keydown.capture="handleTableKeydown"
   >
-    <div v-if="$slots.top || isDirtyActionsVisible || isRowMutationToolbarVisible || showColumnSettings" class="x-table__top">
-      <div v-if="$slots.top" class="x-table__top-slot">
-        <slot name="top" v-bind="slotScope" />
-      </div>
+    <div v-if="isDirtyActionsVisible || isRowMutationToolbarVisible" class="x-table__top">
       <div v-if="isDirtyActionsVisible" class="x-table__dirty-actions" aria-label="脏数据操作">
         <button
           class="x-table__toolbar-icon-button"
@@ -3343,16 +2967,6 @@ defineExpose({
           <i class="ri-delete-bin-6-line" aria-hidden="true"></i>
         </button>
       </div>
-      <button
-        v-if="showColumnSettings"
-        class="x-table__column-settings-button"
-        type="button"
-        aria-label="列设置"
-        title="列设置"
-        @click="handleColumnSettingsClick"
-      >
-        <i class="ri-settings-3-line" aria-hidden="true"></i>
-      </button>
     </div>
 
     <div class="x-table__viewport">
@@ -3631,63 +3245,6 @@ defineExpose({
       </div>
     </div>
 
-    <div v-if="$slots.bottom || isPaginationVisible" class="x-table__bottom">
-      <slot name="bottom" v-bind="slotScope" />
-      <div v-if="isPaginationVisible" class="x-table__pagination" role="navigation" aria-label="表格分页">
-        <span class="x-table__pagination-total">共 {{ paginationState.total }} 条</span>
-        <label class="x-table__page-size">
-          <span>每页</span>
-          <select
-            class="x-table__page-size-select"
-            :value="paginationState.pageSize"
-            aria-label="每页条数"
-            @change="handlePageSizeChange"
-          >
-            <option v-for="size in normalizedPageSizes" :key="size" :value="size">
-              {{ size }} 条
-            </option>
-          </select>
-        </label>
-        <button
-          class="x-table__page-button"
-          type="button"
-          aria-label="上一页"
-          :disabled="paginationState.currentPage <= 1"
-          @click="setPage(paginationState.currentPage - 1)"
-        >
-          上一页
-        </button>
-        <div class="x-table__page-numbers" aria-label="页码">
-          <template v-for="(item, index) in paginationPageItems" :key="`${item}-${index}`">
-            <span v-if="item === 'ellipsis'" class="x-table__page-ellipsis">...</span>
-            <button
-              v-else
-              class="x-table__page-button x-table__page-number"
-              :class="{ 'is-active': item === paginationState.currentPage }"
-              type="button"
-              :aria-current="item === paginationState.currentPage ? 'page' : undefined"
-              :aria-label="`第 ${item} 页`"
-              @click="setPage(item)"
-            >
-              {{ item }}
-            </button>
-          </template>
-        </div>
-        <span class="x-table__page-current">
-          {{ paginationState.currentPage }} / {{ paginationState.pageCount }}
-        </span>
-        <button
-          class="x-table__page-button"
-          type="button"
-          aria-label="下一页"
-          :disabled="paginationState.currentPage >= paginationState.pageCount"
-          @click="setPage(paginationState.currentPage + 1)"
-        >
-          下一页
-        </button>
-      </div>
-    </div>
-
     <div
       v-if="contextMenuState"
       ref="contextMenuRef"
@@ -3810,169 +3367,6 @@ defineExpose({
         </button>
       </div>
     </div>
-    <XDialog
-      v-if="columnSettingsDialog !== false"
-      v-model="columnSettingsDialogVisible"
-      class="x-table__column-settings-dialog"
-      :title="columnSettingsDialogTitle"
-      :width="columnSettingsDialogWidth"
-      :height="columnSettingsDialogHeight"
-      :min-width="640"
-      :min-height="460"
-    >
-      <div class="x-table__column-settings" @mouseup="resetColumnSettingDrag" @mouseleave="resetColumnSettingDrag">
-        <p class="x-table__column-settings-hint">勾选显示列，拖拽列名调整顺序，也可以设置冻结、对齐和宽度。</p>
-        <div class="x-table__column-settings-scroll">
-          <div class="x-table__column-settings-header" aria-hidden="true">
-            <span></span>
-            <span>显示</span>
-            <span class="x-table__column-settings-header-name">列名</span>
-            <span>排序</span>
-            <span>冻结</span>
-            <span>对齐</span>
-            <span>比例%</span>
-            <span>宽度px</span>
-          </div>
-          <div class="x-table__column-settings-list">
-            <div
-              v-for="setting in orderedColumnSettings"
-              :key="setting.key"
-              class="x-table__column-settings-row"
-              :class="{
-                'is-dragging': draggingColumnSettingKey === setting.key,
-                'is-drag-over-before': isColumnSettingDragOver(setting.key, 'before'),
-                'is-drag-over-after': isColumnSettingDragOver(setting.key, 'after')
-              }"
-              draggable="true"
-              @dragstart="startColumnSettingDrag(setting.key, $event)"
-              @dragover="updateColumnSettingDragTarget(setting.key, $event)"
-              @drop="dropColumnSetting(setting.key, $event)"
-              @dragend="resetColumnSettingDrag"
-            >
-              <button
-                class="x-table__column-settings-drag-button"
-                type="button"
-                aria-label="拖拽排序"
-                title="拖拽排序"
-                draggable="true"
-                @dragstart="startColumnSettingDrag(setting.key, $event)"
-              >
-                <i class="ri-draggable" aria-hidden="true"></i>
-              </button>
-              <XCheckbox
-                class="x-table__column-settings-visible"
-                :model-value="!setting.hidden"
-                aria-label="显示列"
-                size="sm"
-                @update:model-value="updateColumnSettingVisible(setting.key, $event)"
-              />
-              <span class="x-table__column-settings-name" :title="getColumnSettingsLabel(setting.key)">
-                {{ getColumnSettingsLabel(setting.key) }}
-              </span>
-              <div class="x-table__column-settings-edge-actions">
-                <button
-                  class="x-table__column-settings-edge-button"
-                  type="button"
-                  :aria-label="`${getColumnSettingsLabel(setting.key)}置顶`"
-                  :title="`${getColumnSettingsLabel(setting.key)}置顶`"
-                  @click="moveColumnSettingToEdge(setting.key, 'first')"
-                >
-                  置顶
-                </button>
-                <button
-                  class="x-table__column-settings-edge-button"
-                  type="button"
-                  :aria-label="`${getColumnSettingsLabel(setting.key)}置底`"
-                  :title="`${getColumnSettingsLabel(setting.key)}置底`"
-                  @click="moveColumnSettingToEdge(setting.key, 'last')"
-                >
-                  置底
-                </button>
-              </div>
-              <div class="x-table__column-settings-radio-group x-table__column-settings-radio-group--button">
-                <XRadioButton
-                  :model-value="setting.fixed"
-                  value="left"
-                  :name="`x-table-fixed-${setting.key}`"
-                  label="左"
-                  size="sm"
-                  @update:model-value="updateColumnSettingFixed(setting.key, $event)"
-                />
-                <XRadioButton
-                  :model-value="setting.fixed"
-                  value="none"
-                  :name="`x-table-fixed-${setting.key}`"
-                  label="无"
-                  size="sm"
-                  @update:model-value="updateColumnSettingFixed(setting.key, $event)"
-                />
-                <XRadioButton
-                  :model-value="setting.fixed"
-                  value="right"
-                  :name="`x-table-fixed-${setting.key}`"
-                  label="右"
-                  size="sm"
-                  @update:model-value="updateColumnSettingFixed(setting.key, $event)"
-                />
-              </div>
-              <div class="x-table__column-settings-radio-group x-table__column-settings-radio-group--button">
-                <XRadioButton
-                  :model-value="setting.align"
-                  value="left"
-                  :name="`x-table-align-${setting.key}`"
-                  label="左"
-                  size="sm"
-                  @update:model-value="updateColumnSettingAlign(setting.key, $event)"
-                />
-                <XRadioButton
-                  :model-value="setting.align"
-                  value="center"
-                  :name="`x-table-align-${setting.key}`"
-                  label="中"
-                  size="sm"
-                  @update:model-value="updateColumnSettingAlign(setting.key, $event)"
-                />
-                <XRadioButton
-                  :model-value="setting.align"
-                  value="right"
-                  :name="`x-table-align-${setting.key}`"
-                  label="右"
-                  size="sm"
-                  @update:model-value="updateColumnSettingAlign(setting.key, $event)"
-                />
-              </div>
-              <XInputNumber
-                class="x-table__column-settings-number"
-                :model-value="setting.widthRatio"
-                :min="0"
-                :max="100"
-                :step="5"
-                size="sm"
-                full-width
-                placeholder="-"
-                @update:model-value="updateColumnSettingWidthRatio(setting.key, $event)"
-              />
-              <XInputNumber
-                class="x-table__column-settings-number"
-                :model-value="setting.width"
-                :min="0"
-                :step="10"
-                size="sm"
-                full-width
-                :placeholder="String(getColumnSettingsWidth(setting.key) ?? '-')"
-                @update:model-value="updateColumnSettingWidth(setting.key, $event)"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <div class="x-table__column-settings-footer">
-          <button class="x-table__column-settings-footer-button" type="button" @click="resetColumnSettings">恢复默认</button>
-          <button class="x-table__column-settings-footer-button is-primary" type="button" @click="columnSettingsDialogVisible = false">关闭</button>
-        </div>
-      </template>
-    </XDialog>
     <input
       ref="excelInputRef"
       class="x-table__excel-input"
@@ -3991,13 +3385,11 @@ defineExpose({
   align-self: stretch;
   background: var(--x-table-panel-background, var(--x-color-surface, transparent));
   --x-table-border-color: var(--x-color-border, rgb(216 224 234));
-  --x-table-section-gap: 8px;
   --x-table-section-padding-y: 8px;
   box-sizing: border-box;
   color: var(--x-table-text-color, var(--x-color-text, #1f2937));
   display: grid;
   font-size: var(--x-table-font-size, 12px);
-  row-gap: var(--x-table-section-gap);
   min-width: 0;
   overflow: hidden;
   width: 100%;
@@ -4018,25 +3410,17 @@ defineExpose({
   grid-row: 2;
 }
 
-.x-table.is-fill-height > .x-table__bottom {
-  grid-row: 3;
-}
-
-.x-table__top,
-.x-table__bottom {
-  min-width: 0;
-  padding: var(--x-table-cell-padding, 0 8px);
-  padding-block: var(--x-table-section-padding-y);
-  position: relative;
-  z-index: 3;
-}
-
 .x-table__top {
   align-items: center;
   background: var(--x-table-top-background, transparent);
   display: flex;
   gap: 8px;
   justify-content: space-between;
+  min-width: 0;
+  padding: var(--x-table-cell-padding, 0 8px);
+  padding-block: var(--x-table-section-padding-y);
+  position: relative;
+  z-index: 3;
 }
 
 .x-table__top-slot {
@@ -4058,7 +3442,6 @@ defineExpose({
   margin-left: auto;
 }
 
-.x-table__column-settings-button,
 .x-table__toolbar-icon-button {
   align-items: center;
   background: var(--x-table-control-bg, var(--x-color-surface, #fff));
@@ -4077,9 +3460,7 @@ defineExpose({
   width: var(--x-table-control-height, 30px);
 }
 
-.x-table__dirty-actions + .x-table__row-mutation-actions,
-.x-table__dirty-actions + .x-table__column-settings-button,
-.x-table__row-mutation-actions + .x-table__column-settings-button {
+.x-table__dirty-actions + .x-table__row-mutation-actions {
   margin-left: 0;
 }
 
@@ -4107,7 +3488,6 @@ defineExpose({
   color: var(--x-color-danger, #dc2626);
 }
 
-.x-table__column-settings-button:hover,
 .x-table__toolbar-icon-button:hover:not(:disabled) {
   background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
   border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
@@ -4119,349 +3499,14 @@ defineExpose({
   color: var(--x-color-danger, #dc2626);
 }
 
-.x-table__column-settings-button:disabled,
 .x-table__toolbar-icon-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
 
-.x-table__column-settings-button:focus-visible,
 .x-table__toolbar-icon-button:focus-visible {
   box-shadow: var(--x-shadow-focus, 0 0 0 3px rgb(14 116 144 / 20%));
   outline: none;
-}
-
-.x-table__column-settings {
-  display: grid;
-  gap: 10px;
-  min-width: 0;
-}
-
-.x-table__column-settings-hint {
-  color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
-  font-size: var(--x-table-font-size, 12px);
-  margin: 0;
-}
-
-.x-table__column-settings-scroll {
-  border: 1px solid var(--x-color-border, #d1d9e6);
-  border-radius: 6px;
-  max-height: 464px;
-  min-width: 0;
-  overflow: auto;
-}
-
-.x-table__column-settings-header,
-.x-table__column-settings-row {
-  align-items: center;
-  box-sizing: border-box;
-  column-gap: 10px;
-  display: grid;
-  grid-template-columns: 28px 52px minmax(120px, 1fr) 80px 84px 84px 84px 92px;
-  min-width: 694px;
-  width: 100%;
-}
-
-.x-table__column-settings-header {
-  background: var(--x-color-surface-soft, #f8fafc);
-  border-bottom: 1px solid var(--x-color-border, #d1d9e6);
-  color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
-  font-size: var(--x-table-font-size, 12px);
-  font-weight: 600;
-  min-height: 34px;
-  padding: 0 10px;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
-.x-table__column-settings-header span {
-  min-width: 0;
-  text-align: center;
-}
-
-.x-table__column-settings-header-name {
-  text-align: left !important;
-}
-
-.x-table__column-settings-list {
-  min-width: 0;
-}
-
-.x-table__column-settings-row {
-  background: var(--x-color-surface, #fff);
-  border-bottom: 1px solid var(--x-color-border, #d1d9e6);
-  min-height: 48px;
-  padding: 8px 10px;
-  position: relative;
-  z-index: 0;
-  transition:
-    background-color 140ms ease,
-    box-shadow 140ms ease,
-    margin 140ms ease,
-    opacity 140ms ease,
-    transform 140ms ease;
-}
-
-.x-table__column-settings-row:last-child {
-  border-bottom: 0;
-}
-
-.x-table__column-settings-row.is-dragging {
-  opacity: 0.48;
-  transform: scale(0.998);
-}
-
-.x-table__column-settings-row.is-drag-over-before,
-.x-table__column-settings-row.is-drag-over-after {
-  background: var(--x-table-row-drag-background, var(--x-color-primary-soft, #f0f9ff));
-  box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
-}
-
-.x-table__column-settings-row.is-drag-over-before {
-  margin-top: 10px;
-}
-
-.x-table__column-settings-row.is-drag-over-after {
-  margin-bottom: 10px;
-}
-
-.x-table__column-settings-row.is-drag-over-before::before,
-.x-table__column-settings-row.is-drag-over-after::after {
-  background: var(--x-table-drag-indicator-color, var(--x-color-primary, #1264f4));
-  border-radius: 999px;
-  content: "";
-  height: 2px;
-  left: 10px;
-  pointer-events: none;
-  position: absolute;
-  right: 10px;
-  z-index: 1;
-}
-
-.x-table__column-settings-row.is-drag-over-before::before {
-  top: -6px;
-}
-
-.x-table__column-settings-row.is-drag-over-after::after {
-  bottom: -6px;
-}
-
-.x-table__column-settings-drag-button {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 4px;
-  color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
-  cursor: grab;
-  display: inline-flex;
-  font-size: 18px;
-  height: 26px;
-  justify-content: center;
-  padding: 0;
-  width: 26px;
-}
-
-.x-table__column-settings-drag-button:hover,
-.x-table__column-settings-drag-button:focus-visible {
-  background: var(--x-color-surface-soft, #f8fafc);
-  color: var(--x-color-primary, #1264f4);
-  outline: none;
-}
-
-.x-table__column-settings-drag-button:active {
-  cursor: grabbing;
-}
-
-.x-table__column-settings-visible {
-  justify-self: center;
-}
-
-.x-table__column-settings-visible :deep(.x-checkbox__label) {
-  display: none;
-}
-
-.x-table__column-settings-name {
-  color: var(--x-color-text, #121826);
-  font-size: var(--x-table-font-size, 12px);
-  font-weight: 600;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.x-table__column-settings-edge-actions {
-  align-items: center;
-  display: inline-flex;
-  gap: 4px;
-  justify-self: center;
-  min-width: 0;
-}
-
-.x-table__column-settings-edge-button {
-  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
-  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
-  border-radius: 4px;
-  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
-  cursor: pointer;
-  font-size: var(--x-table-font-size, 12px);
-  height: 24px;
-  line-height: 1;
-  min-width: 34px;
-  padding: 0 6px;
-  white-space: nowrap;
-}
-
-.x-table__column-settings-edge-button:hover,
-.x-table__column-settings-edge-button:focus-visible {
-  border-color: var(--x-color-primary, #1264f4);
-  color: var(--x-color-primary, #1264f4);
-  outline: none;
-}
-
-.x-table__column-settings-radio-group {
-  align-items: center;
-  display: inline-flex;
-  gap: 6px;
-  justify-self: center;
-  min-width: 0;
-}
-
-.x-table__column-settings-radio-group--button {
-  gap: 0;
-}
-
-.x-table__column-settings-radio-group--button :deep(.x-radio-button) {
-  min-width: 28px;
-}
-
-.x-table__column-settings-number {
-  justify-self: stretch;
-  min-width: 0;
-}
-
-.x-table__column-settings-footer {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.x-table__column-settings-footer-button {
-  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
-  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
-  border-radius: var(--x-table-radius, 6px);
-  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
-  cursor: pointer;
-  min-height: var(--x-table-control-height, 30px);
-  padding: var(--x-table-cell-padding, 0 8px);
-}
-
-.x-table__column-settings-footer-button:hover {
-  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
-  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
-}
-
-.x-table__column-settings-footer-button.is-primary {
-  background: var(--x-color-primary, #1264f4);
-  border-color: var(--x-color-primary, #1264f4);
-  color: var(--x-color-primary-text, #fff);
-}
-
-.x-table__bottom {
-  align-items: center;
-  background: var(--x-table-bottom-background, transparent);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: space-between;
-}
-
-.x-table__pagination {
-  align-items: center;
-  color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));
-  display: inline-flex;
-  flex-wrap: wrap;
-  font-size: var(--x-table-font-size, 12px);
-  gap: 8px;
-  margin-left: auto;
-}
-
-.x-table__pagination-total {
-  font-weight: 600;
-}
-
-.x-table__page-size {
-  align-items: center;
-  display: inline-flex;
-  gap: 6px;
-}
-
-.x-table__page-size-select,
-.x-table__page-button {
-  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
-  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
-  border-radius: var(--x-table-radius, 6px);
-  box-sizing: border-box;
-  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
-  min-height: var(--x-table-control-height, 30px);
-}
-
-.x-table__page-size-select {
-  padding: var(--x-table-cell-padding, 0 8px);
-}
-
-.x-table__page-size-select option {
-  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
-  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
-}
-
-.x-table__page-button {
-  cursor: pointer;
-  padding: var(--x-table-cell-padding, 0 8px);
-}
-
-.x-table__page-numbers {
-  align-items: center;
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.x-table__page-number {
-  min-width: var(--x-table-control-height, 30px);
-}
-
-.x-table__page-number.is-active {
-  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
-  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
-  font-weight: 700;
-}
-
-.x-table__page-ellipsis {
-  color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));
-  padding: 0 2px;
-}
-
-.x-table__page-size-select:hover,
-.x-table__page-button:hover:not(:disabled) {
-  background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));
-  border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));
-  color: var(--x-table-control-hover-text-color, var(--x-color-primary));
-}
-
-.x-table__page-button:disabled {
-  background: var(--x-table-control-disabled-bg, var(--x-color-disabled-bg));
-  color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));
-  cursor: not-allowed;
-}
-
-.x-table__page-current {
-  color: var(--x-table-pagination-current-text-color, var(--x-color-text, #334155));
-  min-width: 52px;
-  text-align: center;
 }
 
 .x-table__viewport {

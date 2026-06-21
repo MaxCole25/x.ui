@@ -1,17 +1,24 @@
 <script setup lang="ts">
-const tooltipBasicCode = `<XTooltip content="保存当前配置">
-  <XButton>保存</XButton>
-</XTooltip>`
+const tooltipBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const tooltipThemeCode = `<XTooltip
-  content="自定义提示"
-  background-color="#12243a"
-  text-color="#eef4fb"
-  border-color="#203247"
-  border-width="1px"
->
-  <XButton>查看提示</XButton>
-</XTooltip>`
+<XTooltip content="保存当前配置" trigger="click">
+      <XButton>保存</XButton>
+    </XTooltip>`
+
+const tooltipThemeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XTooltip
+      content="自定义提示"
+      trigger="click"
+      background-color="#12243a"
+      text-color="#eef4fb"
+      border-color="#203247"
+      border-width="1px"
+    >
+      <XButton>查看提示</XButton>
+    </XTooltip>`
 </script>
 
 # 文字提示 Tooltip

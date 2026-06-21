@@ -1,21 +1,35 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
-const inputValue = ref('默认尺寸')
+const inputValue = ref('示例文本')
 
-const inputBasicCode = `<script setup>
+const inputBasicCode = `\x3Cscript setup lang="ts">
 import { ref } from 'vue'
 
-const value = ref('')
+const inputValue = ref('示例文本')
 <\/script>
 
-<template>
-  <XInput v-model="value" placeholder="请输入内容" clearable />
-</template>`
+<div class="x-demo-column">
+    <div style="width: 240px">
+      <XInput v-model="inputValue" placeholder="请输入内容" clearable />
+    </div>
+    <p class="x-demo-label">当前输入：{{ inputValue || '暂无' }}</p>
+  </div>`
 
-const inputSizeCode = `<XInput size="sm" placeholder="小尺寸" />
-<XInput size="md" placeholder="默认尺寸" />
-<XInput size="lg" placeholder="大尺寸" />`
+const inputSizeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-column">
+    <div style="width: 240px">
+      <XInput size="sm" placeholder="小尺寸" />
+    </div>
+    <div style="width: 240px">
+      <XInput size="md" placeholder="默认尺寸" />
+    </div>
+    <div style="width: 240px">
+      <XInput size="lg" placeholder="大尺寸" />
+    </div>
+  </div>`
 </script>
 
 # Input 输入框

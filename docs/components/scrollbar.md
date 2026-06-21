@@ -1,15 +1,25 @@
 <script setup lang="ts">
-const scrollbarBasicCode = `<XScrollbar max-height="120px">
-  <p>列表项 A</p>
-  <p>列表项 B</p>
-  <p>列表项 C</p>
-  <p>列表项 D</p>
-  <p>列表项 E</p>
-</XScrollbar>`
+const scrollbarBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const scrollbarHeightCode = `<XScrollbar height="140px" background-color="#f8fafc" border-color="#d8e2e8" :border-width="1">
-  <p v-for="index in 8" :key="index">固定高度内容 {{ index }}</p>
-</XScrollbar>`
+<div style="width: 320px">
+    <XScrollbar max-height="120px">
+      <p>列表项 A</p>
+      <p>列表项 B</p>
+      <p>列表项 C</p>
+      <p>列表项 D</p>
+      <p>列表项 E</p>
+    </XScrollbar>
+  </div>`
+
+const scrollbarHeightCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div style="width: 320px">
+    <XScrollbar height="140px" background-color="#f8fafc" border-color="#d8e2e8" :border-width="1">
+      <p v-for="index in 8" :key="index">固定高度内容 {{ index }}</p>
+    </XScrollbar>
+  </div>`
 </script>
 
 # 滚动条 Scrollbar

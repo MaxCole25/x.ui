@@ -2,63 +2,188 @@
 import { ref } from 'vue'
 
 const selectStatus = ref('todo')
-const selectMultiple = ref(['todo', 'done'])
-const selectClear = ref('doing')
-const remoteStatus = ref('')
+
 const statusOptions = [
   { label: '待处理', value: 'todo' },
   { label: '处理中', value: 'doing' },
-  { label: '已完成', value: 'done' },
-  { label: '已归档', value: 'archived', disabled: true }
+  { label: '已完成', value: 'done' }
 ]
+
+const selectMultiple = ref(['todo'])
+
+const remoteStatus = ref('')
+
 const statusFieldNames = { label: 'name', value: 'id' }
-const queryStatus = async () => {
+
+function queryStatus() {
   return [
-    { name: '远程待处理', id: 'todo' },
-    { name: '远程已完成', id: 'done' }
+    { name: '待处理', id: 'todo' },
+    { name: '处理中', id: 'doing' },
+    { name: '已完成', id: 'done' }
   ]
 }
 
-const selectBasicCode = `<XSelect v-model="selectStatus" :options="statusOptions" placeholder="请选择状态" />`
+const selectClear = ref('todo')
 
-const selectOptionCode = `<XSelect v-model="selectStatus">
-  <XOption label="待处理" value="todo" />
-  <XOption label="处理中" value="doing" />
-  <XOption label="已完成" value="done" />
-  <XOption label="已归档" value="archived" disabled />
-</XSelect>`
+const selectBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const selectMultipleCode = `<XSelect v-model="selectMultiple" multiple :options="statusOptions" />`
+const selectStatus = ref('todo')
 
-const selectDisplayValueCode = `<XSelect v-model="selectStatus" :options="statusOptions" display-field="value" />`
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
 
-const selectRemoteCode = `<XSelect
-  v-model="remoteStatus"
-  remote
-  :field-names="statusFieldNames"
-  :remote-method="queryStatus"
-  placeholder="展开后请求服务端"
-/>`
+<div class="x-demo-column" style="width: 260px">
+    <XSelect v-model="selectStatus" :options="statusOptions" placeholder="请选择状态" />
+    <p class="x-demo-label">当前值：{{ selectStatus }}</p>
+  </div>`
 
-const selectStateCode = `<XSelect v-model="selectClear" :options="statusOptions" clearable />
-<XSelect v-model="selectClear" :options="statusOptions" readonly clearable />
-<XSelect :options="statusOptions" disabled placeholder="禁用状态" />`
+const selectOptionCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const selectAffixCode = `<XSelect v-model="selectStatus" prefix="状态" suffix="必选" status="success" :options="statusOptions" />
-<XSelect v-model="selectStatus" prefix="负责人" suffix="只读" readonly :options="statusOptions" />`
+const selectStatus = ref('todo')
+<\/script>
 
-const selectSizeCode = `<XSelect size="sm" :options="statusOptions" placeholder="小尺寸" />
-<XSelect :options="statusOptions" placeholder="默认尺寸" />
-<XSelect size="lg" :options="statusOptions" placeholder="大尺寸" />`
+<div class="x-demo-column" style="width: 260px">
+    <XSelect v-model="selectStatus">
+      <XOption label="待处理" value="todo" />
+      <XOption label="处理中" value="doing" />
+      <XOption label="已完成" value="done" />
+      <XOption label="已归档" value="archived" disabled />
+    </XSelect>
+  </div>`
 
-const selectThemeCode = `<XSelect
-  accent-color="#7c3aed"
-  border-color="#c4b5fd"
-  radius="12px"
-  input-background-color="#faf5ff"
-  :options="statusOptions"
-  placeholder="单组件主题覆盖"
-/>`
+const selectMultipleCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const selectMultiple = ref(['todo'])
+
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<div class="x-demo-column" style="width: 260px">
+    <XSelect v-model="selectMultiple" multiple :options="statusOptions" />
+    <p class="x-demo-label">当前值：{{ selectMultiple.join('、') }}</p>
+  </div>`
+
+const selectDisplayValueCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const selectStatus = ref('todo')
+
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<div class="x-demo-column" style="width: 260px">
+    <XSelect v-model="selectStatus" :options="statusOptions" display-field="value" />
+  </div>`
+
+const selectRemoteCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const remoteStatus = ref('')
+
+const statusFieldNames = { label: 'name', value: 'id' }
+
+function queryStatus() {
+  return [
+    { name: '待处理', id: 'todo' },
+    { name: '处理中', id: 'doing' },
+    { name: '已完成', id: 'done' }
+  ]
+}
+<\/script>
+
+<div class="x-demo-column" style="width: 280px">
+    <XSelect
+      v-model="remoteStatus"
+      remote
+      :field-names="statusFieldNames"
+      :remote-method="queryStatus"
+      placeholder="展开后请求服务端"
+    />
+    <p class="x-demo-label">当前值：{{ remoteStatus }}</p>
+  </div>`
+
+const selectStateCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const selectClear = ref('todo')
+
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<div class="x-demo-column" style="width: 260px">
+    <XSelect v-model="selectClear" :options="statusOptions" clearable />
+    <XSelect v-model="selectClear" :options="statusOptions" readonly clearable />
+    <XSelect :options="statusOptions" disabled placeholder="禁用状态" />
+  </div>`
+
+const selectAffixCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const selectStatus = ref('todo')
+
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<div class="x-demo-column" style="width: 280px">
+    <XSelect v-model="selectStatus" prefix="状态" suffix="必选" status="success" :options="statusOptions" />
+    <XSelect v-model="selectStatus" prefix="负责人" suffix="只读" readonly :options="statusOptions" />
+  </div>`
+
+const selectSizeCode = `\x3Cscript setup lang="ts">
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<div class="x-demo-column" style="width: 260px">
+    <XSelect size="sm" :options="statusOptions" placeholder="小尺寸" />
+    <XSelect :options="statusOptions" placeholder="默认尺寸" />
+    <XSelect size="lg" :options="statusOptions" placeholder="大尺寸" />
+  </div>`
+
+const selectThemeCode = `\x3Cscript setup lang="ts">
+const statusOptions = [
+  { label: '待处理', value: 'todo' },
+  { label: '处理中', value: 'doing' },
+  { label: '已完成', value: 'done' }
+]
+<\/script>
+
+<div class="x-demo-column" style="width: 280px">
+    <XSelect
+      accent-color="#7c3aed"
+      border-color="#c4b5fd"
+      radius="12px"
+      input-background-color="#faf5ff"
+      :options="statusOptions"
+      placeholder="单组件主题覆盖"
+    />
+  </div>`
 </script>
 
 # Select 下拉框

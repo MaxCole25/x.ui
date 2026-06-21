@@ -1,12 +1,28 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const color = ref('#1264f4')
+const color = ref('#1677ff')
+
 const disabledColor = ref('#94a3b8')
 
-const colorPickerBasicCode = `<XColorPicker v-model="color" />`
+const colorPickerBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const colorPickerDisabledCode = `<XColorPicker v-model="color" disabled />`
+const color = ref('#1677ff')
+<\/script>
+
+<div class="x-demo-column">
+    <XColorPicker v-model="color" />
+    <p class="x-demo-label">当前颜色：{{ color }}</p>
+  </div>`
+
+const colorPickerDisabledCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const disabledColor = ref('#94a3b8')
+<\/script>
+
+<XColorPicker v-model="disabledColor" disabled />`
 </script>
 
 # 颜色选择器 ColorPicker

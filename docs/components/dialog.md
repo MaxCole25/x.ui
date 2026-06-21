@@ -3,15 +3,21 @@ import { ref } from 'vue'
 
 const visible = ref(false)
 
-const dialogBasicCode = `<button type="button" @click="visible = true">打开弹窗</button>
+const dialogBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-<XDialog v-model="visible" title="编辑信息">
-  <div>这里放置表单内容</div>
-  <template #footer>
-    <XButton variant="ghost" @click="visible = false">取消</XButton>
-    <XButton @click="visible = false">保存</XButton>
-  </template>
-</XDialog>`
+const visible = ref(false)
+<\/script>
+
+<div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="visible = true"
+      >
+        打开弹窗
+      </button><XDialog v-model="visible" title="编辑信息" :width="520" :height="320" :min-width="360" :min-height="240"><div>这里放置表单内容。</div></XDialog>
+    </div>`
 </script>
 
 # 弹窗 Dialog

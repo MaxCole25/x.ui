@@ -1,12 +1,27 @@
 <script setup lang="ts">
-const tagBasicCode = `<XTag>默认标签</XTag>
-<XTag variant="success" closable @close="handleClose">成功</XTag>`
+const tagBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const tagEffectCode = `<XTag effect="light">浅色</XTag>
-<XTag effect="dark" variant="warning">深色</XTag>
-<XTag effect="plain" variant="danger">朴素</XTag>`
+<div class="x-demo-row">
+    <XTag>默认标签</XTag>
+    <XTag variant="success" closable>成功</XTag>
+  </div>`
 
-const tagCustomCode = `<XTag accent-color="#7c3aed" round hit>自定义颜色</XTag>`
+const tagEffectCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XTag effect="light">浅色</XTag>
+    <XTag effect="dark" variant="warning">深色</XTag>
+    <XTag effect="plain" variant="danger">朴素</XTag>
+  </div>`
+
+const tagCustomCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XTag accent-color="#7c3aed" round hit>自定义颜色</XTag>
+  </div>`
 </script>
 
 # 标签 Tag

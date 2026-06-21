@@ -13,7 +13,7 @@ const appearance = reactive({
   shadow: 'always' as CardShadow,
   width: 220,
   height: 150,
-  content: '用于承载 PageBuilder 中的成组内容。'
+  content: '用于承载页面中的成组内容。'
 })
 </script>
 

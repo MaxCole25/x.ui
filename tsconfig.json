@@ -19,7 +19,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@x-soft88/x-ui": ["src"],
-      "x.ui": ["src"]
+      "xl.ui": ["src"]
     }
   },
   "include": ["src", "tests", "docs"],

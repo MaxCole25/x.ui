@@ -23,6 +23,7 @@ import { XGrid, XGridItem } from './components/basic-components/grid'
 import { XIcon } from './components/basic-components/icon'
 import { XInput } from './components/form-components/input'
 import { XInputNumber } from './components/form-components/input-number'
+import { XTextarea } from './components/form-components/textarea'
 import { XLayout } from './components/basic-components/layout'
 import { XLogin } from './components/other-components/login'
 import { XMessage, XMessageComponent } from './components/feedback-components/message'
@@ -70,6 +71,7 @@ export { XIcon }
 export { iconAliases } from './components/basic-components/icon'
 export { XInput }
 export { XInputNumber }
+export { XTextarea }
 export { XLayout }
 export { XLogin }
 export { XMessage, XMessageComponent }
@@ -140,6 +142,7 @@ export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridSize } 
 export type { IconProps, IconSize, IconVariant } from './components/basic-components/icon'
 export type { InputNumberProps } from './components/form-components/input-number'
 export type { InputProps, InputSize, InputTextAlign, InputType } from './components/form-components/input'
+export type { TextareaProps, TextareaSize, TextareaStatus, TextareaTextAlign } from './components/form-components/textarea'
 export type { LayoutMode, LayoutProps } from './components/basic-components/layout'
 export type { LoginLabelPosition, LoginLogoPosition, LoginProps, LoginSize, LoginSubmitPayload } from './components/other-components/login'
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
@@ -195,6 +198,7 @@ const components = [
   XGridItem,
   XIcon,
   XInput,
+  XTextarea,
   XInputNumber,
   XLayout,
   XLogin,

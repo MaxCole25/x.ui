@@ -6,7 +6,7 @@ import type { ScrollingTextDisplayDirection, ScrollingTextFlowDirection } from '
 import '../../../styles/index.css'
 
 const appearance = reactive({
-  text: '系统公告：x.ui 滚动文字组件支持横向、竖向和速度控制。',
+  text: '系统公告：xl.ui 滚动文字组件支持横向、竖向和速度控制。',
   displayDirection: 'horizontal' as ScrollingTextDisplayDirection,
   flowDirection: 'left' as ScrollingTextFlowDirection,
   width: 260,

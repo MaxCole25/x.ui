@@ -21,6 +21,7 @@ const appearance = reactive({
   activeBackgroundColor: '#0f54d6',
   activeBorderColor: '#0b3d91',
   activeTextColor: '#ffffff',
+  liftOnHover: false,
   loading: false,
   disabled: false
 })
@@ -57,6 +58,7 @@ function handleClick() {
             :active-background-color="appearance.activeBackgroundColor"
             :active-border-color="appearance.activeBorderColor"
             :active-text-color="appearance.activeTextColor"
+            :lift-on-hover="appearance.liftOnHover"
             :loading="appearance.loading"
             :disabled="appearance.disabled"
             @click="handleClick"
@@ -101,6 +103,10 @@ function handleClick() {
           </label>
         </template>
         <template #column-4>
+          <label class="story-check">
+            <input v-model="appearance.liftOnHover" type="checkbox" />
+            <span>悬浮上移</span>
+          </label>
           <label class="story-check">
             <input v-model="appearance.loading" type="checkbox" />
             <span>加载中</span>

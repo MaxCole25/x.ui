@@ -11,5 +11,5 @@ export interface DividerProps extends ElementStyleProps {
   contentPosition?: DividerContentPosition
   borderStyle?: DividerBorderStyle
   thickness?: number | string
-  spacing?: number | string
+  margin?: number | string
 }

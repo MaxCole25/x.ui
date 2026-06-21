@@ -1,27 +1,47 @@
 <script setup lang="ts">
-const buttonGroupBasicCode = `<XButtonGroup>
-  <XButton variant="outline">上一项</XButton>
-  <XButton variant="outline">当前项</XButton>
-  <XButton variant="outline">下一项</XButton>
-</XButtonGroup>`
+const buttonGroupBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const buttonGroupVerticalCode = `<XButtonGroup direction="vertical" width="160px">
-  <XButton variant="outline">创建</XButton>
-  <XButton variant="outline">复制</XButton>
-  <XButton variant="outline">删除</XButton>
-</XButtonGroup>`
+<div class="x-demo-row">
+    <XButtonGroup>
+      <XButton variant="outline">上一项</XButton>
+      <XButton variant="outline">当前项</XButton>
+      <XButton variant="outline">下一项</XButton>
+    </XButtonGroup>
+  </div>`
 
-const buttonGroupRadiusCode = `<XButtonGroup :radius="12" width="360px">
-  <XButton variant="outline">日</XButton>
-  <XButton variant="outline">周</XButton>
-  <XButton variant="outline">月</XButton>
-</XButtonGroup>`
+const buttonGroupVerticalCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const buttonGroupStateCode = `<XButtonGroup width="360px">
-  <XButton>保存</XButton>
-  <XButton variant="outline">预览</XButton>
-  <XButton variant="outline" disabled>发布</XButton>
-</XButtonGroup>`
+<div class="x-demo-row">
+    <XButtonGroup direction="vertical" width="160px">
+      <XButton variant="outline">创建</XButton>
+      <XButton variant="outline">复制</XButton>
+      <XButton variant="outline">删除</XButton>
+    </XButtonGroup>
+  </div>`
+
+const buttonGroupRadiusCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XButtonGroup :radius="12" width="360px">
+      <XButton variant="outline">日</XButton>
+      <XButton variant="outline">周</XButton>
+      <XButton variant="outline">月</XButton>
+    </XButtonGroup>
+  </div>`
+
+const buttonGroupStateCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XButtonGroup width="360px">
+      <XButton>保存</XButton>
+      <XButton variant="outline">预览</XButton>
+      <XButton variant="outline" disabled>发布</XButton>
+    </XButtonGroup>
+  </div>`
 </script>
 
 # 按钮组 ButtonGroup

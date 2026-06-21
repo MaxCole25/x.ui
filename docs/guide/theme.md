@@ -1,13 +1,13 @@
 # 主题基础色
 
-x.ui 默认通过 CSS 变量预设组件基础色。业务项目不需要额外安装主题插件，也不需要修改 `app.use(XUi)` 的方式，只要在引入 `x.ui/style.css` 之后覆盖对应变量即可。
+xl.ui 默认通过 CSS 变量预设组件基础色。业务项目不需要额外安装主题插件，也不需要修改 `app.use(XUi)` 的方式，只要在引入 `xl.ui/style.css` 之后覆盖对应变量即可。
 
 ## 基础接入
 
 ```ts
 import { createApp } from 'vue'
-import XUi from 'x.ui'
-import 'x.ui/style.css'
+import XUi from 'xl.ui'
+import 'xl.ui/style.css'
 import './x-ui-theme.css'
 import App from './App.vue'
 
@@ -116,7 +116,7 @@ createApp(App).use(XUi).mount('#app')
 
 ## 局部主题
 
-CSS 变量可以放在业务容器上，只有容器内部的 x.ui 组件会使用这组颜色：
+CSS 变量可以放在业务容器上，只有容器内部的 xl.ui 组件会使用这组颜色：
 
 ```css
 .admin-theme {

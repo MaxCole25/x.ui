@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { XText } from './index'
-import type { TextAlign, TextType } from './src/types'
+import type { TextAlign, TextType, TextVerticalAlign } from './src/types'
 import '../../../styles/index.css'
 
 const sample = reactive({
@@ -15,12 +15,14 @@ const sample = reactive({
   textColor: '#000000',
   fontFamily: 'Arial, sans-serif',
   fontSize: 12,
+  lineHeight: '1.55',
   previewWidth: 420,
   previewHeight: 92,
   height: 40,
   autoHeight: false,
   padding: '5px 10px',
   textAlign: 'left' as TextAlign,
+  verticalAlign: 'middle' as TextVerticalAlign,
   name: 'businessName',
   id: 'x-text-story',
   maxlength: 40
@@ -38,6 +40,12 @@ const textAlignOptions: Array<{ label: string; value: TextAlign }> = [
   { label: '居左', value: 'left' },
   { label: '居中', value: 'center' },
   { label: '居右', value: 'right' }
+]
+
+const verticalAlignOptions: Array<{ label: string; value: TextVerticalAlign }> = [
+  { label: '顶部', value: 'top' },
+  { label: '居中', value: 'middle' },
+  { label: '底部', value: 'bottom' }
 ]
 
 </script>
@@ -72,10 +80,12 @@ const textAlignOptions: Array<{ label: string; value: TextAlign }> = [
               :text-color="sample.textColor"
               :font-family="sample.fontFamily"
               :font-size="sample.fontSize"
+              :line-height="sample.lineHeight"
               :height="sample.height"
               :auto-height="sample.autoHeight"
               :padding="sample.padding"
               :text-align="sample.textAlign"
+              :vertical-align="sample.verticalAlign"
               :name="sample.name"
               :id="sample.id"
               :maxlength="sample.maxlength"
@@ -132,6 +142,10 @@ const textAlignOptions: Array<{ label: string; value: TextAlign }> = [
               <input v-model.number="sample.fontSize" type="number" min="10" max="32" />
             </label>
             <label>
+              <span>行高</span>
+              <input v-model="sample.lineHeight" />
+            </label>
+            <label>
               <span>容器宽度</span>
               <input v-model.number="sample.previewWidth" type="number" min="120" max="960" />
             </label>
@@ -183,6 +197,12 @@ const textAlignOptions: Array<{ label: string; value: TextAlign }> = [
               <span>文字对齐</span>
               <select v-model="sample.textAlign">
                 <option v-for="align in textAlignOptions" :key="align.value" :value="align.value">{{ align.label }}</option>
+              </select>
+            </label>
+            <label>
+              <span>垂直对齐</span>
+              <select v-model="sample.verticalAlign">
+                <option v-for="align in verticalAlignOptions" :key="align.value" :value="align.value">{{ align.label }}</option>
               </select>
             </label>
           </section>

@@ -265,89 +265,6 @@ describe('XTable', () => {
     expect(unitWrapper.find('.x-table__row--body').attributes('style')).toContain('160px 120px 96px 170px')
   })
 
-  it('renders top and bottom slots with columns and data scope', () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data
-      },
-      slots: {
-        top: '<template #default="{ columns, data }"><div class="custom-top">列 {{ columns.length }} / 行 {{ data.length }}</div></template>',
-        bottom: '<template #default="{ data }"><div class="custom-bottom">共 {{ data.length }} 条</div></template>'
-      }
-    })
-
-    expect(wrapper.find('.custom-top').text()).toBe('列 3 / 行 2')
-    expect(wrapper.find('.custom-bottom').text()).toBe('共 2 条')
-  })
-
-  it('applies public background colors to top and bottom slot panels', () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data,
-        topBackgroundColor: '#f0f9ff',
-        bottomBackgroundColor: 'rgb(240, 253, 244)'
-      },
-      slots: {
-        top: '<div class="custom-top">表顶</div>',
-        bottom: '<div class="custom-bottom">表底</div>'
-      }
-    })
-
-    const style = wrapper.find('.x-table').attributes('style')
-    expect(style).toContain('--x-table-top-background: #f0f9ff')
-    expect(style).toContain('--x-table-bottom-background: rgb(240, 253, 244)')
-    expect(wrapper.find('.x-table__top').exists()).toBe(true)
-    expect(wrapper.find('.x-table__bottom').exists()).toBe(true)
-
-    const source = readTableSource()
-    expect(source).toContain('background: var(--x-table-top-background, transparent);')
-    expect(source).toContain('background: var(--x-table-bottom-background, transparent);')
-  })
-
-  it('keeps top and bottom slot backgrounds transparent by default', () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data
-      },
-      slots: {
-        top: '<div class="custom-top">表顶</div>',
-        bottom: '<div class="custom-bottom">表底</div>'
-      }
-    })
-    const style = wrapper.find('.x-table').attributes('style') ?? ''
-    const source = readTableSource()
-    const globalStyles = readGlobalStyles()
-
-    expect(style).not.toContain('--x-table-top-background')
-    expect(style).not.toContain('--x-table-bottom-background')
-    expect(source).toContain('background: var(--x-table-top-background, transparent);')
-    expect(source).toContain('background: var(--x-table-bottom-background, transparent);')
-    expect(globalStyles).toContain('--x-table-top-background: transparent;')
-    expect(globalStyles).toContain('--x-table-bottom-background: transparent;')
-  })
-
-  it('uses panel background as explicit top and bottom background fallback', () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data,
-        panelBackgroundColor: '#0f172a'
-      },
-      slots: {
-        top: '<div class="custom-top">表顶</div>',
-        bottom: '<div class="custom-bottom">表底</div>'
-      }
-    })
-    const style = wrapper.find('.x-table').attributes('style') ?? ''
-
-    expect(style).toContain('--x-table-panel-background: #0f172a')
-    expect(style).toContain('--x-table-top-background: #0f172a')
-    expect(style).toContain('--x-table-bottom-background: #0f172a')
-  })
-
   it('uses theme table tokens when appearance props are omitted', () => {
     const wrapper = mount(XTable, {
       props: {
@@ -421,8 +338,7 @@ describe('XTable', () => {
         data,
         size: 'sm',
         rowHeight: 40,
-        showActions: true,
-        showPagination: true
+        showActions: true
       }
     })
 
@@ -566,21 +482,13 @@ describe('XTable', () => {
     expect(source).toContain('.x-table__row--body:hover {\n  --x-table-row-hover-overlay-current: var(--x-table-row-hover-overlay, rgb(14 116 144 / 6%));')
   })
 
-  it('routes column settings and pagination controls through theme CSS variables', () => {
+  it('routes toolbar controls through theme CSS variables', () => {
     const source = readTableSource()
     const globalStyles = readGlobalStyles()
     const controlRules = [
-      getCssRule(source, '.x-table__column-settings-button,\n.x-table__toolbar-icon-button'),
-      getCssRule(source, '.x-table__column-settings-button'),
-      getCssRule(source, '.x-table__column-settings-footer-button'),
-      getCssRule(source, '.x-table__column-settings-button:hover'),
-      getCssRule(source, '.x-table__pagination'),
-      getCssRule(source, '.x-table__page-size-select,\n.x-table__page-button'),
-      getCssRule(source, '.x-table__page-size-select option'),
-      getCssRule(source, '.x-table__page-number'),
-      getCssRule(source, '.x-table__page-size-select:hover,\n.x-table__page-button:hover:not(:disabled)'),
-      getCssRule(source, '.x-table__page-button:disabled'),
-      getCssRule(source, '.x-table__page-current')
+      getCssRule(source, '.x-table__toolbar-icon-button'),
+      getCssRule(source, '.x-table__toolbar-icon-button:hover:not(:disabled)'),
+      getCssRule(source, '.x-table__toolbar-icon-button:disabled')
     ].join('\n')
 
     expect(controlRules).toContain('background: var(--x-table-control-bg, var(--x-color-surface, #fff));')
@@ -589,158 +497,14 @@ describe('XTable', () => {
     expect(controlRules).toContain('background: var(--x-table-control-hover-bg, var(--x-color-primary-soft));')
     expect(controlRules).toContain('border-color: var(--x-table-control-hover-border-color, var(--x-color-primary));')
     expect(controlRules).toContain('color: var(--x-table-control-hover-text-color, var(--x-color-primary));')
-    expect(controlRules).toContain('background: var(--x-table-control-disabled-bg, var(--x-color-disabled-bg));')
-    expect(controlRules).toContain('color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));')
-    expect(controlRules).toContain('color: var(--x-table-pagination-text-color, var(--x-color-text-muted, #475569));')
-    expect(controlRules).toContain('color: var(--x-table-pagination-current-text-color, var(--x-color-text, #334155));')
     expect(controlRules).toContain('height: var(--x-table-control-height, 30px);')
-    expect(controlRules).toContain('min-height: var(--x-table-control-height, 30px);')
-    expect(controlRules).toContain('min-width: var(--x-table-control-height, 30px);')
     expect(controlRules).not.toMatch(/(?:background|border|border-color|color):\s*(#fff|#cbd5e1|#334155|#475569|#f1f5f9|#94a3b8)\b/)
 
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #ffffff);')
     expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, #e0ecff);')
     expect(globalStyles).toContain('--x-table-control-disabled-bg: var(--x-color-disabled-bg);')
-    expect(globalStyles).toContain('--x-table-pagination-current-text-color: var(--x-color-text, #334155);')
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #0b1726);')
     expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, rgba(59, 130, 246, 0.16));')
-    expect(globalStyles).toContain('--x-table-pagination-text-color: var(--x-color-text-muted, #8da0b8);')
-  })
-
-  it('keeps the column settings header above scrolling and drag-highlighted rows', () => {
-    const source = readTableSource()
-    const headerRule = getCssRule(source, '.x-table__column-settings-header')
-    const dragIndicatorRule = getCssRule(source, '.x-table__column-settings-row.is-drag-over-before::before,\n.x-table__column-settings-row.is-drag-over-after::after')
-    const rowRule = source.match(/\.x-table__column-settings-row\s*\{[\s\S]*?z-index: 0;[\s\S]*?\n\}/)?.[0] ?? ''
-
-    expect(headerRule).toContain('background: var(--x-color-surface-soft, #f8fafc);')
-    expect(headerRule).toContain('position: sticky;')
-    expect(headerRule).toContain('z-index: 5;')
-    expect(rowRule).toContain('z-index: 0;')
-    expect(dragIndicatorRule).toContain('z-index: 1;')
-  })
-
-  it('keeps pagination hidden by default', () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data
-      }
-    })
-
-    expect(wrapper.find('.x-table__pagination').exists()).toBe(false)
-    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
-  })
-
-  it('renders client-side paginated rows and exposes pagination controls', async () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data: [
-          ...data,
-          { id: 3, name: '权限中心', status: '启用', count: 9 }
-        ],
-        showPagination: true,
-        pageSize: 2,
-        pageSizes: [2, 5]
-      },
-      slots: {
-        bottom: '<template #default="{ pagination, visibleData }"><span class="page-scope">{{ pagination.currentPage }}-{{ visibleData.length }}</span></template>'
-      }
-    })
-
-    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
-    expect(wrapper.text()).toContain('工作台')
-    expect(wrapper.text()).not.toContain('权限中心')
-    expect(wrapper.find('.page-scope').text()).toBe('1-2')
-    expect(wrapper.find('[aria-label="第 1 页"]').attributes('aria-current')).toBe('page')
-    expect(wrapper.find('[aria-label="第 2 页"]').exists()).toBe(true)
-
-    await wrapper.find('[aria-label="下一页"]').trigger('click')
-    await nextTick()
-
-    expect(wrapper.emitted('update:currentPage')?.[0]?.[0]).toBe(2)
-    expect(wrapper.emitted('pagination-change')?.[0]?.[0]).toMatchObject({
-      currentPage: 2,
-      pageSize: 2,
-      total: 3,
-      pageCount: 2,
-      mode: 'client'
-    })
-    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(1)
-    expect(wrapper.text()).toContain('权限中心')
-  })
-
-  it('renders numeric pagination items with ellipsis and supports direct page jumps', async () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data,
-        showPagination: true,
-        paginationMode: 'server',
-        currentPage: 5,
-        pageSize: 10,
-        total: 200
-      }
-    })
-
-    expect(wrapper.find('[aria-label="第 1 页"]').exists()).toBe(true)
-    expect(wrapper.find('[aria-label="第 5 页"]').attributes('aria-current')).toBe('page')
-    expect(wrapper.find('[aria-label="第 20 页"]').exists()).toBe(true)
-    expect(wrapper.find('.x-table__page-ellipsis').exists()).toBe(true)
-
-    await wrapper.find('[aria-label="第 6 页"]').trigger('click')
-
-    expect(wrapper.emitted('update:currentPage')?.[0]?.[0]).toBe(6)
-    expect(wrapper.emitted('pagination-change')?.[0]?.[0]).toMatchObject({
-      currentPage: 6,
-      pageSize: 10,
-      total: 200,
-      pageCount: 20,
-      mode: 'server'
-    })
-  })
-
-  it('supports server pagination without slicing the provided page data', async () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data,
-        showPagination: true,
-        paginationMode: 'server',
-        currentPage: 2,
-        pageSize: 2,
-        total: 5
-      }
-    })
-
-    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
-    expect(wrapper.find('.x-table__page-current').text()).toBe('2 / 3')
-
-    await wrapper.find('[aria-label="下一页"]').trigger('click')
-
-    expect(wrapper.emitted('update:currentPage')?.[0]?.[0]).toBe(3)
-    expect(wrapper.emitted('page-change')?.[0]?.[0]).toMatchObject({
-      currentPage: 3,
-      pageSize: 2,
-      total: 5,
-      pageCount: 3,
-      mode: 'server'
-    })
-  })
-
-  it('hides pagination when showPagination is disabled even with pagination props', () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data,
-        showPagination: false,
-        pageSize: 1
-      }
-    })
-
-    expect(wrapper.find('.x-table__pagination').exists()).toBe(false)
-    expect(wrapper.findAll('.x-table__row--body')).toHaveLength(2)
   })
 
   it('renders custom cell and row actions slots', () => {
@@ -770,8 +534,7 @@ describe('XTable', () => {
         data,
         showActions: true,
         actionsFixed: true,
-        actionsWidth: 180,
-        showColumnSettings: true
+        actionsWidth: 180
       },
       slots: {
         'row-actions': '<button class="row-action">查看</button>'
@@ -874,323 +637,6 @@ describe('XTable', () => {
     expect(wrapper.classes()).not.toContain('is-fill-height')
   })
 
-  it('renders built-in column settings as an icon button and opens the default dialog', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: true
-      }
-    })
-
-    try {
-      const button = wrapper.find('.x-table__column-settings-button')
-      expect(button.exists()).toBe(true)
-      expect(button.text()).toBe('')
-      expect(button.attributes('aria-label')).toBe('列设置')
-      expect(button.find('.ri-settings-3-line').exists()).toBe(true)
-
-      await button.trigger('click')
-      await nextTick()
-
-      expect(wrapper.emitted('column-settings-click')?.[0]?.[0]).toHaveLength(3)
-      expect(document.body.querySelector('.x-table__column-settings-dialog')).not.toBeNull()
-      expect(document.body.textContent).toContain('列设置')
-      expect(document.body.textContent).toContain('恢复默认')
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('keeps column-settings-click compatible when the built-in dialog is disabled', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: true,
-        columnSettingsDialog: false
-      }
-    })
-
-    try {
-      await wrapper.find('.x-table__column-settings-button').trigger('click')
-      await nextTick()
-
-      expect(wrapper.emitted('column-settings-click')?.[0]?.[0]).toHaveLength(3)
-      expect(document.body.querySelector('.x-table__column-settings-dialog')).toBeNull()
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('opens the built-in column settings dialog through the exposed method', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: false
-      }
-    })
-
-    try {
-      expect(wrapper.find('.x-table__column-settings-button').exists()).toBe(false)
-
-      const opened = wrapper.vm.openColumnSettings()
-      await nextTick()
-
-      expect(opened).toBe(true)
-      expect(wrapper.emitted('column-settings-click')).toBeUndefined()
-      expect(document.body.querySelector('.x-table__column-settings-dialog')).not.toBeNull()
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('does not open column settings through the exposed method when the built-in dialog is disabled', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        columnSettingsDialog: false
-      }
-    })
-
-    try {
-      const opened = wrapper.vm.openColumnSettings()
-      await nextTick()
-
-      expect(opened).toBe(false)
-      expect(wrapper.emitted('column-settings-click')).toBeUndefined()
-      expect(document.body.querySelector('.x-table__column-settings-dialog')).toBeNull()
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('does not open the auto dialog when a custom column-settings-click listener is registered', async () => {
-    const onColumnSettingsClick = vi.fn()
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: true,
-        onColumnSettingsClick
-      }
-    })
-
-    try {
-      await wrapper.find('.x-table__column-settings-button').trigger('click')
-      await nextTick()
-
-      expect(onColumnSettingsClick).toHaveBeenCalledTimes(1)
-      expect(document.body.querySelector('.x-table__column-settings-dialog')).toBeNull()
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('updates column settings from the built-in dialog controls', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: true,
-        columnSettingsDialog: true
-      }
-    })
-
-    const dataTransfer = {
-      dropEffect: '',
-      effectAllowed: '',
-      setData: vi.fn()
-    }
-
-    function dispatchDrag(element: Element, type: string, clientY = 0) {
-      const event = new Event(type, { bubbles: true, cancelable: true }) as DragEvent
-      Object.defineProperty(event, 'dataTransfer', { value: dataTransfer })
-      Object.defineProperty(event, 'clientY', { value: clientY })
-      element.dispatchEvent(event)
-    }
-
-    type TestColumnSetting = {
-      key: string
-      hidden?: boolean
-      fixed?: string
-      align?: string
-      widthRatio?: number
-      width?: number
-      order?: number
-    }
-
-    function getLastColumnSettingsUpdate() {
-      const events = wrapper.emitted('update:columnSettings') ?? []
-      return events[events.length - 1]?.[0] as TestColumnSetting[]
-    }
-
-    try {
-      await wrapper.find('.x-table__column-settings-button').trigger('click')
-      await nextTick()
-
-      const rows = () => Array.from(document.body.querySelectorAll('.x-table__column-settings-row'))
-      const findSettingRow = (label: string) => rows().find((row) => row.textContent?.includes(label)) as Element
-      const statusVisibleInput = rows()[1].querySelector('.x-table__column-settings-visible .x-checkbox__native') as HTMLInputElement
-      statusVisibleInput.dispatchEvent(new Event('change', { bubbles: true }))
-      await nextTick()
-
-      let settings = getLastColumnSettingsUpdate()
-      expect(settings.find((setting) => setting.key === 'status')?.hidden).toBe(true)
-
-      const fixedRightButton = rows()[0].querySelector('.x-table__column-settings-radio-group--button .x-radio-button[data-value="right"]') as HTMLElement
-      fixedRightButton.click()
-      await nextTick()
-
-      settings = getLastColumnSettingsUpdate()
-      expect(settings.find((setting) => setting.key === 'name')?.fixed).toBe('right')
-
-      const alignCenterButton = document.body.querySelector('.x-table__column-settings-radio-group--button .x-radio-button[data-name="x-table-align-name"][data-value="center"]') as HTMLElement
-      alignCenterButton.click()
-      await nextTick()
-
-      settings = getLastColumnSettingsUpdate()
-      expect(settings.find((setting) => setting.key === 'name')?.align).toBe('center')
-
-      const nameRow = rows().find((row) => row.textContent?.includes('名称')) as Element
-      const nameNumberInputs = nameRow.querySelectorAll('.x-table__column-settings-number input')
-      ;(nameNumberInputs[0] as HTMLInputElement).value = '35'
-      nameNumberInputs[0].dispatchEvent(new Event('input', { bubbles: true }))
-      ;(nameNumberInputs[1] as HTMLInputElement).value = '240'
-      nameNumberInputs[1].dispatchEvent(new Event('input', { bubbles: true }))
-      await nextTick()
-
-      settings = getLastColumnSettingsUpdate()
-      expect(settings.find((setting) => setting.key === 'name')).toMatchObject({ widthRatio: 35, width: 240 })
-
-      const fixedNoneButton = document.body.querySelector('.x-table__column-settings-radio-group--button .x-radio-button[data-name="x-table-fixed-name"][data-value="none"]') as HTMLElement
-      fixedNoneButton.click()
-      await nextTick()
-
-      dispatchDrag(findSettingRow('数量'), 'dragstart')
-      dispatchDrag(findSettingRow('名称'), 'dragover', -1)
-      dispatchDrag(findSettingRow('名称'), 'drop')
-      await nextTick()
-
-      settings = getLastColumnSettingsUpdate()
-      const orderedKeys = [...settings].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((setting) => setting.key)
-      expect(orderedKeys).toEqual(['count', 'name', 'status'])
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('moves column settings to the first or last position from the built-in dialog', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: true,
-        columnSettingsDialog: true
-      }
-    })
-
-    type TestColumnSetting = {
-      key: string
-      order?: number
-    }
-
-    function getLastColumnSettingsUpdate() {
-      const events = wrapper.emitted('update:columnSettings') ?? []
-      return events[events.length - 1]?.[0] as TestColumnSetting[]
-    }
-
-    function getUpdateCount() {
-      return wrapper.emitted('update:columnSettings')?.length ?? 0
-    }
-
-    function orderedKeys(settings: TestColumnSetting[]) {
-      return [...settings].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((setting) => setting.key)
-    }
-
-    function findSettingRow(label: string) {
-      return Array.from(document.body.querySelectorAll('.x-table__column-settings-row'))
-        .find((row) => row.textContent?.includes(label)) as Element
-    }
-
-    function clickEdgeButton(row: Element, label: '置顶' | '置底') {
-      const button = Array.from(row.querySelectorAll('.x-table__column-settings-edge-button'))
-        .find((item) => item.textContent?.includes(label)) as HTMLButtonElement
-      button.click()
-    }
-
-    try {
-      await wrapper.find('.x-table__column-settings-button').trigger('click')
-      await nextTick()
-
-      clickEdgeButton(findSettingRow('状态'), '置顶')
-      await nextTick()
-      expect(orderedKeys(getLastColumnSettingsUpdate())).toEqual(['status', 'name', 'count'])
-
-      const updateCountAfterMoveFirst = getUpdateCount()
-      clickEdgeButton(findSettingRow('状态'), '置顶')
-      await nextTick()
-      expect(getUpdateCount()).toBe(updateCountAfterMoveFirst)
-
-      clickEdgeButton(findSettingRow('状态'), '置底')
-      await nextTick()
-      expect(orderedKeys(getLastColumnSettingsUpdate())).toEqual(['name', 'count', 'status'])
-
-      const updateCountAfterMoveLast = getUpdateCount()
-      clickEdgeButton(findSettingRow('状态'), '置底')
-      await nextTick()
-      expect(getUpdateCount()).toBe(updateCountAfterMoveLast)
-    } finally {
-      cleanup()
-    }
-  })
-
-  it('resets column settings from the built-in dialog footer', async () => {
-    const { wrapper, cleanup } = mountWithHost({
-      props: {
-        columns,
-        data,
-        showColumnSettings: true,
-        columnSettingsDialog: true,
-        columnSettings: [
-          { key: 'status', order: 0, hidden: true, fixed: 'left', align: 'center', width: 200 },
-          { key: 'name', order: 1, fixed: 'none', align: 'right', widthRatio: 40 },
-          { key: 'count', order: 2, fixed: 'right', align: 'left', width: 160 }
-        ]
-      }
-    })
-
-    try {
-      await wrapper.find('.x-table__column-settings-button').trigger('click')
-      await nextTick()
-
-      const resetButton = Array.from(document.body.querySelectorAll('.x-table__column-settings-footer-button'))
-        .find((button) => button.textContent?.includes('恢复默认')) as HTMLButtonElement
-      resetButton.click()
-      await nextTick()
-
-      const events = wrapper.emitted('update:columnSettings') ?? []
-      const settings = events[events.length - 1]?.[0] as Array<{
-        key: string
-        order?: number
-        hidden?: boolean
-        fixed?: string
-        align?: string
-        width?: number
-        widthRatio?: number
-      }>
-      expect(settings).toEqual([
-        { key: 'name', order: 0, hidden: false, fixed: 'none', align: 'left', width: undefined, widthRatio: undefined },
-        { key: 'status', order: 1, hidden: false, fixed: 'none', align: 'left', width: 120, widthRatio: undefined },
-        { key: 'count', order: 2, hidden: false, fixed: 'none', align: 'right', width: 96, widthRatio: undefined }
-      ])
-    } finally {
-      cleanup()
-    }
-  })
-
   it('pins full height regions to stable grid rows', () => {
     const source = readTableSource()
     const fullHeightBodyRule = getCssRule(source, '.x-table.is-fill-height .x-table__body')
@@ -1200,24 +646,23 @@ describe('XTable', () => {
     expect(source).toContain('  min-height: 0;\n}\n\n.x-table.is-fill-height > .x-table__top {')
     expect(source).toContain('.x-table.is-fill-height > .x-table__top {\n  grid-row: 1;')
     expect(source).toContain('.x-table.is-fill-height > .x-table__viewport {\n  grid-row: 2;')
-    expect(source).toContain('.x-table.is-fill-height > .x-table__bottom {\n  grid-row: 3;')
     expect(fullHeightBodyRule).toContain('display: flex;')
     expect(fullHeightBodyRule).toContain('flex-direction: column;')
     expect(fullHeightBodyRule).toContain('min-height: 100%;')
     expect(fullHeightSummaryRule).toContain('margin-top: auto;')
   })
 
-  it('keeps table section spacing independent from component size', () => {
+  it('keeps table top padding independent from component size', () => {
     const source = readTableSource()
     const rootRule = getCssRule(source, '.x-table')
-    const sectionRule = getCssRule(source, '.x-table__top,\n.x-table__bottom')
+    const topRule = getCssRule(source, '\n.x-table__top')
 
-    expect(rootRule).toContain('--x-table-section-gap: 8px;')
     expect(rootRule).toContain('--x-table-section-padding-y: 8px;')
-    expect(rootRule).toContain('row-gap: var(--x-table-section-gap);')
-    expect(sectionRule).toContain('padding: var(--x-table-cell-padding, 0 8px);')
-    expect(sectionRule).toContain('padding-block: var(--x-table-section-padding-y);')
-    expect(sectionRule.indexOf('padding-block')).toBeGreaterThan(sectionRule.indexOf('padding: var(--x-table-cell-padding'))
+    expect(rootRule).not.toContain('--x-table-section-gap')
+    expect(rootRule).not.toContain('row-gap: var(--x-table-section-gap);')
+    expect(topRule).toContain('padding: var(--x-table-cell-padding, 0 8px);')
+    expect(topRule).toContain('padding-block: var(--x-table-section-padding-y);')
+    expect(topRule.indexOf('padding-block')).toBeGreaterThan(topRule.indexOf('padding: var(--x-table-cell-padding'))
   })
 
   it('keeps row height scoped to table cells instead of controls', () => {
@@ -1628,7 +1073,7 @@ describe('XTable', () => {
     expect(menuItems[1].attributes('disabled')).toBeUndefined()
   })
 
-  it('enables row context actions only while editable and pagination is disabled', async () => {
+  it('enables row context actions only while editable', async () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
@@ -1651,12 +1096,6 @@ describe('XTable', () => {
     expect(menuItems[2].attributes('disabled')).toBeUndefined()
     expect(menuItems[3].attributes('disabled')).toBeUndefined()
     expect(menuItems[4].attributes('disabled')).toBeUndefined()
-
-    await wrapper.setProps({ showPagination: true })
-    menuItems = wrapper.findAll('.x-table__context-menu-item')
-    expect(menuItems[2].attributes('disabled')).toBeDefined()
-    expect(menuItems[3].attributes('disabled')).toBeDefined()
-    expect(menuItems[4].attributes('disabled')).toBeDefined()
   })
 
   it('adds and inserts empty rows from the context menu', async () => {
@@ -2243,58 +1682,6 @@ describe('XTable', () => {
     expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('40px 80px')
 
     window.dispatchEvent(new MouseEvent('pointerup'))
-  })
-
-  it('exposes column setting controls through top slot', async () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data
-      },
-      slots: {
-        top: `
-          <template #default="{ columnSettings, updateColumnSetting }">
-            <span class="settings-count">{{ columnSettings.length }}</span>
-            <button class="set-align" @click="updateColumnSetting('name', { align: 'center' })">设置</button>
-          </template>
-        `
-      }
-    })
-
-    expect(wrapper.find('.settings-count').text()).toBe('3')
-    await wrapper.find('.set-align').trigger('click')
-
-    const events = wrapper.emitted('column-settings-change')
-    expect(events).toBeTruthy()
-    expect(events?.[events.length - 1]?.[0]).toContainEqual(expect.objectContaining({ key: 'name', align: 'center' }))
-  })
-
-  it('reorders column settings from the top slot', async () => {
-    const wrapper = mount(XTable, {
-      props: {
-        columns,
-        data
-      },
-      slots: {
-        top: `
-          <template #default="{ columnSettings, reorderColumnSetting }">
-            <span class="settings-order">{{ columnSettings.map((setting) => setting.key).join(',') }}</span>
-            <button class="reorder-column" @click="reorderColumnSetting('name', 'count', 'after')">排序</button>
-          </template>
-        `
-      }
-    })
-
-    expect(wrapper.find('.settings-order').text()).toBe('name,status,count')
-    await wrapper.find('.reorder-column').trigger('click')
-    await nextTick()
-
-    expect(wrapper.find('.settings-order').text()).toBe('status,count,name')
-    expect(wrapper.findAll('.x-table__cell--header').map((cell) => cell.text())).toEqual(['状态', '数量', '名称'])
-    const emittedSettings = wrapper.emitted('column-settings-change')?.[0]?.[0] as Array<{ key: string; order: number }>
-    expect(emittedSettings.find((setting) => setting.key === 'status')?.order).toBe(0)
-    expect(emittedSettings.find((setting) => setting.key === 'count')?.order).toBe(1)
-    expect(emittedSettings.find((setting) => setting.key === 'name')?.order).toBe(2)
   })
 
   it('renders selection column and emits selected row keys', async () => {

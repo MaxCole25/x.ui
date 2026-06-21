@@ -1,37 +1,82 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const mode = ref('washington')
-const level = ref('p1')
+const mode = ref('default')
+
 const priority = ref('normal')
 
-const radioButtonBasicCode = `<XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
-<XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
-<XRadioButton v-model="mode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
-<XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>`
+const level = ref('middle')
 
-const radioButtonGroupCode = `<XRadioButton v-model="priority" name="priority-button" value="normal">普通</XRadioButton>
-<XRadioButton v-model="priority" name="priority-button" value="urgent">紧急</XRadioButton>
-<XRadioButton v-model="priority" name="priority-button" value="blocked">阻塞</XRadioButton>`
+const radioButtonBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const radioButtonDisabledCode = `<XRadioButton v-model="level" name="level-button" value="p0">P0</XRadioButton>
-<XRadioButton v-model="level" name="level-button" value="p1">P1</XRadioButton>
-<XRadioButton v-model="level" name="level-button" value="p2" disabled>P2 禁用</XRadioButton>`
+const mode = ref('default')
+<\/script>
 
-const radioButtonSizeCode = `<XRadioButton size="sm" model-value="sm" value="sm">小尺寸</XRadioButton>
-<XRadioButton model-value="md" value="md">默认尺寸</XRadioButton>
-<XRadioButton size="lg" model-value="lg" value="lg">大尺寸</XRadioButton>`
+<div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton v-model="mode" name="city-button" value="new-york">New York</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="washington">Washington</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+    <XRadioButton v-model="mode" name="city-button" value="chicago">Chicago</XRadioButton>
+  </div>
+  <p class="x-demo-label">当前值：{{ mode }}</p>`
 
-const radioButtonCustomCode = `<XRadioButton
-  model-value="custom"
-  value="custom"
-  button-color="#7c3aed"
-  button-size="36px"
-  font-size="14px"
-  font-family="Microsoft YaHei, 微软雅黑, sans-serif"
->
-  自定义按钮
-</XRadioButton>`
+const radioButtonGroupCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const priority = ref('normal')
+<\/script>
+
+<div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton v-model="priority" name="priority-button" value="normal">普通</XRadioButton>
+    <XRadioButton v-model="priority" name="priority-button" value="urgent">紧急</XRadioButton>
+    <XRadioButton v-model="priority" name="priority-button" value="blocked">阻塞</XRadioButton>
+  </div>
+  <p class="x-demo-label">当前优先级：{{ priority }}</p>`
+
+const radioButtonDisabledCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const level = ref('middle')
+<\/script>
+
+<div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton v-model="level" name="level-button" value="p0">P0</XRadioButton>
+    <XRadioButton v-model="level" name="level-button" value="p1">P1</XRadioButton>
+    <XRadioButton v-model="level" name="level-button" value="p2" disabled>P2 禁用</XRadioButton>
+  </div>`
+
+const radioButtonSizeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton size="sm" model-value="sm" value="sm">小尺寸</XRadioButton>
+    <XRadioButton model-value="md" value="md">默认尺寸</XRadioButton>
+    <XRadioButton size="lg" model-value="lg" value="lg">大尺寸</XRadioButton>
+  </div>`
+
+const radioButtonCustomCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton
+      model-value="custom"
+      value="custom"
+      button-color="#7c3aed"
+      button-size="36px"
+      font-size="14px"
+      font-family="Microsoft YaHei, 微软雅黑, sans-serif"
+    >
+      自定义按钮
+    </XRadioButton>
+    <XRadioButton
+      model-value="silent"
+      value="silent"
+      button-color="#0f766e"
+    >
+      另一主题
+    </XRadioButton>
+  </div>`
 </script>
 
 # RadioButton 单选按钮

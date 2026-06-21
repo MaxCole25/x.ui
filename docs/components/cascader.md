@@ -2,68 +2,119 @@
 import { ref } from 'vue'
 
 const area = ref(['zhejiang', 'hangzhou'])
-const areaWithAffix = ref(['zhejiang', 'ningbo'])
-const areaParent = ref(['zhejiang'])
-const areaValue = ref(['jiangsu', 'nanjing'])
-const remoteArea = ref([])
 
 const areaOptions = [
-  {
-    label: '浙江',
-    value: 'zhejiang',
-    children: [
-      { label: '杭州', value: 'hangzhou' },
-      { label: '宁波', value: 'ningbo' }
-    ]
-  },
-  {
-    label: '江苏',
-    value: 'jiangsu',
-    children: [{ label: '南京', value: 'nanjing' }]
-  }
+  { label: '浙江', value: 'zhejiang', children: [{ label: '杭州', value: 'hangzhou' }, { label: '宁波', value: 'ningbo' }] },
+  { label: '广东', value: 'guangdong', children: [{ label: '广州', value: 'guangzhou' }, { label: '深圳', value: 'shenzhen' }] }
 ]
 
-const areaFieldNames = { label: 'name', value: 'id', children: 'items' }
+const areaWithAffix = ref(['zhejiang', 'hangzhou'])
 
-const remoteRootOptions = [
-  { name: '浙江', id: 'zhejiang' },
-  { name: '江苏', id: 'jiangsu' }
+const areaParent = ref(['zhejiang'])
+
+const areaValue = ref(['zhejiang', 'hangzhou'])
+
+const remoteArea = ref([])
+
+const areaFieldNames = { label: 'name', value: 'id', children: 'children' }
+
+function queryArea() {
+  return [
+    { name: '浙江', id: 'zhejiang', children: [{ name: '杭州', id: 'hangzhou' }] },
+    { name: '广东', id: 'guangdong', children: [{ name: '深圳', id: 'shenzhen' }] }
+  ]
+}
+
+const cascaderBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const area = ref(['zhejiang', 'hangzhou'])
+
+const areaOptions = [
+  { label: '浙江', value: 'zhejiang', children: [{ label: '杭州', value: 'hangzhou' }, { label: '宁波', value: 'ningbo' }] },
+  { label: '广东', value: 'guangdong', children: [{ label: '广州', value: 'guangzhou' }, { label: '深圳', value: 'shenzhen' }] }
 ]
+<\/script>
 
-const remoteChildrenMap = {
-  zhejiang: [
-    { name: '杭州', id: 'hangzhou' },
-    { name: '宁波', id: 'ningbo' }
-  ],
-  jiangsu: [{ name: '南京', id: 'nanjing' }]
+<div style="width: 280px">
+    <XCascader v-model="area" :options="areaOptions" placeholder="请选择地区" />
+  </div>`
+
+const cascaderAffixCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const areaWithAffix = ref(['zhejiang', 'hangzhou'])
+
+const areaOptions = [
+  { label: '浙江', value: 'zhejiang', children: [{ label: '杭州', value: 'hangzhou' }, { label: '宁波', value: 'ningbo' }] },
+  { label: '广东', value: 'guangdong', children: [{ label: '广州', value: 'guangzhou' }, { label: '深圳', value: 'shenzhen' }] }
+]
+<\/script>
+
+<div style="width: 320px">
+    <XCascader
+      v-model="areaWithAffix"
+      :options="areaOptions"
+      prefix="地区"
+      suffix="必选"
+      clearable
+    />
+  </div>`
+
+const cascaderParentCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const areaParent = ref(['zhejiang'])
+
+const areaOptions = [
+  { label: '浙江', value: 'zhejiang', children: [{ label: '杭州', value: 'hangzhou' }, { label: '宁波', value: 'ningbo' }] },
+  { label: '广东', value: 'guangdong', children: [{ label: '广州', value: 'guangzhou' }, { label: '深圳', value: 'shenzhen' }] }
+]
+<\/script>
+
+<div style="width: 280px">
+    <XCascader v-model="areaParent" :options="areaOptions" change-on-select />
+  </div>`
+
+const cascaderDisplayCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const areaValue = ref(['zhejiang', 'hangzhou'])
+
+const areaOptions = [
+  { label: '浙江', value: 'zhejiang', children: [{ label: '杭州', value: 'hangzhou' }, { label: '宁波', value: 'ningbo' }] },
+  { label: '广东', value: 'guangdong', children: [{ label: '广州', value: 'guangzhou' }, { label: '深圳', value: 'shenzhen' }] }
+]
+<\/script>
+
+<div style="width: 280px">
+    <XCascader v-model="areaValue" :options="areaOptions" display-field="value" />
+  </div>`
+
+const cascaderRemoteCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const remoteArea = ref([])
+
+const areaFieldNames = { label: 'name', value: 'id', children: 'children' }
+
+function queryArea() {
+  return [
+    { name: '浙江', id: 'zhejiang', children: [{ name: '杭州', id: 'hangzhou' }] },
+    { name: '广东', id: 'guangdong', children: [{ name: '深圳', id: 'shenzhen' }] }
+  ]
 }
+<\/script>
 
-const cascaderBasicCode = `<XCascader v-model="area" :options="areaOptions" placeholder="请选择地区" />`
-
-const cascaderAffixCode = `<XCascader
-  v-model="area"
-  :options="areaOptions"
-  prefix="地区"
-  suffix="必选"
-  clearable
-/>`
-
-const cascaderParentCode = `<XCascader v-model="area" :options="areaOptions" change-on-select />`
-
-const cascaderDisplayCode = `<XCascader v-model="area" :options="areaOptions" display-field="value" />`
-
-const cascaderRemoteCode = `<XCascader
-  v-model="area"
-  remote
-  :field-names="areaFieldNames"
-  :remote-method="queryArea"
-  placeholder="请选择地区"
-/>`
-
-function queryArea(option?: { value?: string }) {
-  if (!option?.value) return remoteRootOptions
-  return remoteChildrenMap[option.value as keyof typeof remoteChildrenMap] ?? []
-}
+<div style="width: 280px">
+  <XCascader
+    v-model="remoteArea"
+    remote
+    :field-names="areaFieldNames"
+    :remote-method="queryArea"
+    placeholder="请选择地区"
+  />
+  </div>`
 </script>
 
 # 级联选择器 Cascader

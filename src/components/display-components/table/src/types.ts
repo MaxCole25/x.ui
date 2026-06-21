@@ -4,11 +4,9 @@ export type TableFixed = 'left' | 'right' | 'none'
 export type TableRowKey = string | number
 export type TableReorderPosition = 'before' | 'after'
 export type TableSelectionMode = 'row' | 'cell'
-export type TablePaginationMode = 'client' | 'server'
 export type TableExcelExportMode = 'raw' | 'formatted'
 export type TableSummaryAggregator = 'sum' | 'avg'
 export type TableSummaryScope = 'visible' | 'all'
-export type TableColumnSettingsDialogMode = boolean | 'auto'
 export type TableSortOrder = 'ascending' | 'descending' | null
 
 export interface TableSorter {
@@ -60,35 +58,6 @@ export interface TableColumnSetting {
   align?: TableAlign
   widthRatio?: number
   width?: number
-}
-
-export interface TableTopSlotScope<Row extends Record<string, unknown> = Record<string, unknown>> {
-  columns: TableColumn<Row>[]
-  data: Row[]
-  visibleData: Row[]
-  columnSettings: TableColumnSetting[]
-  selectedRowKeys: string[]
-  selectedCellKeys: string[]
-  pagination: TablePaginationState
-  sorter: TableSorter | null
-  updateColumnSetting: (key: string, setting: Partial<TableColumnSetting>) => void
-  moveColumnSetting: (key: string, direction: 'up' | 'down') => void
-  reorderColumnSetting: (key: string, targetKey: string, position: TableReorderPosition) => void
-  resetColumnSettings: () => void
-  setPage: (page: number) => void
-  setPageSize: (pageSize: number) => void
-}
-
-export interface TablePaginationState {
-  currentPage: number
-  pageSize: number
-  total: number
-  pageCount: number
-  mode: TablePaginationMode
-}
-
-export interface TablePaginationChangePayload extends TablePaginationState {
-  pageSizeChanged?: boolean
 }
 
 export interface TableRowReorderPayload<Row extends Record<string, unknown> = Record<string, unknown>> {
@@ -199,14 +168,7 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   deleteSelectedRowsButtonLabel?: string
   rowDraggable?: boolean
   columnResizable?: boolean
-  showColumnSettings?: boolean
-  columnSettingsDialog?: TableColumnSettingsDialogMode
-  columnSettingsDialogTitle?: string
-  columnSettingsDialogWidth?: number
-  columnSettingsDialogHeight?: number
   panelBackgroundColor?: string
-  topBackgroundColor?: string
-  bottomBackgroundColor?: string
   headerBackgroundColor?: string
   headerTextColor?: string
   bodyBackgroundColor?: string
@@ -225,19 +187,12 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   horizontalBorderWidth?: number | string
   verticalBorderColor?: string
   verticalBorderWidth?: number | string
-  showPagination?: boolean
-  paginationMode?: TablePaginationMode
-  currentPage?: number
-  pageSize?: number
-  total?: number
-  pageSizes?: number[]
   actionsWidth?: number | string
   fullHeight?: boolean
 }
 
 export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>
 export type XlTableColumnSetting = TableColumnSetting
-export type XlTableColumnSettingsDialogMode = TableColumnSettingsDialogMode
 export type XlTableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableAppendRowPayload<Row>
 export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
 export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>
@@ -246,8 +201,6 @@ export type XlTableDirtyChangePayload<Row extends Record<string, unknown> = Reco
 export type XlTableExcelExportMode = TableExcelExportMode
 export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
 export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>
-export type XlTablePaginationChangePayload = TablePaginationChangePayload
-export type XlTablePaginationMode = TablePaginationMode
 export type XlTableRowPatchPayload = TableRowPatchPayload
 export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>
 export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>

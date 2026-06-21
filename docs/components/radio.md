@@ -1,60 +1,107 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const mode = ref('day')
-const buttonMode = ref('washington')
-const level = ref('p1')
+const mode = ref('default')
+
+const buttonMode = ref('day')
+
 const priority = ref('normal')
 
-const radioBasicCode = `<XRadio v-model="mode" name="mode" value="day">日视图</XRadio>
-<XRadio v-model="mode" name="mode" value="week">周视图</XRadio>
-<XRadio v-model="mode" name="mode" value="month">月视图</XRadio>`
+const level = ref('middle')
 
-const radioButtonCode = `<XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
-<XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
-<XRadioButton v-model="buttonMode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
-<XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>`
+const radioBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const radioGroupCode = `<XRadio v-model="priority" name="priority" value="normal">普通</XRadio>
-<XRadio v-model="priority" name="priority" value="urgent">紧急</XRadio>
-<XRadio v-model="priority" name="priority" value="blocked">阻塞</XRadio>`
+const mode = ref('default')
+<\/script>
 
-const radioDisabledCode = `<XRadio v-model="level" name="level" value="p0">P0</XRadio>
-<XRadio v-model="level" name="level" value="p1">P1</XRadio>
-<XRadio v-model="level" name="level" value="p2" disabled>P2 禁用</XRadio>`
+<div class="x-demo-row">
+    <XRadio v-model="mode" name="mode" value="day">日视图</XRadio>
+    <XRadio v-model="mode" name="mode" value="week">周视图</XRadio>
+    <XRadio v-model="mode" name="mode" value="month">月视图</XRadio>
+  </div>
+  <p class="x-demo-label">当前值：{{ mode }}</p>`
 
-const radioSizeCode = `<XRadio size="sm" model-value="sm" value="sm">小尺寸</XRadio>
-<XRadio model-value="md" value="md">默认尺寸</XRadio>
-<XRadio size="lg" model-value="lg" value="lg">大尺寸</XRadio>`
+const radioButtonCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const radioThemeCode = `<XRadio model-value="custom" value="custom" button-color="#7c3aed">
-  主题覆盖
-</XRadio>
+const buttonMode = ref('day')
+<\/script>
 
-<XRadioButton model-value="button" value="button" button-color="#7c3aed">
-  按钮主题
-</XRadioButton>`
+<div style="display: inline-flex; flex-wrap: wrap">
+    <XRadioButton v-model="buttonMode" name="city-button" value="new-york">New York</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="washington">Washington</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="los-angeles">Los Angeles</XRadioButton>
+    <XRadioButton v-model="buttonMode" name="city-button" value="chicago">Chicago</XRadioButton>
+  </div>
+  <p class="x-demo-label">当前值：{{ buttonMode }}</p>`
 
-const radioCustomCode = `<XRadio
-  model-value="custom"
-  value="custom"
-  button-color="#7c3aed"
-  button-size="16px"
-  label-color="#4c1d95"
-  font-size="15px"
-  font-family="SimSun, 宋体, serif"
->
-  自定义外观
-</XRadio>
+const radioGroupCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-<XRadio
-  model-value="silent"
-  value="silent"
-  button-color="#0f766e"
-  label-color="#115e59"
->
-  另一主题
-</XRadio>`
+const priority = ref('normal')
+<\/script>
+
+<div class="x-demo-row">
+    <XRadio v-model="priority" name="priority" value="normal">普通</XRadio>
+    <XRadio v-model="priority" name="priority" value="urgent">紧急</XRadio>
+    <XRadio v-model="priority" name="priority" value="blocked">阻塞</XRadio>
+  </div>
+  <p class="x-demo-label">当前优先级：{{ priority }}</p>`
+
+const radioDisabledCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const level = ref('middle')
+<\/script>
+
+<div class="x-demo-row">
+    <XRadio v-model="level" name="level" value="p0">P0</XRadio>
+    <XRadio v-model="level" name="level" value="p1">P1</XRadio>
+    <XRadio v-model="level" name="level" value="p2" disabled>P2 禁用</XRadio>
+  </div>`
+
+const radioSizeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XRadio size="sm" model-value="sm" value="sm">小尺寸</XRadio>
+    <XRadio model-value="md" value="md">默认尺寸</XRadio>
+    <XRadio size="lg" model-value="lg" value="lg">大尺寸</XRadio>
+  </div>`
+
+const radioThemeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XRadio model-value="custom" value="custom" button-color="#7c3aed">主题覆盖</XRadio>
+    <XRadioButton model-value="button" value="button" button-color="#7c3aed">按钮主题</XRadioButton>
+  </div>`
+
+const radioCustomCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XRadio
+      model-value="custom"
+      value="custom"
+      button-color="#7c3aed"
+      button-size="16px"
+      label-color="#4c1d95"
+      font-size="15px"
+      font-family="SimSun, 宋体, serif"
+    >
+      自定义外观
+    </XRadio>
+    <XRadio
+      model-value="silent"
+      value="silent"
+      button-color="#0f766e"
+      label-color="#115e59"
+    >
+      另一主题
+    </XRadio>
+  </div>`
 </script>
 
 # Radio 单选框

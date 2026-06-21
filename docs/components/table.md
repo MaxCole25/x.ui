@@ -1,112 +1,331 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { TableColumn, TableColumnSetting } from '../../src/components/display-components/table'
 
-const columns: TableColumn[] = [
-  { key: 'name', label: '名称', minWidth: 160 },
-  { key: 'status', label: '状态', width: 120 },
-  { key: 'count', label: '数量', width: 100, align: 'right', formatter: (value) => `${value} 个` }
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
 ]
 
 const rows = ref([
-  { id: 1, name: '工作台', status: '启用', count: 12 },
-  { id: 2, name: '成员管理', status: '停用', count: 5 },
-  { id: 3, name: '权限中心', status: '启用', count: 8 },
-  { id: 4, name: '消息中心', status: '启用', count: 16 }
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
 ])
 
-const selectedRowKeys = ref<(string | number)[]>([])
-const selectedCellKeys = ref<string[]>([])
-const columnSettings: TableColumnSetting[] = [
-  { key: 'name', order: 0, fixed: 'none', align: 'left', width: 220 },
-  { key: 'status', order: 1, fixed: 'none', align: 'center', widthRatio: 25 },
-  { key: 'count', order: 2, fixed: 'none', align: 'right', width: 120 }
+const columnSettings = ref([])
+
+const selectedCellKeys = ref([])
+
+const selectedRowKeys = ref([])
+
+const tableBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
 ]
 
-const tableBasicCode = `<XTable :columns="columns" :data="rows" row-key="id" />`
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
 
-const tableSlotsCode = `<XTable :columns="columns" :data="rows" show-column-settings>
-  <template #top="{ columns, data }">
-    <div class="table-header">
-      <strong>模块列表</strong>
-      <span>列 {{ columns.length }} / 行 {{ data.length }}</span>
-    </div>
-  </template>
-</XTable>`
+<XTable :columns="columns" :data="rows" row-key="id" />`
 
-const tableThemeCode = `<div data-theme="dark">
-  <XTable :columns="columns" :data="rows" show-pagination />
-</div>`
+const tableSlotsCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const tableBrandCode = `<XTable
-  :columns="columns"
-  :data="rows"
-  header-background-color="#172033"
-  body-background-color="#0b1220"
-/>`
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
 
-const tablePaginationCode = `<XTable
-  :columns="columns"
-  :data="rows"
-  show-pagination
-  :page-size="2"
-/>`
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
 
-const tableServerPaginationCode = `<XTable
-  v-model:current-page="page"
-  v-model:page-size="pageSize"
-  :columns="columns"
-  :data="rows"
-  :total="total"
-  show-pagination
-  pagination-mode="server"
-/>`
+<XTable
+      :columns="columns"
+      :data="rows"
+      show-column-settings
+      :column-settings-dialog="false"
+    />`
 
-const tableColumnSettingsCode = `<XTable
-  :columns="columns"
-  :data="rows"
-  show-column-settings
-  :column-settings="columnSettings"
-/>`
+const tableThemeCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const tableCellCode = `<XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="120">
-  <template #cell-name="{ value }">
-    <strong>{{ value }}</strong>
-  </template>
-</XTable>`
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
 
-const tableSelectionCode = `<XTable
-  v-model:selected-cell-keys="selectedCellKeys"
-  :columns="columns"
-  :data="rows"
-  show-selection
-  selection-mode="cell"
-/>`
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
 
-const tableRowDragCode = `<XTable
-  v-model:selected-row-keys="selectedRowKeys"
-  :columns="columns"
-  :data="rows"
-  show-selection
-  row-draggable
-/>`
+<div data-theme="dark" style="padding: 12px; background: #020617; border-radius: 6px">
+      <XTable :columns="columns" :data="rows" show-pagination :page-size="2" />
+    </div>`
 
-const tableEditableCode = `<XTable
-  v-model:data="rows"
-  v-model:selected-row-keys="selectedRowKeys"
-  :columns="columns"
-  editable
-  show-dirty-actions
-  show-selection
-  show-append-row-button
-  show-delete-selected-rows-button
-/>`
+const tableBrandCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const tableFullHeightCode = `<div style="height: 360px">
-  <XTable :columns="columns" :data="rows" full-height />
-</div>`
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
 
-const tableSizeCode = `<XTable :columns="columns" :data="rows" size="sm" :row-height="40" />`
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable
+      :columns="columns"
+      :data="rows"
+      panel-background-color="#111827"
+      header-background-color="#172033"
+      header-text-color="#dbeafe"
+      body-background-color="#0b1220"
+      body-stripe-background-color="#10192c"
+      body-text-color="#e5e7eb"
+      border-color="#334155"
+      viewport-border-color="#64748b"
+      header-divider-color="#38bdf8"
+      row-border-color="#1d4ed8"
+      column-border-color="#7c3aed"
+    />`
+
+const tablePaginationCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable
+      :columns="columns"
+      :data="rows"
+      show-pagination
+      :page-size="2"
+      :page-sizes="[2, 4, 8]"
+    />`
+
+const tableServerPaginationCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable
+      :columns="columns"
+      :data="rows"
+      :total="40"
+      show-pagination
+      pagination-mode="server"
+      :page-size="10"
+    />`
+
+const tableColumnSettingsCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+
+const columnSettings = ref([])
+<\/script>
+
+<XTable
+      :columns="columns"
+      :data="rows"
+      show-column-settings
+      :column-settings="columnSettings"
+      :column-settings-dialog="false"
+    />`
+
+const tableCellCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable :columns="columns" :data="rows" show-actions actions-fixed :actions-width="120" />`
+
+const tableSelectionCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const selectedCellKeys = ref([])
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable
+      v-model:selected-cell-keys="selectedCellKeys"
+      :columns="columns"
+      :data="rows"
+      show-selection
+      selection-mode="cell"
+      selected-cell-background-color="rgba(59, 130, 246, 0.22)"
+      selected-cell-border-color="#60a5fa"
+    />`
+
+const tableRowDragCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const selectedRowKeys = ref([])
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable
+      v-model:selected-row-keys="selectedRowKeys"
+      :columns="columns"
+      :data="rows"
+      show-selection
+      selection-mode="row"
+      row-draggable
+    />`
+
+const tableEditableCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+
+const selectedRowKeys = ref([])
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+<\/script>
+
+<XTable
+      v-model:data="rows"
+      v-model:selected-row-keys="selectedRowKeys"
+      :columns="columns"
+      editable
+      show-dirty-actions
+      show-selection
+      show-append-row-button
+      show-delete-selected-rows-button
+    />`
+
+const tableFullHeightCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<div style="height: 360px">
+      <XTable :columns="columns" :data="rows" full-height />
+    </div>`
+
+const tableSizeCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' },
+  { id: 3, name: '发布准备', status: '已完成', owner: '周三' }
+])
+<\/script>
+
+<XTable :columns="columns" :data="rows" size="sm" :row-height="40" />`
 </script>
 
 # 表格 Table

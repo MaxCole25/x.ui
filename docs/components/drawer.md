@@ -3,11 +3,21 @@ import { ref } from 'vue'
 
 const visible = ref(false)
 
-const drawerBasicCode = `<button type="button" @click="visible = true">打开抽屉</button>
+const drawerBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-<XDrawer v-model="visible" title="配置面板" panel-size="360px">
-  <div>抽屉内容</div>
-</XDrawer>`
+const visible = ref(false)
+<\/script>
+
+<div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="visible = true"
+      >
+        打开抽屉
+      </button><XDrawer v-model="visible" title="配置面板" panel-size="360px"><div class="x-demo-column"><p>抽屉内容</p><p class="x-demo-label">适合承载配置项、详情说明和操作入口。</p></div></XDrawer>
+    </div>`
 </script>
 
 # 抽屉 Drawer

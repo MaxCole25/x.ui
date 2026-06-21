@@ -1,11 +1,17 @@
 <script setup lang="ts">
-const messageServiceCode = `import { XMessage } from 'x.ui'
+const messageServiceCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-XMessage('这是一条消息')
-XMessage.success({ message: '保存成功', showClose: true })
-XMessage.error({ message: '提交失败', duration: 5000 })`
+<div class="x-demo-column" style="max-width: 360px">
+    <XMessageComponent message="这是一条消息" status="info" :duration="0" />
+    <XMessageComponent message="保存成功" status="success" show-close :duration="0" />
+    <XMessageComponent message="提交失败" status="error" show-close :duration="0" />
+  </div>`
 
-const messageComponentCode = `<XMessageComponent message="固定展示的消息" status="info" show-close />`
+const messageComponentCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XMessageComponent message="固定展示的消息" status="info" show-close />`
 </script>
 
 # Message 消息提示

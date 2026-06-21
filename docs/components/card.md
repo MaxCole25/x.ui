@@ -1,24 +1,24 @@
 <script setup lang="ts">
-const cardBasicCode = `<XCard header="卡片标题" footer="底部内容" width="320px">
-  卡片正文
-</XCard>`
+const cardBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const cardSlotCode = `<XCard width="320px" shadow="hover">
-  <template #header>
-    <div style="display: flex; justify-content: space-between; align-items: center">
-      <span>项目概览</span>
-      <XButton width="72px" height="28px">查看</XButton>
-    </div>
-  </template>
+<XCard header="卡片标题" footer="底部内容" width="320px">
+    卡片正文
+  </XCard>`
 
-  <div style="line-height: 1.8">
-    今日新增 12 条任务，3 条需要优先处理。
-  </div>
+const cardSlotCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-  <template #footer>
-    更新时间：09:30
-  </template>
-</XCard>`
+<XCard width="320px" shadow="hover">
+    <template #header>
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span>项目概览</span>
+        <XButton width="72px" height="28px">查看</XButton>
+      </div>
+    </template>
+    <div style="line-height: 1.8">今日新增 12 条任务，3 条需要优先处理。</div>
+    <template #footer>更新时间：09:30</template>
+  </XCard>`
 </script>
 
 # 卡片 Card

@@ -1,86 +1,68 @@
 <script setup lang="ts">
-const flowBasicCode = `<XFlow :items="icons" item-key="id" item-width="72px" :gap="8">
-  <template #default="{ item }">
-    <div class="flow-demo-icon">
-      <XIcon :name="item.name" />
-      <span>{{ item.label }}</span>
-    </div>
-  </template>
-</XFlow>`
+const icons = ['check', 'clock', 'close']
 
-const flowLazyCode = `<XFlow
-  :items="icons"
-  item-key="id"
-  item-width="72px"
-  height="260px"
-  :gap="8"
-  :lazy="true"
-  :initial-count="80"
-  :load-count="40"
->
-  <template #default="{ item }">
-    <div class="flow-demo-icon">
-      <XIcon :name="item.name" />
-      <span>{{ item.label }}</span>
-    </div>
-  </template>
-</XFlow>`
+const flowBasicCode = `\x3Cscript setup lang="ts">
+const icons = ['check', 'clock', 'close']
+<\/script>
 
-const flowThemeCode = `<XFlow
-  :items="icons.slice(0, 12)"
-  item-key="id"
-  item-width="88px"
-  :gap="10"
-  padding="12px"
-  background-color="#f8fafc"
-  border-color="#d8e2e8"
-  :border-width="1"
-  radius="8px"
-  item-background-color="#ffffff"
-  item-border-color="#cbd5e1"
-  :item-border-width="1"
-  item-radius="6px"
-  item-padding="10px"
->
-  <template #default="{ item }">
-    <div class="flow-demo-icon">
-      <XIcon :name="item.name" />
-      <span>{{ item.label }}</span>
-    </div>
-  </template>
-</XFlow>`
+<XFlow :items="icons.slice(0, 20)" item-key="id" item-width="72px" :gap="8">
+    <template #default="{ item }">
+      <div class="flow-demo-icon">
+        <XIcon :name="item.name" />
+        <span>{{ item.label }}</span>
+      </div>
+    </template>
+  </XFlow>`
 
-const iconNames = [
-  'ri-home-4-line',
-  'ri-search-line',
-  'ri-settings-3-line',
-  'ri-user-3-line',
-  'ri-file-list-3-line',
-  'ri-folder-3-line',
-  'ri-download-2-line',
-  'ri-upload-2-line',
-  'ri-delete-bin-6-line',
-  'ri-edit-line',
-  'ri-save-3-line',
-  'ri-star-line',
-  'ri-heart-line',
-  'ri-calendar-line',
-  'ri-time-line',
-  'ri-notification-3-line',
-  'ri-mail-line',
-  'ri-lock-line',
-  'ri-eye-line',
-  'ri-image-line'
-]
+const flowLazyCode = `\x3Cscript setup lang="ts">
+const icons = ['check', 'clock', 'close']
+<\/script>
 
-const icons = Array.from({ length: 240 }, (_, index) => {
-  const name = iconNames[index % iconNames.length]
-  return {
-    name,
-    id: index + 1,
-    label: `图标 ${index + 1}`
-  }
-})
+<XFlow
+    :items="icons"
+    item-key="id"
+    item-width="72px"
+    height="260px"
+    :gap="8"
+    :lazy="true"
+    :initial-count="80"
+    :load-count="40"
+  >
+    <template #default="{ item }">
+      <div class="flow-demo-icon">
+        <XIcon :name="item.name" />
+        <span>{{ item.label }}</span>
+      </div>
+    </template>
+  </XFlow>`
+
+const flowThemeCode = `\x3Cscript setup lang="ts">
+const icons = ['check', 'clock', 'close']
+<\/script>
+
+<XFlow
+    :items="icons.slice(0, 12)"
+    item-key="id"
+    item-width="88px"
+    :gap="10"
+    padding="12px"
+    background-color="#f8fafc"
+    border-color="#d8e2e8"
+    :border-width="1"
+    radius="8px"
+    item-background-color="#ffffff"
+    item-border-color="#cbd5e1"
+    :item-border-width="1"
+    item-radius="6px"
+    item-padding="10px"
+  >
+    <template #default="{ item }">
+      <div class="flow-demo-icon">
+        <XIcon :name="item.name" />
+        <span>{{ item.label }}</span>
+      </div>
+    </template>
+  </XFlow>`
 </script>
 
 # 流式布局 Flow

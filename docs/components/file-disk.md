@@ -1,42 +1,73 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const path = ref('/合同附件')
+const path = ref('/')
+
 const entries = [
-  { id: 'folder-contract', name: '补充协议', type: 'folder', updatedAt: '2026-06-01 10:20' },
-  { id: 'file-contract', name: '销售合同.pdf', type: 'file', extension: 'pdf', size: 245760, updatedAt: '2026-06-02 15:12' },
-  { id: 'file-image', name: '现场照片.png', type: 'file', extension: 'png', size: 98304, updatedAt: '2026-06-02 16:30' }
+  { id: '1', name: '设计稿', type: 'folder' },
+  { id: '2', name: '需求说明.md', type: 'file', size: 2048 }
 ]
 
-const fileDiskBasicCode = `<XFileDisk
-  v-model="path"
-  title="销售单附件"
-  :entries="entries"
-  :permissions="{ read: true, write: true, delete: true, view: true }"
-/>`
+const fileDiskBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const fileDiskPermissionCode = `<XFileDisk
-  :entries="entries"
-  :permissions="{ read: true, write: false, delete: false, view: true }"
-/>`
+const path = ref('/')
 
-const fileDiskThemeCode = `<XFileDisk
-  :entries="entries"
-  background-color="#0f172a"
-  text-color="#e2e8f0"
-  muted-text-color="#94a3b8"
-  border-color="#334155"
-  header-background-color="#111827"
-  toolbar-background-color="#1e293b"
-  item-background-color="#111827"
-  item-hover-background-color="#1e3a5f"
-  item-active-background-color="#155e75"
-  item-active-text-color="#f8fafc"
-  icon-color="#cbd5e1"
-  active-icon-color="#67e8f9"
-  empty-background-color="#111827"
-  drag-over-background-color="rgba(103, 232, 249, 0.14)"
-/>`
+const entries = [
+  { id: '1', name: '设计稿', type: 'folder' },
+  { id: '2', name: '需求说明.md', type: 'file', size: 2048 }
+]
+<\/script>
+
+<div style="height: 420px">
+    <XFileDisk
+      v-model="path"
+      title="销售单附件"
+      :entries="entries"
+      :permissions="{ read: true, write: true, delete: true, view: true }"
+    />
+  </div>`
+
+const fileDiskPermissionCode = `\x3Cscript setup lang="ts">
+const entries = [
+  { id: '1', name: '设计稿', type: 'folder' },
+  { id: '2', name: '需求说明.md', type: 'file', size: 2048 }
+]
+<\/script>
+
+<div style="height: 360px">
+      <XFileDisk
+        :entries="entries"
+        :permissions="{ read: true, write: false, delete: false, view: true }"
+      />
+    </div>`
+
+const fileDiskThemeCode = `\x3Cscript setup lang="ts">
+const entries = [
+  { id: '1', name: '设计稿', type: 'folder' },
+  { id: '2', name: '需求说明.md', type: 'file', size: 2048 }
+]
+<\/script>
+
+<div style="height: 360px">
+      <XFileDisk
+        :entries="entries"
+        background-color="#0f172a"
+        text-color="#e2e8f0"
+        muted-text-color="#94a3b8"
+        border-color="#334155"
+        header-background-color="#111827"
+        toolbar-background-color="#1e293b"
+        item-background-color="#111827"
+        item-hover-background-color="#1e3a5f"
+        item-active-background-color="#155e75"
+        item-active-text-color="#f8fafc"
+        icon-color="#cbd5e1"
+        active-icon-color="#67e8f9"
+        empty-background-color="#111827"
+        drag-over-background-color="rgba(103, 232, 249, 0.14)"
+      />
+    </div>`
 </script>
 
 # 文件磁盘 FileDisk

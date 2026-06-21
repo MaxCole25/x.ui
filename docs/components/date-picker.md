@@ -1,29 +1,63 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const date = ref('2026-06-03')
-const deliveryDate = ref('2026-05-06')
-const markedDate = ref('2026-05-06')
-const customFestivals = {
-  '2026-05-06': { name: '纪念日', type: 'custom' as const }
-}
+const date = ref('2026-06-18')
 
-const datePickerBasicCode = `<XDatePicker v-model="date" />`
+const deliveryDate = ref('2026-06-18')
 
-const datePickerInputCode = `<XDatePicker
-  v-model="date"
-  size="lg"
-  clearable
-  prefix="交付日期"
-  active-border-color="#1264f4"
-/>`
+const markedDate = ref('2026-06-18')
 
-const datePickerFestivalCode = `<XDatePicker
-  v-model="date"
-  :festivals="{
-    '2026-05-06': { name: '纪念日', type: 'custom' }
-  }"
-/>`
+const customFestivals = [{ date: '2026-06-18', label: '发布日' }]
+
+const datePickerBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const date = ref('2026-06-18')
+<\/script>
+
+<div class="x-demo-column">
+      <div style="width: 240px">
+        <XDatePicker v-model="date" />
+      </div>
+      <p class="x-demo-label">当前日期：{{ date || '暂无' }}</p>
+    </div>`
+
+const datePickerInputCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const deliveryDate = ref('2026-06-18')
+<\/script>
+
+<div class="x-demo-column">
+      <div style="width: 320px">
+        <XDatePicker
+          v-model="deliveryDate"
+          size="lg"
+          clearable
+          prefix="交付日期"
+          active-border-color="#1264f4"
+        />
+      </div>
+      <p class="x-demo-label">当前日期：{{ deliveryDate || '暂无' }}</p>
+    </div>`
+
+const datePickerFestivalCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const markedDate = ref('2026-06-18')
+
+const customFestivals = [{ date: '2026-06-18', label: '发布日' }]
+<\/script>
+
+<div class="x-demo-column">
+      <div style="width: 260px">
+        <XDatePicker
+          v-model="markedDate"
+          :festivals="customFestivals"
+        />
+      </div>
+      <p class="x-demo-label">当前日期：{{ markedDate || '暂无' }}</p>
+    </div>`
 </script>
 
 # 日期选择器 DatePicker

@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const jsonText = ref(`{
-  "name": "x.ui",
-  "version": "0.1.0",
-  "features": ["components", "docs", "stories"]
-}`)
+const jsonText = ref('{\n  "name": "x.ui"\n}')
 
-const jsonEditorBasicCode = `<XJsonEditor v-model="jsonText" />`
+const jsonEditorBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const jsonText = ref('{\n  "name": "x.ui"\n}')
+<\/script>
+
+<div style="max-width: 720px">
+      <XJsonEditor v-model="jsonText" />
+    </div>`
 </script>
 
 # JSON编辑器 JsonEditor

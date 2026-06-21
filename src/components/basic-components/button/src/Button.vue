@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'solid',
   size: undefined,
   width: 120,
-  liftOnHover: true,
+  liftOnHover: false,
   disabled: false,
   loading: false
 })

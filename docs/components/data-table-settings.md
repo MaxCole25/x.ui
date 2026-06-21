@@ -1,37 +1,52 @@
 <script setup lang="ts">
 const tableSettingsAdapter = {
-  loadTables: () => [
-    {
-      tableKey: 'sales_order',
-      label: '销售订单',
-      physicalTableName: 'sales_order',
-      modelName: 'SalesOrder',
-      businessKeys: [{ key: 'orderNo', label: '订单号' }]
-    }
-  ],
-  loadColumns: () => [
-    { key: 'orderNo', label: '订单号', displayType: 'text', editType: 'input', keyType: 'primary', sortOrder: 1 },
-    { key: 'customerName', label: '客户名称', displayType: 'text', editType: 'autocomplete', sortOrder: 2 },
-    { key: 'status', label: '状态', displayType: 'tag', editType: 'select', dataSourceKey: 'order_status', sortOrder: 3 }
-  ],
-  loadSettings: () => [],
-  loadDataSources: () => [{ key: 'order_status', label: '订单状态', valueCount: 4 }],
-  saveSettings: (_table, rows) => ({ saved: rows.length })
+  async load() {
+    return []
+  },
+  async save(settings) {
+    console.log('保存列设置', settings)
+  }
 }
 
-const dataTableSettingsBasicCode = `<XDataTableSettings :adapter="adapter" height="100%" />`
+const dataTableSettingsBasicCode = `\x3Cscript setup lang="ts">
+const tableSettingsAdapter = {
+  async load() {
+    return []
+  },
+  async save(settings) {
+    console.log('保存列设置', settings)
+  }
+}
+<\/script>
 
-const dataTableSettingsThemeCode = `<XDataTableSettings
-  :adapter="adapter"
-  background-color="#ffffff"
-  text-color="#0f172a"
-  border-color="#d7e3f0"
-  header-background-color="#f3f7fb"
-  header-text-color="#0f172a"
-  control-border-color="#cbd5e1"
-  save-button-background-color="#1264f4"
-  save-button-text-color="#ffffff"
-/>`
+<div style="height: 420px">
+      <XDataTableSettings :adapter="tableSettingsAdapter" height="100%" />
+    </div>`
+
+const dataTableSettingsThemeCode = `\x3Cscript setup lang="ts">
+const tableSettingsAdapter = {
+  async load() {
+    return []
+  },
+  async save(settings) {
+    console.log('保存列设置', settings)
+  }
+}
+<\/script>
+
+<div style="height: 420px">
+      <XDataTableSettings
+        :adapter="tableSettingsAdapter"
+        background-color="#ffffff"
+        text-color="#0f172a"
+        border-color="#d7e3f0"
+        header-background-color="#f3f7fb"
+        header-text-color="#0f172a"
+        control-border-color="#cbd5e1"
+        save-button-background-color="#1264f4"
+        save-button-text-color="#ffffff"
+      />
+    </div>`
 </script>
 
 # 数据表设置 DataTableSettings

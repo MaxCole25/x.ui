@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const count = ref(12)
+const count = ref(1)
 
-const inputNumberBasicCode = `<XInputNumber v-model="count" :min="0" :max="99" :step="3" />`
+const inputNumberBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const count = ref(1)
+<\/script>
+
+<div class="x-demo-column" style="width: 240px">
+    <XInputNumber v-model="count" :min="0" :max="99" :step="3" />
+    <p class="x-demo-label">当前值：{{ count }}</p>
+  </div>`
 </script>
 
 # 数字输入框 InputNumber

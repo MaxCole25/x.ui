@@ -1,12 +1,27 @@
 <script setup lang="ts">
-const avatarBasicCode = `<XAvatar name="UX" />
-<XAvatar name="王小明" size="lg" />`
+const avatarBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const avatarIconCode = `<XAvatar icon="user" />
-<XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />`
+<div class="x-demo-row">
+    <XAvatar name="UX" />
+    <XAvatar name="王小明" size="lg" />
+  </div>`
 
-const avatarBorderCode = `<XAvatar name="边框" border-width="2px" border-color="#0f172a" />
-<XAvatar name="方形" shape="square" avatar-background-color="#1264f4" />`
+const avatarIconCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XAvatar icon="user" />
+    <XAvatar icon="user" icon-variant="fill" icon-full icon-color="#fff" />
+  </div>`
+
+const avatarBorderCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XAvatar name="边框" border-width="2px" border-color="#0f172a" />
+    <XAvatar name="方形" shape="square" avatar-background-color="#1264f4" />
+  </div>`
 </script>
 
 # 头像 Avatar

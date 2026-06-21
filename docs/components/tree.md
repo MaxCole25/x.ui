@@ -1,47 +1,82 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const currentKey = ref('doc-1')
-const treeData = ref([
-  {
-    id: 'group-1',
-    label: '产品文档',
-    type: 'group',
-    children: [
-      { id: 'doc-1', label: '组件规范', type: 'document', authorDisplayName: '张三' },
-      { id: 'doc-2', label: '验收清单', type: 'document', authorDisplayName: '李四' }
-    ]
-  },
-  {
-    id: 'group-2',
-    label: '项目成员',
-    type: 'group',
-    children: [
-      { id: 'user-1', rawId: 1001, label: '王小明', type: 'user', authorId: 1001 }
-    ]
-  }
-])
+const treeData = [
+  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
+  { key: 'components', label: '组件' }
+]
 
-const treeBasicCode = `<XTree :tree-data="treeData" :current-tree-key="currentKey" @nodeClick="onNodeClick" />`
+const currentKey = ref('docs')
 
-const treeExtraCode = `<XTree
-  :tree-data="treeData"
-  :current-tree-key="currentKey"
-  @nodeExtraClick="onNodeExtraClick"
->
-  <template #nodeExtra="{ node }">
-    <button type="button">{{ node.authorDisplayName || '操作' }}</button>
-  </template>
-</XTree>`
+const authorDisplayName = '林一'
 
-const treeContextCode = `<XTree
-  :tree-data="treeData"
-  :context-menu-items="({ node }) => [
-    { action: 'new-root', label: '增加根节点' },
-    { action: 'new-child', label: '新建节点', disabled: !node },
-    { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
-  ]"
-/>`
+const authorUserName = 'linyi'
+
+const treeBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const treeData = [
+  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
+  { key: 'components', label: '组件' }
+]
+
+const currentKey = ref('docs')
+<\/script>
+
+<div style="width: 320px">
+      <XTree
+        :tree-data="treeData"
+        :current-tree-key="currentKey"
+        @nodeClick="(node) => { currentKey = String(node.id) }"
+      />
+    </div>`
+
+const treeExtraCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const treeData = [
+  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
+  { key: 'components', label: '组件' }
+]
+
+const currentKey = ref('docs')
+
+const authorDisplayName = '林一'
+
+const authorUserName = 'linyi'
+<\/script>
+
+<div style="width: 320px">
+      <XTree
+        :tree-data="treeData"
+        :current-tree-key="currentKey"
+        @nodeExtraClick="(node) => { currentKey = String(node.id) }"
+      >
+        <template #nodeExtra="{ node }">
+          <button type="button" style="border: 0; background: transparent; color: #2563eb; cursor: pointer; font: inherit; padding: 0">
+            {{ node.authorDisplayName || node.authorUserName || '操作' }}
+          </button>
+        </template>
+      </XTree>
+    </div>`
+
+const treeContextCode = `\x3Cscript setup lang="ts">
+const treeData = [
+  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
+  { key: 'components', label: '组件' }
+]
+<\/script>
+
+<div style="width: 320px">
+      <XTree
+        :tree-data="treeData"
+        :context-menu-items="({ node }) => [
+          { action: 'new-root', label: '增加根节点' },
+          { action: 'new-child', label: '新建节点', disabled: !node },
+          { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
+        ]"
+      />
+    </div>`
 </script>
 
 # 树目录 Tree

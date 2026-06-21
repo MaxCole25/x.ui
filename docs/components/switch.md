@@ -2,31 +2,72 @@
 import { ref } from 'vue'
 
 const enabled = ref(true)
+
 const notice = ref(false)
 
-const switchBasicCode = `<XSwitch v-model="enabled" />`
+const switchBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const switchTextCode = `<XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />`
+const enabled = ref(true)
+<\/script>
 
-const switchLabelPositionCode = `<XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
-<XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />`
+<div class="x-demo-row">
+    <XSwitch v-model="enabled" />
+    <span class="x-demo-label">当前值：{{ enabled }}</span>
+  </div>`
 
-const switchSizeCode = `<XSwitch size="sm" model-value />
-<XSwitch model-value />
-<XSwitch size="lg" model-value />`
+const switchTextCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const switchDisabledCode = `<XSwitch disabled />
-<XSwitch model-value disabled />`
+const notice = ref(false)
+<\/script>
 
-const switchThemeCode = `<XSwitch
-  model-value
-  checked-color="#1264f4"
-  inactive-color="#dcdfe6"
-  thumb-color="#ffffff"
-  button-size="20"
-  font-size="15"
-  font-family="Arial, sans-serif"
-/>`
+<div class="x-demo-row">
+    <XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />
+  </div>`
+
+const switchLabelPositionCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const notice = ref(false)
+<\/script>
+
+<div class="x-demo-row">
+    <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
+    <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />
+  </div>`
+
+const switchSizeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XSwitch size="sm" model-value />
+    <XSwitch model-value />
+    <XSwitch size="lg" model-value />
+  </div>`
+
+const switchDisabledCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XSwitch disabled />
+    <XSwitch model-value disabled />
+  </div>`
+
+const switchThemeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-row">
+    <XSwitch
+      model-value
+      checked-color="#1264f4"
+      inactive-color="#dcdfe6"
+      thumb-color="#ffffff"
+      button-size="20"
+      font-size="15"
+      font-family="Arial, sans-serif"
+    />
+  </div>`
 </script>
 
 # Switch 开关

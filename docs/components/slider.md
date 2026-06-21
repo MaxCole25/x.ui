@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const value = ref(36)
-const verticalValue = ref(64)
+const verticalValue = ref(40)
 
-const sliderBasicCode = `<XSlider v-model="value" show-value />`
-const sliderVerticalCode = `<XSlider v-model="verticalValue" vertical show-value />`
+const sliderBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-demo-column" style="width: 320px">
+    <XSlider v-model="value" show-value />
+  </div>`
+
+const sliderVerticalCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const verticalValue = ref(40)
+<\/script>
+
+<div class="x-demo-column" style="height: 200px">
+    <XSlider v-model="verticalValue" vertical show-value />
+  </div>`
 </script>
 
 # 滑块 Slider

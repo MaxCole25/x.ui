@@ -16,7 +16,8 @@ const props = withDefaults(defineProps<TextProps>(), {
   tag: 'span',
   truncated: false,
   disabled: false,
-  autoHeight: false
+  autoHeight: false,
+  verticalAlign: 'middle'
 })
 
 const attrs = useAttrs()
@@ -35,6 +36,12 @@ const hasValue = computed(() => textValue.value !== '')
 const mergedVariant = computed(() => props.variant ?? 'default')
 const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'size' in instance.vnode.props))
 const sizePreset = computed(() => props.size === 'title' ? null : componentSizePreset[props.size])
+const verticalAlignMap = {
+  top: 'flex-start',
+  middle: 'center',
+  bottom: 'flex-end'
+} as const
+const toCssLineHeight = (value?: number | string) => (typeof value === 'number' ? String(value) : value)
 
 const textStyle = computed(() => ({
   ...createElementStyleVars(props),
@@ -44,10 +51,12 @@ const textStyle = computed(() => ({
   '--x-text-color': props.textColor,
   '--x-text-font-family': props.fontFamily,
   '--x-text-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value?.fontSize) : toCssSize(props.fontSize),
+  '--x-text-line-height': toCssLineHeight(props.lineHeight),
   '--x-text-height': props.autoHeight ? 'auto' : hasExplicitSize.value ? toCssSize(sizePreset.value?.height) : toCssSize(props.height),
   '--x-text-padding': hasExplicitSize.value ? sizePreset.value?.padding : toCssSize(props.padding),
   '--x-text-radius': hasExplicitSize.value ? sizePreset.value?.radius : props.radius,
-  '--x-text-align': props.textAlign
+  '--x-text-align': props.textAlign,
+  '--x-text-vertical-align': verticalAlignMap[props.verticalAlign]
 }))
 </script>
 

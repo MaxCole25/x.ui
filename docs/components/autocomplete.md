@@ -2,58 +2,131 @@
 import { ref } from 'vue'
 
 const keyword = ref('')
-const city = ref('')
-const cityValue = ref('')
-const customerId = ref<string | number>('')
-const customerKeyword = ref('')
-const remoteCity = ref('')
+
+const city = ref('shanghai')
 
 const cities = [
   { label: '上海', value: 'shanghai' },
-  { label: '深圳', value: 'shenzhen' },
-  { label: '杭州', value: 'hangzhou' }
+  { label: '杭州', value: 'hangzhou' },
+  { label: '深圳', value: 'shenzhen' }
 ]
 
-const customerOptions = ref([
-  { label: '南通某客户', value: 456 },
-  { label: '上海示例客户', value: 1024 }
-])
+const customerId = ref('u-001')
 
-const remoteCities = [
-  { name: '上海', id: 'shanghai' },
-  { name: '深圳', id: 'shenzhen' },
-  { name: '杭州', id: 'hangzhou' }
+const customerKeyword = ref('')
+
+const customerOptions = [
+  { label: '张三', value: 'u-001' },
+  { label: '李四', value: 'u-002' }
 ]
+
+const cityValue = ref('shanghai')
+
+const remoteCity = ref('')
 
 const cityFieldNames = { label: 'name', value: 'id' }
 
-const autocompleteBasicCode = `<XAutocomplete v-model="keyword" placeholder="请输入关键词" clearable />`
-
-const autocompleteOptionsCode = `<XAutocomplete v-model="city" :options="cities" placeholder="请选择城市" />`
-
-const autocompleteSeparatedCode = `<XAutocomplete
-  v-model="customerId"
-  v-model:input-value="customerKeyword"
-  :options="customerOptions"
-  :value-on-input="false"
-  placeholder="请输入ID或名称"
-/>`
-
-const autocompleteDisplayCode = `<XAutocomplete v-model="city" :options="cities" display-field="value" placeholder="显示城市 id" />`
-
-const autocompleteRemoteCode = `<XAutocomplete
-  v-model="city"
-  remote
-  :field-names="cityFieldNames"
-  :remote-method="queryCity"
-  :remote-debounce="300"
-  :remote-min-length="1"
-  placeholder="输入城市关键词"
-/>`
-
-function queryCity(keyword: string) {
-  return remoteCities.filter((item) => item.name.includes(keyword) || item.id.includes(keyword))
+function queryCity() {
+  return [
+    { name: '上海', id: 'shanghai' },
+    { name: '杭州', id: 'hangzhou' }
+  ]
 }
+
+const autocompleteBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const keyword = ref('')
+<\/script>
+
+<div style="width: 240px">
+    <XAutocomplete v-model="keyword" placeholder="请输入关键词" clearable />
+  </div>`
+
+const autocompleteOptionsCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const city = ref('shanghai')
+
+const cities = [
+  { label: '上海', value: 'shanghai' },
+  { label: '杭州', value: 'hangzhou' },
+  { label: '深圳', value: 'shenzhen' }
+]
+<\/script>
+
+<div style="width: 240px">
+    <XAutocomplete v-model="city" :options="cities" placeholder="请选择城市" />
+  </div>`
+
+const autocompleteSeparatedCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const customerId = ref('u-001')
+
+const customerKeyword = ref('')
+
+const customerOptions = [
+  { label: '张三', value: 'u-001' },
+  { label: '李四', value: 'u-002' }
+]
+<\/script>
+
+<div class="x-demo-column">
+    <div style="width: 280px">
+      <XAutocomplete
+        v-model="customerId"
+        v-model:input-value="customerKeyword"
+        :options="customerOptions"
+        :value-on-input="false"
+        placeholder="请输入ID或名称"
+      />
+    </div>
+    <p class="x-demo-label">当前值：{{ customerId || '暂无' }}，输入文本：{{ customerKeyword || '暂无' }}</p>
+  </div>`
+
+const autocompleteDisplayCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const cityValue = ref('shanghai')
+
+const cities = [
+  { label: '上海', value: 'shanghai' },
+  { label: '杭州', value: 'hangzhou' },
+  { label: '深圳', value: 'shenzhen' }
+]
+<\/script>
+
+<div style="width: 240px">
+    <XAutocomplete v-model="cityValue" :options="cities" display-field="value" placeholder="显示城市 id" />
+  </div>`
+
+const autocompleteRemoteCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const remoteCity = ref('')
+
+const cityFieldNames = { label: 'name', value: 'id' }
+
+function queryCity() {
+  return [
+    { name: '上海', id: 'shanghai' },
+    { name: '杭州', id: 'hangzhou' }
+  ]
+}
+<\/script>
+
+<div style="width: 280px">
+  <XAutocomplete
+    v-model="remoteCity"
+    remote
+    :field-names="cityFieldNames"
+    :remote-method="queryCity"
+    :remote-debounce="300"
+    :remote-min-length="1"
+    placeholder="输入城市关键词"
+  />
+  </div>`
 </script>
 
 # 自动补全输入框 Autocomplete

@@ -1,21 +1,49 @@
 <script setup lang="ts">
-import IconGallery from '../.vitepress/components/IconGallery.vue'
+const iconBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const iconBasicCode = `<XIcon name="home" />
-<XIcon name="search" />
-<XIcon name="add" />`
+<div class="x-icon-preview-row">
+    <XIcon name="home"></XIcon>
+    <XIcon name="search"></XIcon>
+    <XIcon name="add"></XIcon>
+    <XIcon name="edit"></XIcon>
+    <XIcon name="delete"></XIcon>
+  </div>`
 
-const iconVariantCode = `<XIcon name="home" variant="line" />
-<XIcon name="home" variant="fill" />
-<XIcon name="settings-3-line" />`
+const iconVariantCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const iconSizeCode = `<XIcon name="search" size="lg" color="#1264f4" />
-<XIcon name="loading" :icon-size="24" spin title="加载中" />`
+<div class="x-icon-preview-row">
+    <XIcon name="home" variant="line" size="lg"></XIcon>
+    <XIcon name="home" variant="fill" size="lg"></XIcon>
+    <XIcon name="settings-3-line" size="lg"></XIcon>
+    <XIcon name="settings-3-fill" size="lg"></XIcon>
+  </div>`
 
-const iconOffsetCode = `<XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px" />
-<XIcon name="information-line" color="red" icon-size="14px" offset-y="1px" />`
+const iconSizeCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const iconAccessibilityCode = `<XIcon name="notification-3" title="通知" />`
+<div class="x-icon-preview-row">
+    <XIcon name="search" size="sm"></XIcon>
+    <XIcon name="search" size="md"></XIcon>
+    <XIcon name="search" size="lg"></XIcon>
+    <XIcon name="loading" :icon-size="24" color="#1264f4" spin title="加载中"></XIcon>
+  </div>`
+
+const iconOffsetCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-icon-preview-row">
+    <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="-1px"></XIcon></span>
+    <span>提示 <XIcon name="information-line" color="red" icon-size="14px" offset-y="1px"></XIcon></span>
+  </div>`
+
+const iconAccessibilityCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<div class="x-icon-preview-row">
+    <XIcon name="notification-3" title="通知" />
+  </div>`
 </script>
 
 # 图标 Icon

@@ -1,5 +1,18 @@
 import DefaultTheme from 'vitepress/theme'
-import { defineAsyncComponent } from 'vue'
+import { XBadge } from '../../../src/components/display-components/badge'
+import { XCollapse } from '../../../src/components/display-components/collapse'
+import { XDescriptions } from '../../../src/components/display-components/descriptions'
+import { XProgress } from '../../../src/components/display-components/progress'
+import { XSkeleton } from '../../../src/components/display-components/skeleton'
+import { XStatistic } from '../../../src/components/display-components/statistic'
+import { XUpload } from '../../../src/components/form-components/upload'
+import { XBreadcrumb } from '../../../src/components/navigation-components/breadcrumb'
+import { XPagination } from '../../../src/components/navigation-components/pagination'
+import { XSteps } from '../../../src/components/navigation-components/steps'
+import { XAlert } from '../../../src/components/feedback-components/alert'
+import { XNotificationComponent } from '../../../src/components/feedback-components/notification'
+import { XPopover } from '../../../src/components/feedback-components/popover'
+import { XPopconfirm } from '../../../src/components/feedback-components/popconfirm'
 import { XButton } from '../../../src/components/basic-components/button'
 import { XButtonGroup } from '../../../src/components/basic-components/button-group'
 import { XBaseInput } from '../../../src/components/basic-components/base-input'
@@ -9,6 +22,7 @@ import { XDivider } from '../../../src/components/basic-components/divider'
 import { XFlow, XFlowItem } from '../../../src/components/basic-components/flow'
 import { XGrid, XGridItem } from '../../../src/components/basic-components/grid'
 import { XIcon } from '../../../src/components/basic-components/icon'
+import { XIconSelect } from '../../../src/components/form-components/icon-select'
 import { XLayout } from '../../../src/components/basic-components/layout'
 import { XScrollbar } from '../../../src/components/basic-components/scrollbar'
 import { XText } from '../../../src/components/basic-components/text'
@@ -22,6 +36,7 @@ import { XDatePickerPanel } from '../../../src/components/form-components/date-p
 import { XDateTimePicker } from '../../../src/components/form-components/date-time-picker'
 import { XInput } from '../../../src/components/form-components/input'
 import { XInputNumber } from '../../../src/components/form-components/input-number'
+import { XTextarea } from '../../../src/components/form-components/textarea'
 import { XRadio, XRadioButton } from '../../../src/components/form-components/radio'
 import { XOption, XSelect } from '../../../src/components/form-components/select'
 import { XSlider } from '../../../src/components/form-components/slider'
@@ -37,6 +52,8 @@ import { XTable } from '../../../src/components/display-components/table'
 import { XTag } from '../../../src/components/display-components/tag'
 import { XTree } from '../../../src/components/display-components/tree'
 import { XDropdown } from '../../../src/components/navigation-components/dropdown'
+import { XDropdownItem } from '../../../src/components/navigation-components/dropdown-item'
+import { XDropdownMenu } from '../../../src/components/navigation-components/dropdown-menu'
 import { XNavMenu } from '../../../src/components/navigation-components/nav-menu'
 import { XTabs } from '../../../src/components/navigation-components/tabs'
 import { XDialog } from '../../../src/components/feedback-components/dialog'
@@ -47,6 +64,7 @@ import { XMessageBoxComponent } from '../../../src/components/feedback-component
 import { XTooltip } from '../../../src/components/feedback-components/tooltip'
 import { XFileDisk } from '../../../src/components/other-components/file-disk'
 import { XDataTableSettings } from '../../../src/components/other-components/data-table-settings'
+import { XTableColumnSettings } from '../../../src/components/other-components/table-column-settings'
 import { XJsonEditor } from '../../../src/components/other-components/json-editor'
 import { XLogin } from '../../../src/components/other-components/login'
 import { XRichTextEditor } from '../../../src/components/other-components/rich-text-editor'
@@ -59,6 +77,21 @@ import '../theme.css'
 export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
+    app.component(XBadge.name!, XBadge)
+    app.component(XCollapse.name!, XCollapse)
+    app.component(XDescriptions.name!, XDescriptions)
+    app.component(XProgress.name!, XProgress)
+    app.component(XSkeleton.name!, XSkeleton)
+    app.component(XStatistic.name!, XStatistic)
+    app.component(XUpload.name!, XUpload)
+    app.component(XBreadcrumb.name!, XBreadcrumb)
+    app.component(XPagination.name!, XPagination)
+    app.component(XSteps.name!, XSteps)
+    app.component(XAlert.name!, XAlert)
+    app.component(XNotificationComponent.name!, XNotificationComponent)
+    app.component('XNotificationComponent', XNotificationComponent)
+    app.component(XPopover.name!, XPopover)
+    app.component(XPopconfirm.name!, XPopconfirm)
     app.component(XButton.name!, XButton)
     app.component(XButtonGroup.name!, XButtonGroup)
     app.component(XBaseInput.name!, XBaseInput)
@@ -71,10 +104,12 @@ export default {
     app.component(XGrid.name!, XGrid)
     app.component(XGridItem.name!, XGridItem)
     app.component(XIcon.name!, XIcon)
+    app.component(XIconSelect.name!, XIconSelect)
     app.component(XLayout.name!, XLayout)
     app.component(XScrollbar.name!, XScrollbar)
     app.component(XText.name!, XText)
     app.component(XInput.name!, XInput)
+    app.component(XTextarea.name!, XTextarea)
     app.component(XAutocomplete.name!, XAutocomplete)
     app.component(XCascader.name!, XCascader)
     app.component(XCheckbox.name!, XCheckbox)
@@ -102,6 +137,8 @@ export default {
     app.component(XTag.name!, XTag)
     app.component(XTree.name!, XTree)
     app.component(XDropdown.name!, XDropdown)
+    app.component(XDropdownItem.name!, XDropdownItem)
+    app.component(XDropdownMenu.name!, XDropdownMenu)
     app.component(XNavMenu.name!, XNavMenu)
     app.component(XTabs.name!, XTabs)
     app.component(XDialog.name!, XDialog)
@@ -114,12 +151,9 @@ export default {
     app.component(XTooltip.name!, XTooltip)
     app.component(XFileDisk.name!, XFileDisk)
     app.component(XDataTableSettings.name!, XDataTableSettings)
+    app.component(XTableColumnSettings.name!, XTableColumnSettings)
     app.component(XJsonEditor.name!, XJsonEditor)
     app.component(XLogin.name!, XLogin)
-    app.component(
-      'XPageBuilder',
-      defineAsyncComponent(() => import('../../../src/components/other-components/page-builder').then((mod) => mod.XPageBuilder))
-    )
     app.component(XRichTextEditor.name!, XRichTextEditor)
     app.component('ButtonPlayground', ButtonPlayground)
     app.component('IconGallery', IconGallery)

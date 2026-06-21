@@ -1,24 +1,33 @@
 <script setup lang="ts">
-const scrollingTextBasicCode = `<XScrollingText width="280px">
-  系统公告：今日 18:00 将进行例行维护。
-</XScrollingText>`
+const scrollingTextBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const scrollingTextVerticalCode = `<XScrollingText display-direction="vertical" flow-direction="up" height="96px">
-  任务已提交，正在等待处理。
-</XScrollingText>`
+<XScrollingText width="280px">
+    系统公告：今日 18:00 将进行例行维护。
+  </XScrollingText>`
 
-const scrollingTextThemeCode = `<XScrollingText
-  display-direction="horizontal"
-  flow-direction="right"
-  width="320px"
-  :speed="60"
-  font-family="Arial, sans-serif"
-  font-size="14px"
-  text-color="#ffffff"
-  background-color="#1264f4"
->
-  x.ui 支持滚动速度、字体样式、字体大小、字体颜色和背景色配置。
-</XScrollingText>`
+const scrollingTextVerticalCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XScrollingText display-direction="vertical" flow-direction="up" height="96px">
+    任务已提交，正在等待处理。
+  </XScrollingText>`
+
+const scrollingTextThemeCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XScrollingText
+    display-direction="horizontal"
+    flow-direction="right"
+    width="320px"
+    :speed="60"
+    font-family="Arial, sans-serif"
+    font-size="14px"
+    text-color="#ffffff"
+    background-color="#1264f4"
+  >
+    x.ui 支持滚动速度、字体样式、字体大小、字体颜色和背景色配置。
+  </XScrollingText>`
 </script>
 
 # 滚动文字 ScrollingText

@@ -1,55 +1,122 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const activeKey = ref('dashboard')
 const menuItems = [
-  { key: 'dashboard', label: '控制台', icon: 'dashboard' },
-  {
-    key: 'system',
-    label: '系统管理',
-    icon: 'settings-3',
-    children: [
-      { key: 'user', label: '用户管理', icon: 'user' },
-      { key: 'role', label: '角色管理', icon: 'shield-user' }
-    ]
-  },
-  {
-    key: 'content',
-    label: '内容中心',
-    icon: 'file-list',
-    children: [
-      { key: 'article', label: '文章管理', icon: 'article' },
-      { key: 'comment', label: '评论管理', icon: 'message-3' }
-    ]
-  }
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
 ]
 
-const navMenuBasicCode = `<XNavMenu :items="items" :active-key="activeKey" mode="vertical" @select="(key) => (activeKey = key)" />`
+const activeKey = ref('dashboard')
 
-const navMenuStyleCode = `<XNavMenu
-  :items="items"
-  :item-radius="6"
-  :submenu-item-radius="4"
-  :show-submenu-arrow="true"
-  submenu-arrow-icon="ri-arrow-right-s-line"
-/>`
+const navMenuBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-const navMenuScrollCode = `<XNavMenu
-  :items="items"
-  active-key="role"
-  mode="vertical"
-  scrollable
-  :max-height="180"
-/>`
+const menuItems = [
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
+]
 
-const navMenuSidebarCode = `<aside class="demo-sidebar">
-  <div class="demo-sidebar__brand">x.ui Admin</div>
-  <XNavMenu :items="items" :active-key="activeKey" scrollable accordion />
-</aside>`
+const activeKey = ref('dashboard')
+<\/script>
 
-const navMenuHiddenCode = `<XNavMenu :items="items" :active-key="activeKey" mode="vertical" hidden />`
+<div style="width: 240px">
+      <XNavMenu
+        :items="menuItems"
+        :active-key="activeKey"
+        mode="vertical"
+        @select="(key) => { activeKey = key }"
+      />
+    </div>`
 
-const navMenuAccordionCode = `<XNavMenu :items="items" active-key="role" mode="vertical" accordion />`
+const navMenuStyleCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const menuItems = [
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
+]
+
+const activeKey = ref('dashboard')
+<\/script>
+
+<div style="width: 240px">
+      <XNavMenu
+        :items="menuItems"
+        :active-key="activeKey"
+        :item-radius="6"
+        :submenu-item-radius="4"
+        :show-submenu-arrow="true"
+        submenu-arrow-icon="ri-arrow-right-s-line"
+      />
+    </div>`
+
+const navMenuScrollCode = `\x3Cscript setup lang="ts">
+const menuItems = [
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
+]
+<\/script>
+
+<div style="width: 240px">
+      <XNavMenu
+        :items="menuItems"
+        active-key="role"
+        mode="vertical"
+        scrollable
+        :max-height="180"
+      />
+    </div>`
+
+const navMenuSidebarCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const menuItems = [
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
+]
+
+const activeKey = ref('dashboard')
+<\/script>
+
+<aside style="width: 240px; height: 260px; overflow: hidden; border: 1px solid var(--x-color-border); border-radius: 6px">
+      <div style="height: 48px; line-height: 48px; padding: 0 16px; font-weight: 600">x.ui Admin</div>
+      <XNavMenu
+        :items="menuItems"
+        :active-key="activeKey"
+        mode="vertical"
+        scrollable
+        max-height="212px"
+        accordion
+        @select="(key) => { activeKey = key }"
+      />
+    </aside>`
+
+const navMenuHiddenCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const menuItems = [
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
+]
+
+const activeKey = ref('dashboard')
+<\/script>
+
+<div style="width: 240px; min-height: 48px; border: 1px dashed var(--x-color-border); padding: 10px">
+      <XNavMenu :items="menuItems" :active-key="activeKey" mode="vertical" hidden />
+      <span class="x-demo-label">菜单已隐藏，但组件状态仍保留。</span>
+    </div>`
+
+const navMenuAccordionCode = `\x3Cscript setup lang="ts">
+const menuItems = [
+  { key: 'dashboard', label: '工作台' },
+  { key: 'settings', label: '设置' }
+]
+<\/script>
+
+<div style="width: 240px">
+      <XNavMenu :items="menuItems" active-key="role" mode="vertical" accordion />
+    </div>`
 </script>
 
 # 菜单 NavMenu

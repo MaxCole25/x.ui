@@ -61,7 +61,9 @@ function fallbackCopy(text: string) {
     </div>
 
     <div class="x-doc-demo__preview">
-      <slot />
+      <ClientOnly>
+        <slot />
+      </ClientOnly>
     </div>
 
     <div v-if="normalizedCode" class="x-doc-demo__toolbar">

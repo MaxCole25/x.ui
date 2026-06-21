@@ -2,21 +2,40 @@
 import { ref } from 'vue'
 
 const serviceVisible = ref(false)
+
 const visible = ref(false)
 
-const messageBoxServiceCode = `import { XMessageBox } from 'x.ui'
+const messageBoxServiceCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-XMessageBox.alert('操作成功', '提示')
+const serviceVisible = ref(false)
+<\/script>
 
-XMessageBox.confirm('删除后不可恢复，是否继续？', '删除确认', {
-  status: 'warning',
-  confirmButtonText: '删除',
-  cancelButtonText: '取消'
-})`
+<div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="serviceVisible = true"
+      >
+        模拟服务调用
+      </button><XMessageBoxComponent v-model="serviceVisible" title="删除确认" message="删除后不可恢复，是否继续？" status="warning" show-cancel-button confirm-button-text="删除" cancel-button-text="取消" :close-on-mask-click="false" />
+    </div>`
 
-const messageBoxComponentCode = `<button type="button" @click="visible = true">打开弹框</button>
+const messageBoxComponentCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
 
-<XMessageBoxComponent v-model="visible" title="提示" message="确认继续吗？" show-cancel-button />`
+const visible = ref(false)
+<\/script>
+
+<div>
+      <button
+        type="button"
+        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
+        @click="visible = true"
+      >
+        打开弹框
+      </button><XMessageBoxComponent v-model="visible" title="提示" message="确认继续吗？" show-cancel-button />
+    </div>`
 </script>
 
 # MessageBox 消息弹框

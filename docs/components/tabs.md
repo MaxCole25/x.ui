@@ -8,17 +8,66 @@ const items = ref([
   { name: 'settings', label: '设置', disabled: true }
 ])
 
-const tabsBasicCode = `<XTabs v-model="active" :items="items" closable>
+const tabsBasicCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const active = ref('overview')
+const items = ref([
+  { name: 'overview', label: '总览', locked: true },
+  { name: 'members', label: '成员', closable: true },
+  { name: 'settings', label: '设置', disabled: true }
+])
+<\/script>
+
+<XTabs v-model="active" :items="items" closable>
   <template #pane="{ item }">
     当前页签：{{ item.label }}
   </template>
 </XTabs>`
 
-const tabsVariantCode = `<XTabs v-model="active" :items="items" variant="line" />
+const tabsVariantCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const active = ref('overview')
+const items = ref([
+  { name: 'overview', label: '总览', locked: true },
+  { name: 'members', label: '成员', closable: true },
+  { name: 'settings', label: '设置', disabled: true }
+])
+<\/script>
+
+<XTabs v-model="active" :items="items" variant="line" />
 <XTabs v-model="active" :items="items" variant="card" />
 <XTabs v-model="active" :items="items" variant="border-card" />`
 
-const tabsEditableCode = `<XTabs
+const tabsEditableCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const active = ref('overview')
+const items = ref([
+  { name: 'overview', label: '总览', locked: true },
+  { name: 'members', label: '成员', closable: true },
+  { name: 'settings', label: '设置', disabled: true }
+])
+
+function createTab() {
+  const nextIndex = items.value.length + 1
+  const name = 'tab-' + nextIndex
+  items.value.push({ name, label: '页签 ' + nextIndex, closable: true })
+  active.value = name
+}
+
+function removeTab(name: string) {
+  const index = items.value.findIndex((item) => item.name === name)
+  if (index === -1) return
+  items.value.splice(index, 1)
+  if (active.value === name) {
+    active.value = items.value[index - 1]?.name ?? items.value[0]?.name ?? ''
+  }
+}
+<\/script>
+
+<XTabs
   v-model="active"
   :items="items"
   addable
@@ -27,14 +76,33 @@ const tabsEditableCode = `<XTabs
   @tab-remove="removeTab"
 />`
 
-const tabsDraggableCode = `<XTabs
+const tabsDraggableCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const active = ref('overview')
+const items = ref([
+  { name: 'overview', label: '总览', locked: true },
+  { name: 'members', label: '成员', closable: true },
+  { name: 'settings', label: '设置', disabled: true }
+])
+
+function moveTab(payload: { source: string; target: string; position: 'before' | 'after' }) {
+  const sourceIndex = items.value.findIndex((item) => item.name === payload.source)
+  const targetIndex = items.value.findIndex((item) => item.name === payload.target)
+  if (sourceIndex === -1 || targetIndex === -1) return
+  const [source] = items.value.splice(sourceIndex, 1)
+  const insertIndex = payload.position === 'before' ? targetIndex : targetIndex + 1
+  items.value.splice(insertIndex > sourceIndex ? insertIndex - 1 : insertIndex, 0, source)
+}
+<\/script>
+
+<XTabs
   v-model="active"
   :items="items"
   draggable
   @reorder="moveTab"
 />`
 </script>
-
 # 标签页 Tabs
 
 `XTabs` 是用于多页签内容切换的容器组件，支持关闭、新增、拖拽排序、懒渲染、右键菜单、四向布局和自定义标签内容。

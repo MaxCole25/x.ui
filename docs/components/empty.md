@@ -1,9 +1,15 @@
 <script setup lang="ts">
-const emptyBasicCode = `<XEmpty description="暂无数据" action-text="刷新" @action="reload" />`
+const emptyBasicCode = `\x3Cscript setup lang="ts">
+<\/script>
 
-const emptySlotCode = `<XEmpty description="还没有成员">
-  <XButton variant="outline">邀请成员</XButton>
-</XEmpty>`
+<XEmpty description="暂无数据" action-text="刷新" />`
+
+const emptySlotCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XEmpty description="还没有成员">
+    <XButton variant="outline">邀请成员</XButton>
+  </XEmpty>`
 </script>
 
 # 空状态 Empty

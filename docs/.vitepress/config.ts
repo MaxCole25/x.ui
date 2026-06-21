@@ -46,6 +46,8 @@ export default defineConfig({
             text: 'Form 组件',
             items: [
               { text: '输入框 Input', link: '/components/input' },
+              { text: '多行输入框 Textarea', link: '/components/textarea' },
+              { text: '上传 Upload', link: '/components/upload' },
               { text: '自动补全 Autocomplete', link: '/components/autocomplete' },
               { text: '级联选择 Cascader', link: '/components/cascader' },
               { text: '多选框 Checkbox', link: '/components/checkbox' },
@@ -54,6 +56,7 @@ export default defineConfig({
               { text: '日期选择器面板 DatePickerPanel', link: '/components/date-picker-panel' },
               { text: '日期选择器 DatePicker', link: '/components/date-picker' },
               { text: '日期时间选择器 DateTimePicker', link: '/components/date-time-picker' },
+              { text: '图标选择面板 IconSelect', link: '/components/icon-select' },
               { text: '数字输入框 InputNumber', link: '/components/input-number' },
               { text: '单选框 Radio', link: '/components/radio' },
               { text: '单选按钮 RadioButton', link: '/components/radio-button' },
@@ -71,6 +74,12 @@ export default defineConfig({
               { text: '头像 Avatar', link: '/components/avatar' },
               { text: '图表 Chart', link: '/components/chart' },
               { text: '空状态 Empty', link: '/components/empty' },
+              { text: '徽标 Badge', link: '/components/badge' },
+              { text: '折叠面板 Collapse', link: '/components/collapse' },
+              { text: '描述列表 Descriptions', link: '/components/descriptions' },
+              { text: '进度条 Progress', link: '/components/progress' },
+              { text: '骨架屏 Skeleton', link: '/components/skeleton' },
+              { text: '统计数值 Statistic', link: '/components/statistic' },
               { text: '滚动文字 ScrollingText', link: '/components/scrolling-text' },
               { text: '表格 Table', link: '/components/table' },
               { text: '标签 Tag', link: '/components/tag' },
@@ -81,6 +90,11 @@ export default defineConfig({
             text: '导航组件',
             items: [
               { text: '下拉菜单 Dropdown', link: '/components/dropdown' },
+              { text: '下拉菜单容器 DropdownMenu', link: '/components/dropdown-menu' },
+              { text: '下拉菜单项 DropdownItem', link: '/components/dropdown-item' },
+              { text: '面包屑 Breadcrumb', link: '/components/breadcrumb' },
+              { text: '分页 Pagination', link: '/components/pagination' },
+              { text: '步骤条 Steps', link: '/components/steps' },
               { text: '菜单 NavMenu', link: '/components/nav-menu' },
               { text: '标签页 Tabs', link: '/components/tabs' }
             ]
@@ -90,6 +104,10 @@ export default defineConfig({
             items: [
               { text: '弹窗 Dialog', link: '/components/dialog' },
               { text: '抽屉 Drawer', link: '/components/drawer' },
+              { text: '提示 Alert', link: '/components/alert' },
+              { text: '通知 Notification', link: '/components/notification' },
+              { text: '气泡卡片 Popover', link: '/components/popover' },
+              { text: '气泡确认 Popconfirm', link: '/components/popconfirm' },
               { text: '加载 Loading', link: '/components/loading' },
               { text: '消息提示 Message', link: '/components/message' },
               { text: '消息弹框 MessageBox', link: '/components/message-box' },
@@ -101,9 +119,9 @@ export default defineConfig({
             items: [
               { text: '文件磁盘 FileDisk', link: '/components/file-disk' },
               { text: '数据表设置 DataTableSettings', link: '/components/data-table-settings' },
+              { text: '表格列设置 TableColumnSettings', link: '/components/table-column-settings' },
               { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' },
               { text: '登录 Login', link: '/components/login' },
-              { text: '页面构建器 PageBuilder', link: '/components/page-builder' },
               { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' }
             ]
           }
