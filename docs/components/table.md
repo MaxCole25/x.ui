@@ -289,6 +289,23 @@ const columns = [
       show-delete-selected-rows-button
     />`
 
+const tableEditableAutoCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const rows = ref([
+  { id: 1, name: '需求评审', status: '进行中', owner: '林一' },
+  { id: 2, name: '视觉验收', status: '待处理', owner: '陈二' }
+])
+
+const columns = [
+  { key: 'name', label: '名称' },
+  { key: 'status', label: '状态' },
+  { key: 'owner', label: '负责人' }
+]
+<\/script>
+
+<XTable :columns="columns" :data="rows" editable />`
+
 const tableFullHeightCode = `\x3Cscript setup lang="ts">
 import { ref } from 'vue'
 
@@ -566,7 +583,9 @@ const rows = ref([
 
 开启 `editable` 后，单元格编辑提交会先形成脏单元格标记，并通过 `cell-change`、`dirty-change` 抛出变化；不会自动保存到后端。开启 `show-dirty-actions` 后，表顶会显示保存修改、标记已保存、撤销修改三个图标按钮。保存按钮会触发 `save` 事件，业务侧可在保存成功后调用 `clearDirtyChanges()` 清除脏标记；撤销按钮会调用 `resetDirtyChanges()` 恢复旧值。
 
-还可以通过 `show-append-row-button` 和 `show-delete-selected-rows-button` 在表顶显示内置行操作图标按钮。`新建行数据` 会在末尾追加一行空数据；`删除选择行` 会删除左侧选择列勾选的行。两个操作都会通过 `update:data` 抛出最新数据，适合和 `v-model:data` 搭配使用。为避免分页数据和全量数据不一致，开启分页时按钮会禁用。
+可编辑数据默认使用 `editable-data-strategy="auto"`。严格受控场景推荐继续使用 `v-model:data`；简单场景如果传入的是响应式数组，也可以只写 `:data="rows"`，组件会在没有外部 `update:data` 监听时尽量把编辑结果回写到原数组。需要完全保持旧行为时，可以设置 `editable-data-strategy="emit"`；需要强制原地回写时，可以设置 `editable-data-strategy="mutate"`。无论哪种策略，组件都会继续触发 `update:data`。
+
+还可以通过 `show-append-row-button` 和 `show-delete-selected-rows-button` 在表顶显示内置行操作图标按钮。`新建行数据` 会在末尾追加一行空数据；`删除选择行` 会删除左侧选择列勾选的行。两个操作都会按 `editableDataStrategy` 提交最新数据，并继续通过 `update:data` 抛出结果。为避免分页数据和全量数据不一致，开启分页时按钮会禁用。
 
 <XDocDemo title="可编辑行工具栏" :code="tableEditableCode">
   <ClientOnly>
@@ -580,6 +599,12 @@ const rows = ref([
       show-append-row-button
       show-delete-selected-rows-button
     />
+  </ClientOnly>
+</XDocDemo>
+
+<XDocDemo title="响应式 data 简单回写" :code="tableEditableAutoCode">
+  <ClientOnly>
+    <XTable :columns="columns" :data="rows" editable />
   </ClientOnly>
 </XDocDemo>
 
@@ -661,6 +686,7 @@ body,
 | showSelection | 表格是否可选 | `boolean` | `false` |
 | showSelectionColumn | 是否显示左侧选择行列，可和单元格选择同时使用 | `boolean` | `true` |
 | editable | 表格是否可编辑，开启后行选模式下点击普通单元格不再选中行 | `boolean` | `false` |
+| editableDataStrategy | `editable` 数据回写策略；`auto` 会在外部监听 `update:data` 时只抛事件，否则尽量回写原数组 | `'auto' \| 'emit' \| 'mutate'` | `'auto'` |
 | showDirtyActions | `editable` 时是否在表顶显示保存、标记已保存和撤销修改图标按钮 | `boolean` | `false` |
 | showAppendRowButton | `editable` 时是否在表顶显示新建行数据图标按钮 | `boolean` | `false` |
 | showDeleteSelectedRowsButton | `editable` 时是否在表顶显示删除选择行图标按钮 | `boolean` | `false` |
@@ -751,7 +777,7 @@ body,
 | selection-change | 选中行变化时触发，包含选中 key 和行数据 | `{ keys, rows }` |
 | update:selectedCellKeys | 选中单元格变化时触发 | `string[]` |
 | cell-selection-change | 选中单元格变化时触发，包含选中 key 和单元格数据 | `{ keys, cells }` |
-| update:data | 单元格编辑提交后触发，支持 `v-model:data` | `Record<string, unknown>[]` |
+| update:data | 可编辑数据变化后触发，覆盖单元格编辑、粘贴、行操作、撤销脏数据和 Excel 导入，支持 `v-model:data` | `Record<string, unknown>[]` |
 | cell-change | 单元格编辑提交后触发，包含当前行、全量行、列和值变化 | `TableCellChangePayload` |
 | dirty-change | 脏单元格变化时触发，包含全部脏单元格、当前数据和脏行 | `TableDirtyChangePayload` |
 | save | 点击保存修改按钮或调用 `save()` 时触发，业务侧决定如何落库 | `TableSavePayload` |
@@ -804,10 +830,10 @@ body,
 - 开启 `show-selection` 后，检查行选、单元格点击选择、Tab / Shift+Tab 横向移动选区、Ctrl/Command 多选、拖拽框选、手柄调整选区、选择行列勾选和已选数量是否正确；再开启 `editable`，确认普通单元格点击不会切换行选，只能通过选择列勾选行，双击单元格或选中单元格后直接输入字符都可以进入编辑并提交新值。
 - 开启 `row-draggable` 后，从拖拽列拖拽数据行，检查拖拽高亮和排序结果是否正确；从普通单元格开始拖动不应触发行排序。
 - 开启 `show-column-settings` 后，点击表顶列设置图标按钮，在 `XDialog` 弹窗中检查列名拖拽排序、置顶、置底、左/右冻结、对齐、比例宽度和 px 宽度是否生效；滚动列设置列表时，检查列表内容不会叠加在列头上。
-- 在数据单元格右键菜单中检查复制、粘贴启用条件和 `Ctrl+C`、`Ctrl+V` 快捷键文案；开启单元格选择后复制选区，开启 `editable` 后从剪贴板粘贴多行多列内容，确认 `v-model:data` 得到更新。
-- 在未开启分页且开启 `editable` 时，通过右键菜单和 `Ctrl+I`、`Ctrl+U`、`Ctrl+D` 检查 `增加行`、`向上插入行`、`向下插入行` 是否能更新 `v-model:data`；开启分页后这三项应禁用。
-- 开启 `show-append-row-button` 和 `show-delete-selected-rows-button` 后，检查表顶图标按钮只在 `editable` 时显示；追加行应更新 `v-model:data`，删除选择行应根据左侧选择列勾选结果删除并清空选择。
-- 在数据单元格右键菜单中分别检查 `适合宽度` 和 `适应宽度`，并用 `Ctrl+W` 检查 `适合宽度` 快捷键；确认后者会把表头文字宽度也纳入列宽计算；分别导出默认表格数据和格式化文字，确认 `formatter` 列导出内容符合预期；开启 `editable` 后导入 Excel，确认菜单可用且 `v-model:data` 得到更新。
+- 在数据单元格右键菜单中检查复制、粘贴启用条件和 `Ctrl+C`、`Ctrl+V` 快捷键文案；开启单元格选择后复制选区，开启 `editable` 后从剪贴板粘贴多行多列内容，确认 `v-model:data` 或默认 `auto` 策略下的响应式 `:data` 得到更新。
+- 在未开启分页且开启 `editable` 时，通过右键菜单和 `Ctrl+I`、`Ctrl+U`、`Ctrl+D` 检查 `增加行`、`向上插入行`、`向下插入行` 是否能更新 `v-model:data` 或默认 `auto` 策略下的响应式 `:data`；开启分页后这三项应禁用。
+- 开启 `show-append-row-button` 和 `show-delete-selected-rows-button` 后，检查表顶图标按钮只在 `editable` 时显示；追加行应更新当前数据源，删除选择行应根据左侧选择列勾选结果删除并清空选择。
+- 在数据单元格右键菜单中分别检查 `适合宽度` 和 `适应宽度`，并用 `Ctrl+W` 检查 `适合宽度` 快捷键；确认后者会把表头文字宽度也纳入列宽计算；分别导出默认表格数据和格式化文字，确认 `formatter` 列导出内容符合预期；开启 `editable` 后导入 Excel，确认菜单可用且数据源得到更新。
 - 在窄容器中检查横向滚动和文本截断效果。
 - 开启 `full-height` 后，检查父容器高度变化时表格是否撑满，数据区域是否在内部滚动。
 

@@ -13,6 +13,7 @@ import type {
   TableColumnResizePayload,
   TableColumnSetting,
   TableDirtyChangePayload,
+  TableEditableDataStrategy,
   TableRowClickPayload,
   TableRowReorderPayload,
   TableSavePayload,
@@ -78,6 +79,7 @@ const parentState = reactive({
   actionsWidth: 160,
   showSelectionColumn: true,
   editable: false,
+  editableDataStrategy: 'auto' as TableEditableDataStrategy,
   showDirtyActions: false,
   columnResizable: true,
   selectionMode: 'row' as TableSelectionMode,
@@ -202,12 +204,20 @@ function updateSelectionMode(value: string | number | boolean) {
   parentState.selectionMode = value as TableSelectionMode
 }
 
+function updateEditableDataStrategy(value: string | number | boolean) {
+  parentState.editableDataStrategy = value as TableEditableDataStrategy
+}
+
 function updateSize(value: string | number | boolean) {
   parentState.size = value as XSize
 }
 
 function updateSelectionModeFromEvent(event: Event) {
   updateSelectionMode((event.target as HTMLSelectElement).value)
+}
+
+function updateEditableDataStrategyFromEvent(event: Event) {
+  updateEditableDataStrategy((event.target as HTMLSelectElement).value)
 }
 
 function updateSizeFromEvent(event: Event) {
@@ -247,6 +257,14 @@ function updateSizeFromEvent(event: Event) {
           </div>
           <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.selectable }"><span>选择行列</span><XSwitch v-model="parentState.showSelectionColumn" size="sm" :disabled="!parentState.selectable" /></div>
           <div class="table-story__control-item"><span>可编辑</span><XSwitch v-model="parentState.editable" size="sm" /></div>
+          <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.editable }">
+            <span>回写策略</span>
+            <select :value="parentState.editableDataStrategy" :disabled="!parentState.editable" @change="updateEditableDataStrategyFromEvent">
+              <option value="auto">auto</option>
+              <option value="emit">emit</option>
+              <option value="mutate">mutate</option>
+            </select>
+          </div>
           <div class="table-story__control-item" :class="{ 'is-disabled': !parentState.editable }"><span>脏数据按钮</span><XSwitch v-model="parentState.showDirtyActions" size="sm" :disabled="!parentState.editable" /></div>
           <div class="table-story__control-item"><span>列宽拖拽</span><XSwitch v-model="parentState.columnResizable" size="sm" /></div>
           <label><input v-model="parentState.rowDraggable" type="checkbox" /><span>行拖拽排序</span></label>
@@ -276,6 +294,7 @@ function updateSizeFromEvent(event: Event) {
           <XTableColumnSettings v-model="columnSettings" :columns="columns" />
           <span>{{ selectedText }}</span>
           <span>{{ rowEventText }}</span>
+          <span>默认 auto：仅传响应式 :data 也会尽量编辑回写</span>
         </div>
 
         <div class="table-story__parent" :style="parentStyle">
@@ -295,6 +314,7 @@ function updateSizeFromEvent(event: Event) {
             :show-selection="parentState.selectable"
             :show-selection-column="parentState.showSelectionColumn"
             :editable="parentState.editable"
+            :editable-data-strategy="parentState.editableDataStrategy"
             :show-dirty-actions="parentState.showDirtyActions"
             :column-resizable="parentState.columnResizable"
             :selection-mode="parentState.selectionMode"

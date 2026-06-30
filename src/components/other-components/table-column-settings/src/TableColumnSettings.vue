@@ -6,7 +6,7 @@ import { XCheckbox } from '../../../form-components/checkbox'
 import { XInputNumber } from '../../../form-components/input-number'
 import { XRadioButton } from '../../../form-components/radio'
 import type { TableAlign, TableColumn, TableColumnSetting, TableFixed, TableReorderPosition } from '../../../display-components/table'
-import type { TableColumnSettingsProps } from './types'
+import type { TableColumnSettingsProps, TableColumnSettingsSlots } from './types'
 
 defineOptions({ name: 'XTableColumnSettings' })
 
@@ -22,6 +22,8 @@ const emit = defineEmits<{
   (e: 'change', value: TableColumnSetting[]): void
   (e: 'reset', value: TableColumnSetting[]): void
 }>()
+
+defineSlots<TableColumnSettingsSlots>()
 
 const dialogVisible = ref(false)
 const internalSettings = ref<TableColumnSetting[]>([])
@@ -259,10 +261,12 @@ defineExpose({
 </script>
 
 <template>
-  <XButton class="x-table-column-settings__trigger" :disabled="disabled" width="auto" @click="open">
-    <i class="ri-settings-3-line" aria-hidden="true"></i>
-    <span>列设置</span>
-  </XButton>
+  <slot name="trigger" :open="open" :disabled="disabled" :visible="dialogVisible">
+    <XButton class="x-table-column-settings__trigger" :disabled="disabled" width="auto" @click="open">
+      <i class="ri-settings-3-line" aria-hidden="true"></i>
+      <span>列设置</span>
+    </XButton>
+  </slot>
 
   <XDialog
     v-if="dialogVisible"

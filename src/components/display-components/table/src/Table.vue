@@ -41,6 +41,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   showSelection: false,
   showSelectionColumn: true,
   editable: false,
+  editableDataStrategy: 'auto',
   showDirtyActions: false,
   showAppendRowButton: false,
   showDeleteSelectedRowsButton: false,
@@ -109,6 +110,26 @@ const internalColumnSettings = ref<TableColumnSetting[]>([])
 const internalSorter = ref<TableSorter | null>(null)
 const tableWidth = ref(0)
 const attrs = useAttrs()
+
+function hasUpdateDataListener() {
+  return attrs['onUpdate:data'] !== undefined || attrs.onUpdateData !== undefined
+}
+
+function mutateTableData(rows: Record<string, unknown>[]) {
+  try {
+    props.data.splice(0, props.data.length, ...rows)
+  } catch {
+    // Keep update:data flowing when the provided data array cannot be mutated.
+  }
+}
+
+function commitTableData(rows: Record<string, unknown>[]) {
+  const shouldMutate = props.editableDataStrategy === 'mutate' || (props.editableDataStrategy === 'auto' && !hasUpdateDataListener())
+  if (shouldMutate) {
+    mutateTableData(rows)
+  }
+  emit('update:data', rows)
+}
 
 const activeSorter = computed(() => normalizeSorter(internalSorter.value))
 const sortedIndexedRows = computed(() => {
@@ -954,7 +975,7 @@ function commitCellEdit() {
 
   const rows = props.data.map((item, index) => (index === rowIndex ? { ...item, [column.key]: value } : item))
   const nextRow = rows[rowIndex]
-  emit('update:data', rows)
+  commitTableData(rows)
   emitCellChange({
     row: nextRow,
     rows,
@@ -988,7 +1009,7 @@ function commitRowPatch(payload: TableRowPatchPayload) {
   const nextPatch = Object.fromEntries(changes.map((change) => [change.column.key, change.value]))
   const rows = props.data.map((item, index) => (index === rowIndex ? { ...item, ...nextPatch } : item))
   const nextRow = rows[rowIndex]
-  emit('update:data', rows)
+  commitTableData(rows)
   changes.forEach((change) => {
     emitCellChange({
       row: nextRow,
@@ -1128,7 +1149,7 @@ function resetDirtyChanges(rowKeys?: Array<string | number>) {
     })
     return nextRow
   })
-  emit('update:data', rows)
+  commitTableData(rows)
   clearDirtyChanges(rowKeys)
 }
 
@@ -1445,7 +1466,7 @@ function pasteClipboardTextToCells(text: string) {
     return
   }
 
-  emit('update:data', rows)
+  commitTableData(rows)
   changedCells.forEach((cell) => {
     const row = rows[cell.rowIndex]
     emitCellChange({
@@ -1824,7 +1845,7 @@ function handleContextMenuInsertRow(position: 'above' | 'below') {
 function appendEmptyRow() {
   const row = createEmptyRow()
   const rows = [...props.data, row]
-  emit('update:data', rows)
+  commitTableData(rows)
   emit('append-row', { row, rows })
 }
 
@@ -1857,7 +1878,7 @@ function deleteSelectedRows() {
     return
   }
 
-  emit('update:data', rows)
+  commitTableData(rows)
   emit('delete-selected-rows', { keys, rows, deletedRows })
   emitSelectionChange([])
 }
@@ -1867,7 +1888,7 @@ function insertEmptyRow(targetRowIndex: number, position: 'above' | 'below') {
   const safeTargetIndex = Math.min(Math.max(targetRowIndex, 0), rows.length - 1)
   const insertIndex = rows.length === 0 ? 0 : safeTargetIndex + (position === 'below' ? 1 : 0)
   rows.splice(insertIndex, 0, createEmptyRow())
-  emit('update:data', rows)
+  commitTableData(rows)
 }
 
 function insertEmptyRowFromActiveSelection(position: 'above' | 'below') {
@@ -1993,7 +2014,7 @@ async function importExcelFile(file: File) {
 
   const matrix = xlsx.utils.sheet_to_json<unknown[]>(worksheet, { header: 1, defval: '' }) as unknown[][]
   const rows = createRowsFromExcelMatrix(matrix)
-  emit('update:data', rows)
+  commitTableData(rows)
   emit('excel-import', {
     file,
     rows: rows.map((row) => ({ ...row })),

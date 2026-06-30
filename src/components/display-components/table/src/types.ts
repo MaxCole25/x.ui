@@ -4,6 +4,7 @@ export type TableFixed = 'left' | 'right' | 'none'
 export type TableRowKey = string | number
 export type TableReorderPosition = 'before' | 'after'
 export type TableSelectionMode = 'row' | 'cell'
+export type TableEditableDataStrategy = 'auto' | 'emit' | 'mutate'
 export type TableExcelExportMode = 'raw' | 'formatted'
 export type TableSummaryAggregator = 'sum' | 'avg'
 export type TableSummaryScope = 'visible' | 'all'
@@ -158,6 +159,7 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   showSelection?: boolean
   showSelectionColumn?: boolean
   editable?: boolean
+  editableDataStrategy?: TableEditableDataStrategy
   showDirtyActions?: boolean
   showAppendRowButton?: boolean
   showDeleteSelectedRowsButton?: boolean
@@ -198,6 +200,7 @@ export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Rec
 export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>
 export type XlTableDirtyCellChange<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyCellChange<Row>
 export type XlTableDirtyChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyChangePayload<Row>
+export type XlTableEditableDataStrategy = TableEditableDataStrategy
 export type XlTableExcelExportMode = TableExcelExportMode
 export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
 export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>

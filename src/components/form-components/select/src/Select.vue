@@ -54,6 +54,7 @@ const selectRef = ref<HTMLElement | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
 const isFocused = ref(false)
+const activeOptionIndex = ref(-1)
 const slotOptions = ref<SelectOptionRecord[]>([])
 const remoteOptions = ref<SelectOptionRecord[]>([])
 const remoteLoading = ref(false)
@@ -206,6 +207,7 @@ const dropdownClasses = computed(() => [
     'is-teleported': props.teleported
   }
 ])
+const enabledDisplayOptions = computed(() => displayOptions.value.filter((option) => !option.disabled))
 
 const registerOption = (option: SelectOptionRecord) => {
   slotOptions.value = [...slotOptions.value.filter((item) => item.value !== option.value), option]
@@ -236,6 +238,68 @@ const selectOption = (option: SelectOptionRecord) => {
   isOpen.value = false
 }
 
+const getFirstEnabledOptionIndex = () => displayOptions.value.findIndex((option) => !option.disabled)
+
+const getSelectedOptionIndex = () => displayOptions.value.findIndex((option) => selectedValues.value.includes(option.value) && !option.disabled)
+
+const setInitialActiveOption = () => {
+  activeOptionIndex.value = getSelectedOptionIndex()
+  if (activeOptionIndex.value < 0) {
+    activeOptionIndex.value = getFirstEnabledOptionIndex()
+  }
+}
+
+const openDropdown = async () => {
+  if (!canInteract.value) return
+
+  if (!isOpen.value) {
+    isOpen.value = true
+    void runRemoteQuery()
+  }
+
+  if (activeOptionIndex.value < 0) {
+    setInitialActiveOption()
+  }
+
+  await nextTick()
+  scrollActiveOptionIntoView()
+}
+
+const moveActiveOption = async (step: 1 | -1) => {
+  if (!enabledDisplayOptions.value.length) {
+    activeOptionIndex.value = -1
+    return
+  }
+
+  if (activeOptionIndex.value < 0 || displayOptions.value[activeOptionIndex.value]?.disabled) {
+    activeOptionIndex.value = step > 0 ? -1 : displayOptions.value.length
+  }
+
+  for (let index = activeOptionIndex.value + step; index >= 0 && index < displayOptions.value.length; index += step) {
+    if (!displayOptions.value[index]?.disabled) {
+      activeOptionIndex.value = index
+      await nextTick()
+      scrollActiveOptionIntoView()
+      return
+    }
+  }
+
+  activeOptionIndex.value = step > 0 ? getFirstEnabledOptionIndex() : displayOptions.value.map((option) => !option.disabled).lastIndexOf(true)
+  await nextTick()
+  scrollActiveOptionIntoView()
+}
+
+const selectActiveOption = () => {
+  const option = displayOptions.value[activeOptionIndex.value]
+  if (!option) return
+  selectOption(option)
+}
+
+const scrollActiveOptionIntoView = () => {
+  const optionEl = dropdownRef.value?.querySelectorAll<HTMLElement>('.x-option')[activeOptionIndex.value]
+  optionEl?.scrollIntoView({ block: 'nearest' })
+}
+
 const runRemoteQuery = async () => {
   if (!props.remote || !props.remoteMethod) return
 
@@ -257,6 +321,7 @@ const runRemoteQuery = async () => {
 const clear = () => {
   if (!showClear.value) return
   commit(props.multiple ? [] : undefined)
+  activeOptionIndex.value = getFirstEnabledOptionIndex()
   emit('clear')
 }
 
@@ -265,6 +330,7 @@ const toggle = () => {
 
   isOpen.value = !isOpen.value
   if (isOpen.value) {
+    setInitialActiveOption()
     void runRemoteQuery()
   }
 }
@@ -352,6 +418,48 @@ const close = () => {
   isOpen.value = false
 }
 
+const handleKeydown = (event: KeyboardEvent) => {
+  if (!canInteract.value) return
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    if (!isOpen.value) {
+      void openDropdown()
+      return
+    }
+
+    void moveActiveOption(1)
+    return
+  }
+
+  if (event.key === 'ArrowUp') {
+    event.preventDefault()
+    if (!isOpen.value) {
+      void openDropdown()
+      return
+    }
+
+    void moveActiveOption(-1)
+    return
+  }
+
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    if (!isOpen.value) {
+      void openDropdown()
+      return
+    }
+
+    selectActiveOption()
+    return
+  }
+
+  if (event.key === 'Escape' && isOpen.value) {
+    event.preventDefault()
+    close()
+  }
+}
+
 const handleDocumentPointerdown = (event: PointerEvent) => {
   if (!isOpen.value) return
 
@@ -368,6 +476,7 @@ watch(
   async (open) => {
     if (!open) {
       removePositionListeners()
+      activeOptionIndex.value = -1
       return
     }
 
@@ -402,6 +511,7 @@ watch(
   () => allOptions.value.map((option) => getOptionDisplayText(option)).join('\u0000'),
   async () => {
     if (!isOpen.value) return
+    setInitialActiveOption()
     await nextTick()
     updateDropdownPosition()
   }
@@ -469,6 +579,7 @@ onBeforeUnmount(() => {
           @focus="handleFocus"
           @click="toggle"
           @blur="handleBlur"
+          @keydown="handleKeydown"
         >
           <span v-if="selectedLabels.length" class="x-select__value" :title="selectedText">
             {{ selectedText }}
@@ -509,10 +620,10 @@ onBeforeUnmount(() => {
         <div v-if="isLoading" class="x-select__empty">{{ props.loadingText }}</div>
         <template v-else>
           <button
-            v-for="option in displayOptions"
+            v-for="(option, index) in displayOptions"
             :key="String(option.value)"
             class="x-option"
-            :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled }"
+            :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled, 'is-active': index === activeOptionIndex }"
             type="button"
             role="option"
             :aria-selected="selectedValues.includes(option.value)"
@@ -540,10 +651,10 @@ onBeforeUnmount(() => {
       <div v-if="isLoading" class="x-select__empty">{{ props.loadingText }}</div>
       <template v-else>
         <button
-          v-for="option in displayOptions"
+          v-for="(option, index) in displayOptions"
           :key="String(option.value)"
           class="x-option"
-          :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled }"
+          :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled, 'is-active': index === activeOptionIndex }"
           type="button"
           role="option"
           :aria-selected="selectedValues.includes(option.value)"

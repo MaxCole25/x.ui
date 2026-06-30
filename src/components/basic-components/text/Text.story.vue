@@ -14,6 +14,7 @@ const sample = reactive({
   backgroundColor: '#f0fdf4',
   textColor: '#000000',
   fontFamily: 'Arial, sans-serif',
+  fontWeight: 400,
   fontSize: 12,
   lineHeight: '1.55',
   previewWidth: 420,
@@ -79,6 +80,7 @@ const verticalAlignOptions: Array<{ label: string; value: TextVerticalAlign }> =
               :background-color="sample.backgroundColor"
               :text-color="sample.textColor"
               :font-family="sample.fontFamily"
+              :font-weight="sample.fontWeight"
               :font-size="sample.fontSize"
               :line-height="sample.lineHeight"
               :height="sample.height"
@@ -140,6 +142,10 @@ const verticalAlignOptions: Array<{ label: string; value: TextVerticalAlign }> =
             <label>
               <span>字体大小</span>
               <input v-model.number="sample.fontSize" type="number" min="10" max="32" />
+            </label>
+            <label>
+              <span>字体粗细</span>
+              <input v-model.number="sample.fontWeight" type="number" min="100" max="900" step="100" />
             </label>
             <label>
               <span>行高</span>

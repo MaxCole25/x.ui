@@ -2,8 +2,15 @@ export type GridSize = number | string
 export type GridAlign = 'start' | 'center' | 'end' | 'stretch'
 export type GridItemOverflow = 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto'
 
+export interface GridResponsiveColumns {
+  sm?: number | string
+  md?: number | string
+  lg?: number | string
+}
+
 export interface GridProps {
   columns?: number | string
+  responsiveColumns?: GridResponsiveColumns
   rows?: number | string
   gap?: GridSize
   rowGap?: GridSize

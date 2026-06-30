@@ -22,10 +22,7 @@ export default defineConfig(() => {
       : {
           lib: {
             entry: {
-              'x-ui': resolve(__dirname, 'src/index.ts'),
-              core: resolve(__dirname, 'src/core.ts'),
-              'rich-text-editor': resolve(__dirname, 'src/rich-text-editor.ts'),
-              table: resolve(__dirname, 'src/table.ts')
+              'x-ui': resolve(__dirname, 'src/index.ts')
             },
             name: 'XUi',
             formats: ['es'],

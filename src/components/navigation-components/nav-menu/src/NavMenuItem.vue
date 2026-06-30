@@ -26,6 +26,7 @@ const props = withDefaults(
     openKeys: Set<string>
     showSubmenuArrow: boolean
     submenuArrowIcon?: string | Component
+    submenuPopupGap: number | string
     depth?: number
   }>(),
   {
@@ -213,13 +214,22 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
+function toPixelValue(value: number | string) {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  const parsed = Number.parseFloat(value)
+  return Number.isFinite(parsed) ? parsed : 8
+}
+
 function updateSubmenuPosition() {
   if (!shouldTeleportSubmenu.value || !isSubmenuOpen.value || !itemRef.value || !submenuRef.value) {
     return
   }
 
   const viewportGap = 8
-  const popupGap = 8
+  const popupGap = toPixelValue(props.submenuPopupGap)
   const triggerRect = itemRef.value.getBoundingClientRect()
   const submenuRect = submenuRef.value.getBoundingClientRect()
   const width = submenuRect.width || 180
@@ -319,6 +329,7 @@ provide(popupPathKey, {
           :open-keys="props.openKeys"
           :show-submenu-arrow="props.showSubmenuArrow"
           :submenu-arrow-icon="props.submenuArrowIcon"
+          :submenu-popup-gap="props.submenuPopupGap"
           :depth="props.depth + 1"
           @select="handleChildSelect"
           @toggle-open="emit('toggle-open', $event)"

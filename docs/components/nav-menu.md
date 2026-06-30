@@ -45,6 +45,7 @@ const activeKey = ref('dashboard')
         :active-key="activeKey"
         :item-radius="6"
         :submenu-item-radius="4"
+        :submenu-popup-gap="12"
         :show-submenu-arrow="true"
         submenu-arrow-icon="ri-arrow-right-s-line"
       />
@@ -146,7 +147,7 @@ const menuItems = [
 
 ## 自定义菜单项圆角与子菜单箭头
 
-通过 `item-radius` 控制菜单项圆角，通过 `submenu-item-radius` 控制弹出子菜单项圆角。子菜单箭头默认跟随展开状态自动切换，也可以通过 `show-submenu-arrow` 隐藏，或通过 `submenu-arrow-icon` 统一替换为指定图标。
+通过 `item-radius` 控制菜单项圆角，通过 `submenu-item-radius` 控制弹出子菜单项圆角，通过 `submenu-popup-gap` 控制弹出子菜单框体与上级菜单之间的距离。子菜单箭头默认跟随展开状态自动切换，也可以通过 `show-submenu-arrow` 隐藏，或通过 `submenu-arrow-icon` 统一替换为指定图标。
 
 <XDocDemo title="自定义菜单项圆角与子菜单箭头" :code="navMenuStyleCode">
   <ClientOnly>
@@ -156,6 +157,7 @@ const menuItems = [
         :active-key="activeKey"
         :item-radius="6"
         :submenu-item-radius="4"
+        :submenu-popup-gap="12"
         :show-submenu-arrow="true"
         submenu-arrow-icon="ri-arrow-right-s-line"
       />
@@ -257,6 +259,7 @@ const menuItems = [
 | fontFamily | 菜单字体族 | `string` | `'var(--x-font-family)'` |
 | itemRadius | 菜单项圆角，传入数字时按 px 处理 | `number \| string` | `undefined` |
 | submenuItemRadius | 弹出子菜单项圆角，传入数字时按 px 处理 | `number \| string` | `undefined` |
+| submenuPopupGap | 弹出子菜单框体与上级菜单之间的距离，传入数字时按 px 处理 | `number \| string` | `8` |
 | showSubmenuArrow | 是否显示有子菜单项右侧箭头 | `boolean` | `true` |
 | submenuArrowIcon | 自定义子菜单箭头图标，字符串按 `XIcon` 名称渲染，Vue 组件按第三方图标组件渲染 | `string \| Component` | `undefined` |
 
@@ -290,7 +293,7 @@ const menuItems = [
 7. 开启 `scrollable` 并设置 `maxHeight=300`，确认滚动条只出现在菜单内部。
 8. 开启 `accordion`，依次展开同级父菜单，确认前一个父菜单会自动折叠。
 9. 设置 `activeKey="/security/roles"`，确认“系统设置”和“权限管理”等父级路径默认展开。
-10. 调整 `itemGap`、`itemRadius`、`submenuItemRadius`、`showSubmenuArrow`、`submenuArrowIcon`，确认间距、圆角和箭头显示符合配置。
+10. 调整 `itemGap`、`itemRadius`、`submenuItemRadius`、`submenuPopupGap`、`showSubmenuArrow`、`submenuArrowIcon`，确认间距、圆角和箭头显示符合配置。
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充

@@ -92,6 +92,7 @@ export default defineConfig({
               { text: '下拉菜单 Dropdown', link: '/components/dropdown' },
               { text: '下拉菜单容器 DropdownMenu', link: '/components/dropdown-menu' },
               { text: '下拉菜单项 DropdownItem', link: '/components/dropdown-item' },
+              { text: '工具栏 Tools', link: '/components/tools' },
               { text: '面包屑 Breadcrumb', link: '/components/breadcrumb' },
               { text: '分页 Pagination', link: '/components/pagination' },
               { text: '步骤条 Steps', link: '/components/steps' },
@@ -122,6 +123,8 @@ export default defineConfig({
               { text: '表格列设置 TableColumnSettings', link: '/components/table-column-settings' },
               { text: 'JSON编辑器 JsonEditor', link: '/components/json-editor' },
               { text: '登录 Login', link: '/components/login' },
+              { text: '登录页 LoginPage', link: '/components/login-page' },
+              { text: '注册 Register', link: '/components/register' },
               { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' }
             ]
           }

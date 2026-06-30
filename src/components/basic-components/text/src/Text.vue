@@ -42,6 +42,7 @@ const verticalAlignMap = {
   bottom: 'flex-end'
 } as const
 const toCssLineHeight = (value?: number | string) => (typeof value === 'number' ? String(value) : value)
+const toCssFontWeight = (value?: number | string) => (value === undefined ? undefined : String(value))
 
 const textStyle = computed(() => ({
   ...createElementStyleVars(props),
@@ -50,6 +51,7 @@ const textStyle = computed(() => ({
   '--x-text-bg': props.backgroundColor,
   '--x-text-color': props.textColor,
   '--x-text-font-family': props.fontFamily,
+  '--x-text-font-weight': toCssFontWeight(props.fontWeight),
   '--x-text-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value?.fontSize) : toCssSize(props.fontSize),
   '--x-text-line-height': toCssLineHeight(props.lineHeight),
   '--x-text-height': props.autoHeight ? 'auto' : hasExplicitSize.value ? toCssSize(sizePreset.value?.height) : toCssSize(props.height),

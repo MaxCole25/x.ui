@@ -30,6 +30,8 @@ export interface NavMenuProps {
   activeTextColor?: string
   submenuActiveTextColor?: string
   activeBackgroundColor?: string
+  activeAncestorTextColor?: string
+  activeAncestorBackgroundColor?: string
   fontSize?: number | string
   fontWeight?: number | string
   activeFontWeight?: number | string
@@ -37,6 +39,7 @@ export interface NavMenuProps {
   itemGap?: number | string
   itemRadius?: number | string
   submenuItemRadius?: number | string
+  submenuPopupGap?: number | string
   showSubmenuArrow?: boolean
   submenuArrowIcon?: string | Component
 }

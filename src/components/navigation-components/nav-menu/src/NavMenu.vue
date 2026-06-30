@@ -20,11 +20,14 @@ const props = withDefaults(defineProps<NavMenuProps>(), {
   textColor: 'var(--x-color-text)',
   activeTextColor: '#fff',
   activeBackgroundColor: 'var(--x-color-primary)',
+  activeAncestorTextColor: undefined,
+  activeAncestorBackgroundColor: undefined,
   fontSize: 14,
   fontWeight: 400,
   activeFontWeight: 600,
   fontFamily: 'var(--x-font-family)',
   itemGap: 4,
+  submenuPopupGap: 8,
   showSubmenuArrow: true
 })
 
@@ -243,11 +246,14 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
     '--x-nav-menu-active-text-color': props.activeTextColor,
     '--x-nav-menu-submenu-active-text-color': props.submenuActiveTextColor ?? props.activeTextColor,
     '--x-nav-menu-active-bg-color': props.activeBackgroundColor,
+    '--x-nav-menu-active-ancestor-text-color': props.activeAncestorTextColor ?? props.activeBackgroundColor,
+    '--x-nav-menu-active-ancestor-bg-color': props.activeAncestorBackgroundColor ?? `color-mix(in srgb, ${props.activeBackgroundColor} 12%, transparent)`,
     '--x-nav-menu-font-size': toCssLength(props.fontSize),
     '--x-nav-menu-font-weight': String(props.fontWeight),
     '--x-nav-menu-active-font-weight': String(props.activeFontWeight),
     '--x-nav-menu-font-family': props.fontFamily,
-    '--x-nav-menu-item-gap': toCssLength(props.itemGap)
+    '--x-nav-menu-item-gap': toCssLength(props.itemGap),
+    '--x-nav-menu-submenu-popup-gap': toCssLength(props.submenuPopupGap)
   }
 
   if (props.maxHeight !== undefined) {
@@ -293,6 +299,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
         :open-keys="currentOpenKeys"
         :show-submenu-arrow="props.showSubmenuArrow"
         :submenu-arrow-icon="props.submenuArrowIcon"
+        :submenu-popup-gap="props.submenuPopupGap"
         @select="handleSelect"
         @toggle-open="handleToggleOpen"
       />

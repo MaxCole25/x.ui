@@ -18,18 +18,6 @@
       "types": "./dist/x-ui.d.ts",
       "import": "./dist/x-ui.js"
     },
-    "./core": {
-      "types": "./dist/core.d.ts",
-      "import": "./dist/core.js"
-    },
-    "./rich-text-editor": {
-      "types": "./dist/rich-text-editor.d.ts",
-      "import": "./dist/rich-text-editor.js"
-    },
-    "./table": {
-      "types": "./dist/table.d.ts",
-      "import": "./dist/table.js"
-    },
     "./style.css": "./dist/style.css",
     "./remixicon.css": "./src/remixicon.css"
   },

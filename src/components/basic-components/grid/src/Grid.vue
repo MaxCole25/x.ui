@@ -35,6 +35,9 @@ const gridStyle = computed(() => {
 
   return {
     '--x-grid-columns': toGridTemplate(props.columns),
+    '--x-grid-columns-sm': toGridTemplate(props.responsiveColumns?.sm),
+    '--x-grid-columns-md': toGridTemplate(props.responsiveColumns?.md),
+    '--x-grid-columns-lg': toGridTemplate(props.responsiveColumns?.lg),
     '--x-grid-rows': toGridTemplate(props.rows),
     '--x-grid-gap': gap,
     '--x-grid-row-gap': toCssSize(props.rowGap) ?? gap,

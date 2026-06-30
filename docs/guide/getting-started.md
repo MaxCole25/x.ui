@@ -41,13 +41,13 @@ import 'xl.ui/style.css'
 </template>
 ```
 
-## 入口选择
+## 使用方式
 
-xl.ui 当前提供多个入口。业务项目选择入口时，必须先确认是否需要跨 app 复用组件，以及是否接受手动局部导入复杂组件。
+xl.ui 统一使用完整入口 `xl.ui`。业务项目不需要在轻量入口、复杂组件子入口之间做选择；所有公开组件都从主入口获取，样式统一从 `xl.ui/style.css` 引入。
 
-### 完整入口 `xl.ui`
+### 全局注册
 
-`xl.ui` 是完整组件库入口，会注册当前组件库中的公开组件，并配合全局样式使用。对于 AiDoc 这类存在 `shared-web` / `official-web` 多前端复用业务组件的场景，推荐宿主 app 统一使用完整入口，避免 shared 组件模板中使用了某个 xl.ui 组件，但宿主没有全局注册导致运行时不渲染。
+全局注册会把当前组件库中的公开组件注册到 Vue app，适合业务项目统一接入。
 
 ```ts
 import XUi from 'xl.ui'
@@ -56,32 +56,20 @@ import 'xl.ui/style.css'
 app.use(XUi)
 ```
 
-### 轻量入口 `xl.ui/core`
-
-`xl.ui/core` 是轻量基础入口，只注册 core 白名单组件，不等于完整 xl.ui 组件库。使用 `xl.ui/core` 时，模板中如果出现非 core 组件，构建阶段不一定能明显暴露问题，运行时可能出现组件不渲染。
-
-当前 core 白名单组件包括：
-
-`XAvatar`、`XBaseInput`、`XButton`、`XButtonGroup`、`XBrick`、`XBrickItem`、`XCheckbox`、`XDateTimePicker`、`XDialog`、`XDropdown`、`XDropdownItem`、`XDropdownMenu`、`XEmpty`、`XForm`、`XFormItem`、`XGrid`、`XGridItem`、`XIcon`、`XInput`、`XTextarea`、`XLogin`、`XMessage`、`XOption`、`XSelect`、`XSwitch`、`XTabs`、`XTooltip`、`XTree`。
-
-`XTable`、`XRichTextEditor` 等复杂组件不在 core 白名单内。如果宿主 app 坚持使用 `xl.ui/core`，跨 app 复用的 shared 业务组件必须对非 core 组件进行局部导入。
-
-### 复杂组件子入口
-
-`xl.ui/table` 和 `xl.ui/rich-text-editor` 是复杂组件子入口，适合在使用 `xl.ui/core` 的轻量 app 中按需局部导入。
+### 命名导入
 
 ```vue
 <script setup lang="ts">
-import { XTable } from 'xl.ui/table'
+import { XText } from 'xl.ui'
 import 'xl.ui/style.css'
 </script>
 
 <template>
-  <XTable :columns="columns" :data="rows" />
+  <XText>正文内容</XText>
 </template>
 ```
 
-如果业务组件会在多个 app 之间复用，优先选择完整入口 `xl.ui`。只有在明确控制包体积、依赖范围，并且团队能持续遵守“非 core 组件必须局部导入”的约束时，才建议使用 `xl.ui/core`。
+命名导入适合在不使用全局注册时单独引用组件。入口仍然是 `xl.ui`，不再提供 `xl.ui/core`、`xl.ui/table`、`xl.ui/rich-text-editor` 这类子入口。
 
 ## 本地联调
 

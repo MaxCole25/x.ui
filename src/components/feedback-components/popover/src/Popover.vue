@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { componentSizePreset } from '../../../_utils/size'
 import { toCssSize } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -7,7 +7,7 @@ import type { PopoverProps } from './types'
 
 defineOptions({ name: 'XPopover' })
 
-const props = withDefaults(defineProps<PopoverProps>(), { modelValue: undefined, title: '', content: '', placement: 'bottom', trigger: 'click', disabled: false, showArrow: true, width: 220, teleported: true, teleportTo: 'body', zIndex: overlayZIndex.popper, size: 'md' })
+const props = withDefaults(defineProps<PopoverProps & { contentPlain?: boolean }>(), { modelValue: undefined, title: '', content: '', placement: 'bottom', trigger: 'click', disabled: false, showArrow: true, contentPlain: false, width: 220, teleported: true, teleportTo: 'body', zIndex: overlayZIndex.popper, size: 'md' })
 const emit = defineEmits<{ 'update:modelValue': [value: boolean]; show: []; hide: [] }>()
 const uncontrolledVisible = ref(false)
 const triggerRef = ref<HTMLElement | null>(null)
@@ -28,6 +28,15 @@ function onMouseenter() { if (props.trigger === 'hover') setVisible(true) }
 function onMouseleave() { if (props.trigger === 'hover') setVisible(false) }
 function onFocus() { if (props.trigger === 'focus') setVisible(true) }
 function onBlur() { if (props.trigger === 'focus') setVisible(false) }
+function handleDocumentPointerdown(event: PointerEvent) {
+  if (props.trigger !== 'click' || !visible.value) return
+
+  const target = event.target
+  if (!(target instanceof Node)) return
+  if (triggerRef.value?.contains(target) || popperRef.value?.contains(target)) return
+
+  setVisible(false)
+}
 function updatePosition() {
   if (!props.teleported || !visible.value || !triggerRef.value || !popperRef.value) return
   const gap = 8; const trigger = triggerRef.value.getBoundingClientRect(); const popper = popperRef.value.getBoundingClientRect()
@@ -38,14 +47,18 @@ function updatePosition() {
   position.value = { left: Math.round(left) + 'px', top: Math.round(top) + 'px' }
 }
 watch(visible, async (value) => { if (value) { await nextTick(); updatePosition() } }, { flush: 'post' })
-onBeforeUnmount(() => setVisible(false))
+onMounted(() => document.addEventListener('pointerdown', handleDocumentPointerdown, true))
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', handleDocumentPointerdown, true)
+  setVisible(false)
+})
 </script>
 
 <template>
   <span ref="triggerRef" class="x-popover" :class="{ 'is-visible': visible }" @click="toggle" @mouseenter="onMouseenter" @mouseleave="onMouseleave" @focusin="onFocus" @focusout="onBlur">
     <slot />
-    <Teleport v-if="props.teleported" :to="props.teleportTo"><div v-if="visible" ref="popperRef" class="x-popover__popper is-teleported" :class="'x-popover__popper--' + props.placement" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div></Teleport>
-    <div v-else-if="visible" ref="popperRef" class="x-popover__popper" :class="'x-popover__popper--' + props.placement" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div>
+    <Teleport v-if="props.teleported" :to="props.teleportTo"><div v-if="visible" ref="popperRef" class="x-popover__popper is-teleported" :class="['x-popover__popper--' + props.placement, { 'is-content-plain': props.contentPlain }]" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div></Teleport>
+    <div v-else-if="visible" ref="popperRef" class="x-popover__popper" :class="['x-popover__popper--' + props.placement, { 'is-content-plain': props.contentPlain }]" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div>
   </span>
 </template>
 
@@ -57,7 +70,9 @@ onBeforeUnmount(() => setVisible(false))
 .x-popover__popper--top { bottom: calc(100% + 8px); left: 0; }
 .x-popover__popper--left { right: calc(100% + 8px); top: 0; }
 .x-popover__popper--right { left: calc(100% + 8px); top: 0; }
+.x-popover__popper.is-content-plain { background: transparent; border: 0; box-shadow: none; padding: 0; width: auto; }
 .x-popover__title { font-size: 14px; font-weight: 800; }
 .x-popover__content { color: var(--x-color-muted); min-width: 0; }
+.x-popover__popper.is-content-plain .x-popover__content { color: inherit; }
 .x-popover__arrow { display: none; }
 </style>

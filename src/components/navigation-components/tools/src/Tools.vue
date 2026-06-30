@@ -1,0 +1,169 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { createElementStyleVars } from '../../../_utils/elementStyle'
+import { overlayZIndex } from '../../../_utils/zIndex'
+import { XIcon } from '../../../basic-components/icon'
+import { XDropdown } from '../../dropdown'
+import { XDropdownItem } from '../../dropdown-item'
+import { XDropdownMenu } from '../../dropdown-menu'
+import type { ToolsActionItem, ToolsItem, ToolsMenuItem, ToolsProps } from './types'
+
+defineOptions({
+  name: 'XTools'
+})
+
+const props = withDefaults(defineProps<ToolsProps>(), {
+  items: () => [],
+  size: 'md',
+  disabled: false,
+  teleported: false,
+  teleportTo: 'body',
+  zIndex: overlayZIndex.popper,
+  placement: 'bottom-start',
+  popperWidth: 148
+})
+
+const emit = defineEmits<{
+  click: [item: ToolsActionItem, event: MouseEvent]
+  command: [command: unknown, item: ToolsActionItem, menuItem: ToolsMenuItem]
+  'visible-change': [item: ToolsActionItem, visible: boolean]
+}>()
+
+const toolsStyle = computed(() => ({
+  ...createElementStyleVars(props),
+  '--x-tools-z-index': props.zIndex
+}))
+
+function isSeparator(item: ToolsItem): item is Extract<ToolsItem, { type: 'separator' }> {
+  return item.type === 'separator'
+}
+
+function getItemType(item: ToolsActionItem) {
+  return item.type ?? 'button'
+}
+
+function isItemDisabled(item: ToolsActionItem) {
+  return props.disabled || item.disabled
+}
+
+function getMenuCommand(menuItem: ToolsMenuItem) {
+  return menuItem.command ?? menuItem.key ?? menuItem.name
+}
+
+function handleClick(item: ToolsActionItem, event: MouseEvent) {
+  if (isItemDisabled(item)) return
+  item.onClick?.(item, event)
+  emit('click', item, event)
+}
+
+function handleCommand(command: unknown, item: ToolsActionItem) {
+  const menuItem = item.children?.find((child) => getMenuCommand(child) === command)
+  if (!menuItem || menuItem.disabled) return
+
+  menuItem.onClick?.(menuItem, item)
+  item.onCommand?.(command, item, menuItem)
+  emit('command', command, item, menuItem)
+}
+
+function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
+  emit('visible-change', item, visible)
+}
+</script>
+
+<template>
+  <div
+    class="x-tools"
+    :class="[`x-tools--${props.size}`, { 'is-disabled': props.disabled }]"
+    :style="toolsStyle"
+    role="toolbar"
+  >
+    <template v-for="(item, index) in props.items" :key="item.key ?? `separator-${index}`">
+      <span v-if="isSeparator(item)" class="x-tools__separator" aria-hidden="true"></span>
+
+      <slot
+        v-else
+        name="item"
+        :item="item"
+        :disabled="isItemDisabled(item)"
+        :click="(event: MouseEvent) => handleClick(item, event)"
+      >
+        <button
+          v-if="getItemType(item) === 'button'"
+          class="x-tools__item"
+          type="button"
+          :disabled="isItemDisabled(item)"
+          @click="handleClick(item, $event)"
+        >
+          <slot name="icon" :item="item">
+            <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+          </slot>
+          <span v-if="item.name" class="x-tools__name">{{ item.name }}</span>
+        </button>
+
+        <XDropdown
+          v-else
+          class="x-tools__dropdown"
+          trigger="click"
+          :placement="props.placement"
+          :size="props.size"
+          :disabled="isItemDisabled(item)"
+          :show-arrow="false"
+          :teleported="props.teleported"
+          :teleport-to="props.teleportTo"
+          :z-index="props.zIndex"
+          :popper-width="props.popperWidth"
+          @command="handleCommand($event, item)"
+          @visible-change="handleVisibleChange(item, $event)"
+        >
+          <div class="x-tools__split" :class="{ 'is-dropdown-only': getItemType(item) === 'dropdown' }">
+            <button
+              v-if="getItemType(item) === 'dropdown'"
+              class="x-tools__item x-tools__item--trigger"
+              type="button"
+              :disabled="isItemDisabled(item)"
+            >
+              <slot name="icon" :item="item">
+                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+              </slot>
+              <span v-if="item.name" class="x-tools__name">{{ item.name }}</span>
+            </button>
+            <button
+              v-else-if="item.icon || item.name || item.onClick"
+              class="x-tools__item x-tools__item--trigger"
+              type="button"
+              :disabled="isItemDisabled(item)"
+              @click.stop="handleClick(item, $event)"
+            >
+              <slot name="icon" :item="item">
+                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+              </slot>
+              <span v-if="item.name" class="x-tools__name">{{ item.name }}</span>
+            </button>
+            <button class="x-tools__arrow" type="button" :disabled="isItemDisabled(item)" aria-label="打开菜单">
+              <XIcon name="arrow-down-s" :size="props.size" />
+            </button>
+          </div>
+
+          <template #dropdown>
+            <XDropdownMenu :min-width="props.popperWidth">
+              <XDropdownItem
+                v-for="menuItem in item.children ?? []"
+                :key="menuItem.key ?? String(getMenuCommand(menuItem))"
+                :command="getMenuCommand(menuItem)"
+                :icon="menuItem.icon"
+                :disabled="menuItem.disabled"
+                :divided="menuItem.divided"
+                :active="menuItem.active"
+                :size="props.size"
+              >
+                <slot name="dropdown-item" :item="item" :menu-item="menuItem">
+                  {{ menuItem.name }}
+                </slot>
+              </XDropdownItem>
+            </XDropdownMenu>
+          </template>
+        </XDropdown>
+      </slot>
+    </template>
+  </div>
+</template>

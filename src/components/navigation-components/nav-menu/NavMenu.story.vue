@@ -109,6 +109,7 @@ const state = reactive({
   itemGap: 4 as number | string,
   itemRadius: 10,
   submenuItemRadius: 7,
+  submenuPopupGap: 8,
   showSubmenuArrow: true,
   submenuArrowIcon: ''
 })
@@ -210,6 +211,10 @@ function handleSelect(key: string) {
             <span>子菜单项圆角</span>
             <input v-model.number="state.submenuItemRadius" type="number" min="0" max="32" />
           </label>
+          <label>
+            <span>子菜单弹出间距</span>
+            <input v-model.number="state.submenuPopupGap" type="number" min="0" max="40" />
+          </label>
           <label class="menu-check">
             <input v-model="state.showSubmenuArrow" type="checkbox" />
             <span>显示子菜单箭头</span>
@@ -244,6 +249,7 @@ function handleSelect(key: string) {
             :item-gap="state.itemGap"
             :item-radius="state.itemRadius"
             :submenu-item-radius="state.submenuItemRadius"
+            :submenu-popup-gap="state.submenuPopupGap"
             :show-submenu-arrow="state.showSubmenuArrow"
             :submenu-arrow-icon="state.submenuArrowIcon || undefined"
             @select="handleSelect"

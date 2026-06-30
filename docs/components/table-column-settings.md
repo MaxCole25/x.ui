@@ -6,6 +6,21 @@ const code = `\x3Cscript setup lang="ts">
     <XTableColumnSettings v-model="columnSettings" :columns="columns" />
     <XTable :columns="columns" :data="rows" :column-settings="columnSettings" row-key="id" />
   </div>`
+
+const customTriggerCode = `<XTableColumnSettings v-model="columnSettings" :columns="columns">
+  <template #trigger="{ open, disabled }">
+    <button
+      class="x-table-column-settings-doc__icon-trigger"
+      type="button"
+      :disabled="disabled"
+      aria-label="列设置"
+      title="列设置"
+      @click="open"
+    >
+      <i class="ri-settings-3-line"></i>
+    </button>
+  </template>
+</XTableColumnSettings>`
 </script>
 
 # 表格列设置 TableColumnSettings
@@ -21,6 +36,20 @@ const code = `\x3Cscript setup lang="ts">
   </div>
 </XDocDemo>
 
+## 自定义触发按钮
+
+通过 `trigger` 插槽可以自定义打开列设置弹窗的按钮。插槽会提供 `open`、`disabled` 和 `visible`，适合放入工具栏图标按钮或业务自定义操作区。
+
+<XDocDemo title="自定义图标按钮" :code="customTriggerCode">
+  <XTableColumnSettings v-model="columnSettings" :columns="columns">
+    <template #trigger="{ open, disabled }">
+      <button class="x-table-column-settings-doc__icon-trigger" type="button" :disabled="disabled" aria-label="列设置" title="列设置" @click="open">
+        <i class="ri-settings-3-line"></i>
+      </button>
+    </template>
+  </XTableColumnSettings>
+</XDocDemo>
+
 ## Props
 
 | 名称 | 说明 | 类型 | 默认值 |
@@ -31,6 +60,12 @@ const code = `\x3Cscript setup lang="ts">
 | width | 弹窗宽度 | `number` | `760` |
 | height | 弹窗高度 | `number` | `620` |
 | disabled | 是否禁用列设置按钮 | `boolean` | `false` |
+
+## Slots
+
+| 名称 | 说明 | 参数 |
+| --- | --- | --- |
+| trigger | 自定义列设置触发按钮 | `{ open, disabled, visible }` |
 
 ## Events
 
@@ -55,4 +90,33 @@ const code = `\x3Cscript setup lang="ts">
 2. 拖拽列名、置顶、置底后，确认表格列顺序更新。
 3. 切换冻结和对齐，确认表格固定列和文本对齐生效。
 4. 修改比例宽度和 px 宽度，确认列宽变化且长文本不溢出遮挡。
+5. 使用自定义图标按钮打开弹窗，确认禁用状态下不会打开。
 
+<style scoped>
+.x-table-column-settings-doc__icon-trigger {
+  align-items: center;
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
+  border-radius: 6px;
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 18px;
+  height: 30px;
+  justify-content: center;
+  padding: 0;
+  width: 30px;
+}
+
+.x-table-column-settings-doc__icon-trigger:hover,
+.x-table-column-settings-doc__icon-trigger:focus-visible {
+  border-color: var(--x-color-primary, #1264f4);
+  color: var(--x-color-primary, #1264f4);
+  outline: none;
+}
+
+.x-table-column-settings-doc__icon-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+</style>

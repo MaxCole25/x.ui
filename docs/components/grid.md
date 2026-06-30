@@ -26,6 +26,15 @@ const gridSpanCode = `\x3Cscript setup lang="ts">
     <XGridItem column="1 / 3">指定列线</XGridItem>
   </XGrid>`
 
+const gridResponsiveCode = `\x3Cscript setup lang="ts">
+<\/script>
+
+<XGrid :columns="4" :responsive-columns="{ sm: 1, md: 2, lg: 3 }" :gap="10">
+    <XGridItem v-for="index in 8" :key="index">
+      响应式格子 {{ index }}
+    </XGridItem>
+  </XGrid>`
+
 const gridAppearanceCode = `\x3Cscript setup lang="ts">
 <\/script>
 
@@ -92,6 +101,18 @@ const gridAppearanceCode = `\x3Cscript setup lang="ts">
   </XGrid>
 </XDocDemo>
 
+## 响应式列数
+
+通过 `responsiveColumns` 可以按断点调整列数。`lg` 在 `1024px` 及以下生效，`md` 在 `768px` 及以下生效，`sm` 在 `640px` 及以下生效；未配置的断点会回退到更大断点或 `columns`。
+
+<XDocDemo title="响应式列数" :code="gridResponsiveCode">
+  <XGrid :columns="4" :responsive-columns="{ sm: 1, md: 2, lg: 3 }" :gap="10">
+    <XGridItem v-for="index in 8" :key="index">
+      响应式格子 {{ index }}
+    </XGridItem>
+  </XGrid>
+</XDocDemo>
+
 ## 颜色、边框和圆角
 
 容器和格子都公开了常用外观属性，数字尺寸会自动转为 `px`。
@@ -125,6 +146,7 @@ const gridAppearanceCode = `\x3Cscript setup lang="ts">
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | columns | 列模板；数字转为 `repeat(n, minmax(0, 1fr))`，字符串原样作为 CSS 值 | `number \| string` | `3` |
+| responsiveColumns | 响应式列模板；支持 `sm`、`md`、`lg` 三个断点，数字转为等分列模板，字符串原样作为 CSS 值 | `GridResponsiveColumns` | - |
 | rows | 行模板；数字转为 `repeat(n, minmax(0, 1fr))`，字符串原样作为 CSS 值 | `number \| string` | - |
 | gap | 横竖统一间距，数字按 px 处理 | `number \| string` | - |
 | rowGap | 竖向间距，优先级高于 `gap` | `number \| string` | - |
@@ -176,9 +198,20 @@ const gridAppearanceCode = `\x3Cscript setup lang="ts">
 | --- | --- |
 | `default` | 放置任意内容，推荐使用 `XGridItem` 包裹需要外观或跨行跨列控制的格子 |
 
+## 类型
+
+```ts
+interface GridResponsiveColumns {
+  sm?: number | string
+  md?: number | string
+  lg?: number | string
+}
+```
+
 ## 手动验收建议
 
 1. 切换 `columns` 为 `3` 和 `4`，确认九宫格和 16 宫格等分。
 2. 调整 `gap`、`rowGap`、`columnGap`，确认横竖间距优先级正确。
-3. 设置 `colSpan`、`rowSpan`、`column`、`row`，确认单项跨行跨列生效。
-4. 调整容器和格子的颜色、边框、圆角、内边距，确认公开外观属性可覆盖。
+3. 调整浏览器宽度到 `1024px`、`768px`、`640px` 以下，确认 `responsiveColumns` 列数按断点回退。
+4. 设置 `colSpan`、`rowSpan`、`column`、`row`，确认单项跨行跨列生效。
+5. 调整容器和格子的颜色、边框、圆角、内边距，确认公开外观属性可覆盖。

@@ -5,7 +5,7 @@ import { XColorPickerPanel } from './index'
 import '../../../styles/index.css'
 
 const appearance = reactive({
-  colorsText: '#1264f4,#10b981,#f59e0b,#ef4444,#111827'
+  colorsText: '#1264f4,#10b981,#f59e0b,#ef4444,#7c3aed,#0891b2'
 })
 
 const sample = reactive({
@@ -32,11 +32,7 @@ const sample = reactive({
     <Variant title="外观接口">
       <ElementStylePlayground>
         <template #default="styleProps">
-          <XColorPickerPanel
-            v-bind="styleProps"
-            v-model="sample.color"
-            :colors="appearance.colorsText.split(',').map((item) => item.trim()).filter(Boolean)"
-          />
+          <XColorPickerPanel v-bind="styleProps" v-model="sample.color" :colors="appearance.colorsText.split(',').map((item) => item.trim()).filter(Boolean)" />
         </template>
         <template #column-1>
           <label>
@@ -44,9 +40,15 @@ const sample = reactive({
             <input v-model="appearance.colorsText" />
           </label>
         </template>
-        <template #column-3>
+        <template #column-2>
           <label>
             <span>绑定值</span>
+            <input v-model="sample.color" />
+          </label>
+        </template>
+        <template #column-3>
+          <label>
+            <span>颜色输入</span>
             <input v-model="sample.color" type="color" />
           </label>
         </template>
@@ -54,11 +56,3 @@ const sample = reactive({
     </Variant>
   </Story>
 </template>
-
-<style scoped>
-.story-stack {
-  display: grid;
-  gap: 12px;
-  padding: 16px;
-}
-</style>

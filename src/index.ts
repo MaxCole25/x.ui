@@ -36,6 +36,7 @@ import { XDrawer } from './components/feedback-components/drawer'
 import { XDropdown } from './components/navigation-components/dropdown'
 import { XDropdownItem } from './components/navigation-components/dropdown-item'
 import { XDropdownMenu } from './components/navigation-components/dropdown-menu'
+import { XTools } from './components/navigation-components/tools'
 import { XEmpty } from './components/display-components/empty'
 import { XFileDisk } from './components/other-components/file-disk'
 import { XFlow, XFlowItem } from './components/basic-components/flow'
@@ -49,6 +50,8 @@ import { XTextarea } from './components/form-components/textarea'
 import { XJsonEditor } from './components/other-components/json-editor'
 import { XLayout } from './components/basic-components/layout'
 import { XLogin } from './components/other-components/login'
+import { XLoginPage } from './components/other-components/login-page'
+import { XRegister } from './components/other-components/register'
 import { XLoading, vLoading, XLoadingService } from './components/feedback-components/loading'
 import { XMessage, XMessageComponent } from './components/feedback-components/message'
 import { XMessageBox, XMessageBoxComponent } from './components/feedback-components/message-box'
@@ -112,6 +115,7 @@ export { XDrawer }
 export { XDropdown }
 export { XDropdownItem }
 export { XDropdownMenu }
+export { XTools }
 export { XEmpty }
 export { XFileDisk }
 export { XFlow }
@@ -130,6 +134,8 @@ export { XTextarea }
 export { XJsonEditor }
 export { XLayout }
 export { XLogin }
+export { XLoginPage }
+export { XRegister }
 export { XLoading, XLoadingService, vLoading }
 export { XMessage, XMessageComponent }
 export { XMessageBox, XMessageBoxComponent }
@@ -203,7 +209,7 @@ export type {
   DataTableSettingsSavePayload,
   DataTableSettingsTable
 } from './components/other-components/data-table-settings'
-export type { TableColumnSettingsExpose, TableColumnSettingsProps } from './components/other-components/table-column-settings'
+export type { TableColumnSettingsExpose, TableColumnSettingsProps, TableColumnSettingsSlots, TableColumnSettingsTriggerSlotProps } from './components/other-components/table-column-settings'
 export type {
   PickerButtonThemeProps,
   PickerCalendarThemeProps,
@@ -226,6 +232,7 @@ export type { DrawerDirection, DrawerProps } from './components/feedback-compone
 export type { DropdownItemProps } from './components/navigation-components/dropdown-item'
 export type { DropdownMenuProps } from './components/navigation-components/dropdown-menu'
 export type { DropdownPlacement, DropdownProps, DropdownTrigger } from './components/navigation-components/dropdown'
+export type { ToolsActionItem, ToolsItem, ToolsItemKey, ToolsItemType, ToolsMenuItem, ToolsProps, ToolsSeparatorItem } from './components/navigation-components/tools'
 export type { EmptyProps } from './components/display-components/empty'
 export type { FileDiskAdapter, FileDiskClipboardAction, FileDiskClipboardPayload, FileDiskColors, FileDiskCreateFolderPayload, FileDiskDownloadOptions, FileDiskDownloadPayload, FileDiskItem, FileDiskItemType, FileDiskPermission, FileDiskProps, FileDiskRenamePayload, FileDiskTransferPayload, FileDiskUploadPayload, FileDiskViewMode } from './components/other-components/file-disk'
 export type { FlowAlign, FlowItemKey, FlowItemOverflow, FlowItemProps, FlowProps, FlowSize } from './components/basic-components/flow'
@@ -248,7 +255,7 @@ export type {
   FormValidateMethod,
   FormValidateResult
 } from './components/form-components/form'
-export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridSize } from './components/basic-components/grid'
+export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridResponsiveColumns, GridSize } from './components/basic-components/grid'
 export type { IconProps, IconSize, IconVariant } from './components/basic-components/icon'
 export type { IconSelectCategoryName, IconSelectIconInfo, IconSelectProps } from './components/form-components/icon-select'
 export type { InputNumberProps } from './components/form-components/input-number'
@@ -257,6 +264,18 @@ export type { TextareaProps, TextareaSize, TextareaStatus, TextareaTextAlign } f
 export type { JsonEditorProps } from './components/other-components/json-editor'
 export type { LayoutMode, LayoutProps } from './components/basic-components/layout'
 export type { LoginLabelPosition, LoginLogoPosition, LoginProps, LoginSize, LoginSubmitPayload } from './components/other-components/login'
+export type {
+  LoginPageAlign,
+  LoginPageBackgroundRepeat,
+  LoginPageBackgroundSize,
+  LoginPageDirection,
+  LoginPageJustify,
+  LoginPagePreset,
+  LoginPageProps,
+  LoginPageSectionConfig,
+  LoginPageSectionOverflow
+} from './components/other-components/login-page'
+export type { RegisterLabelPosition, RegisterLogoPosition, RegisterProps, RegisterSize, RegisterSubmitPayload } from './components/other-components/register'
 export type { LoadingInstance, LoadingOptions, LoadingProps } from './components/feedback-components/loading'
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
 export type { MessageBoxAction, MessageBoxOptions, MessageBoxProps, MessageBoxType } from './components/feedback-components/message-box'
@@ -288,6 +307,7 @@ export type {
   TableDeleteSelectedRowsPayload,
   TableDirtyCellChange,
   TableDirtyChangePayload,
+  TableEditableDataStrategy,
   TableExcelExportMode,
   TableExcelExportPayload,
   TableExcelImportPayload,
@@ -312,6 +332,7 @@ export type {
   XlTableDeleteSelectedRowsPayload,
   XlTableDirtyCellChange,
   XlTableDirtyChangePayload,
+  XlTableEditableDataStrategy,
   XlTableExcelExportMode,
   XlTableExcelExportPayload,
   XlTableExcelImportPayload,
@@ -382,6 +403,7 @@ const components = [
   XDropdown,
   XDropdownMenu,
   XDropdownItem,
+  XTools,
   XEmpty,
   XDrawer,
   XDivider,
@@ -399,6 +421,8 @@ const components = [
   XTabs,
   XTable,
   XLogin,
+  XLoginPage,
+  XRegister,
   XLoading,
   XMessageComponent,
   XMessageBoxComponent,

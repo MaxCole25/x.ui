@@ -54,6 +54,7 @@ import { XTree } from '../../../src/components/display-components/tree'
 import { XDropdown } from '../../../src/components/navigation-components/dropdown'
 import { XDropdownItem } from '../../../src/components/navigation-components/dropdown-item'
 import { XDropdownMenu } from '../../../src/components/navigation-components/dropdown-menu'
+import { XTools } from '../../../src/components/navigation-components/tools'
 import { XNavMenu } from '../../../src/components/navigation-components/nav-menu'
 import { XTabs } from '../../../src/components/navigation-components/tabs'
 import { XDialog } from '../../../src/components/feedback-components/dialog'
@@ -67,6 +68,8 @@ import { XDataTableSettings } from '../../../src/components/other-components/dat
 import { XTableColumnSettings } from '../../../src/components/other-components/table-column-settings'
 import { XJsonEditor } from '../../../src/components/other-components/json-editor'
 import { XLogin } from '../../../src/components/other-components/login'
+import { XLoginPage } from '../../../src/components/other-components/login-page'
+import { XRegister } from '../../../src/components/other-components/register'
 import { XRichTextEditor } from '../../../src/components/other-components/rich-text-editor'
 import ButtonPlayground from '../components/ButtonPlayground.vue'
 import IconGallery from '../components/IconGallery.vue'
@@ -139,6 +142,7 @@ export default {
     app.component(XDropdown.name!, XDropdown)
     app.component(XDropdownItem.name!, XDropdownItem)
     app.component(XDropdownMenu.name!, XDropdownMenu)
+    app.component(XTools.name!, XTools)
     app.component(XNavMenu.name!, XNavMenu)
     app.component(XTabs.name!, XTabs)
     app.component(XDialog.name!, XDialog)
@@ -154,6 +158,8 @@ export default {
     app.component(XTableColumnSettings.name!, XTableColumnSettings)
     app.component(XJsonEditor.name!, XJsonEditor)
     app.component(XLogin.name!, XLogin)
+    app.component(XLoginPage.name!, XLoginPage)
+    app.component(XRegister.name!, XRegister)
     app.component(XRichTextEditor.name!, XRichTextEditor)
     app.component('ButtonPlayground', ButtonPlayground)
     app.component('IconGallery', IconGallery)

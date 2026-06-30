@@ -5,7 +5,7 @@ import GridItem from './src/GridItem.vue'
 export const XGrid = Grid
 export const XGridItem = GridItem
 
-export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridSize } from './src/types'
+export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridResponsiveColumns, GridSize } from './src/types'
 
 XGrid.install = (app: App) => {
   app.component(XGrid.name!, XGrid)

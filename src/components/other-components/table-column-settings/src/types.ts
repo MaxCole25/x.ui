@@ -9,10 +9,19 @@ export interface TableColumnSettingsProps<Row extends Record<string, unknown> = 
   disabled?: boolean
 }
 
+export interface TableColumnSettingsTriggerSlotProps {
+  open: () => void
+  disabled: boolean
+  visible: boolean
+}
+
+export interface TableColumnSettingsSlots {
+  trigger?: (props: TableColumnSettingsTriggerSlotProps) => unknown
+}
+
 export interface TableColumnSettingsExpose {
   open: () => void
   close: () => void
   reset: () => void
   getSettings: () => TableColumnSetting[]
 }
-

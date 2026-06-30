@@ -27,7 +27,8 @@ const state = reactive({
   title: '列设置',
   width: 760,
   height: 620,
-  disabled: false
+  disabled: false,
+  useCustomTrigger: false
 })
 
 const settings = ref<TableColumnSetting[]>([])
@@ -57,7 +58,21 @@ function handleReset(value: TableColumnSetting[]) {
               :disabled="state.disabled"
               @change="handleChange"
               @reset="handleReset"
-            />
+            >
+              <template v-if="state.useCustomTrigger" #trigger="{ open, disabled, visible }">
+                <button
+                  class="table-column-settings-story__icon-trigger"
+                  type="button"
+                  :class="{ 'is-active': visible }"
+                  :disabled="disabled"
+                  aria-label="列设置"
+                  title="列设置"
+                  @click="open"
+                >
+                  <i class="ri-settings-3-line" aria-hidden="true"></i>
+                </button>
+              </template>
+            </XTableColumnSettings>
             <span>{{ eventText }}</span>
           </div>
           <XTable :columns="columns" :data="rows" :column-settings="settings" row-key="id" full-height />
@@ -74,6 +89,7 @@ function handleReset(value: TableColumnSetting[]) {
             <label><span>弹窗宽度</span><input v-model.number="state.width" type="number" min="640" max="1200" /></label>
             <label><span>弹窗高度</span><input v-model.number="state.height" type="number" min="460" max="900" /></label>
             <label><span>禁用</span><input v-model="state.disabled" type="checkbox" /></label>
+            <label><span>自定义触发</span><input v-model="state.useCustomTrigger" type="checkbox" /></label>
           </div>
         </section>
 
@@ -84,6 +100,7 @@ function handleReset(value: TableColumnSetting[]) {
             <p><code>columns</code> 接收表格列配置。</p>
             <p><code>open</code> 暴露打开弹窗方法。</p>
             <p><code>reset</code> 暴露恢复默认方法。</p>
+            <p><code>trigger</code> 插槽自定义触发按钮。</p>
           </div>
         </section>
 
@@ -92,6 +109,8 @@ function handleReset(value: TableColumnSetting[]) {
           <div class="table-column-settings-story__grid">
             <p><code>TableColumnSettingsProps</code></p>
             <p><code>TableColumnSettingsExpose</code></p>
+            <p><code>TableColumnSettingsSlots</code></p>
+            <p><code>TableColumnSettingsTriggerSlotProps</code></p>
             <p><code>TableColumn</code></p>
             <p><code>TableColumnSetting</code></p>
           </div>
@@ -135,6 +154,34 @@ function handleReset(value: TableColumnSetting[]) {
   justify-content: center;
 }
 
+.table-column-settings-story__icon-trigger {
+  align-items: center;
+  background: var(--x-table-control-bg, var(--x-color-surface, #fff));
+  border: 1px solid var(--x-table-control-border-color, var(--x-color-border, #cbd5e1));
+  border-radius: 6px;
+  color: var(--x-table-control-text-color, var(--x-color-text, #334155));
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 18px;
+  height: 30px;
+  justify-content: center;
+  padding: 0;
+  width: 30px;
+}
+
+.table-column-settings-story__icon-trigger:hover,
+.table-column-settings-story__icon-trigger:focus-visible,
+.table-column-settings-story__icon-trigger.is-active {
+  border-color: var(--x-color-primary, #1264f4);
+  color: var(--x-color-primary, #1264f4);
+  outline: none;
+}
+
+.table-column-settings-story__icon-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
 .table-column-settings-story__section {
   display: grid;
   gap: 8px;
@@ -175,4 +222,3 @@ function handleReset(value: TableColumnSetting[]) {
   min-width: 0;
 }
 </style>
-

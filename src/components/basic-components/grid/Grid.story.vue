@@ -7,6 +7,11 @@ import '../../../styles/index.css'
 
 const appearance = reactive({
   columns: 3,
+  responsiveColumns: {
+    sm: 1,
+    md: 2,
+    lg: 3
+  },
   rows: '',
   count: 9,
   gap: 8,
@@ -48,8 +53,10 @@ const sampleItems = computed(() =>
 )
 
 const previewCode = computed(() => {
+  const responsiveColumnsCode = getResponsiveColumnsCode()
   const attrs = [
     appearance.columns !== 3 ? `:columns="${appearance.columns}"` : '',
+    responsiveColumnsCode ? `:responsive-columns="${responsiveColumnsCode}"` : '',
     normalizeSize(appearance.rows) ? `rows="${appearance.rows}"` : '',
     appearance.gap !== 0 ? `:gap="${appearance.gap}"` : '',
     normalizeSize(appearance.rowGap) ? `row-gap="${appearance.rowGap}"` : '',
@@ -72,6 +79,14 @@ const previewCode = computed(() => {
 function normalizeSize(value: string) {
   return value.trim() === '' ? undefined : value
 }
+
+function getResponsiveColumnsCode() {
+  const entries = Object.entries(appearance.responsiveColumns)
+    .filter(([, value]) => String(value).trim() !== '')
+    .map(([key, value]) => `${key}: ${Number(value)}`)
+
+  return entries.length > 0 ? `{ ${entries.join(', ')} }` : ''
+}
 </script>
 
 <template>
@@ -82,6 +97,7 @@ function normalizeSize(value: string) {
           <XGrid
             v-bind="styleProps"
             :columns="appearance.columns"
+            :responsive-columns="appearance.responsiveColumns"
             :rows="normalizeSize(appearance.rows)"
             :count="appearance.count"
             :gap="appearance.gap"
@@ -131,6 +147,9 @@ function normalizeSize(value: string) {
 
         <template #column-1>
           <label><span>列数</span><input v-model.number="appearance.columns" type="number" min="1" max="8" /></label>
+          <label><span>小屏列数</span><input v-model.number="appearance.responsiveColumns.sm" type="number" min="1" max="8" /></label>
+          <label><span>中屏列数</span><input v-model.number="appearance.responsiveColumns.md" type="number" min="1" max="8" /></label>
+          <label><span>大屏列数</span><input v-model.number="appearance.responsiveColumns.lg" type="number" min="1" max="8" /></label>
           <label><span>行模板</span><input v-model="appearance.rows" placeholder="repeat(3, 1fr)" /></label>
           <label><span>数量</span><input v-model.number="appearance.count" type="number" min="0" max="24" /></label>
           <label><span>横竖间距</span><input v-model.number="appearance.gap" type="number" min="0" max="40" /></label>
@@ -198,6 +217,7 @@ function normalizeSize(value: string) {
           <section class="grid-story-meta">
             <p><code>GridSize = number | string</code></p>
             <p><code>GridAlign = 'start' | 'center' | 'end' | 'stretch'</code></p>
+            <p><code>GridResponsiveColumns = { sm?: GridSize; md?: GridSize; lg?: GridSize }</code></p>
             <p><code>GridItemOverflow = 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto'</code></p>
           </section>
         </template>

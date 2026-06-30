@@ -15,6 +15,7 @@ export interface TextProps extends ElementStyleProps {
   formatter?: TextFormatter
   disabled?: boolean
   fontFamily?: string
+  fontWeight?: number | string
   fontSize?: number | string
   lineHeight?: number | string
   height?: number | string
