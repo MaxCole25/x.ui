@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import { XBadge } from '../../../src/components/display-components/badge'
 import { XCollapse } from '../../../src/components/display-components/collapse'
 import { XDescriptions } from '../../../src/components/display-components/descriptions'
+import { XList } from '../../../src/components/display-components/list'
 import { XProgress } from '../../../src/components/display-components/progress'
 import { XSkeleton } from '../../../src/components/display-components/skeleton'
 import { XStatistic } from '../../../src/components/display-components/statistic'
@@ -51,10 +52,13 @@ import { XScrollingText } from '../../../src/components/display-components/scrol
 import { XTable } from '../../../src/components/display-components/table'
 import { XTag } from '../../../src/components/display-components/tag'
 import { XTree } from '../../../src/components/display-components/tree'
+import { XTreeTable } from '../../../src/components/display-components/tree-table'
 import { XDropdown } from '../../../src/components/navigation-components/dropdown'
 import { XDropdownItem } from '../../../src/components/navigation-components/dropdown-item'
 import { XDropdownMenu } from '../../../src/components/navigation-components/dropdown-menu'
+import { XFloatButtonGroup } from '../../../src/components/navigation-components/float-button-group'
 import { XTools } from '../../../src/components/navigation-components/tools'
+import { XUserStatus } from '../../../src/components/navigation-components/user-status'
 import { XNavMenu } from '../../../src/components/navigation-components/nav-menu'
 import { XTabs } from '../../../src/components/navigation-components/tabs'
 import { XDialog } from '../../../src/components/feedback-components/dialog'
@@ -83,6 +87,7 @@ export default {
     app.component(XBadge.name!, XBadge)
     app.component(XCollapse.name!, XCollapse)
     app.component(XDescriptions.name!, XDescriptions)
+    app.component(XList.name!, XList)
     app.component(XProgress.name!, XProgress)
     app.component(XSkeleton.name!, XSkeleton)
     app.component(XStatistic.name!, XStatistic)
@@ -139,10 +144,13 @@ export default {
     app.component(XTable.name!, XTable)
     app.component(XTag.name!, XTag)
     app.component(XTree.name!, XTree)
+    app.component(XTreeTable.name!, XTreeTable)
     app.component(XDropdown.name!, XDropdown)
     app.component(XDropdownItem.name!, XDropdownItem)
     app.component(XDropdownMenu.name!, XDropdownMenu)
+    app.component(XFloatButtonGroup.name!, XFloatButtonGroup)
     app.component(XTools.name!, XTools)
+    app.component(XUserStatus.name!, XUserStatus)
     app.component(XNavMenu.name!, XNavMenu)
     app.component(XTabs.name!, XTabs)
     app.component(XDialog.name!, XDialog)

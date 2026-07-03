@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { XIcon } from '../../../basic-components/icon'
+import { XBadge } from '../../../display-components/badge'
 import { XDropdown } from '../../dropdown'
 import { XDropdownItem } from '../../dropdown-item'
 import { XDropdownMenu } from '../../dropdown-menu'
@@ -29,6 +30,8 @@ const emit = defineEmits<{
   'visible-change': [item: ToolsActionItem, visible: boolean]
 }>()
 
+const slots = useSlots()
+
 const toolsStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-tools-z-index': props.zIndex
@@ -44,6 +47,37 @@ function getItemType(item: ToolsActionItem) {
 
 function isItemDisabled(item: ToolsActionItem) {
   return props.disabled || item.disabled
+}
+
+function shouldShowName(item: ToolsActionItem) {
+  return item.showName !== false && Boolean(item.name)
+}
+
+function getToolLabel(item: ToolsActionItem) {
+  return item.name || String(item.key)
+}
+
+function getDropdownAriaLabel(item: ToolsActionItem) {
+  return `打开${getToolLabel(item)}菜单`
+}
+
+function hasBadge(item: ToolsActionItem) {
+  return (
+    item.badgeDot ||
+    item.badgeShowZero ||
+    item.badgeValue !== undefined ||
+    item.badgeHidden !== undefined ||
+    item.badgeMax !== undefined ||
+    item.badgeStatus !== undefined ||
+    item.badgeAccentColor !== undefined ||
+    item.badgeBackgroundColor !== undefined ||
+    item.badgeTextColor !== undefined ||
+    item.badgeBorderColor !== undefined
+  )
+}
+
+function shouldRenderIconWrap(item: ToolsActionItem) {
+  return Boolean(item.icon || hasBadge(item) || slots.icon)
 }
 
 function getMenuCommand(menuItem: ToolsMenuItem) {
@@ -91,13 +125,35 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
           v-if="getItemType(item) === 'button'"
           class="x-tools__item"
           type="button"
+          :aria-label="getToolLabel(item)"
           :disabled="isItemDisabled(item)"
+          :title="getToolLabel(item)"
           @click="handleClick(item, $event)"
         >
-          <slot name="icon" :item="item">
-            <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
-          </slot>
-          <span v-if="item.name" class="x-tools__name">{{ item.name }}</span>
+          <span v-if="shouldRenderIconWrap(item)" class="x-tools__icon-wrap">
+            <XBadge
+              v-if="hasBadge(item)"
+              :model-value="item.badgeValue"
+              :max="item.badgeMax"
+              :dot="item.badgeDot"
+              :hidden="item.badgeHidden"
+              :status="item.badgeStatus"
+              :show-zero="item.badgeShowZero"
+              :size="props.size"
+              :accent-color="item.badgeAccentColor"
+              :background-color="item.badgeBackgroundColor"
+              :text-color="item.badgeTextColor"
+              :border-color="item.badgeBorderColor"
+            >
+              <slot name="icon" :item="item">
+                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+              </slot>
+            </XBadge>
+            <slot v-else name="icon" :item="item">
+              <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+            </slot>
+          </span>
+          <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
         </button>
 
         <XDropdown
@@ -120,26 +176,76 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
               v-if="getItemType(item) === 'dropdown'"
               class="x-tools__item x-tools__item--trigger"
               type="button"
+              :aria-label="getToolLabel(item)"
               :disabled="isItemDisabled(item)"
+              :title="getToolLabel(item)"
             >
-              <slot name="icon" :item="item">
-                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
-              </slot>
-              <span v-if="item.name" class="x-tools__name">{{ item.name }}</span>
+              <span v-if="shouldRenderIconWrap(item)" class="x-tools__icon-wrap">
+                <XBadge
+                  v-if="hasBadge(item)"
+                  :model-value="item.badgeValue"
+                  :max="item.badgeMax"
+                  :dot="item.badgeDot"
+                  :hidden="item.badgeHidden"
+                  :status="item.badgeStatus"
+                  :show-zero="item.badgeShowZero"
+                  :size="props.size"
+                  :accent-color="item.badgeAccentColor"
+                  :background-color="item.badgeBackgroundColor"
+                  :text-color="item.badgeTextColor"
+                  :border-color="item.badgeBorderColor"
+                >
+                  <slot name="icon" :item="item">
+                    <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                  </slot>
+                </XBadge>
+                <slot v-else name="icon" :item="item">
+                  <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                </slot>
+              </span>
+              <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
             </button>
             <button
               v-else-if="item.icon || item.name || item.onClick"
               class="x-tools__item x-tools__item--trigger"
               type="button"
+              :aria-label="getToolLabel(item)"
               :disabled="isItemDisabled(item)"
+              :title="getToolLabel(item)"
               @click.stop="handleClick(item, $event)"
             >
-              <slot name="icon" :item="item">
-                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
-              </slot>
-              <span v-if="item.name" class="x-tools__name">{{ item.name }}</span>
+              <span v-if="shouldRenderIconWrap(item)" class="x-tools__icon-wrap">
+                <XBadge
+                  v-if="hasBadge(item)"
+                  :model-value="item.badgeValue"
+                  :max="item.badgeMax"
+                  :dot="item.badgeDot"
+                  :hidden="item.badgeHidden"
+                  :status="item.badgeStatus"
+                  :show-zero="item.badgeShowZero"
+                  :size="props.size"
+                  :accent-color="item.badgeAccentColor"
+                  :background-color="item.badgeBackgroundColor"
+                  :text-color="item.badgeTextColor"
+                  :border-color="item.badgeBorderColor"
+                >
+                  <slot name="icon" :item="item">
+                    <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                  </slot>
+                </XBadge>
+                <slot v-else name="icon" :item="item">
+                  <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                </slot>
+              </span>
+              <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
             </button>
-            <button class="x-tools__arrow" type="button" :disabled="isItemDisabled(item)" aria-label="打开菜单">
+            <button
+              class="x-tools__arrow"
+              type="button"
+              :disabled="isItemDisabled(item)"
+              :aria-label="getDropdownAriaLabel(item)"
+              :title="getDropdownAriaLabel(item)"
+            >
               <XIcon name="arrow-down-s" :size="props.size" />
             </button>
           </div>

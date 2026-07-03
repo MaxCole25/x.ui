@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<TextareaProps>(), {
   status: 'default',
   rows: 3,
   autoHeight: false,
+  fullHeight: false,
   allowWrap: true,
   showActiveBorder: true
 })
@@ -66,7 +67,7 @@ const textareaStyle = computed(() => ({
   '--x-textarea-font-family': props.fontFamily,
   '--x-textarea-font-size': toCssSize(props.fontSize ?? preset.value?.fontSize),
   '--x-textarea-width': toCssSize(props.width),
-  '--x-textarea-height': props.autoHeight ? contentHeight.value : toCssSize(props.height),
+  '--x-textarea-height': props.fullHeight ? '100%' : props.autoHeight ? contentHeight.value : toCssSize(props.height),
   '--x-textarea-padding': toCssSize(props.padding) ?? preset.value?.padding,
   '--x-textarea-text-align': props.textAlign,
   '--x-textarea-rows': safeRows.value,
@@ -131,6 +132,7 @@ const clear = () => {
         'is-disabled': mergedDisabled,
         'is-readonly': props.readonly,
         'is-auto-height': props.autoHeight,
+        'is-full-height': props.fullHeight,
         'is-nowrap': !props.allowWrap,
         'has-max-rows': safeMaxRows,
         'is-active-border-hidden': !props.showActiveBorder,

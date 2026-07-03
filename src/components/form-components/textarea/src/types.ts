@@ -21,6 +21,7 @@ export interface TextareaProps extends ElementStyleProps {
   rows?: number
   maxRows?: number
   autoHeight?: boolean
+  fullHeight?: boolean
   allowWrap?: boolean
   accentColor?: string
   activeBorderColor?: string

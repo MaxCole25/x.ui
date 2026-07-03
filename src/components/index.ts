@@ -49,7 +49,9 @@ export * from './feedback-components/tooltip'
 export * from './navigation-components/dropdown'
 export * from './navigation-components/dropdown-menu'
 export * from './navigation-components/dropdown-item'
+export * from './navigation-components/float-button-group'
 export * from './navigation-components/tools'
+export * from './navigation-components/user-status'
 export * from './display-components/empty'
 export * from './feedback-components/drawer'
 export * from './basic-components/divider'
@@ -58,8 +60,74 @@ export * from './feedback-components/dialog'
 export * from './basic-components/layout'
 export * from './navigation-components/nav-menu'
 export * from './display-components/tree'
+export { XTreeTable } from './display-components/tree-table'
+export type {
+  TreeTableAlign,
+  TreeTableColumn,
+  TreeTableExpandChangePayload,
+  TreeTableExpose,
+  TreeTableProps,
+  TreeTableRowClickPayload,
+  TreeTableRowData,
+  TreeTableRowInfo,
+  TreeTableRowKey,
+  TreeTableSelectionChangePayload,
+  TreeTableSlots
+} from './display-components/tree-table'
 export * from './navigation-components/tabs'
-export * from './display-components/table'
+export { XTable, XlTable } from './display-components/table'
+export type {
+  TableAlign,
+  TableAppendRowPayload,
+  TableCellChangePayload,
+  TableColumn,
+  TableColumnResizePayload,
+  TableColumnSetting,
+  TableDeleteSelectedRowsPayload,
+  TableDirtyCellChange,
+  TableDirtyChangePayload,
+  TableEditableDataStrategy,
+  TableExcelExportMode,
+  TableExcelExportPayload,
+  TableExcelImportPayload,
+  TableFixed,
+  TableProps,
+  TableReorderPosition,
+  TableRowClickPayload,
+  TableRowKey,
+  TableRowPatchPayload,
+  TableRowReorderPayload,
+  TableSavePayload,
+  TableSelectionMode,
+  TableSorter,
+  TableSortOrder,
+  TableSummaryAggregator,
+  TableSummaryCell,
+  TableSummaryContext,
+  TableSummaryRow,
+  TableSummaryScope,
+  XlTableAppendRowPayload,
+  XlTableColumn,
+  XlTableColumnResizePayload,
+  XlTableDeleteSelectedRowsPayload,
+  XlTableDirtyCellChange,
+  XlTableDirtyChangePayload,
+  XlTableEditableDataStrategy,
+  XlTableExcelExportMode,
+  XlTableExcelExportPayload,
+  XlTableExcelImportPayload,
+  XlTableProps,
+  XlTableRowClickPayload,
+  XlTableRowPatchPayload,
+  XlTableSavePayload,
+  XlTableSorter,
+  XlTableSortOrder,
+  XlTableSummaryAggregator,
+  XlTableSummaryCell,
+  XlTableSummaryContext,
+  XlTableSummaryRow,
+  XlTableSummaryScope
+} from './display-components/table'
 export * from './other-components/login'
 export * from './other-components/login-page'
 export * from './other-components/register'
@@ -81,6 +149,7 @@ export * from './display-components/progress'
 export * from './display-components/skeleton'
 export * from './display-components/collapse'
 export * from './display-components/descriptions'
+export * from './display-components/list'
 export * from './display-components/statistic'
 export * from './feedback-components/alert'
 export * from './feedback-components/popover'

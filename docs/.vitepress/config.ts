@@ -77,13 +77,15 @@ export default defineConfig({
               { text: '徽标 Badge', link: '/components/badge' },
               { text: '折叠面板 Collapse', link: '/components/collapse' },
               { text: '描述列表 Descriptions', link: '/components/descriptions' },
+              { text: '列表 List', link: '/components/list' },
               { text: '进度条 Progress', link: '/components/progress' },
               { text: '骨架屏 Skeleton', link: '/components/skeleton' },
               { text: '统计数值 Statistic', link: '/components/statistic' },
               { text: '滚动文字 ScrollingText', link: '/components/scrolling-text' },
               { text: '表格 Table', link: '/components/table' },
               { text: '标签 Tag', link: '/components/tag' },
-              { text: '树目录 Tree', link: '/components/tree' }
+              { text: '树目录 Tree', link: '/components/tree' },
+              { text: '树表 TreeTable', link: '/components/tree-table' }
             ]
           },
           {
@@ -92,7 +94,9 @@ export default defineConfig({
               { text: '下拉菜单 Dropdown', link: '/components/dropdown' },
               { text: '下拉菜单容器 DropdownMenu', link: '/components/dropdown-menu' },
               { text: '下拉菜单项 DropdownItem', link: '/components/dropdown-item' },
+              { text: '悬浮按钮组 FloatButtonGroup', link: '/components/float-button-group' },
               { text: '工具栏 Tools', link: '/components/tools' },
+              { text: '用户状态 UserStatus', link: '/components/user-status' },
               { text: '面包屑 Breadcrumb', link: '/components/breadcrumb' },
               { text: '分页 Pagination', link: '/components/pagination' },
               { text: '步骤条 Steps', link: '/components/steps' },

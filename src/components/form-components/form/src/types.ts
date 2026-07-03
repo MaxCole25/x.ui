@@ -52,7 +52,10 @@ export interface FormItemProps {
   size?: FormSize
   disabled?: boolean
   labelWidth?: string | number
+  labelHeight?: string | number
+  labelGap?: string | number
   labelPosition?: FormLabelPosition
+  contentHeight?: string | number
   contentFullHeight?: boolean
   align?: FormItemAlign
   labelAlign?: FormItemHorizontalAlign

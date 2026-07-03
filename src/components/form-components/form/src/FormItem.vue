@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey, formItemContextKey } from './context'
 import type { FormControlSize, FormItemAlign, FormItemHorizontalAlign, FormItemProps, FormItemRule, FormItemStyle, FormLabelPosition, FormPublicSize, FormSize } from './types'
 
@@ -37,6 +38,7 @@ const mergedLabelPosition = computed<FormLabelPosition>(() => props.labelPositio
 const mergedAlign = computed<FormItemAlign>(() => props.align)
 const displayError = computed(() => props.error ?? validateMessage.value)
 const mergedContentFullHeight = computed(() => props.contentFullHeight)
+const hasContentHeight = computed(() => props.contentHeight != null)
 
 const fieldJustifyMap: Record<NonNullable<FormItemProps['contentJustify']>, string> = {
   start: 'flex-start',
@@ -113,6 +115,9 @@ const itemThemeStyle = computed<Record<string, string> | undefined>(() => {
   const labelColor = props.labelTextColor ?? props.labelColor
   const hintColor = props.hintTextColor ?? props.descriptionTextColor
 
+  if (props.contentHeight != null) style['--x-form-item-content-height'] = toCssSize(props.contentHeight) ?? String(props.contentHeight)
+  if (props.labelHeight != null) style['--x-form-item-label-height'] = toCssSize(props.labelHeight) ?? String(props.labelHeight)
+  if (props.labelGap != null) style['--x-form-item-label-gap'] = toCssSize(props.labelGap) ?? String(props.labelGap)
   if (labelColor) style['--x-form-item-label-color'] = labelColor
   if (props.contentTextColor) style['--x-form-item-content-color'] = props.contentTextColor
   if (props.backgroundColor) style['--x-form-item-bg'] = props.backgroundColor
@@ -244,6 +249,7 @@ onBeforeUnmount(() => {
       `x-form-item--label-${mergedLabelPosition}`,
       {
         'x-form-item--align-center': mergedAlign === 'center',
+        'x-form-item--content-height': hasContentHeight,
         'x-form-item--content-fill-height': mergedContentFullHeight,
         'is-required': isRequired,
         'is-error': Boolean(displayError),

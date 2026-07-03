@@ -2,6 +2,7 @@ import type { App, Plugin } from 'vue'
 import { XBadge } from './components/display-components/badge'
 import { XCollapse } from './components/display-components/collapse'
 import { XDescriptions } from './components/display-components/descriptions'
+import { XList } from './components/display-components/list'
 import { XProgress } from './components/display-components/progress'
 import { XSkeleton } from './components/display-components/skeleton'
 import { XStatistic } from './components/display-components/statistic'
@@ -36,7 +37,9 @@ import { XDrawer } from './components/feedback-components/drawer'
 import { XDropdown } from './components/navigation-components/dropdown'
 import { XDropdownItem } from './components/navigation-components/dropdown-item'
 import { XDropdownMenu } from './components/navigation-components/dropdown-menu'
+import { XFloatButtonGroup } from './components/navigation-components/float-button-group'
 import { XTools } from './components/navigation-components/tools'
+import { XUserStatus } from './components/navigation-components/user-status'
 import { XEmpty } from './components/display-components/empty'
 import { XFileDisk } from './components/other-components/file-disk'
 import { XFlow, XFlowItem } from './components/basic-components/flow'
@@ -71,6 +74,7 @@ import { XTooltip } from './components/feedback-components/tooltip'
 import { XTimePicker } from './components/form-components/time-picker'
 import { XTimeSelect } from './components/form-components/time-select'
 import { XTree } from './components/display-components/tree'
+import { XTreeTable } from './components/display-components/tree-table'
 import './styles/index.css'
 
 export { componentSizeOptions, componentSizePreset } from './components/_utils/size'
@@ -81,6 +85,7 @@ export type { OverlayZIndexName } from './components/_utils/zIndex'
 export { XBadge }
 export { XCollapse }
 export { XDescriptions }
+export { XList }
 export { XProgress }
 export { XSkeleton }
 export { XStatistic }
@@ -115,7 +120,9 @@ export { XDrawer }
 export { XDropdown }
 export { XDropdownItem }
 export { XDropdownMenu }
+export { XFloatButtonGroup }
 export { XTools }
+export { XUserStatus }
 export { XEmpty }
 export { XFileDisk }
 export { XFlow }
@@ -158,6 +165,7 @@ export { XTimePicker }
 export { XTimeSelect }
 export { XTooltip }
 export { XTree }
+export { XTreeTable }
 export { RICH_TEXT_EDITOR_TOOLBAR_BUTTONS } from './components/other-components/rich-text-editor'
 
 export type {
@@ -232,7 +240,9 @@ export type { DrawerDirection, DrawerProps } from './components/feedback-compone
 export type { DropdownItemProps } from './components/navigation-components/dropdown-item'
 export type { DropdownMenuProps } from './components/navigation-components/dropdown-menu'
 export type { DropdownPlacement, DropdownProps, DropdownTrigger } from './components/navigation-components/dropdown'
+export type { FloatButtonGroupDirection, FloatButtonGroupItem, FloatButtonGroupItemKey, FloatButtonGroupMode, FloatButtonGroupPlacement, FloatButtonGroupPosition, FloatButtonGroupProps } from './components/navigation-components/float-button-group'
 export type { ToolsActionItem, ToolsItem, ToolsItemKey, ToolsItemType, ToolsMenuItem, ToolsProps, ToolsSeparatorItem } from './components/navigation-components/tools'
+export type { UserStatusMenuItem, UserStatusProps } from './components/navigation-components/user-status'
 export type { EmptyProps } from './components/display-components/empty'
 export type { FileDiskAdapter, FileDiskClipboardAction, FileDiskClipboardPayload, FileDiskColors, FileDiskCreateFolderPayload, FileDiskDownloadOptions, FileDiskDownloadPayload, FileDiskItem, FileDiskItemType, FileDiskPermission, FileDiskProps, FileDiskRenamePayload, FileDiskTransferPayload, FileDiskUploadPayload, FileDiskViewMode } from './components/other-components/file-disk'
 export type { FlowAlign, FlowItemKey, FlowItemOverflow, FlowItemProps, FlowProps, FlowSize } from './components/basic-components/flow'
@@ -277,6 +287,7 @@ export type {
 } from './components/other-components/login-page'
 export type { RegisterLabelPosition, RegisterLogoPosition, RegisterProps, RegisterSize, RegisterSubmitPayload } from './components/other-components/register'
 export type { LoadingInstance, LoadingOptions, LoadingProps } from './components/feedback-components/loading'
+export type { ListItem, ListItemClickPayload, ListItemSlotProps, ListItemValue, ListProps, ListSize } from './components/display-components/list'
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
 export type { MessageBoxAction, MessageBoxOptions, MessageBoxProps, MessageBoxType } from './components/feedback-components/message-box'
 export type { NavMenuItem, NavMenuMode, NavMenuProps } from './components/navigation-components/nav-menu'
@@ -362,6 +373,19 @@ export type {
   TreeNodeData,
   TreeProps
 } from './components/display-components/tree'
+export type {
+  TreeTableAlign,
+  TreeTableColumn,
+  TreeTableExpandChangePayload,
+  TreeTableExpose,
+  TreeTableProps,
+  TreeTableRowClickPayload,
+  TreeTableRowData,
+  TreeTableRowInfo,
+  TreeTableRowKey,
+  TreeTableSelectionChangePayload,
+  TreeTableSlots
+} from './components/display-components/tree-table'
 
 const components = [
   XButton,
@@ -397,13 +421,16 @@ const components = [
   XFlow,
   XFlowItem,
   XScrollingText,
+  XList,
   XAvatar,
   XTag,
   XTooltip,
   XDropdown,
   XDropdownMenu,
   XDropdownItem,
+  XFloatButtonGroup,
   XTools,
+  XUserStatus,
   XEmpty,
   XDrawer,
   XDivider,
@@ -418,6 +445,7 @@ const components = [
   XLayout,
   XNavMenu,
   XTree,
+  XTreeTable,
   XTabs,
   XTable,
   XLogin,
