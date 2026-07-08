@@ -4,6 +4,7 @@ import { ref } from 'vue'
 const current = ref('audit')
 const alignCurrent = ref('notice-1')
 const lazyCurrent = ref('order')
+const dragCurrent = ref('audit')
 const loading = ref(false)
 const finished = ref(false)
 const loadCount = ref(0)
@@ -14,6 +15,7 @@ const listItems = [
   { value: 'archive', title: '归档记录', description: '当前账号暂无归档权限。', icon: '档', extra: '禁用', disabled: true }
 ]
 const lazyItems = ref([...listItems])
+const dragItems = ref([...listItems])
 const alignedItems = [
   { value: 'notice-1', title: '系统通知', description: '你的申请已经进入复核流程，请留意后续状态变化。', icon: '通', extra: '09:12', align: 'start' },
   { value: 'notice-2', title: '处理记录', description: '已提交补充材料，等待业务方确认。', icon: '记', extra: '09:18', align: 'end' },
@@ -33,6 +35,10 @@ function loadMore() {
     loading.value = false
     finished.value = loadCount.value >= 3
   }, 600)
+}
+
+function handleItemReorder(payload) {
+  dragItems.value = payload.items
 }
 
 const basicCode = `\x3Cscript setup lang="ts">
@@ -73,6 +79,28 @@ const lazyCode = `<XList
   :loading="loading"
   :finished="finished"
   @load-more="loadMore"
+/>`
+
+const draggableCode = `\x3Cscript setup lang="ts">
+import { ref } from 'vue'
+
+const current = ref('audit')
+const items = ref([
+  { value: 'audit', title: '审核中心', description: '12 条待处理审批。', icon: '审', extra: '待办 12' },
+  { value: 'order', title: '订单同步', description: '队列运行正常。', icon: '单', extra: '正常' },
+  { value: 'risk', title: '风险提醒', description: '命中 3 条高优先级策略。', icon: '险', extra: '高' }
+])
+
+function handleItemReorder(payload) {
+  items.value = payload.items
+}
+<\/script>
+
+<XList
+  v-model="current"
+  draggable
+  :items="items"
+  @item-reorder="handleItemReorder"
 />`
 </script>
 
@@ -133,6 +161,19 @@ const lazyCode = `<XList
   />
 </XDocDemo>
 
+## 拖拽排序
+
+开启 `draggable` 后，信息块可以拖拽到其它信息块前后。组件不会直接改写 `items`，拖拽完成时会触发 `item-reorder`，业务侧使用事件中的 `items` 更新数据源顺序。
+
+<XDocDemo title="拖拽排序" :code="draggableCode">
+  <XList
+    v-model="dragCurrent"
+    draggable
+    :items="dragItems"
+    @item-reorder="handleItemReorder"
+  />
+</XDocDemo>
+
 ## Props
 
 | 名称 | 说明 | 类型 | 默认值 |
@@ -140,6 +181,7 @@ const lazyCode = `<XList
 | modelValue | 当前选中项值，支持 `v-model` | `ListItemValue` | - |
 | items | 信息块列表 | `ListItem[]` | `[]` |
 | disabled | 是否整体禁用 | `boolean` | `false` |
+| draggable | 是否允许信息块拖拽排序 | `boolean` | `false` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
 | height | 列表高度，设置后列表自身滚动 | `number \| string` | - |
 | maxHeight | 列表最大高度，设置后列表自身滚动 | `number \| string` | - |
@@ -167,6 +209,7 @@ const lazyCode = `<XList
 | update:modelValue | 选中值变化 |
 | change | 选中项变化，返回 `(value, item)` |
 | item-click | 点击可用项时触发，返回 `{ item, index, active, disabled, event }` |
+| item-reorder | 拖拽排序完成时触发，返回 `ListItemReorderPayload`，业务侧应使用 `items` 更新数据源 |
 | load-more | 滚动接近底部且非加载中、非完成时触发 |
 
 ## Slots
@@ -195,7 +238,21 @@ const lazyCode = `<XList
 | avatar | 头像图片地址 | `string` |
 | extra | 右侧内容 | `string \| number` |
 | disabled | 是否禁用当前项 | `boolean` |
+| draggable | 是否允许当前项作为拖拽源，优先级高于列表级 `draggable` | `boolean` |
 | align | 当前条目内容块对齐方式，优先级高于 `itemAlign` | `start \| end \| stretch` |
+
+### ListItemReorderPayload
+
+| 名称 | 说明 | 类型 |
+| --- | --- | --- |
+| item | 被拖拽的信息块 | `ListItem` |
+| targetItem | 放置目标信息块 | `ListItem` |
+| fromIndex | 原始索引 | `number` |
+| toIndex | 建议插入后的索引 | `number` |
+| sourceValue | 被拖拽项值 | `ListItemValue` |
+| targetValue | 目标项值 | `ListItemValue` |
+| position | 放置在目标项之前或之后 | `before \| after` |
+| items | 按本次拖拽结果计算出的新数组 | `ListItem[]` |
 
 ## 手动验收建议
 
@@ -205,3 +262,4 @@ const lazyCode = `<XList
 4. 设置 `item.align`、`itemContentWidthMode` 和 `itemContentMaxWidth`，确认内容块左右对齐时按钮点击区域仍占满整行，且可在自适应宽度与统一宽度之间切换。
 5. 设置 `height` 后滚动到底部，确认只在非 `loading`、非 `finished` 时触发 `load-more`。
 6. 开启 `enableEqualItemHeight`，确认所有信息块高度统一，右侧 `extra` 内容保持横向右对齐。
+7. 开启 `draggable` 后拖动信息块到其它项前后，确认插入线、`item-reorder` 事件和业务侧更新后的顺序正确；禁用项不能被拖起，但可以作为落点。

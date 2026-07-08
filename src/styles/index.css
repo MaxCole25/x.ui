@@ -5213,6 +5213,7 @@
   min-width: 0;
   padding: var(--x-text-padding, 0);
   text-align: var(--x-text-align, left);
+  width: var(--x-text-width, auto);
 }
 
 .x-text--sm {

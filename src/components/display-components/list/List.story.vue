@@ -3,16 +3,18 @@ import { computed, reactive, ref } from 'vue'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XList } from './index'
 import '../../../styles/index.css'
-import type { ListItem, ListItemAlign, ListItemContentWidthMode, ListItemValue } from './src/types'
+import type { ListItem, ListItemAlign, ListItemContentWidthMode, ListItemReorderPayload, ListItemValue } from './src/types'
 
 const selectedValue = ref<ListItemValue>('audit')
 const eventState = reactive({
   change: 'audit',
   itemClick: '审核中心',
-  loadMore: 0
+  loadMore: 0,
+  itemReorder: '暂无'
 })
 const appearance = reactive({
   disabled: false,
+  draggable: true,
   size: 'md',
   height: 220,
   maxHeight: 260,
@@ -73,6 +75,16 @@ function handleItemClick(payload: { item: ListItem }) {
 function handleLoadMore() {
   eventState.loadMore += 1
 }
+
+function handleItemReorder(payload: ListItemReorderPayload) {
+  eventState.itemReorder = `${payload.sourceValue} -> ${payload.targetValue} (${payload.position})`
+  if (appearance.scene === '左右对齐') {
+    alignedItems.value = payload.items
+    return
+  }
+
+  listItems.value = payload.items
+}
 </script>
 
 <template>
@@ -84,6 +96,7 @@ function handleLoadMore() {
             v-model="selectedValue"
             :items="currentItems"
             :disabled="appearance.disabled"
+            :draggable="appearance.draggable"
             :size="listSize"
             :height="appearance.height"
             :max-height="appearance.maxHeight"
@@ -106,6 +119,7 @@ function handleLoadMore() {
             :style="listStyle"
             @change="handleChange"
             @item-click="handleItemClick"
+            @item-reorder="handleItemReorder"
             @load-more="handleLoadMore"
           >
             <template v-if="appearance.slotMode === '局部插槽'" #extra="{ item, active }">
@@ -151,6 +165,7 @@ function handleLoadMore() {
         </template>
         <template #column-4>
           <label class="story-check"><input v-model="appearance.disabled" type="checkbox" /><span>禁用</span></label>
+          <label class="story-check"><input v-model="appearance.draggable" type="checkbox" /><span>可拖拽</span></label>
           <label class="story-check"><input v-model="appearance.bordered" type="checkbox" /><span>显示边框</span></label>
           <label class="story-check"><input v-model="appearance.hoverable" type="checkbox" /><span>悬停反馈</span></label>
           <label class="story-check"><input v-model="appearance.enableEqualItemHeight" type="checkbox" /><span>启用等高信息块</span></label>
@@ -158,13 +173,13 @@ function handleLoadMore() {
           <label class="story-check"><input v-model="appearance.finished" type="checkbox" /><span>加载完成</span></label>
         </template>
         <template #interfaces>
-          <p class="story-note">Props 覆盖选中值、数据项、尺寸、禁用、边框、等高信息块、内容对齐、内容宽度模式、内容宽度、选中色、加载状态、完成状态和滚动触发距离。</p>
+          <p class="story-note">Props 覆盖选中值、数据项、尺寸、禁用、拖拽、边框、等高信息块、内容对齐、内容宽度模式、内容宽度、选中色、加载状态、完成状态和滚动触发距离。</p>
         </template>
         <template #types>
-          <p class="story-note"><code>ListItemValue</code>、<code>ListItemAlign</code>、<code>ListItemContentWidthMode</code>、<code>ListItem</code>、<code>ListItemSlotProps</code>、<code>ListItemClickPayload</code>、<code>ListProps</code></p>
+          <p class="story-note"><code>ListItemValue</code>、<code>ListItemAlign</code>、<code>ListItemContentWidthMode</code>、<code>ListReorderPosition</code>、<code>ListItem</code>、<code>ListItemSlotProps</code>、<code>ListItemClickPayload</code>、<code>ListItemReorderPayload</code>、<code>ListProps</code></p>
         </template>
         <template #events>
-          <p class="story-note">change: {{ eventState.change }}；item-click: {{ eventState.itemClick }}；load-more: {{ eventState.loadMore }} 次</p>
+          <p class="story-note">change: {{ eventState.change }}；item-click: {{ eventState.itemClick }}；item-reorder: {{ eventState.itemReorder }}；load-more: {{ eventState.loadMore }} 次</p>
         </template>
       </ElementStylePlayground>
     </Variant>

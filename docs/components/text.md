@@ -21,6 +21,7 @@ const textAppearanceCode = `\x3Cscript setup lang="ts">
     :font-weight="400"
     :font-size="12"
     line-height="1.55"
+    width="100%"
     :height="40"
     radius="8px"
     padding="5px 10px"
@@ -54,7 +55,7 @@ const textFormatterCode = `\x3Cscript setup lang="ts">
 ## 外观接口
 
 `XText` 支持常用外观属性，可用于在低代码配置面板中统一控制文本容器、边框和字号样式。
-当显式传入 `size="sm" | "md" | "lg"` 时，组件会按统一尺寸预设接管字号、高度、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`；未显式传入 `size` 时，仍可通过 `fontSize`、`height`、`padding`、`radius` 做局部外观调整。
+当显式传入 `size="sm" | "md" | "lg"` 时，组件会按统一尺寸预设接管字号、高度、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`；未显式传入 `size` 时，仍可通过 `fontSize`、`height`、`padding`、`radius` 做局部外观调整，`width` 可独立控制组件宽度。
 `fontWeight` 用于控制字体粗细，支持 `400`、`700`、`normal`、`bold` 等 CSS `font-weight` 值；未传入时正文默认 `400`，`size="title"` 默认 `700`。
 设置 `autoHeight` 后，组件会撑满父元素高度；如需控制文字在父元素内的垂直位置，可使用 `verticalAlign="top" | "middle" | "bottom"`。当需要更贴近底部对齐时，可配合 `lineHeight="1"` 减少文字行盒上下留白。
 
@@ -69,6 +70,7 @@ const textFormatterCode = `\x3Cscript setup lang="ts">
     :font-weight="400"
     :font-size="12"
     line-height="1.55"
+    width="100%"
     :height="40"
     radius="8px"
     padding="5px 10px"
@@ -107,6 +109,7 @@ const textFormatterCode = `\x3Cscript setup lang="ts">
 | fontWeight | 字体粗细 | `number \| string` | 正文 `400`，标题 `700` |
 | fontSize | 字体大小，未显式传入 `size` 时生效 | `number \| string` | `undefined` |
 | lineHeight | 行高，数字会作为无单位行高使用 | `number \| string` | `undefined` |
+| width | 组件宽度 | `number \| string` | `undefined` |
 | height | 组件高度，未显式传入 `size` 时生效 | `number \| string` | `undefined` |
 | autoHeight | 是否自动高度 | `boolean` | `false` |
 | padding | 容器内边距，未显式传入 `size` 时生效 | `number \| string` | `undefined` |

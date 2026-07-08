@@ -54,6 +54,7 @@ const textStyle = computed(() => ({
   '--x-text-font-weight': toCssFontWeight(props.fontWeight),
   '--x-text-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value?.fontSize) : toCssSize(props.fontSize),
   '--x-text-line-height': toCssLineHeight(props.lineHeight),
+  '--x-text-width': toCssSize(props.width),
   '--x-text-height': props.autoHeight ? 'auto' : hasExplicitSize.value ? toCssSize(sizePreset.value?.height) : toCssSize(props.height),
   '--x-text-padding': hasExplicitSize.value ? sizePreset.value?.padding : toCssSize(props.padding),
   '--x-text-radius': hasExplicitSize.value ? sizePreset.value?.radius : props.radius,

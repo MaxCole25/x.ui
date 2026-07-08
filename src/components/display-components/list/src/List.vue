@@ -2,7 +2,16 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
 import type { CSSProperties } from 'vue'
-import type { ListItem, ListItemAlign, ListItemClickPayload, ListItemSlotProps, ListItemValue, ListProps } from './types'
+import type {
+  ListItem,
+  ListItemAlign,
+  ListItemClickPayload,
+  ListItemReorderPayload,
+  ListItemSlotProps,
+  ListItemValue,
+  ListProps,
+  ListReorderPosition
+} from './types'
 
 defineOptions({
   name: 'XList'
@@ -11,6 +20,7 @@ defineOptions({
 const props = withDefaults(defineProps<ListProps>(), {
   items: () => [],
   disabled: false,
+  draggable: false,
   size: 'md',
   bordered: true,
   hoverable: true,
@@ -39,10 +49,15 @@ const emit = defineEmits<{
   'update:modelValue': [value: ListItemValue]
   change: [value: ListItemValue, item: ListItem]
   'item-click': [payload: ListItemClickPayload]
+  'item-reorder': [payload: ListItemReorderPayload]
   'load-more': []
 }>()
 
 const rootRef = ref<HTMLElement>()
+const draggingValue = ref<ListItemValue | null>(null)
+const draggingIndex = ref(-1)
+const dragOverValue = ref<ListItemValue | null>(null)
+const dragOverPosition = ref<ListReorderPosition | null>(null)
 let scrollFrame = 0
 
 const listStyle = computed<CSSProperties>(() => ({
@@ -67,6 +82,14 @@ function isDisabled(item: ListItem) {
   return Boolean(props.disabled || item.disabled)
 }
 
+function canDrag(item: ListItem) {
+  return Boolean(props.draggable && !isDisabled(item) && item.draggable !== false)
+}
+
+function canReceiveDrop(item: ListItem) {
+  return Boolean(props.draggable && draggingValue.value !== null && draggingValue.value !== item.value)
+}
+
 function getItemAlign(item: ListItem): ListItemAlign {
   return item.align ?? props.itemAlign ?? 'stretch'
 }
@@ -87,6 +110,83 @@ function handleItemClick(item: ListItem, index: number, event: MouseEvent) {
   emit('item-click', { ...slotProps, event })
   emit('update:modelValue', item.value)
   emit('change', item.value, item)
+}
+
+function handleItemDragStart(item: ListItem, index: number, event: DragEvent) {
+  if (!canDrag(item)) return
+
+  draggingValue.value = item.value
+  draggingIndex.value = index
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', String(item.value))
+  }
+}
+
+function handleItemDragOver(item: ListItem, event: DragEvent) {
+  if (!canReceiveDrop(item)) {
+    dragOverValue.value = null
+    dragOverPosition.value = null
+    return
+  }
+
+  event.preventDefault()
+  const current = event.currentTarget as HTMLElement | null
+  if (!current) return
+
+  const rect = current.getBoundingClientRect()
+  dragOverValue.value = item.value
+  dragOverPosition.value = event.clientY - rect.top > rect.height / 2 ? 'after' : 'before'
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move'
+  }
+}
+
+function handleItemDrop(item: ListItem, event: DragEvent) {
+  if (!canReceiveDrop(item)) return
+
+  event.preventDefault()
+  const sourceValue = draggingValue.value
+  const fromIndex = draggingIndex.value
+  const position = dragOverPosition.value ?? 'before'
+  resetDragState()
+
+  if (sourceValue === null || sourceValue === item.value || fromIndex < 0) return
+
+  const items = [...props.items]
+  const currentFromIndex = items.findIndex((sourceItem) => sourceItem.value === sourceValue)
+  const targetIndex = items.findIndex((targetItem) => targetItem.value === item.value)
+  if (currentFromIndex < 0 || targetIndex < 0) return
+
+  const [draggingItem] = items.splice(currentFromIndex, 1)
+  let toIndex = targetIndex
+  if (currentFromIndex < targetIndex) {
+    toIndex -= 1
+  }
+  if (position === 'after') {
+    toIndex += 1
+  }
+  toIndex = Math.min(Math.max(toIndex, 0), items.length)
+  items.splice(toIndex, 0, draggingItem)
+  if (toIndex === currentFromIndex) return
+
+  emit('item-reorder', {
+    item: draggingItem,
+    targetItem: item,
+    fromIndex,
+    toIndex,
+    sourceValue,
+    targetValue: item.value,
+    position,
+    items
+  })
+}
+
+function resetDragState() {
+  draggingValue.value = null
+  draggingIndex.value = -1
+  dragOverValue.value = null
+  dragOverPosition.value = null
 }
 
 function syncLoadMore() {
@@ -135,11 +235,25 @@ onBeforeUnmount(() => {
       v-for="(item, index) in props.items"
       :key="item.value"
       class="x-list__item"
-      :class="{ 'is-active': isActive(item), 'is-disabled': isDisabled(item) }"
+      :class="{
+        'is-active': isActive(item),
+        'is-disabled': isDisabled(item),
+        'is-draggable': canDrag(item),
+        'is-dragging': item.value === draggingValue,
+        'is-drag-over-before': item.value === dragOverValue && dragOverPosition === 'before',
+        'is-drag-over-after': item.value === dragOverValue && dragOverPosition === 'after'
+      }"
       type="button"
-      :disabled="isDisabled(item)"
+      :disabled="props.disabled || (isDisabled(item) && !props.draggable)"
+      :draggable="canDrag(item)"
       :aria-pressed="isActive(item)"
+      :aria-disabled="isDisabled(item)"
+      :tabindex="isDisabled(item) && props.draggable ? -1 : undefined"
       @click="handleItemClick(item, index, $event)"
+      @dragstart="handleItemDragStart(item, index, $event)"
+      @dragover="handleItemDragOver(item, $event)"
+      @drop="handleItemDrop(item, $event)"
+      @dragend="resetDragState"
     >
       <span
         class="x-list__item-content"
@@ -288,6 +402,39 @@ onBeforeUnmount(() => {
 .x-list__item.is-disabled {
   cursor: not-allowed;
   opacity: 0.56;
+}
+
+.x-list__item.is-draggable {
+  cursor: move;
+}
+
+.x-list__item.is-dragging {
+  opacity: 0.42;
+}
+
+.x-list__item.is-drag-over-before,
+.x-list__item.is-drag-over-after {
+  position: relative;
+}
+
+.x-list__item.is-drag-over-before::before,
+.x-list__item.is-drag-over-after::after {
+  background: var(--x-color-primary);
+  border-radius: 999px;
+  content: '';
+  height: 2px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.x-list__item.is-drag-over-before::before {
+  top: -5px;
+}
+
+.x-list__item.is-drag-over-after::after {
+  bottom: -5px;
 }
 
 .x-list__media {

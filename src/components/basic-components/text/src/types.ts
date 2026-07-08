@@ -18,6 +18,7 @@ export interface TextProps extends ElementStyleProps {
   fontWeight?: number | string
   fontSize?: number | string
   lineHeight?: number | string
+  width?: number | string
   height?: number | string
   autoHeight?: boolean
   padding?: number | string

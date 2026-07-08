@@ -3,6 +3,7 @@ export type ListSize = 'sm' | 'md' | 'lg'
 export type ListSizeValue = string | number
 export type ListItemAlign = 'start' | 'end' | 'stretch'
 export type ListItemContentWidthMode = 'auto' | 'equal'
+export type ListReorderPosition = 'before' | 'after'
 
 export interface ListItem {
   value: ListItemValue
@@ -12,6 +13,7 @@ export interface ListItem {
   avatar?: string
   extra?: string | number
   disabled?: boolean
+  draggable?: boolean
   align?: ListItemAlign
 }
 
@@ -26,10 +28,22 @@ export interface ListItemClickPayload extends ListItemSlotProps {
   event: MouseEvent
 }
 
+export interface ListItemReorderPayload {
+  item: ListItem
+  targetItem: ListItem
+  fromIndex: number
+  toIndex: number
+  sourceValue: ListItemValue
+  targetValue: ListItemValue
+  position: ListReorderPosition
+  items: ListItem[]
+}
+
 export interface ListProps {
   modelValue?: ListItemValue
   items?: ListItem[]
   disabled?: boolean
+  draggable?: boolean
   size?: ListSize
   height?: ListSizeValue
   maxHeight?: ListSizeValue

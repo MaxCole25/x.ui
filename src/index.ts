@@ -287,7 +287,16 @@ export type {
 } from './components/other-components/login-page'
 export type { RegisterLabelPosition, RegisterLogoPosition, RegisterProps, RegisterSize, RegisterSubmitPayload } from './components/other-components/register'
 export type { LoadingInstance, LoadingOptions, LoadingProps } from './components/feedback-components/loading'
-export type { ListItem, ListItemClickPayload, ListItemSlotProps, ListItemValue, ListProps, ListSize } from './components/display-components/list'
+export type {
+  ListItem,
+  ListItemClickPayload,
+  ListItemReorderPayload,
+  ListItemSlotProps,
+  ListItemValue,
+  ListProps,
+  ListReorderPosition,
+  ListSize
+} from './components/display-components/list'
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
 export type { MessageBoxAction, MessageBoxOptions, MessageBoxProps, MessageBoxType } from './components/feedback-components/message-box'
 export type { NavMenuItem, NavMenuMode, NavMenuProps } from './components/navigation-components/nav-menu'

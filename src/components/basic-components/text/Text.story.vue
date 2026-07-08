@@ -19,6 +19,7 @@ const sample = reactive({
   lineHeight: '1.55',
   previewWidth: 420,
   previewHeight: 92,
+  width: '100%',
   height: 40,
   autoHeight: false,
   padding: '5px 10px',
@@ -83,6 +84,7 @@ const verticalAlignOptions: Array<{ label: string; value: TextVerticalAlign }> =
               :font-weight="sample.fontWeight"
               :font-size="sample.fontSize"
               :line-height="sample.lineHeight"
+              :width="sample.width"
               :height="sample.height"
               :auto-height="sample.autoHeight"
               :padding="sample.padding"
@@ -150,6 +152,10 @@ const verticalAlignOptions: Array<{ label: string; value: TextVerticalAlign }> =
             <label>
               <span>行高</span>
               <input v-model="sample.lineHeight" />
+            </label>
+            <label>
+              <span>组件宽度</span>
+              <input v-model="sample.width" />
             </label>
             <label>
               <span>容器宽度</span>
@@ -255,10 +261,6 @@ const verticalAlignOptions: Array<{ label: string; value: TextVerticalAlign }> =
   display: flex;
   overflow: auto;
   padding: 10px;
-}
-
-.text-story__sandbox :deep(.x-text) {
-  width: 100%;
 }
 
 .text-story__controls {
