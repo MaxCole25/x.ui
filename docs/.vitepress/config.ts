@@ -33,6 +33,7 @@ export default defineConfig({
               { text: '基础输入框 BaseInput', link: '/components/base-input' },
               { text: '砖格 Brick', link: '/components/brick' },
               { text: '卡片 Card', link: '/components/card' },
+              { text: '分组容器 GroupContainer', link: '/components/group-container' },
               { text: '分割线 Divider', link: '/components/divider' },
               { text: '流式布局 Flow', link: '/components/flow' },
               { text: '宫格 Grid', link: '/components/grid' },

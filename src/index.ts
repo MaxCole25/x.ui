@@ -21,6 +21,7 @@ import { XButton } from './components/basic-components/button'
 import { XButtonGroup } from './components/basic-components/button-group'
 import { XBrick, XBrickItem } from './components/basic-components/brick'
 import { XCard } from './components/basic-components/card'
+import { XGroupContainer } from './components/basic-components/group-container'
 import { XChart } from './components/display-components/chart'
 import { XCascader } from './components/form-components/cascader'
 import { XCheckbox } from './components/form-components/checkbox'
@@ -104,6 +105,7 @@ export { XButtonGroup }
 export { XBrick }
 export { XBrickItem }
 export { XCard }
+export { XGroupContainer }
 export { XChart }
 export { XCascader }
 export { XCheckbox }
@@ -182,6 +184,7 @@ export type { BrickDirection, BrickItemOverflow, BrickItemProps, BrickProps, Bri
 export type { ButtonProps, ButtonVariant } from './components/basic-components/button'
 export type { ButtonGroupDirection, ButtonGroupProps } from './components/basic-components/button-group'
 export type { CardProps, CardShadow } from './components/basic-components/card'
+export type { GroupContainerBorderStyle, GroupContainerProps, GroupContainerTitlePosition } from './components/basic-components/group-container'
 export type {
   ChartAutoresize,
   ChartEventBinding,
@@ -316,7 +319,7 @@ export type {
 export type { SliderProps } from './components/form-components/slider'
 export type { SwitchLabelPosition, SwitchProps, SwitchSize } from './components/form-components/switch'
 export type { TagEffect, TagProps, TagSize, TagType } from './components/display-components/tag'
-export type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsCloseAllPayload, TabsCloseOthersPayload, TabsEditAction, TabsPaneContext, TabsProps, TabsReorderPayload, TabsReorderPosition, TabsType } from './components/navigation-components/tabs'
+export type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsCloseAllPayload, TabsCloseOthersPayload, TabsEditAction, TabsExpose, TabsPaneContext, TabsProps, TabsReorderPayload, TabsReorderPosition, TabsType } from './components/navigation-components/tabs'
 export type {
   TableAlign,
   TableAppendRowPayload,
@@ -402,6 +405,7 @@ const components = [
   XBrick,
   XBrickItem,
   XCard,
+  XGroupContainer,
   XChart,
   XText,
   XBaseInput,

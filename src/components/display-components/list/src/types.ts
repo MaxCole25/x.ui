@@ -54,7 +54,17 @@ export interface ListProps {
   itemContentWidthMode?: ListItemContentWidthMode
   itemContentWidth?: ListSizeValue
   itemContentMaxWidth?: ListSizeValue
+  itemGap?: ListSizeValue
   itemRadius?: ListSizeValue
+  padding?: ListSizeValue
+  titleFontSize?: ListSizeValue
+  titleTextColor?: string
+  descriptionFontSize?: ListSizeValue
+  descriptionTextColor?: string
+  iconFontSize?: ListSizeValue
+  iconTextColor?: string
+  extraFontSize?: ListSizeValue
+  extraTextColor?: string
   activeBackgroundColor?: string
   activeBorderColor?: string
   activeTextColor?: string

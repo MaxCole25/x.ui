@@ -13,6 +13,7 @@ const uncontrolledVisible = ref(false)
 const triggerRef = ref<HTMLElement | null>(null)
 const popperRef = ref<HTMLElement | null>(null)
 const position = ref<Record<string, string>>({})
+const effectivePlacement = ref(props.placement)
 const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
 const preset = computed(() => componentSizePreset[props.size])
 const styleVars = computed(() => ({ '--x-popover-width': toCssSize(props.width), '--x-popover-font-size': preset.value.fontSize + 'px', '--x-popover-z-index': props.zIndex, ...position.value }))
@@ -37,19 +38,54 @@ function handleDocumentPointerdown(event: PointerEvent) {
 
   setVisible(false)
 }
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
 function updatePosition() {
   if (!props.teleported || !visible.value || !triggerRef.value || !popperRef.value) return
-  const gap = 8; const trigger = triggerRef.value.getBoundingClientRect(); const popper = popperRef.value.getBoundingClientRect()
-  let left = trigger.left + trigger.width / 2 - popper.width / 2; let top = trigger.bottom + gap
-  if (props.placement === 'top') top = trigger.top - popper.height - gap
-  if (props.placement === 'left') { left = trigger.left - popper.width - gap; top = trigger.top + trigger.height / 2 - popper.height / 2 }
-  if (props.placement === 'right') { left = trigger.right + gap; top = trigger.top + trigger.height / 2 - popper.height / 2 }
-  position.value = { left: Math.round(left) + 'px', top: Math.round(top) + 'px' }
+  const gap = 8
+  const trigger = triggerRef.value.getBoundingClientRect()
+  const popper = popperRef.value.getBoundingClientRect()
+  const width = popper.width
+  const height = popper.height
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+  const bottomSpace = viewportHeight - trigger.bottom - gap
+  const topSpace = trigger.top - gap
+  const rightSpace = viewportWidth - trigger.right - gap
+  const leftSpace = trigger.left - gap
+  let placement = props.placement
+
+  if (placement === 'bottom' && bottomSpace < height && topSpace > bottomSpace) placement = 'top'
+  else if (placement === 'top' && topSpace < height && bottomSpace > topSpace) placement = 'bottom'
+  else if (placement === 'right' && rightSpace < width && leftSpace > rightSpace) placement = 'left'
+  else if (placement === 'left' && leftSpace < width && rightSpace > leftSpace) placement = 'right'
+
+  let left = trigger.left + trigger.width / 2 - width / 2
+  let top = trigger.bottom + gap
+  if (placement === 'top') top = trigger.top - height - gap
+  if (placement === 'left') { left = trigger.left - width - gap; top = trigger.top + trigger.height / 2 - height / 2 }
+  if (placement === 'right') { left = trigger.right + gap; top = trigger.top + trigger.height / 2 - height / 2 }
+
+  const maxLeft = Math.max(gap, viewportWidth - width - gap)
+  const maxTop = Math.max(gap, viewportHeight - height - gap)
+
+  effectivePlacement.value = placement
+  position.value = {
+    left: Math.round(clamp(left, gap, maxLeft)) + 'px',
+    top: Math.round(clamp(top, gap, maxTop)) + 'px'
+  }
 }
 watch(visible, async (value) => { if (value) { await nextTick(); updatePosition() } }, { flush: 'post' })
-onMounted(() => document.addEventListener('pointerdown', handleDocumentPointerdown, true))
+onMounted(() => {
+  document.addEventListener('pointerdown', handleDocumentPointerdown, true)
+  window.addEventListener('resize', updatePosition)
+  window.addEventListener('scroll', updatePosition, true)
+})
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', handleDocumentPointerdown, true)
+  window.removeEventListener('resize', updatePosition)
+  window.removeEventListener('scroll', updatePosition, true)
   setVisible(false)
 })
 </script>
@@ -57,7 +93,7 @@ onBeforeUnmount(() => {
 <template>
   <span ref="triggerRef" class="x-popover" :class="{ 'is-visible': visible }" @click="toggle" @mouseenter="onMouseenter" @mouseleave="onMouseleave" @focusin="onFocus" @focusout="onBlur">
     <slot />
-    <Teleport v-if="props.teleported" :to="props.teleportTo"><div v-if="visible" ref="popperRef" class="x-popover__popper is-teleported" :class="['x-popover__popper--' + props.placement, { 'is-content-plain': props.contentPlain }]" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div></Teleport>
+    <Teleport v-if="props.teleported" :to="props.teleportTo"><div v-if="visible" ref="popperRef" class="x-popover__popper is-teleported" :class="['x-popover__popper--' + effectivePlacement, { 'is-content-plain': props.contentPlain }]" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div></Teleport>
     <div v-else-if="visible" ref="popperRef" class="x-popover__popper" :class="['x-popover__popper--' + props.placement, { 'is-content-plain': props.contentPlain }]" :style="styleVars"><strong v-if="props.title" class="x-popover__title">{{ props.title }}</strong><div class="x-popover__content"><slot name="content">{{ props.content }}</slot></div><span v-if="props.showArrow" class="x-popover__arrow" /></div>
   </span>
 </template>

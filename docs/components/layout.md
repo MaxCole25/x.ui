@@ -8,6 +8,7 @@ const layoutBasicCode = `\x3Cscript setup lang="ts">
       :full-height="false"
       :sidebar-width="180"
       sidebar-padding="8px 12px"
+      content-padding="12px"
     >
       <template #topbar>顶部区域</template>
       <template #sidebar>侧栏区域</template>
@@ -46,6 +47,7 @@ const layoutModeCode = `\x3Cscript setup lang="ts">
       :full-height="false"
       :sidebar-width="180"
       sidebar-padding="8px 12px"
+      content-padding="12px"
     >
       <template #topbar>顶部区域</template>
       <template #sidebar>侧栏区域</template>
@@ -55,7 +57,7 @@ const layoutModeCode = `\x3Cscript setup lang="ts">
   </div>
 </XDocDemo>
 
-`sidebarPadding` 支持标准 CSS padding 写法，例如：`12`、`'12px'`、`'8px 12px'`、`'8px 12px 10px 6px'`。
+`sidebarPadding` 和 `contentPadding` 支持标准 CSS padding 写法，例如：`12`、`'12px'`、`'8px 12px'`、`'8px 12px 10px 6px'`。
 
 ## 布局模式
 
@@ -97,6 +99,7 @@ const layoutModeCode = `\x3Cscript setup lang="ts">
 | sidebarPadding | 侧栏内边距（支持数字像素或 CSS padding 写法） | `number \| string` | `12` |
 | contentBackgroundColor | 内容区背景色 | `string` | `'transparent'` |
 | contentColor | 内容区前景色 | `string` | `'#F9F9F9'` |
+| contentPadding | 内容区内边距（支持数字像素或 CSS padding 写法） | `number \| string` | `0` |
 | contentRadius | 内容区圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | footerBackgroundColor | 底部栏背景色 | `string` | `'#124A50'` |
 | footerColor | 底部栏前景色 | `string` | `'#F9F9F9'` |

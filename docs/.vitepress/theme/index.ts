@@ -19,6 +19,7 @@ import { XButtonGroup } from '../../../src/components/basic-components/button-gr
 import { XBaseInput } from '../../../src/components/basic-components/base-input'
 import { XBrick, XBrickItem } from '../../../src/components/basic-components/brick'
 import { XCard } from '../../../src/components/basic-components/card'
+import { XGroupContainer } from '../../../src/components/basic-components/group-container'
 import { XDivider } from '../../../src/components/basic-components/divider'
 import { XFlow, XFlowItem } from '../../../src/components/basic-components/flow'
 import { XGrid, XGridItem } from '../../../src/components/basic-components/grid'
@@ -106,6 +107,7 @@ export default {
     app.component(XBrick.name!, XBrick)
     app.component(XBrickItem.name!, XBrickItem)
     app.component(XCard.name!, XCard)
+    app.component(XGroupContainer.name!, XGroupContainer)
     app.component(XDivider.name!, XDivider)
     app.component(XFlow.name!, XFlow)
     app.component(XFlowItem.name!, XFlowItem)

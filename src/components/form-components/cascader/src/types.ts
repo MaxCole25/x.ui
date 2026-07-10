@@ -54,6 +54,7 @@ export interface CascaderProps
   textAlign?: CascaderTextAlign
   separator?: string
   changeOnSelect?: boolean
+  dropdownMaxHeight?: number | string
   teleportTo?: string
   name?: string
 }

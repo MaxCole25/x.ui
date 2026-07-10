@@ -11,6 +11,7 @@ defineOptions({
 const props = withDefaults(defineProps<FormItemProps>(), {
   required: false,
   loading: false,
+  labelVisible: true,
   contentFullHeight: false,
   align: 'start'
 })
@@ -39,6 +40,7 @@ const mergedAlign = computed<FormItemAlign>(() => props.align)
 const displayError = computed(() => props.error ?? validateMessage.value)
 const mergedContentFullHeight = computed(() => props.contentFullHeight)
 const hasContentHeight = computed(() => props.contentHeight != null)
+const isLabelVisible = computed(() => props.labelVisible !== false)
 
 const fieldJustifyMap: Record<NonNullable<FormItemProps['contentJustify']>, string> = {
   start: 'flex-start',
@@ -251,6 +253,7 @@ onBeforeUnmount(() => {
         'x-form-item--align-center': mergedAlign === 'center',
         'x-form-item--content-height': hasContentHeight,
         'x-form-item--content-fill-height': mergedContentFullHeight,
+        'x-form-item--label-hidden': !isLabelVisible,
         'is-required': isRequired,
         'is-error': Boolean(displayError),
         'is-disabled': mergedDisabled,
@@ -259,7 +262,7 @@ onBeforeUnmount(() => {
     ]"
   >
     <label
-      v-if="props.label || $slots.label"
+      v-if="isLabelVisible && (props.label || $slots.label)"
       class="x-form-item__label"
       :class="props.labelClass"
       :for="id"

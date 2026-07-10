@@ -10,6 +10,7 @@ export type {
   TabsCloseAllPayload,
   TabsCloseOthersPayload,
   TabsEditAction,
+  TabsExpose,
   TabsPaneContext,
   TabsProps,
   TabsReorderPayload,

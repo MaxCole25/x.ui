@@ -30,6 +30,7 @@ const props = withDefaults(defineProps<CascaderProps>(), {
   textAlign: 'left',
   separator: ' / ',
   changeOnSelect: false,
+  dropdownMaxHeight: 260,
   showActiveBorder: true
 })
 
@@ -147,7 +148,7 @@ const selectedText = computed(() => selectedLabels.value.join(props.separator))
 const displayPath = computed(() => (open.value && activePath.value.length ? activePath.value : selectedPath.value))
 
 const columns = computed(() => {
-  const result: CascaderOption[][] = [rootOptions.value]
+  const result: CascaderOption[][] = rootOptions.value.length ? [rootOptions.value] : []
   displayPath.value.forEach((option) => {
     if (option.children?.length) result.push(option.children)
   })
@@ -179,6 +180,7 @@ const cascaderStyle = computed(() => ({
   '--x-cascader-height': props.autoHeight ? 'auto' : toCssSize(props.height ?? sizePreset[mergedSize.value].height),
   '--x-cascader-padding': toCssSize(props.padding ?? sizePreset[mergedSize.value].padding),
   '--x-cascader-text-align': props.textAlign,
+  '--x-cascader-dropdown-max-height': toCssSize(props.dropdownMaxHeight),
   '--x-cascader-clear-icon-color': props.clearIconColor,
   '--x-cascader-clear-icon-size': toCssSize(props.clearIconSize)
 }))
@@ -207,19 +209,22 @@ const updatePanelPosition = () => {
   const panelHeight = panelRef.value?.offsetHeight || 260
   const panelWidth = panelRef.value?.scrollWidth || rect.width
   const maxWidth = Math.max(gap, viewportWidth - gap * 2)
-  const width = Math.max(1, Math.min(Math.max(rect.width, panelWidth), maxWidth))
+  const width = Math.max(1, Math.min(panelWidth, maxWidth))
   const left = Math.min(Math.max(rect.left, gap), Math.max(gap, viewportWidth - width - gap))
   const spaceBelow = viewportHeight - rect.bottom - gap
   const spaceAbove = rect.top - gap
   const shouldOpenUp = spaceBelow < panelHeight && spaceAbove > spaceBelow
+  const availableHeight = Math.max(gap, Math.floor(shouldOpenUp ? spaceAbove : spaceBelow))
+  const maxHeight = Math.min(panelHeight, availableHeight)
   const top = shouldOpenUp
-    ? Math.max(gap, rect.top - gap - panelHeight)
-    : Math.min(Math.max(gap, rect.bottom + gap), Math.max(gap, viewportHeight - gap))
+    ? Math.max(gap, rect.top - gap - maxHeight)
+    : Math.min(Math.max(gap, rect.bottom + gap), Math.max(gap, viewportHeight - maxHeight - gap))
 
   teleportedPanelStyle.value = {
     left: `${Math.round(left)}px`,
     top: `${Math.round(top)}px`,
     width: `${Math.round(width)}px`,
+    '--x-cascader-dropdown-max-height': `${Math.round(maxHeight)}px`,
     zIndex: String(overlayZIndex.popper)
   }
 }
@@ -358,6 +363,15 @@ watch(columns, async () => {
   await nextTick()
   updatePanelPosition()
 })
+
+watch(
+  () => props.dropdownMaxHeight,
+  async () => {
+    if (!open.value) return
+    await nextTick()
+    updatePanelPosition()
+  }
+)
 
 onBeforeUnmount(() => {
   removePositionListeners()

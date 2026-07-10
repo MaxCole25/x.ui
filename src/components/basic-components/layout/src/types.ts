@@ -22,6 +22,7 @@ export interface LayoutProps {
   sidebarPadding?: number | string
   contentBackgroundColor?: string
   contentColor?: string
+  contentPadding?: number | string
   contentRadius?: number | string
   footerBackgroundColor?: string
   footerColor?: string

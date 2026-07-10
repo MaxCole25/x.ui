@@ -13,6 +13,7 @@ export interface ButtonProps extends ElementStyleProps {
   fontSize?: number | string
   padding?: number | string
   radius?: number | string
+  hoverBackgroundColor?: string
   activeBackgroundColor?: string
   activeBorderColor?: string
   activeTextColor?: string

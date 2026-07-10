@@ -55,6 +55,7 @@ export interface FormItemProps {
   labelHeight?: string | number
   labelGap?: string | number
   labelPosition?: FormLabelPosition
+  labelVisible?: boolean
   contentHeight?: string | number
   contentFullHeight?: boolean
   align?: FormItemAlign

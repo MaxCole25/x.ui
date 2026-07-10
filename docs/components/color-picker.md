@@ -43,7 +43,7 @@ const compactColor = ref('#10b981')
 # 颜色选择器 ColorPicker
 
 用于选择和展示当前颜色，内置颜色选择器面板。
-触发器中的色值支持手动输入修改。
+触发器中的色值支持手动输入修改，透明色统一使用 `transparent`。
 
 ## 基础用法
 
@@ -64,7 +64,7 @@ const compactColor = ref('#10b981')
 
 ## 隐藏内联面板
 
-内联模式下可以隐藏常驻颜色面板，点击色块时再弹出颜色面板。点击色值输入框只会编辑文本，不会打开面板。`width` 和 `padding` 用于调整触发器区域。
+内联模式下可以隐藏常驻颜色面板，点击色块时再弹出颜色面板。点击色值输入框只会编辑文本，不会打开面板。`width` 和 `padding` 用于调整触发器区域。弹出面板会根据浏览器边缘自动避让，靠近底部时会优先向上显示。
 
 <XDocDemo title="隐藏内联面板" :code="colorPickerInlinePanelCode">
   <XColorPicker v-model="compactColor" hide-inline-panel width="180px" padding="0 10px" />
@@ -81,6 +81,10 @@ const compactColor = ref('#10b981')
 | showValue | 是否显示并允许手动输入当前色值 | `boolean` | `true` |
 | width | 触发器宽度，数字按 px 处理 | `string \| number` | — |
 | padding | 触发器内边距，数字按 px 处理 | `string \| number` | — |
+
+## 透明色
+
+颜色面板默认提供透明预设，选择后 `modelValue` 为 `transparent`。透明色块会用棋盘格显示，便于和白色区分。
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充

@@ -9,7 +9,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<ColorPickerPanelProps>(), {
   modelValue: '#1264f4',
-  colors: () => ['#1264f4', '#10b981', '#f59e0b', '#ef4444', '#7c3aed', '#0891b2']
+  colors: () => ['#1264f4', '#10b981', '#f59e0b', '#ef4444', '#7c3aed', '#0891b2', 'transparent']
 })
 
 const emit = defineEmits<{
@@ -28,7 +28,10 @@ const hueSliderRef = ref<HTMLElement>()
 const activeHue = ref(216)
 const shouldSkipNextHueSync = ref(false)
 
+const transparentColorValue = 'transparent'
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value))
+const normalizeColorText = (value: string) => value.trim().toLowerCase()
+const isTransparentColor = (value: string) => normalizeColorText(value) === transparentColorValue
 
 const normalizeHex = (value: string) => {
   const color = value.trim()
@@ -163,6 +166,10 @@ const commit = (value: string) => {
   emit('change', value)
 }
 
+const isActiveSwatch = (color: string) => normalizeColorText(color) === normalizeColorText(props.modelValue)
+const getSwatchStyle = (color: string) => (isTransparentColor(color) ? undefined : { backgroundColor: color })
+const getSwatchLabel = (color: string) => (isTransparentColor(color) ? '选择透明色' : `选择颜色 ${color}`)
+
 const commitHsv = (value: HsvColor, options: { syncHueFromModelValue?: boolean } = {}) => {
   activeHue.value = ((value.h % 360) + 360) % 360
   shouldSkipNextHueSync.value = options.syncHueFromModelValue === false
@@ -212,7 +219,10 @@ const startDrag = (event: PointerEvent, update: (event: PointerEvent) => void) =
 
 <template>
   <div class="x-color-panel" :style="panelStyle">
-    <div class="x-color-panel__preview" />
+    <div class="x-color-panel__value-row">
+      <div class="x-color-panel__preview" :class="{ 'is-transparent': isTransparentColor(props.modelValue) }" />
+      <input :value="props.modelValue" class="x-color-panel__input" type="text" @input="commit(($event.target as HTMLInputElement).value)" />
+    </div>
     <div
       ref="colorFieldRef"
       class="x-color-panel__field"
@@ -242,13 +252,12 @@ const startDrag = (event: PointerEvent, update: (event: PointerEvent) => void) =
         v-for="color in props.colors"
         :key="color"
         class="x-color-panel__swatch"
-        :class="{ 'is-active': color.toLowerCase() === props.modelValue.toLowerCase() }"
+        :class="{ 'is-active': isActiveSwatch(color), 'is-transparent': isTransparentColor(color) }"
         type="button"
-        :style="{ backgroundColor: color }"
-        :aria-label="`选择颜色 ${color}`"
+        :style="getSwatchStyle(color)"
+        :aria-label="getSwatchLabel(color)"
         @click="commit(color)"
       />
     </div>
-    <input :value="props.modelValue" class="x-color-panel__input" type="text" @input="commit(($event.target as HTMLInputElement).value)" />
   </div>
 </template>

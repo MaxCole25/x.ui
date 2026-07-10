@@ -25,6 +25,7 @@ const colorPickerStyle = computed(() => ({
 }))
 
 const shouldUsePopoverPanel = computed(() => props.panelMode === 'popover' || props.hideInlinePanel)
+const isTransparentColor = computed(() => props.modelValue.trim().toLowerCase() === 'transparent')
 
 const panelProps = computed(() => ({
   modelValue: props.modelValue,
@@ -55,7 +56,7 @@ const commit = (value: string) => {
   >
     <span v-if="shouldUsePopoverPanel" class="x-color-picker__trigger" tabindex="0">
       <XPopover trigger="click" placement="bottom" :width="248" :show-arrow="false" content-plain :disabled="props.disabled">
-        <span class="x-color-picker__chip" :style="{ backgroundColor: props.modelValue }" />
+        <span class="x-color-picker__chip" :class="{ 'is-transparent': isTransparentColor }" :style="{ backgroundColor: props.modelValue }" />
         <template #content>
           <slot name="panel">
             <XColorPickerPanel v-bind="panelProps" @update:model-value="commit" />
@@ -75,7 +76,7 @@ const commit = (value: string) => {
     </span>
     <template v-else>
       <span class="x-color-picker__trigger" tabindex="0">
-        <label class="x-color-picker__chip" :style="{ backgroundColor: props.modelValue }">
+        <label class="x-color-picker__chip" :class="{ 'is-transparent': isTransparentColor }" :style="{ backgroundColor: props.modelValue }">
           <input class="x-color-picker__native-input" :value="props.modelValue" type="color" :disabled="props.disabled" @focus="emit('focus', $event)" @input="commit(($event.target as HTMLInputElement).value)" />
         </label>
         <input

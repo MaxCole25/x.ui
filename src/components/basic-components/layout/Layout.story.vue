@@ -9,6 +9,7 @@ const state = reactive({
   fullHeight: true,
   sidebarWidth: 280,
   sidebarPadding: '12px',
+  contentPadding: '0px',
   sidebarCollapsed: false,
   gap: 0,
   topbarRadius: 0,
@@ -25,6 +26,7 @@ const previewCode = computed(() => {
     !state.fullHeight ? ':full-height="false"' : '',
     state.sidebarWidth !== 280 ? `:sidebar-width="${state.sidebarWidth}"` : '',
     state.sidebarPadding !== '12px' ? `sidebar-padding="${state.sidebarPadding}"` : '',
+    state.contentPadding !== '0px' ? `content-padding="${state.contentPadding}"` : '',
     state.sidebarCollapsed ? 'sidebar-collapsed' : '',
     state.gap !== 0 ? `:gap="${state.gap}"` : '',
     state.topbarRadius !== 0 ? `:topbar-radius="${state.topbarRadius}"` : '',
@@ -75,6 +77,11 @@ const previewCode = computed(() => {
           </label>
 
           <label>
+            <span>内容内边距</span>
+            <input v-model="state.contentPadding" type="text" />
+          </label>
+
+          <label>
             <span>顶部圆角</span>
             <input v-model.number="state.topbarRadius" type="number" min="0" max="32" step="1" />
           </label>
@@ -115,6 +122,7 @@ const previewCode = computed(() => {
           :full-height="state.fullHeight"
           :sidebar-width="state.sidebarWidth"
           :sidebar-padding="state.sidebarPadding"
+          :content-padding="state.contentPadding"
           :sidebar-collapsed="state.sidebarCollapsed"
           :gap="state.gap"
           :topbar-radius="state.topbarRadius"

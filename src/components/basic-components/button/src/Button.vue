@@ -35,6 +35,7 @@ const buttonStyle = computed(() => ({
   '--x-button-padding': resolveSizeStyle(props.padding, sizePreset.value.padding),
   '--x-button-radius': resolveSizeStyle(props.radius, sizePreset.value.radius),
   '--x-button-bg': props.backgroundColor,
+  '--x-button-hover-bg': props.hoverBackgroundColor,
   '--x-button-text': props.textColor,
   '--x-button-border-color': props.borderColor,
   '--x-button-active-bg': props.activeBackgroundColor,

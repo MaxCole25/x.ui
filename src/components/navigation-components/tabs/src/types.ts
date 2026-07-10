@@ -43,6 +43,10 @@ export interface TabsCloseOthersPayload {
   names: TabName[]
 }
 
+export interface TabsExpose {
+  scrollActiveTabIntoView: () => void
+}
+
 export interface TabsProps {
   modelValue?: TabName
   items?: TabItem[]

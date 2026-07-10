@@ -25,7 +25,17 @@ const appearance = reactive({
   itemContentWidthMode: 'auto',
   itemContentWidth: '',
   itemContentMaxWidth: '',
+  itemGap: 8,
   itemRadius: 6,
+  padding: '',
+  titleFontSize: '',
+  titleTextColor: '#0f172a',
+  descriptionFontSize: '',
+  descriptionTextColor: '#64748b',
+  iconFontSize: '',
+  iconTextColor: '#0f172a',
+  extraFontSize: '',
+  extraTextColor: '#64748b',
   activeBackgroundColor: '#e0f2fe',
   activeBorderColor: '#0284c7',
   activeTextColor: '#075985',
@@ -107,7 +117,17 @@ function handleItemReorder(payload: ListItemReorderPayload) {
             :item-content-width-mode="itemContentWidthMode"
             :item-content-width="itemContentWidth"
             :item-content-max-width="itemContentMaxWidth"
+            :item-gap="appearance.itemGap"
             :item-radius="appearance.itemRadius"
+            :padding="appearance.padding || undefined"
+            :title-font-size="appearance.titleFontSize || undefined"
+            :title-text-color="appearance.titleTextColor"
+            :description-font-size="appearance.descriptionFontSize || undefined"
+            :description-text-color="appearance.descriptionTextColor"
+            :icon-font-size="appearance.iconFontSize || undefined"
+            :icon-text-color="appearance.iconTextColor"
+            :extra-font-size="appearance.extraFontSize || undefined"
+            :extra-text-color="appearance.extraTextColor"
             :active-background-color="appearance.activeBackgroundColor"
             :active-border-color="appearance.activeBorderColor"
             :active-text-color="appearance.activeTextColor"
@@ -144,6 +164,8 @@ function handleItemReorder(payload: ListItemReorderPayload) {
           <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
           <label><span>高度</span><input v-model.number="appearance.height" type="number" min="120" max="520" /></label>
           <label><span>最大高度</span><input v-model.number="appearance.maxHeight" type="number" min="120" max="640" /></label>
+          <label><span>内边距</span><input v-model="appearance.padding" placeholder="如 0 8px" /></label>
+          <label><span>条目间距</span><input v-model.number="appearance.itemGap" type="number" min="0" max="32" /></label>
           <label><span>圆角</span><input v-model.number="appearance.itemRadius" type="number" min="0" max="24" /></label>
           <label><span>数据示例</span><select v-model="appearance.scene"><option>普通列表</option><option>左右对齐</option></select></label>
         </template>
@@ -152,10 +174,14 @@ function handleItemReorder(payload: ListItemReorderPayload) {
           <label><span>加载文案</span><input v-model="appearance.loadingText" /></label>
           <label><span>完成文案</span><input v-model="appearance.finishedText" /></label>
           <label><span>加载距离</span><input v-model.number="appearance.loadOffset" type="number" min="0" max="240" /></label>
+          <label><span>标题字号</span><input v-model="appearance.titleFontSize" placeholder="如 12px" /></label>
+          <label><span>描述字号</span><input v-model="appearance.descriptionFontSize" placeholder="如 12px" /></label>
           <label><span>内容对齐</span><select v-model="appearance.itemAlign"><option value="stretch">stretch</option><option value="start">start</option><option value="end">end</option></select></label>
           <label><span>宽度模式</span><select v-model="appearance.itemContentWidthMode"><option value="auto">auto</option><option value="equal">equal</option></select></label>
         </template>
         <template #column-3>
+          <label><span>标题颜色</span><input v-model="appearance.titleTextColor" type="color" /></label>
+          <label><span>描述颜色</span><input v-model="appearance.descriptionTextColor" type="color" /></label>
           <label><span>激活背景色</span><input v-model="appearance.activeBackgroundColor" type="color" /></label>
           <label><span>激活边框色</span><input v-model="appearance.activeBorderColor" type="color" /></label>
           <label><span>激活文字色</span><input v-model="appearance.activeTextColor" type="color" /></label>
@@ -164,6 +190,10 @@ function handleItemReorder(payload: ListItemReorderPayload) {
           <label><span>最大宽度</span><input v-model="appearance.itemContentMaxWidth" placeholder="如 72%" /></label>
         </template>
         <template #column-4>
+          <label><span>图标字号</span><input v-model="appearance.iconFontSize" placeholder="如 14px" /></label>
+          <label><span>右侧字号</span><input v-model="appearance.extraFontSize" placeholder="如 12px" /></label>
+          <label><span>图标颜色</span><input v-model="appearance.iconTextColor" type="color" /></label>
+          <label><span>右侧颜色</span><input v-model="appearance.extraTextColor" type="color" /></label>
           <label class="story-check"><input v-model="appearance.disabled" type="checkbox" /><span>禁用</span></label>
           <label class="story-check"><input v-model="appearance.draggable" type="checkbox" /><span>可拖拽</span></label>
           <label class="story-check"><input v-model="appearance.bordered" type="checkbox" /><span>显示边框</span></label>
@@ -173,7 +203,7 @@ function handleItemReorder(payload: ListItemReorderPayload) {
           <label class="story-check"><input v-model="appearance.finished" type="checkbox" /><span>加载完成</span></label>
         </template>
         <template #interfaces>
-          <p class="story-note">Props 覆盖选中值、数据项、尺寸、禁用、拖拽、边框、等高信息块、内容对齐、内容宽度模式、内容宽度、选中色、加载状态、完成状态和滚动触发距离。</p>
+          <p class="story-note">Props 覆盖选中值、数据项、尺寸、禁用、拖拽、边框、等高信息块、内容对齐、内容宽度模式、内容宽度、内边距、条目间距、标题/描述/图标/右侧字号颜色、选中色、加载状态、完成状态和滚动触发距离。</p>
         </template>
         <template #types>
           <p class="story-note"><code>ListItemValue</code>、<code>ListItemAlign</code>、<code>ListItemContentWidthMode</code>、<code>ListReorderPosition</code>、<code>ListItem</code>、<code>ListItemSlotProps</code>、<code>ListItemClickPayload</code>、<code>ListItemReorderPayload</code>、<code>ListProps</code></p>

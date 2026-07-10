@@ -192,7 +192,17 @@ function handleItemReorder(payload) {
 | itemContentWidthMode | 条目内容块宽度模式，`auto` 按内容自适应，`equal` 使用统一宽度 | `auto \| equal` | `auto` |
 | itemContentWidth | 条目内容块宽度 | `number \| string` | - |
 | itemContentMaxWidth | 条目内容块最大宽度 | `number \| string` | - |
+| itemGap | 条目之间的间距 | `number \| string` | `8px` |
 | itemRadius | 条目圆角 | `number \| string` | 按尺寸 |
+| padding | 信息块内部内边距 | `number \| string` | 按尺寸 |
+| titleFontSize | 标题字号 | `number \| string` | 按尺寸 |
+| titleTextColor | 标题颜色 | `string` | `currentColor` |
+| descriptionFontSize | 描述字号 | `number \| string` | 按尺寸 |
+| descriptionTextColor | 描述颜色 | `string` | 主题弱文本色 |
+| iconFontSize | 图标字号 | `number \| string` | 按尺寸 |
+| iconTextColor | 图标颜色 | `string` | `currentColor` |
+| extraFontSize | 右侧内容字号 | `number \| string` | - |
+| extraTextColor | 右侧内容颜色 | `string` | 主题弱文本色 |
 | activeBackgroundColor | 选中背景色 | `string` | - |
 | activeBorderColor | 选中边框色 | `string` | - |
 | activeTextColor | 选中文字色 | `string` | - |

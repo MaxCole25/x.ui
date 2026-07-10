@@ -5,7 +5,7 @@ const color = ref('#1677ff')
 
 const customColor = ref('#7c3aed')
 
-const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626']
+const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626', 'transparent']
 
 const colorPickerPanelBasicCode = `\x3Cscript setup lang="ts">
 import { ref } from 'vue'
@@ -23,7 +23,7 @@ import { ref } from 'vue'
 
 const customColor = ref('#7c3aed')
 
-const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626']
+const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626', 'transparent']
 <\/script>
 
 <div class="x-demo-column">
@@ -39,7 +39,7 @@ const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626']
 
 # 颜色选择器面板 ColorPickerPanel
 
-用于展示颜色预览，支持色域拖拽、主色系拖动、预设色和颜色值输入。
+用于展示颜色预览，支持色域拖拽、主色系拖动、预设色和颜色值输入。透明色统一使用 `transparent`。
 
 ## 基础用法
 
@@ -52,7 +52,7 @@ const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626']
 
 ## 自定义色板
 
-通过 `colors` 控制面板预设色板，也可以使用外观属性调整边框和背景。色域和主色系拖动会继续输出标准十六进制颜色值。
+通过 `colors` 控制面板预设色板，也可以使用外观属性调整边框和背景。`colors` 可包含 `transparent` 作为透明预设；色域和主色系拖动会继续输出标准十六进制颜色值。
 
 <XDocDemo title="自定义色板" :code="colorPickerPanelCustomCode">
   <div class="x-demo-column">
@@ -71,7 +71,7 @@ const customColors = ['#1677ff', '#16a34a', '#f97316', '#dc2626']
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | modelValue | 当前颜色值 | `string` | `#1264f4` |
-| colors | 预设色板 | `string[]` | 内置色板 |
+| colors | 预设色板，可包含 `transparent` | `string[]` | 内置色板 |
 
 <!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
 ## 公开属性补充

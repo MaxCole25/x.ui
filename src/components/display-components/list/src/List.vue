@@ -63,9 +63,19 @@ let scrollFrame = 0
 const listStyle = computed<CSSProperties>(() => ({
   '--x-list-height': toCssSize(props.height),
   '--x-list-max-height': toCssSize(props.maxHeight),
+  '--x-list-item-gap': toCssSize(props.itemGap),
   '--x-list-item-radius': toCssSize(props.itemRadius),
+  '--x-list-item-padding': toCssSize(props.padding),
   '--x-list-item-content-width': toCssSize(props.itemContentWidth),
   '--x-list-item-content-max-width': toCssSize(props.itemContentMaxWidth),
+  '--x-list-title-font-size': toCssSize(props.titleFontSize),
+  '--x-list-title-text-color': props.titleTextColor,
+  '--x-list-description-font-size': toCssSize(props.descriptionFontSize),
+  '--x-list-description-text-color': props.descriptionTextColor,
+  '--x-list-icon-font-size': toCssSize(props.iconFontSize),
+  '--x-list-icon-text-color': props.iconTextColor,
+  '--x-list-extra-font-size': toCssSize(props.extraFontSize),
+  '--x-list-extra-text-color': props.extraTextColor,
   '--x-list-active-bg': props.activeBackgroundColor,
   '--x-list-active-border': props.activeBorderColor,
   '--x-list-active-text': props.activeTextColor
@@ -304,7 +314,8 @@ onBeforeUnmount(() => {
   color: var(--x-color-text);
   display: grid;
   font-family: var(--x-font-family);
-  gap: 8px;
+  gap: var(--x-list-item-gap, 8px);
+  align-content: start;
   height: var(--x-list-height);
   max-height: var(--x-list-max-height);
   min-width: 0;
@@ -318,6 +329,7 @@ onBeforeUnmount(() => {
 }
 
 .x-list.is-equal-item-height {
+  align-content: stretch;
   grid-auto-rows: 1fr;
 }
 
@@ -460,7 +472,7 @@ onBeforeUnmount(() => {
 .x-list__icon {
   align-items: center;
   background: var(--x-color-surface-soft);
-  color: currentColor;
+  color: var(--x-list-icon-text-color, currentColor);
   display: inline-flex;
   font-size: var(--x-list-icon-font-size);
   justify-content: center;
@@ -478,14 +490,21 @@ onBeforeUnmount(() => {
 }
 
 .x-list__title {
-  color: currentColor;
+  color: var(--x-list-title-text-color, currentColor);
   font-size: var(--x-list-title-font-size);
   font-weight: 700;
 }
 
 .x-list__description {
-  color: var(--x-color-muted);
+  color: var(--x-list-description-text-color, var(--x-color-muted));
   font-size: var(--x-list-description-font-size);
+}
+
+.x-list__item.is-active .x-list__title,
+.x-list__item.is-active .x-list__icon,
+.x-list__item.is-active .x-list__side,
+.x-list__item.is-active .x-list__extra {
+  color: currentColor;
 }
 
 .x-list__item.is-active .x-list__description {
@@ -494,8 +513,9 @@ onBeforeUnmount(() => {
 
 .x-list__side {
   align-items: center;
-  color: var(--x-color-muted);
+  color: var(--x-list-extra-text-color, var(--x-color-muted));
   display: inline-flex;
+  font-size: var(--x-list-extra-font-size);
   gap: 4px;
   justify-content: flex-end;
   justify-self: end;
@@ -509,6 +529,7 @@ onBeforeUnmount(() => {
 }
 
 .x-list__extra {
+  font-size: var(--x-list-extra-font-size);
   min-width: max-content;
   overflow: visible;
   overflow-wrap: normal;

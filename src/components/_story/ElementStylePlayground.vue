@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
+import { XColorPicker } from '../form-components/color-picker'
 
 withDefaults(
   defineProps<{
@@ -72,15 +73,15 @@ const parentStyle = computed(() => ({
             <section class="element-style-playground__column">
               <label>
                 <span>边框颜色</span>
-                <input v-model="state.borderColor" type="color" />
+                <XColorPicker v-model="state.borderColor" class="element-style-playground__color-picker" hide-inline-panel panel-mode="popover" :show-value="false" width="48px" padding="0" />
               </label>
               <label>
                 <span>背景色</span>
-                <input v-model="state.backgroundColor" type="color" />
+                <XColorPicker v-model="state.backgroundColor" class="element-style-playground__color-picker" hide-inline-panel panel-mode="popover" :show-value="false" width="48px" padding="0" />
               </label>
               <label>
                 <span>文字颜色</span>
-                <input v-model="state.textColor" type="color" />
+                <XColorPicker v-model="state.textColor" class="element-style-playground__color-picker" hide-inline-panel panel-mode="popover" :show-value="false" width="48px" padding="0" />
               </label>
               <slot name="column-3" :state="state" />
             </section>
@@ -253,5 +254,9 @@ const parentStyle = computed(() => ({
   flex-basis: auto;
   min-height: auto;
   width: auto;
+}
+
+.element-style-playground__color-picker {
+  flex: 0 0 48px;
 }
 </style>

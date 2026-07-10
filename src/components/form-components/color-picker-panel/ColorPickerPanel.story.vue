@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { reactive } from 'vue'
+import { XColorPicker } from '../color-picker'
 import { XColorPickerPanel } from './index'
 import '../../../styles/index.css'
 
 const appearance = reactive({
-  colorsText: '#1264f4,#10b981,#f59e0b,#ef4444,#7c3aed,#0891b2'
+  colorsText: '#1264f4,#10b981,#f59e0b,#ef4444,#7c3aed,#0891b2,transparent'
 })
 
 const sample = reactive({
@@ -49,7 +50,7 @@ const sample = reactive({
         <template #column-3>
           <label>
             <span>颜色输入</span>
-            <input v-model="sample.color" type="color" />
+            <XColorPicker v-model="sample.color" hide-inline-panel panel-mode="popover" :show-value="false" width="48px" padding="0" />
           </label>
         </template>
       </ElementStylePlayground>

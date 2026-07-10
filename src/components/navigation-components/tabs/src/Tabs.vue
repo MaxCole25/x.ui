@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Component, CSSProperties } from 'vue'
-import type { TabItem, TabName, TabsCloseAllPayload, TabsCloseOthersPayload, TabsPaneContext, TabsProps, TabsReorderPosition } from './types'
+import type { TabItem, TabName, TabsCloseAllPayload, TabsCloseOthersPayload, TabsExpose, TabsPaneContext, TabsProps, TabsReorderPosition } from './types'
 
 defineOptions({ name: 'XTabs' })
 
@@ -211,6 +211,8 @@ watch(
     if (value !== undefined) {
       internalVisited.value[String(value)] = true
     }
+
+    scheduleTabsScrollSync()
   },
   { immediate: true }
 )
@@ -218,7 +220,7 @@ watch(
 watch(
   () => [props.items, props.tabPosition],
   () => {
-    window.setTimeout(syncScrollState, 0)
+    scheduleTabsScrollSync()
   },
   { deep: true }
 )
@@ -357,6 +359,51 @@ function syncScrollState() {
   showScrollButtons.value = maxScrollLeft > 1
   canScrollPrev.value = track.scrollLeft > 1
   canScrollNext.value = track.scrollLeft < maxScrollLeft - 1
+}
+
+function scheduleTabsScrollSync() {
+  window.setTimeout(scrollActiveTabIntoView, 0)
+}
+
+function scrollActiveTabIntoView() {
+  void nextTick(() => {
+    syncActiveTabIntoView()
+    syncScrollState()
+  })
+}
+
+function syncActiveTabIntoView() {
+  const track = trackRef.value
+  const activeTab = track?.querySelector<HTMLElement>('.x-tabs__item-frame.is-active')
+  if (!track || !activeTab) {
+    return
+  }
+
+  const trackRect = track.getBoundingClientRect()
+  const activeRect = activeTab.getBoundingClientRect()
+
+  if (isVertical.value) {
+    const delta = activeRect.top < trackRect.top
+      ? activeRect.top - trackRect.top
+      : activeRect.bottom > trackRect.bottom
+        ? activeRect.bottom - trackRect.bottom
+        : 0
+
+    if (delta !== 0) {
+      track.scrollTo({ top: Math.max(0, track.scrollTop + delta), behavior: 'smooth' })
+    }
+    return
+  }
+
+  const delta = activeRect.left < trackRect.left
+    ? activeRect.left - trackRect.left
+    : activeRect.right > trackRect.right
+      ? activeRect.right - trackRect.right
+      : 0
+
+  if (delta !== 0) {
+    track.scrollTo({ left: Math.max(0, track.scrollLeft + delta), behavior: 'smooth' })
+  }
 }
 
 function scrollTabs(direction: 'prev' | 'next') {
@@ -523,6 +570,10 @@ onBeforeUnmount(() => {
   }
   trackResizeObserver?.disconnect()
   trackResizeObserver = null
+})
+
+defineExpose<TabsExpose>({
+  scrollActiveTabIntoView
 })
 </script>
 

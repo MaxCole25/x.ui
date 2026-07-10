@@ -92,6 +92,7 @@ interface ResolvedColumn {
   column: TableColumn
   setting: TableColumnSetting
   track: string
+  baseTrack: string
   align: TableAlign
   fixed: TableFixed
   left: string
@@ -106,6 +107,7 @@ interface TableContextMenuState {
 
 const defaultColumnMinWidth = 40
 const autoFitColumnWidthBuffer = 12
+const fallbackRowKeyPrefix = '__x_table_row_index__'
 const internalColumnSettings = ref<TableColumnSetting[]>([])
 const internalSorter = ref<TableSorter | null>(null)
 const tableWidth = ref(0)
@@ -1212,9 +1214,18 @@ function handleTableKeydown(event: KeyboardEvent) {
   }
 
   if (isCopyShortcut(event) && !editingCellKey.value) {
+    if (!isCellCopyEnabled.value) {
+      return
+    }
+
+    const selectedCellsText = getSelectedCellsClipboardText()
+    if (!selectedCellsText) {
+      return
+    }
+
     event.preventDefault()
     event.stopPropagation()
-    void copySelectedCells()
+    void copySelectedCells(selectedCellsText)
     return
   }
 
@@ -1274,6 +1285,13 @@ function handleTableKeydown(event: KeyboardEvent) {
     event.preventDefault()
     event.stopPropagation()
     moveActiveCellSelectionByRow()
+    return
+  }
+
+  if (isCellSelectionArrowKey(event) && isCellSelectionEnabled.value && !editingCellKey.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    moveActiveCellSelectionByArrow(event.key)
     return
   }
 
@@ -1337,16 +1355,19 @@ function isAutoFitWidthShortcut(event: KeyboardEvent) {
   return isPlainControlShortcut(event, 'w')
 }
 
+function isCellSelectionArrowKey(event: KeyboardEvent) {
+  return event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight'
+}
+
 function isPlainControlShortcut(event: KeyboardEvent, key: string) {
   return (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === key
 }
 
-async function copySelectedCells() {
+async function copySelectedCells(text = getSelectedCellsClipboardText()) {
   if (!isCellCopyEnabled.value) {
     return
   }
 
-  const text = getSelectedCellsClipboardText()
   if (!text) {
     return
   }
@@ -1497,6 +1518,47 @@ function getActiveSelectedCellCoordinate() {
   const rowIndex = rowIndexByKey.value.get(rowKey)
   const columnIndex = columnIndexByKey.value.get(columnKey)
   return rowIndex === undefined || columnIndex === undefined ? null : { rowIndex, columnIndex }
+}
+
+function moveActiveCellSelectionByArrow(key: string) {
+  if (key === 'ArrowUp') {
+    moveActiveCellSelectionByOffset(-1, 0)
+    return
+  }
+
+  if (key === 'ArrowDown') {
+    moveActiveCellSelectionByOffset(1, 0)
+    return
+  }
+
+  if (key === 'ArrowLeft') {
+    moveActiveCellSelectionByOffset(0, -1)
+    return
+  }
+
+  if (key === 'ArrowRight') {
+    moveActiveCellSelectionByOffset(0, 1)
+  }
+}
+
+function moveActiveCellSelectionByOffset(rowDelta: -1 | 0 | 1, columnDelta: -1 | 0 | 1) {
+  const coordinate = getActiveSelectedCellCoordinate()
+  const rowCount = props.data.length
+  const columnCount = resolvedColumns.value.length
+  if (!coordinate || rowCount === 0 || columnCount === 0) {
+    return
+  }
+
+  const nextRowIndex = (coordinate.rowIndex + rowDelta + rowCount) % rowCount
+  const nextColumnIndex = (coordinate.columnIndex + columnDelta + columnCount) % columnCount
+  const row = props.data[nextRowIndex]
+  const column = resolvedColumns.value[nextColumnIndex]?.column
+  if (!row || !column) {
+    return
+  }
+
+  emitCellSelectionChange([getCellSelectionKey(row, nextRowIndex, column)])
+  focusTableRoot()
 }
 
 function parseClipboardText(text: string) {
@@ -2337,6 +2399,7 @@ function createResolvedColumn(column: TableColumn, setting: TableColumnSetting):
     column,
     setting,
     track: '',
+    baseTrack: '',
     align: setting.align ?? column.align ?? 'left',
     fixed: setting.fixed ?? 'none',
     left: 'auto',
@@ -2346,20 +2409,56 @@ function createResolvedColumn(column: TableColumn, setting: TableColumnSetting):
 
 function resolveColumnTracks(columns: ResolvedColumn[]) {
   const columnTrackSizes = columns.map((column) => getColumnTrackSize(column.column, column.setting))
+  const baseColumnWidths = columnTrackSizes.map((track) => getColumnTrackPixelWidth(track))
+  const shouldUseBaseTracks = tableWidth.value > 0 && baseColumnWidths.every((width) => width !== undefined)
+  const utilityColumnsWidth = getUtilityColumnsWidth()
+  const baseDataColumnsWidth = baseColumnWidths.reduce<number>((sum, width) => sum + (width ?? 0), 0)
+  const remaining = shouldUseBaseTracks ? tableWidth.value - utilityColumnsWidth - baseDataColumnsWidth : 0
+  const fillColumnIndex = remaining > 0 ? getLastFillableColumnIndex(columns) : -1
+
+  if (shouldUseBaseTracks) {
+    columns.forEach((column, index) => {
+      const baseWidth = baseColumnWidths[index] ?? getColumnMinWidth(column.column)
+      const resolvedWidth = index === fillColumnIndex ? baseWidth + remaining : baseWidth
+      column.baseTrack = formatResolvedPixelSize(baseWidth)
+      column.track = formatResolvedPixelSize(resolvedWidth)
+    })
+    return
+  }
+
   const fixedTotal = columnTrackSizes.reduce(
     (sum, track) => (track.kind === 'flexible' ? sum : sum + (track.pixelSize ?? 0)),
     0
   )
   const flexibleColumns = columnTrackSizes.filter((track) => track.kind === 'flexible')
   const flexibleMinTotal = flexibleColumns.reduce((sum, track) => sum + track.minWidth, 0)
-  const remaining = Math.max(tableWidth.value - getUtilityColumnsWidth() - fixedTotal - flexibleMinTotal, 0)
-  const extraPerFlexibleColumn = flexibleColumns.length > 0 ? remaining / flexibleColumns.length : 0
+  const legacyRemaining = Math.max(tableWidth.value - utilityColumnsWidth - fixedTotal - flexibleMinTotal, 0)
+  const extraPerFlexibleColumn = flexibleColumns.length > 0 ? legacyRemaining / flexibleColumns.length : 0
 
   columns.forEach((column, index) => {
     const track = columnTrackSizes[index]
-    column.track =
-      track.kind === 'flexible' ? formatResolvedPixelSize(track.minWidth + extraPerFlexibleColumn) : track.track
+    column.track = track.kind === 'flexible' ? formatResolvedPixelSize(track.minWidth + extraPerFlexibleColumn) : track.track
+    column.baseTrack = column.track
   })
+}
+
+function getColumnTrackPixelWidth(track: ReturnType<typeof getColumnTrackSize>) {
+  return track.kind === 'flexible' ? track.minWidth : track.pixelSize
+}
+
+function getLastFillableColumnIndex(columns: ResolvedColumn[]) {
+  const unfixedColumnIndex = findLastColumnIndex(columns, (column) => column.fixed === 'none')
+  return unfixedColumnIndex >= 0 ? unfixedColumnIndex : columns.length - 1
+}
+
+function findLastColumnIndex<T>(items: T[], predicate: (item: T) => boolean) {
+  for (let index = items.length - 1; index >= 0; index -= 1) {
+    if (predicate(items[index])) {
+      return index
+    }
+  }
+
+  return -1
 }
 
 function applyFixedOffsets(columns: ResolvedColumn[]) {
@@ -2460,7 +2559,7 @@ function getColumnMinWidth(column: TableColumn) {
 }
 
 function getResolvedColumnWidth(column: ResolvedColumn) {
-  return parseCssPixelSize(column.track) ?? getColumnMinWidth(column.column)
+  return parseCssPixelSize(column.baseTrack) ?? parseCssPixelSize(column.track) ?? getColumnMinWidth(column.column)
 }
 
 function parseCssPixelSize(value: string) {
@@ -2539,7 +2638,7 @@ function setColumnSettings(settings: TableColumnSetting[]) {
 
 function getRowKey(row: Record<string, unknown>, rowIndex: number) {
   const value = row[props.rowKey]
-  return value === undefined || value === null ? String(rowIndex) : String(value)
+  return value === undefined || value === null ? `${fallbackRowKeyPrefix}${rowIndex}` : String(value)
 }
 
 function getCellValue(row: Record<string, unknown>, column: TableColumn) {
