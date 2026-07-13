@@ -20,6 +20,7 @@ import { XBaseInput } from './components/basic-components/base-input'
 import { XButton } from './components/basic-components/button'
 import { XButtonGroup } from './components/basic-components/button-group'
 import { XBrick, XBrickItem } from './components/basic-components/brick'
+import { XSplitPane, XSplitter } from './components/basic-components/splitter'
 import { XCard } from './components/basic-components/card'
 import { XGroupContainer } from './components/basic-components/group-container'
 import { XChart } from './components/display-components/chart'
@@ -104,6 +105,8 @@ export { XButton }
 export { XButtonGroup }
 export { XBrick }
 export { XBrickItem }
+export { XSplitter }
+export { XSplitPane }
 export { XCard }
 export { XGroupContainer }
 export { XChart }
@@ -181,6 +184,7 @@ export type {
 export type { AvatarProps, AvatarShape, AvatarSize } from './components/display-components/avatar'
 export type { BaseInputProps, BaseInputSize, BaseInputStatus, BaseInputTextAlign, BaseInputType } from './components/basic-components/base-input'
 export type { BrickDirection, BrickItemOverflow, BrickItemProps, BrickProps, BrickSize } from './components/basic-components/brick'
+export type { SplitPaneOverflow, SplitPaneProps, SplitterDirection, SplitterProps, SplitterResizePayload, SplitterSize } from './components/basic-components/splitter'
 export type { ButtonProps, ButtonVariant } from './components/basic-components/button'
 export type { ButtonGroupDirection, ButtonGroupProps } from './components/basic-components/button-group'
 export type { CardProps, CardShadow } from './components/basic-components/card'
@@ -404,6 +408,8 @@ const components = [
   XButtonGroup,
   XBrick,
   XBrickItem,
+  XSplitter,
+  XSplitPane,
   XCard,
   XGroupContainer,
   XChart,

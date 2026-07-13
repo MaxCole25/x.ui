@@ -32,6 +32,7 @@ export default defineConfig({
               { text: '按钮组 ButtonGroup', link: '/components/button-group' },
               { text: '基础输入框 BaseInput', link: '/components/base-input' },
               { text: '砖格 Brick', link: '/components/brick' },
+              { text: '可拖拽分栏 Splitter', link: '/components/splitter' },
               { text: '卡片 Card', link: '/components/card' },
               { text: '分组容器 GroupContainer', link: '/components/group-container' },
               { text: '分割线 Divider', link: '/components/divider' },

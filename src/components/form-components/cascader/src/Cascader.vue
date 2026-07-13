@@ -165,6 +165,7 @@ const isLoading = computed(() => props.loading || remoteLoading.value)
 
 const cascaderStyle = computed(() => ({
   ...createElementStyleVars(props),
+  width: toCssSize(props.width),
   '--x-cascader-color': props.accentColor ?? props.activeBorderColor,
   '--x-cascader-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-cascader-border-color': props.borderColor,
@@ -184,14 +185,18 @@ const cascaderStyle = computed(() => ({
   '--x-cascader-clear-icon-color': props.clearIconColor,
   '--x-cascader-clear-icon-size': toCssSize(props.clearIconSize)
 }))
-const panelStyle = computed(() => ({
-  ...cascaderStyle.value,
-  ...(shouldTeleportPanel.value
-    ? teleportedPanelStyle.value
-    : {
-        zIndex: String(overlayZIndex.popper)
-      })
-}))
+const panelStyle = computed(() => {
+  const { width: _, ...themeStyle } = cascaderStyle.value
+
+  return {
+    ...themeStyle,
+    ...(shouldTeleportPanel.value
+      ? teleportedPanelStyle.value
+      : {
+          zIndex: String(overlayZIndex.popper)
+        })
+  }
+})
 const panelClasses = computed(() => [
   'x-cascader__panel',
   {

@@ -18,6 +18,7 @@ import { XButton } from '../../../src/components/basic-components/button'
 import { XButtonGroup } from '../../../src/components/basic-components/button-group'
 import { XBaseInput } from '../../../src/components/basic-components/base-input'
 import { XBrick, XBrickItem } from '../../../src/components/basic-components/brick'
+import { XSplitPane, XSplitter } from '../../../src/components/basic-components/splitter'
 import { XCard } from '../../../src/components/basic-components/card'
 import { XGroupContainer } from '../../../src/components/basic-components/group-container'
 import { XDivider } from '../../../src/components/basic-components/divider'
@@ -106,6 +107,8 @@ export default {
     app.component(XBaseInput.name!, XBaseInput)
     app.component(XBrick.name!, XBrick)
     app.component(XBrickItem.name!, XBrickItem)
+    app.component(XSplitter.name!, XSplitter)
+    app.component(XSplitPane.name!, XSplitPane)
     app.component(XCard.name!, XCard)
     app.component(XGroupContainer.name!, XGroupContainer)
     app.component(XDivider.name!, XDivider)
