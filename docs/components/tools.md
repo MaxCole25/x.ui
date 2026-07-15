@@ -3,6 +3,14 @@ import { ref } from 'vue'
 
 const action = ref('')
 
+const toolsHorizontalItems = [
+  { key: 'add', name: '添加行', icon: 'add-line' },
+  { key: 'remove', name: '删除行', icon: 'delete-bin-line' },
+  { key: 'import', name: '导入', icon: 'upload-2-line' },
+  { key: 'export', name: '导出', icon: 'download-2-line' },
+  { key: 'refresh', name: '刷新', icon: 'refresh-line' }
+]
+
 const toolsBasicItems = [
   {
     key: 'print',
@@ -175,6 +183,12 @@ const toolsBasicItems = [
   @command="(command) => { action = String(command) }"
 />
 <p>当前动作：{{ action }}</p>`
+
+const toolsHorizontalCode = `<XTools
+  :items="toolsHorizontalItems"
+  size="sm"
+  item-layout="horizontal"
+/>`
 </script>
 
 # 工具栏 Tools
@@ -192,6 +206,20 @@ const toolsBasicItems = [
         @command="(command) => { action = String(command) }"
       />
       <p class="x-demo-label">当前动作：{{ action }}</p>
+    </div>
+  </ClientOnly>
+</XDocDemo>
+
+默认使用 `vertical` 布局：图标在上、文字在下，适合页面顶部的常规工具栏。
+
+## 横向布局
+
+设置 `item-layout="horizontal"` 后，图标和文字会在同一行显示。配合 `size="sm"` 可用于业务明细表标题栏右侧的紧凑工具栏。
+
+<XDocDemo title="横向紧凑工具栏" :code="toolsHorizontalCode">
+  <ClientOnly>
+    <div class="x-demo-column" style="width: 100%">
+      <XTools :items="toolsHorizontalItems" size="sm" item-layout="horizontal" />
     </div>
   </ClientOnly>
 </XDocDemo>
@@ -215,6 +243,7 @@ const toolsBasicItems = [
 | --- | --- | --- | --- |
 | items | 工具项列表 | `ToolsItem[]` | `[]` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
+| itemLayout | 工具项布局；`vertical` 为图标在上、文字在下，`horizontal` 为图标与文字同行 | `vertical \| horizontal` | `vertical` |
 | disabled | 是否禁用整组工具栏 | `boolean` | `false` |
 | teleported | 下拉菜单是否挂载到外部 | `boolean` | `false` |
 | teleportTo | 下拉菜单挂载目标 | `string` | `body` |

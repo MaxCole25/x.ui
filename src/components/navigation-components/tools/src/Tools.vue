@@ -16,6 +16,7 @@ defineOptions({
 const props = withDefaults(defineProps<ToolsProps>(), {
   items: () => [],
   size: 'md',
+  itemLayout: 'vertical',
   disabled: false,
   teleported: false,
   teleportTo: 'body',
@@ -107,7 +108,7 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
 <template>
   <div
     class="x-tools"
-    :class="[`x-tools--${props.size}`, { 'is-disabled': props.disabled }]"
+    :class="[`x-tools--${props.size}`, `x-tools--${props.itemLayout}`, { 'is-disabled': props.disabled }]"
     :style="toolsStyle"
     role="toolbar"
   >

@@ -5,6 +5,7 @@ import type { DropdownPlacement } from '../../dropdown/src/types'
 
 export type ToolsItemKey = string | number
 export type ToolsItemType = 'button' | 'dropdown' | 'split-dropdown' | 'separator'
+export type ToolsItemLayout = 'vertical' | 'horizontal'
 
 export interface ToolsMenuItem {
   key?: ToolsItemKey
@@ -49,6 +50,7 @@ export type ToolsItem = ToolsActionItem | ToolsSeparatorItem
 export interface ToolsProps extends ElementStyleProps {
   items?: ToolsItem[]
   size?: XSize
+  itemLayout?: ToolsItemLayout
   disabled?: boolean
   teleported?: boolean
   teleportTo?: string

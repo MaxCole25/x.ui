@@ -248,7 +248,7 @@ export type { DropdownItemProps } from './components/navigation-components/dropd
 export type { DropdownMenuProps } from './components/navigation-components/dropdown-menu'
 export type { DropdownPlacement, DropdownProps, DropdownTrigger } from './components/navigation-components/dropdown'
 export type { FloatButtonGroupDirection, FloatButtonGroupItem, FloatButtonGroupItemKey, FloatButtonGroupMode, FloatButtonGroupPlacement, FloatButtonGroupPosition, FloatButtonGroupProps } from './components/navigation-components/float-button-group'
-export type { ToolsActionItem, ToolsItem, ToolsItemKey, ToolsItemType, ToolsMenuItem, ToolsProps, ToolsSeparatorItem } from './components/navigation-components/tools'
+export type { ToolsActionItem, ToolsItem, ToolsItemKey, ToolsItemLayout, ToolsItemType, ToolsMenuItem, ToolsProps, ToolsSeparatorItem } from './components/navigation-components/tools'
 export type { UserStatusMenuItem, UserStatusProps } from './components/navigation-components/user-status'
 export type { EmptyProps } from './components/display-components/empty'
 export type { FileDiskAdapter, FileDiskClipboardAction, FileDiskClipboardPayload, FileDiskColors, FileDiskCreateFolderPayload, FileDiskDownloadOptions, FileDiskDownloadPayload, FileDiskItem, FileDiskItemType, FileDiskPermission, FileDiskProps, FileDiskRenamePayload, FileDiskTransferPayload, FileDiskUploadPayload, FileDiskViewMode } from './components/other-components/file-disk'

@@ -52,7 +52,7 @@ const groupContainerStyle = computed(() => ({
 
 <style scoped>
 .x-group-container {
-  background: var(--x-group-container-background-color, var(--x-color-bg, #fff));
+  background: var(--x-group-container-background-color, var(--x-color-surface, #fff));
   border: var(--x-group-container-border-width, 1px) var(--x-group-container-border-style, solid) var(--x-group-container-border-color, var(--x-color-border, #d8d9df));
   border-radius: var(--x-group-container-radius, 6px);
   box-sizing: border-box;
@@ -67,7 +67,7 @@ const groupContainerStyle = computed(() => ({
 }
 
 .x-group-container__title {
-  background: var(--x-group-container-title-background-color, var(--x-group-container-background-color, var(--x-color-bg, #fff)));
+  background: var(--x-group-container-title-background-color, var(--x-group-container-background-color, var(--x-color-surface, #fff)));
   box-sizing: border-box;
   color: var(--x-group-container-title-text-color, var(--x-group-container-text-color, var(--x-color-text, #303133)));
   font-size: var(--x-group-container-title-font-size, 14px);

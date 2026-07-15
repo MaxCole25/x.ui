@@ -2,7 +2,7 @@
 import { computed, reactive } from 'vue'
 import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XTools } from './index'
-import type { ToolsItem, ToolsItemType } from './src/types'
+import type { ToolsItem, ToolsItemLayout, ToolsItemType } from './src/types'
 import '../../../styles/index.css'
 
 const eventState = reactive({
@@ -13,6 +13,7 @@ const eventState = reactive({
 
 const appearance = reactive({
   size: 'md' as 'sm' | 'md' | 'lg',
+  itemLayout: 'vertical' as ToolsItemLayout,
   disabled: false,
   teleported: true,
   teleportTo: 'body',
@@ -146,6 +147,7 @@ function handleVisibleChange(item: ToolsItem, visible: boolean) {
             v-bind="styleProps"
             :items="tools"
             :size="appearance.size"
+            :item-layout="appearance.itemLayout"
             :disabled="appearance.disabled"
             :teleported="appearance.teleported"
             :teleport-to="appearance.teleportTo"
@@ -159,6 +161,7 @@ function handleVisibleChange(item: ToolsItem, visible: boolean) {
 
         <template #column-1>
           <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
+          <label><span>布局</span><select v-model="appearance.itemLayout"><option value="vertical">vertical</option><option value="horizontal">horizontal</option></select></label>
           <label><span>层级</span><input v-model.number="appearance.zIndex" type="number" /></label>
           <label><span>弹层宽度</span><input v-model.number="appearance.popperWidth" type="number" /></label>
           <label class="story-check"><input v-model="appearance.showName" type="checkbox" /><span>显示名称</span></label>

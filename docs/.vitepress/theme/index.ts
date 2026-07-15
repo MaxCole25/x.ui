@@ -80,6 +80,7 @@ import { XRichTextEditor } from '../../../src/components/other-components/rich-t
 import ButtonPlayground from '../components/ButtonPlayground.vue'
 import IconGallery from '../components/IconGallery.vue'
 import XDocDemo from '../components/XDocDemo.vue'
+import ThemePreview from '../components/ThemePreview.vue'
 import '../../../src/styles/index.css'
 import '../theme.css'
 
@@ -177,5 +178,6 @@ export default {
     app.component('ButtonPlayground', ButtonPlayground)
     app.component('IconGallery', IconGallery)
     app.component('XDocDemo', XDocDemo)
+    app.component('ThemePreview', ThemePreview)
   }
 }

@@ -2017,11 +2017,15 @@ function handleContextMenuExport(mode: TableExcelExportMode) {
 }
 
 function handleContextMenuImport() {
+  closeContextMenu()
+  openExcelImport()
+}
+
+function openExcelImport() {
   if (!props.editable) {
     return
   }
 
-  closeContextMenu()
   excelInputRef.value?.click()
 }
 
@@ -3015,6 +3019,7 @@ defineExpose({
   resetDirtyChanges,
   getDirtyChanges,
   exportExcel,
+  openExcelImport,
   importExcelFile
 })
 </script>
@@ -3593,7 +3598,7 @@ defineExpose({
   align-items: center;
   background: var(--x-color-primary, #1264f4);
   border-radius: 999px;
-  color: var(--x-color-primary-foreground, #fff);
+  color: var(--x-color-primary-text, #fff);
   display: inline-flex;
   font-size: 10px;
   height: 16px;

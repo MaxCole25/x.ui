@@ -1,129 +1,106 @@
-# 主题基础色
+# 内置主题
 
-xl.ui 默认通过 CSS 变量预设组件基础色。业务项目不需要额外安装主题插件，也不需要修改 `app.use(XUi)` 的方式，只要在引入 `xl.ui/style.css` 之后覆盖对应变量即可。
+x.ui 内置三套主题，全部通过 CSS 变量实现，不需要额外插件，也不改变 `app.use(XUi)` 的方式。
 
-## 基础接入
+- `regular`：常规蓝白主题，也是未设置主题时的默认值。
+- `dark`：深蓝灰主题，适合暗色工作台。
+- `light`：纯白底色与线条点缀的浅色主题。
+
+<ThemePreview />
+
+## 全局启用
+
+主题必须设置在 `<html>` 上。这样 Select、Dialog、Message、Tooltip 等 Teleport 到 `body` 的浮层才能与页面保持一致。
 
 ```ts
 import { createApp } from 'vue'
 import XUi from 'xl.ui'
 import 'xl.ui/style.css'
-import './x-ui-theme.css'
 import App from './App.vue'
+
+document.documentElement.dataset.theme = 'dark'
 
 createApp(App).use(XUi).mount('#app')
 ```
 
-`x-ui-theme.css` 示例：
+`regular` 可以省略：删除 `data-theme` 与设置 `data-theme="regular"` 的效果相同。
+
+```ts
+type XUiTheme = 'regular' | 'dark' | 'light'
+
+function setTheme(theme: XUiTheme) {
+  document.documentElement.dataset.theme = theme
+}
+```
+
+主题切换会立即生效；x.ui 不会自动读取系统主题，也不会保存用户选择。
+
+## 主题基础色
+
+| Token | 常规 `regular` | 深色 `dark` | 浅色 `light` | 用途 |
+| --- | --- | --- | --- | --- |
+| `--x-color-page-background` | `#f5f5f5` | `#08111f` | `#ffffff` | 页面背景 |
+| `--x-color-primary` | `#586085` | `#3b82f6` | `#2f6fed` | 重点交互与激活态 |
+| `--x-color-primary-hover` | `#263d6f` | `#60a5fa` | `#245dc9` | 主色 hover |
+| `--x-color-primary-soft` | `#eeeeee` | `rgba(59, 130, 246, .16)` | `#f4f8ff` | 轻量选中与 hover 背景 |
+| `--x-color-text` | `#14221f` | `#eef4fb` | `#1f2937` | 正文颜色 |
+| `--x-color-text-muted` | `#52615d` | `#8da0b8` | `#66758a` | 次要文字和图标 |
+| `--x-color-surface` | `#ffffff` | `#0b1726` | `#ffffff` | 组件表面 |
+| `--x-color-surface-soft` | `#e8f2ee` | `#12243a` | `#f9fbfd` | 次级表面 |
+| `--x-color-border` | `#cdded7` | `#203247` | `#cbd7e6` | 默认边框 |
+| `--x-color-border-strong` | `#7fa5dd` | `#36506d` | `#9fb1c7` | 强调边框 |
+| `--x-color-disabled-bg` | `#f1f5f9` | `#111f31` | `#f7f9fc` | 禁用背景 |
+
+成功、警告、危险、信息色均提供 `--x-color-{status}`、`-soft`、`-border`、`-text` 四组 token；浮层和表格还提供 `--x-dialog-*`、`--x-drawer-*`、`--x-tooltip-*`、`--x-table-*` 专属 token，并随三套主题同步切换。
+
+## 业务布局接入
+
+主题 token 只能影响使用它们的业务样式。应用外壳、页面内容区、面板和业务表头请避免写死 `#fff`、`#cbd5e1` 等颜色，改为使用下列语义 token：
 
 ```css
-:root {
-  --x-color-primary: #1677ff;
-  --x-color-primary-hover: #0958d9;
-  --x-color-primary-soft: #e6f4ff;
-  --x-color-text: #1f2937;
-  --x-color-text-muted: #667085;
-  --x-color-border: #d9d9d9;
+.app-shell {
+  background: var(--x-color-page-background);
+  color: var(--x-color-text);
+}
+
+.app-panel {
+  background: var(--x-color-surface);
+  border: 1px solid var(--x-color-border);
+}
+
+.app-toolbar,
+.app-table-header {
+  background: var(--x-color-surface-soft);
+  border-color: var(--x-color-border);
+}
+```
+
+这样 `regular` 会呈现浅蓝灰画布与蓝调次级面板，`light` 则保持白底和中性线框；不消费 token 的业务布局不会随组件库主题切换。
+
+## 自定义主题
+
+内置主题是预设，不限制业务自定义。请在引入 `xl.ui/style.css` **之后**加载业务样式，并覆盖需要改变的 token；没有覆盖的 token 会继承常规主题的默认值。
+
+```css
+:root[data-theme='brand'] {
+  --x-color-page-background: #faf7ff;
+  --x-color-primary: #7c3aed;
+  --x-color-primary-hover: #6d28d9;
+  --x-color-primary-soft: #f3e8ff;
+  --x-color-text: #24113d;
+  --x-color-border: #d8b4fe;
   --x-color-surface: #ffffff;
 }
 ```
 
-## 可覆盖变量
-
-下面列出主题基础色的所有初始值。色块展示的是浏览器最终渲染颜色；像 `--x-color-text-muted` 这类引用变量，会同时保留原始变量值和解析后的实际颜色。
-
-<style>
-.x-theme-color-swatch {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  vertical-align: middle;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
-}
-</style>
-
-### 浅色主题默认初始值
-
-| 色块 | 变量 | 初始值 | 用途 |
-| --- | --- | --- | --- |
-| <span class="x-theme-color-swatch" style="background: #1264f4;"></span> | `--x-color-primary` | `#1264f4` | 主色，用于主按钮、激活态、选中态和重点交互 |
-| <span class="x-theme-color-swatch" style="background: #0f54d6;"></span> | `--x-color-primary-hover` | `#0f54d6` | 主色 hover 或按下态 |
-| <span class="x-theme-color-swatch" style="background: #e0ecff;"></span> | `--x-color-primary-soft` | `#e0ecff` | 主色浅背景，用于 hover 背景、轻量选中态 |
-| <span class="x-theme-color-swatch" style="background: #ffffff;"></span> | `--x-color-primary-text` | `#ffffff` | 主色背景上的文字色 |
-| <span class="x-theme-color-swatch" style="background: #16a34a;"></span> | `--x-color-success` | `#16a34a` | 成功色 |
-| <span class="x-theme-color-swatch" style="background: #f0f9eb;"></span> | `--x-color-success-soft` | `#f0f9eb` | 成功浅背景 |
-| <span class="x-theme-color-swatch" style="background: #c2e7b0;"></span> | `--x-color-success-border` | `#c2e7b0` | 成功边框色 |
-| <span class="x-theme-color-swatch" style="background: #166534;"></span> | `--x-color-success-text` | `#166534` | 成功文字色 |
-| <span class="x-theme-color-swatch" style="background: #d97706;"></span> | `--x-color-warning` | `#d97706` | 警告色 |
-| <span class="x-theme-color-swatch" style="background: #fdf6ec;"></span> | `--x-color-warning-soft` | `#fdf6ec` | 警告浅背景 |
-| <span class="x-theme-color-swatch" style="background: #f3d19e;"></span> | `--x-color-warning-border` | `#f3d19e` | 警告边框色 |
-| <span class="x-theme-color-swatch" style="background: #92400e;"></span> | `--x-color-warning-text` | `#92400e` | 警告文字色 |
-| <span class="x-theme-color-swatch" style="background: #dc2626;"></span> | `--x-color-danger` | `#dc2626` | 危险或错误色 |
-| <span class="x-theme-color-swatch" style="background: #fef0f0;"></span> | `--x-color-danger-soft` | `#fef0f0` | 危险浅背景 |
-| <span class="x-theme-color-swatch" style="background: #fab6b6;"></span> | `--x-color-danger-border` | `#fab6b6` | 危险边框色 |
-| <span class="x-theme-color-swatch" style="background: #b91c1c;"></span> | `--x-color-danger-text` | `#b91c1c` | 危险文字色 |
-| <span class="x-theme-color-swatch" style="background: #64748b;"></span> | `--x-color-info` | `#64748b` | 信息色 |
-| <span class="x-theme-color-swatch" style="background: #f4f4f5;"></span> | `--x-color-info-soft` | `#f4f4f5` | 信息浅背景 |
-| <span class="x-theme-color-swatch" style="background: #d4d7de;"></span> | `--x-color-info-border` | `#d4d7de` | 信息边框色 |
-| <span class="x-theme-color-swatch" style="background: #475569;"></span> | `--x-color-info-text` | `#475569` | 信息文字色 |
-| <span class="x-theme-color-swatch" style="background: #121826;"></span> | `--x-color-text` | `#121826` | 默认正文色 |
-| <span class="x-theme-color-swatch" style="background: #606b7d;"></span> | `--x-color-muted` | `#606b7d` | 次要色 |
-| <span class="x-theme-color-swatch" style="background: #606b7d;"></span> | `--x-color-text-muted` | `var(--x-color-muted)`，解析为 `#606b7d` | 次要文字色 |
-| <span class="x-theme-color-swatch" style="background: #d1d9e6;"></span> | `--x-color-border` | `#d1d9e6` | 默认边框色 |
-| <span class="x-theme-color-swatch" style="background: #ffffff;"></span> | `--x-color-surface` | `#ffffff` | 默认组件表面背景 |
-| <span class="x-theme-color-swatch" style="background: #f1f5f9;"></span> | `--x-color-disabled-bg` | `#f1f5f9` | 禁用背景色 |
-| <span class="x-theme-color-swatch" style="background: #94a3b8;"></span> | `--x-color-disabled-text` | `#94a3b8` | 禁用文字色 |
-| <span class="x-theme-color-swatch" style="background: #d4d7de;"></span> | `--x-color-disabled-border` | `#d4d7de` | 禁用边框色 |
-
-### 暗色主题初始值
-
-当根节点或上层容器命中 `:root.dark`、`:root[data-theme='dark']`、`[data-theme='dark']` 或 `[data-doc-theme-scheme='dark']` 时，会使用下面这组基础色。
-
-| 色块 | 变量 | 初始值 | 用途 |
-| --- | --- | --- | --- |
-| <span class="x-theme-color-swatch" style="background: #3b82f6;"></span> | `--x-color-primary` | `#3b82f6` | 主色，用于主按钮、激活态、选中态和重点交互 |
-| <span class="x-theme-color-swatch" style="background: #60a5fa;"></span> | `--x-color-primary-hover` | `#60a5fa` | 主色 hover 或按下态 |
-| <span class="x-theme-color-swatch" style="background: rgba(59, 130, 246, 0.16);"></span> | `--x-color-primary-soft` | `rgba(59, 130, 246, 0.16)` | 主色浅背景，用于 hover 背景、轻量选中态 |
-| <span class="x-theme-color-swatch" style="background: #ffffff;"></span> | `--x-color-primary-text` | `#ffffff` | 主色背景上的文字色 |
-| <span class="x-theme-color-swatch" style="background: #22c55e;"></span> | `--x-color-success` | `#22c55e` | 成功色 |
-| <span class="x-theme-color-swatch" style="background: rgba(34, 197, 94, 0.16);"></span> | `--x-color-success-soft` | `rgba(34, 197, 94, 0.16)` | 成功浅背景 |
-| <span class="x-theme-color-swatch" style="background: rgba(34, 197, 94, 0.38);"></span> | `--x-color-success-border` | `rgba(34, 197, 94, 0.38)` | 成功边框色 |
-| <span class="x-theme-color-swatch" style="background: #86efac;"></span> | `--x-color-success-text` | `#86efac` | 成功文字色 |
-| <span class="x-theme-color-swatch" style="background: #f59e0b;"></span> | `--x-color-warning` | `#f59e0b` | 警告色 |
-| <span class="x-theme-color-swatch" style="background: rgba(245, 158, 11, 0.16);"></span> | `--x-color-warning-soft` | `rgba(245, 158, 11, 0.16)` | 警告浅背景 |
-| <span class="x-theme-color-swatch" style="background: rgba(245, 158, 11, 0.38);"></span> | `--x-color-warning-border` | `rgba(245, 158, 11, 0.38)` | 警告边框色 |
-| <span class="x-theme-color-swatch" style="background: #fcd34d;"></span> | `--x-color-warning-text` | `#fcd34d` | 警告文字色 |
-| <span class="x-theme-color-swatch" style="background: #f87171;"></span> | `--x-color-danger` | `#f87171` | 危险或错误色 |
-| <span class="x-theme-color-swatch" style="background: rgba(248, 113, 113, 0.16);"></span> | `--x-color-danger-soft` | `rgba(248, 113, 113, 0.16)` | 危险浅背景 |
-| <span class="x-theme-color-swatch" style="background: rgba(248, 113, 113, 0.38);"></span> | `--x-color-danger-border` | `rgba(248, 113, 113, 0.38)` | 危险边框色 |
-| <span class="x-theme-color-swatch" style="background: #fca5a5;"></span> | `--x-color-danger-text` | `#fca5a5` | 危险文字色 |
-| <span class="x-theme-color-swatch" style="background: #94a3b8;"></span> | `--x-color-info` | `#94a3b8` | 信息色 |
-| <span class="x-theme-color-swatch" style="background: rgba(148, 163, 184, 0.14);"></span> | `--x-color-info-soft` | `rgba(148, 163, 184, 0.14)` | 信息浅背景 |
-| <span class="x-theme-color-swatch" style="background: rgba(148, 163, 184, 0.32);"></span> | `--x-color-info-border` | `rgba(148, 163, 184, 0.32)` | 信息边框色 |
-| <span class="x-theme-color-swatch" style="background: #cbd5e1;"></span> | `--x-color-info-text` | `#cbd5e1` | 信息文字色 |
-| <span class="x-theme-color-swatch" style="background: #eef4fb;"></span> | `--x-color-text` | `#eef4fb` | 默认正文色 |
-| <span class="x-theme-color-swatch" style="background: #8da0b8;"></span> | `--x-color-muted` | `#8da0b8` | 次要色 |
-| <span class="x-theme-color-swatch" style="background: #8da0b8;"></span> | `--x-color-text-muted` | `var(--x-color-muted)`，解析为 `#8da0b8` | 次要文字色 |
-| <span class="x-theme-color-swatch" style="background: #203247;"></span> | `--x-color-border` | `#203247` | 默认边框色 |
-| <span class="x-theme-color-swatch" style="background: #0b1726;"></span> | `--x-color-surface` | `#0b1726` | 默认组件表面背景 |
-| <span class="x-theme-color-swatch" style="background: #111f31;"></span> | `--x-color-disabled-bg` | `#111f31` | 禁用背景色 |
-| <span class="x-theme-color-swatch" style="background: #60738d;"></span> | `--x-color-disabled-text` | `#60738d` | 禁用文字色 |
-| <span class="x-theme-color-swatch" style="background: #334155;"></span> | `--x-color-disabled-border` | `#334155` | 禁用边框色 |
-
-`success`、`warning`、`danger`、`info` 还提供 `-soft`、`-border`、`-text` 后缀变量，用于消息提示、标签和状态类组件。
-
-## 局部主题
-
-CSS 变量可以放在业务容器上，只有容器内部的 xl.ui 组件会使用这组颜色：
-
-```css
-.admin-theme {
-  --x-color-primary: #0f766e;
-  --x-color-primary-hover: #115e59;
-  --x-color-primary-soft: #ccfbf1;
-}
+```ts
+document.documentElement.dataset.theme = 'brand'
 ```
 
-组件自身的颜色 props 和组件级变量优先级更高，适合临时覆盖某个组件；全局基础色适合统一业务项目的主色、文字、边框和状态色。
+组件的颜色 Props 和组件专属 CSS 变量优先级高于全局 token，适合对单个实例做临时覆盖。
+
+## 使用限制
+
+- 公开内置主题值为 `regular`、`dark`、`light`；自定义值由业务 CSS 自行定义。
+- 本期只保证 `<html data-theme="...">` 的全局主题。把主题写在局部容器时，容器内的普通组件可以继承变量，但 Teleport 浮层仍会使用 `html` / `body` 的全局主题。
+- 为兼容现有文档站，`.dark` 与 `data-doc-theme-scheme="dark"` 仍会触发深色 token；业务项目请统一使用 `data-theme`。
