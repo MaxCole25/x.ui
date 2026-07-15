@@ -23,6 +23,8 @@ const props = withDefaults(defineProps<DialogProps>(), {
   resizable: true,
   showFullscreen: false,
   closeOnMaskClick: true,
+  teleported: true,
+  teleportTo: 'body',
   zIndex: overlayZIndex.dialog
 })
 
@@ -31,9 +33,13 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const uncontrolledVisible = ref(false)
 const visible = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => emit('update:modelValue', value)
+  get: () => props.modelValue ?? uncontrolledVisible.value,
+  set: (value: boolean) => {
+    if (props.modelValue === undefined) uncontrolledVisible.value = value
+    emit('update:modelValue', value)
+  }
 })
 
 const popupWidth = ref(toPixelNumber(props.width, 920))
@@ -256,7 +262,7 @@ const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '�
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <div v-if="visible" class="x-dialog__mask" :style="maskStyle" @click.self="onMaskClick">
       <div class="x-dialog" v-bind="$attrs" :class="[`x-dialog--${props.size ?? 'md'}`, { 'is-fullscreen': isFullscreen }]" :style="popupStyle">
         <header class="x-dialog__header" @mousedown="startDrag">

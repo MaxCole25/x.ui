@@ -4,16 +4,16 @@
 
 pre-1.0 阶段不保留旧命名兼容，`legacy` 和 `review` 命中数都必须保持为 0。新增组件和新增公开属性应优先遵守 [公开接口命名规范](/guide/api-naming)。
 
-生成日期：2026-06-01
+生成日期：2026-07-15
 
 ## 汇总
 
 | 项 | 数量 |
 | --- | --- |
-| 公开组件 Props 接口 | 56 |
-| 有效 Props 出现次数 | 1466 |
-| 唯一 Props 名称 | 516 |
-| 直接声明唯一字段 | 454 |
+| 公开组件 Props 接口 | 87 |
+| 有效 Props 出现次数 | 1974 |
+| 唯一 Props 名称 | 646 |
+| 直接声明唯一字段 | 584 |
 | 命中审计规则次数 | 0 |
 | legacy 命中次数 | 0 |
 | review 命中次数 | 0 |
@@ -29,6 +29,8 @@ pre-1.0 阶段不保留旧命名兼容，`legacy` 和 `review` 命中数都必�
 | 组件特定 z-index 命名 | legacy | 0 | 0 | 0 | 新增浮层优先使用 zIndex，并从 overlayZIndex 读取默认值。 |
 | 填充尺寸开关 | legacy | 0 | 0 | 0 | 撑满父容器优先使用 fullHeight，局部内容撑满使用 contentFullHeight，页签拉伸使用 tabStretch。 |
 | 裸 color 属性 | legacy | 0 | 0 | 0 | 图标组件外不要新增裸 color；主题色使用 accentColor，选中色使用 checkedColor，头像背景使用 avatarBackgroundColor，文字色使用 textColor。 |
+| 缺少对象的弱色命名 | legacy | 0 | 0 | 0 | 弱文字色使用 mutedTextColor；其它弱色必须加明确对象前缀。 |
+| 缺少颜色后缀的内容背景 | legacy | 0 | 0 | 0 | 内容背景色使用 contentBackgroundColor。 |
 | 裸 type 视觉/状态属性 | legacy | 0 | 0 | 0 | 视觉形态使用 variant，反馈状态使用 status；原生输入 type 可保留。 |
 | 泛化裸词 | review | 0 | 0 | 0 | 新增时先确认上下文足够明确；不明确时加业务前缀或改用更具体名称。 |
 

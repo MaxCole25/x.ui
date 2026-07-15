@@ -67,7 +67,7 @@ const verticalCode = `<XSplitter v-model="sizes" direction="vertical" height="42
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| size | 未使用 `v-model` 时的初始主轴尺寸，支持像素或百分比 | `number \| string` | — |
+| paneSize | 未使用 `v-model` 时的初始主轴尺寸，支持像素或百分比 | `number \| string` | — |
 | minSize | 主轴最小尺寸（px） | `number` | `0` |
 | maxSize | 主轴最大尺寸（px） | `number` | — |
 | padding | 面板内容内边距，支持数字像素或 CSS 长度 | `number \| string` | — |

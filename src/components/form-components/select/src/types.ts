@@ -51,8 +51,8 @@ export interface SelectProps
   teleported?: boolean
   teleportTo?: string
   zIndex?: number | string
-  dropdownMaxWidth?: number | string
-  dropdownBackgroundColor?: string
+  popperMaxWidth?: number | string
+  popperBackgroundColor?: string
   textAlign?: SelectTextAlign
   name?: string
 }

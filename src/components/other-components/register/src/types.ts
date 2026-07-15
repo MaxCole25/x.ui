@@ -66,7 +66,7 @@ export interface RegisterProps {
   radius?: string
   width?: string
   textColor?: string
-  mutedColor?: string
+  mutedTextColor?: string
   inputBackgroundColor?: string
   buttonTextColor?: string
   enableImageCaptcha?: boolean

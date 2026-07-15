@@ -47,7 +47,7 @@ const sample = reactive({
   suffix: '必选',
   separator: ' / ',
   changeOnSelect: false,
-  dropdownMaxHeight: 260,
+  popperMaxHeight: 260,
   teleportTo: '',
   activeBorderColor: '#1264f4',
   clearIconColor: '#64748b',
@@ -169,7 +169,7 @@ const updateRadius = (event: Event) => {
           <div class="cascader-appearance__column">
             <label>
               <span>弹层最大高度</span>
-              <input v-model.number="sample.dropdownMaxHeight" type="number" min="80" />
+              <input v-model.number="sample.popperMaxHeight" type="number" min="80" />
             </label>
             <label>
               <span>高度</span>

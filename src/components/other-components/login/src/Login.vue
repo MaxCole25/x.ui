@@ -50,7 +50,7 @@ const props = withDefaults(defineProps<LoginProps>(), {
   radius: '18px',
   width: '100%',
   textColor: '#12323a',
-  mutedColor: '#6b7c93',
+  mutedTextColor: '#6b7c93',
   inputBackgroundColor: '#ffffff',
   buttonTextColor: '#ffffff',
   letterCaptchaText: '',
@@ -110,7 +110,7 @@ const themeStyle = computed<Record<string, string>>(() => ({
   '--x-login-radius': props.radius,
   '--x-login-width': props.width,
   '--x-login-text': props.textColor,
-  '--x-login-muted': props.mutedColor,
+  '--x-login-muted': props.mutedTextColor,
   '--x-login-input-bg': props.inputBackgroundColor,
   '--x-login-button-text': props.buttonTextColor
 }))

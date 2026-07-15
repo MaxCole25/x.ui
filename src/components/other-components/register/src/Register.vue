@@ -58,7 +58,7 @@ const props = withDefaults(defineProps<RegisterProps>(), {
   radius: '18px',
   width: '100%',
   textColor: '#12323a',
-  mutedColor: '#6b7c93',
+  mutedTextColor: '#6b7c93',
   inputBackgroundColor: '#ffffff',
   buttonTextColor: '#ffffff',
   enableImageCaptcha: false,
@@ -118,7 +118,7 @@ const themeStyle = computed<Record<string, string>>(() => ({
   '--x-register-radius': props.radius,
   '--x-register-width': props.width,
   '--x-register-text': props.textColor,
-  '--x-register-muted': props.mutedColor,
+  '--x-register-muted': props.mutedTextColor,
   '--x-register-input-bg': props.inputBackgroundColor,
   '--x-register-button-text': props.buttonTextColor
 }))

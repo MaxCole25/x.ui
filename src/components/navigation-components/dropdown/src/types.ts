@@ -17,6 +17,7 @@ export type DropdownPlacement =
 export type DropdownSize = 'sm' | 'md' | 'lg'
 
 export interface DropdownProps extends ElementStyleProps {
+  modelValue?: boolean
   trigger?: DropdownTrigger
   placement?: DropdownPlacement
   size?: DropdownSize
@@ -27,7 +28,7 @@ export interface DropdownProps extends ElementStyleProps {
   teleportTo?: string
   offset?: number | string
   popperWidth?: number | string
-  zIndex?: number | string
+  zIndex?: number
   radius?: number | string
   shadow?: string
   hoverBackgroundColor?: string

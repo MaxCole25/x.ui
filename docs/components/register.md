@@ -153,7 +153,7 @@ const registerThemeCode = `<XRegister
 | `radius` | 外边框圆角大小 | `string` | `'18px'` |
 | `width` | 组件宽度 | `string` | `'100%'` |
 | `textColor` | 主文字色 | `string` | `'#12323a'` |
-| `mutedColor` | 次级文字色 | `string` | `'#6b7c93'` |
+| `mutedTextColor` | 次级文字色 | `string` | `'#6b7c93'` |
 | `inputBackgroundColor` | 输入框背景色 | `string` | `'#ffffff'` |
 | `buttonTextColor` | 主按钮文字色 | `string` | `'#ffffff'` |
 

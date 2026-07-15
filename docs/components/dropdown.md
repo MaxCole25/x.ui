@@ -94,11 +94,12 @@ const dropdownItemCode = `\x3Cscript setup lang="ts">
 | disabled | 是否禁用 | `boolean` | `false` |
 | hideOnClick | 点击菜单项后是否隐藏 | `boolean` | `true` |
 | showArrow | 是否显示箭头 | `boolean` | `true` |
-| teleported | 是否将弹层挂载到 `teleportTo`，用于避免被父级裁剪 | `boolean` | `false` |
+| modelValue | 是否显示菜单；未传入时由组件内部控制 | `boolean` | — |
+| teleported | 是否将弹层挂载到 `teleportTo`，用于避免被父级裁剪 | `boolean` | `true` |
 | teleportTo | 弹层挂载目标 | `string` | `body` |
 | offset | 弹层偏移长度 | `number \| string` | `6` |
 | popperWidth | 弹层宽度 | `number \| string` | `max-content` |
-| zIndex | 弹层层级 | `number \| string` | `2000` |
+| zIndex | 弹层层级 | `number` | `2000` |
 | radius | 弹层圆角 | `number \| string` | `6px` |
 | shadow | 弹层阴影 | `string` | 内置阴影 |
 | hoverBackgroundColor | 菜单项悬浮背景色 | `string` | 主色浅色 |

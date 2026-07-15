@@ -79,6 +79,9 @@ const meetingTime = ref('09:30')
 | clearable | 是否可清空 | `boolean` | `false` |
 | hideClearButton | 是否隐藏清除按钮 | `boolean` | `false` |
 | size | 输入框尺寸 | `'sm' \| 'md' \| 'lg'` | - |
+| teleported | 是否将选择弹窗挂载到 `teleportTo` | `boolean` | `true` |
+| teleportTo | 选择弹窗挂载目标 | `string` | `body` |
+| zIndex | 选择弹窗层级 | `number` | `1900` |
 | status | 输入框状态 | `'default' \| 'success' \| 'warning' \| 'error'` | `default` |
 | textAlign | 文本对齐方式 | `'left' \| 'center' \| 'right'` | `'center'` |
 | prefix | 前缀文本，会显示在默认时间图标后 | `string` | - |

@@ -35,7 +35,7 @@
     <div
       class="xl-rich-editor__surface"
       :class="{ 'xl-rich-editor__surface--with-outline': showOutline && props.showOutline }"
-      :style="{ '--xl-editor-content-bg': props.contentBackground }"
+      :style="{ '--xl-editor-content-bg': props.contentBackgroundColor }"
     >
       <EditorContent :editor="editor" @mousedown="handleEditorMouseDown" />
       <span v-if="showOutline && props.showOutline" class="xl-rich-editor__outline-divider" aria-hidden="true"></span>
@@ -77,7 +77,7 @@ export interface RichTextEditorTheme {
   toolbarActiveBackground?: string
   toolbarActiveTextColor?: string
   toolbarDividerColor?: string
-  contentBackground?: string
+  contentBackgroundColor?: string
   contentTextColor?: string
   placeholderColor?: string
   overlayBackground?: string
@@ -99,7 +99,7 @@ const props = withDefaults(
     showOutline?: boolean
     pasteImages?: boolean
     size?: XSize
-    contentBackground?: string
+    contentBackgroundColor?: string
     contentTextColor?: string
     contentFontSize?: number | string
     theme?: RichTextEditorTheme
@@ -117,7 +117,7 @@ const props = withDefaults(
     showOutline: true,
     pasteImages: true,
     size: undefined,
-    contentBackground: 'var(--x-color-surface, #ffffff)',
+    contentBackgroundColor: 'var(--x-color-surface, #ffffff)',
     contentTextColor: 'var(--x-color-text, #111827)',
     contentFontSize: 14,
   },
@@ -163,7 +163,7 @@ const editorStyle = computed(() => {
     '--xl-editor-control-height': `${preset.height}px`,
     '--xl-editor-control-padding': preset.padding,
     '--xl-editor-radius': preset.radius,
-    '--xl-editor-content-bg': theme.contentBackground || props.contentBackground,
+    '--xl-editor-content-bg': theme.contentBackgroundColor || props.contentBackgroundColor,
     '--xl-editor-content-text': theme.contentTextColor || props.contentTextColor,
     '--xl-editor-content-font-size': typeof props.contentFontSize === 'number' ? `${props.contentFontSize}px` : props.contentFontSize,
     '--xl-editor-placeholder': theme.placeholderColor || '',

@@ -118,7 +118,7 @@ const brickAlignCode = `\x3Cscript setup lang="ts">
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| size | 沿主轴的固定尺寸，优先级高于 `width` 或 `height` | `number \| string` | `undefined` |
+| itemSize | 沿主轴的固定尺寸，优先级高于 `width` 或 `height` | `number \| string` | `undefined` |
 | width | 宽度；横向分隔时也作为主轴尺寸 | `number \| string` | `undefined` |
 | height | 高度；竖向分隔时也作为主轴尺寸 | `number \| string` | `undefined` |
 | minSize | 沿主轴的最小尺寸 | `number \| string` | `undefined` |

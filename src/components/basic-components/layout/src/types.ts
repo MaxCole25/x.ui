@@ -12,20 +12,20 @@ export interface LayoutProps {
   topbarHeight?: number | string
   footerHeight?: number | string
   topbarBackgroundColor?: string
-  topbarColor?: string
+  topbarTextColor?: string
   topbarRadius?: number | string
-  topbarBorder?: string
+  topbarBorderColor?: string
   sidebarBackgroundColor?: string
-  sidebarColor?: string
+  sidebarTextColor?: string
   sidebarRadius?: number | string
-  sidebarBorder?: string
+  sidebarBorderColor?: string
   sidebarPadding?: number | string
   contentBackgroundColor?: string
-  contentColor?: string
+  contentTextColor?: string
   contentPadding?: number | string
   contentRadius?: number | string
   footerBackgroundColor?: string
-  footerColor?: string
+  footerTextColor?: string
   footerRadius?: number | string
-  footerBorder?: string
+  footerBorderColor?: string
 }

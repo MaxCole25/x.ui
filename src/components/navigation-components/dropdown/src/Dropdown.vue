@@ -16,18 +16,23 @@ const props = withDefaults(defineProps<DropdownProps>(), {
   disabled: false,
   hideOnClick: true,
   showArrow: true,
-  teleported: false,
+  modelValue: undefined,
+  teleported: true,
   teleportTo: 'body',
   offset: 6,
   zIndex: overlayZIndex.popper
 })
 
 const emit = defineEmits<{
+  'update:modelValue': [visible: boolean]
   command: [command: unknown]
   'visible-change': [visible: boolean]
+  show: []
+  hide: []
 }>()
 
-const visible = ref(false)
+const uncontrolledVisible = ref(false)
+const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
 const dropdownRef = ref<HTMLElement>()
 const triggerRef = ref<HTMLElement>()
 const popperRef = ref<HTMLElement>()
@@ -59,8 +64,11 @@ const teleportedPopperStyle = computed(() => ({
 function setVisible(value: boolean) {
   if (props.disabled) value = false
   if (visible.value === value) return
-  visible.value = value
+  if (props.modelValue === undefined) uncontrolledVisible.value = value
+  emit('update:modelValue', value)
   emit('visible-change', value)
+  if (value) emit('show')
+  else emit('hide')
   if (value) {
     void nextTick(updatePopperPosition)
   }

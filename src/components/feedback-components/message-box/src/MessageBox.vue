@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { componentSizePreset } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { MessageBoxAction, MessageBoxProps } from './types'
@@ -9,7 +9,6 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<MessageBoxProps>(), {
-  modelValue: false,
   title: '提示',
   message: '',
   status: 'info',
@@ -21,6 +20,8 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   confirmButtonText: '确定',
   cancelButtonText: '取消',
   distinguishCancelAndClose: false,
+  teleported: true,
+  teleportTo: 'body',
   width: 420,
   minWidth: 280,
   maxWidth: 'calc(100vw - 32px)',
@@ -34,6 +35,15 @@ const emit = defineEmits<{
   cancel: []
   close: []
 }>()
+
+const uncontrolledVisible = ref(false)
+const visible = computed({
+  get: () => props.modelValue ?? uncontrolledVisible.value,
+  set: (value: boolean) => {
+    if (props.modelValue === undefined) uncontrolledVisible.value = value
+    emit('update:modelValue', value)
+  }
+})
 
 const mergedStatus = computed(() => props.status ?? 'info')
 const iconClass = computed(() => {
@@ -73,7 +83,7 @@ const boxStyle = computed(() => ({
 }))
 
 function finish(action: MessageBoxAction) {
-  emit('update:modelValue', false)
+  visible.value = false
   emit('action', action)
   if (action === 'confirm') emit('confirm')
   if (action === 'cancel') emit('cancel')
@@ -86,8 +96,8 @@ function onMaskClick() {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="props.modelValue" class="x-message-box__mask" :style="boxStyle" @click.self="onMaskClick">
+  <Teleport :to="props.teleportTo" :disabled="!props.teleported">
+    <div v-if="visible" class="x-message-box__mask" :style="boxStyle" @click.self="onMaskClick">
       <section class="x-message-box" :class="`x-message-box--${mergedSize}`" role="dialog" aria-modal="true" :aria-label="props.title">
         <header class="x-message-box__header">
           <div class="x-message-box__title">

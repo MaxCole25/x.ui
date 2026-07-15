@@ -109,7 +109,7 @@ function initializeSizes() {
     sizes.value = normalizeSizes(modelSizes, availableSize)
     return
   }
-  const configuredSizes = panes.value.map((pane) => toPixels(pane.props.size, availableSize))
+  const configuredSizes = panes.value.map((pane) => toPixels(pane.props.paneSize, availableSize))
   const fixedTotal = configuredSizes.reduce<number>((sum, value) => sum + (value ?? 0), 0)
   const flexibleIndexes = configuredSizes.map((value, index) => (value === undefined ? index : -1)).filter((index) => index >= 0)
   const fallbackSize = flexibleIndexes.length ? Math.max(0, (availableSize - fixedTotal) / flexibleIndexes.length) : 0

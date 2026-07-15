@@ -94,6 +94,8 @@ const visible = ref(false)
 | minWidth | 最小宽度 | `number \| string` | `280` |
 | maxWidth | 最大宽度 | `number \| string` | `calc(100vw - 32px)` |
 | zIndex | 层级 | `number` | `2300` |
+| teleported | 是否将弹框挂载到 `teleportTo` | `boolean` | `true` |
+| teleportTo | 弹框挂载目标 | `string` | `body` |
 | backgroundColor | 弹框背景色 | `string` | `#fff` |
 | textColor | 内容文字色 | `string` | `#606266` |
 | titleColor | 标题色 | `string` | `#303133` |

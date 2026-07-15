@@ -34,9 +34,9 @@ const appearance = reactive({
 })
 
 const sampleItems = computed(() => [
-  { label: '区域一', size: normalizeSize(appearance.firstSize) },
-  { label: '区域二', size: normalizeSize(appearance.secondSize) },
-  { label: '区域三', size: normalizeSize(appearance.thirdSize) }
+  { label: '区域一', itemSize: normalizeSize(appearance.firstSize) },
+  { label: '区域二', itemSize: normalizeSize(appearance.secondSize) },
+  { label: '区域三', itemSize: normalizeSize(appearance.thirdSize) }
 ])
 const resolvedItemBackgroundColor = computed(() =>
   appearance.itemBackgroundTransparent ? 'transparent' : appearance.itemBackgroundColor
@@ -73,9 +73,9 @@ const previewCode = computed(() => {
   }
 
   return `<XBrick${attrs.length ? ` ${attrs.join(' ')}` : ''}>
-  <XBrickItem size="${appearance.firstSize}"${secondItemAttrs}>区域一</XBrickItem>
+  <XBrickItem item-size="${appearance.firstSize}"${secondItemAttrs}>区域一</XBrickItem>
   <XBrickItem${secondItemAttrs}>区域二</XBrickItem>
-  <XBrickItem size="${appearance.thirdSize}"${secondItemAttrs}>区域三</XBrickItem>
+  <XBrickItem item-size="${appearance.thirdSize}"${secondItemAttrs}>区域三</XBrickItem>
 </XBrick>`
 })
 
@@ -120,7 +120,7 @@ function booleanOverrideToAttr(name: string, value: BooleanOverride) {
               <XBrickItem
                 v-for="item in sampleItems"
                 :key="item.label"
-                :size="item.size"
+                :item-size="item.itemSize"
                 :overflow="appearance.itemOverflow"
                 :vertical-center="resolveBooleanOverride(appearance.itemVerticalCenter)"
                 :horizontal-center="resolveBooleanOverride(appearance.itemHorizontalCenter)"
@@ -131,7 +131,7 @@ function booleanOverrideToAttr(name: string, value: BooleanOverride) {
               >
                 <div class="brick-story-item">
                   <strong>{{ item.label }}</strong>
-                  <span>{{ item.size || '平分剩余' }}</span>
+                  <span>{{ item.itemSize || '平分剩余' }}</span>
                 </div>
               </XBrickItem>
             </template>

@@ -45,12 +45,12 @@ export interface AutocompleteProps
   remoteTrigger?: AutocompleteRemoteTrigger
   remoteDebounce?: number
   remoteMinLength?: number
-  dropdownMaxHeight?: number | string
-  dropdownMaxWidth?: number | string
+  popperMaxHeight?: number | string
+  popperMaxWidth?: number | string
   teleported?: boolean
   teleportTo?: string
-  zIndex?: number | string
-  dropdownBackgroundColor?: string
+  zIndex?: number
+  popperBackgroundColor?: string
   loading?: boolean
   loadingText?: string
   emptyText?: string

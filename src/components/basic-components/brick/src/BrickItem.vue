@@ -55,8 +55,8 @@ const nestedContentLayout = computed(() => ({
 provide(brickContentLayoutKey, nestedContentLayout)
 
 const mainSize = computed(() => {
-  if (props.size !== undefined) {
-    return props.size
+  if (props.itemSize !== undefined) {
+    return props.itemSize
   }
 
   return direction.value === 'horizontal' ? props.width : props.height

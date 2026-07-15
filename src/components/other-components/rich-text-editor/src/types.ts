@@ -46,7 +46,7 @@ export interface RichTextEditorTheme {
   toolbarActiveBackground?: string
   toolbarActiveTextColor?: string
   toolbarDividerColor?: string
-  contentBackground?: string
+  contentBackgroundColor?: string
   contentTextColor?: string
   placeholderColor?: string
   overlayBackground?: string
@@ -68,7 +68,7 @@ export interface RichTextEditorProps {
   toolbarTooltipPlacement?: 'top' | 'bottom'
   showOutline?: boolean
   pasteImages?: boolean
-  contentBackground?: string
+  contentBackgroundColor?: string
   contentTextColor?: string
   contentFontSize?: number | string
   theme?: RichTextEditorTheme

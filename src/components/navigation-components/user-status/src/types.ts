@@ -12,6 +12,7 @@ export interface UserStatusMenuItem {
 }
 
 export interface UserStatusProps extends ElementStyleProps {
+  modelValue?: boolean
   loggedIn?: boolean
   name?: string
   description?: string
@@ -31,5 +32,5 @@ export interface UserStatusProps extends ElementStyleProps {
   hideOnClick?: boolean
   teleported?: boolean
   teleportTo?: string
-  zIndex?: number | string
+  zIndex?: number
 }

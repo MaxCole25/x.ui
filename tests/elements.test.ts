@@ -40,13 +40,13 @@ const mountAutocomplete = (options: any = {}) =>
 describe('元素组件', () => {
   it('renders text style classes', () => {
     const wrapper = mount(XText, {
-      props: { variant: 'primary', size: 'title' },
+      props: { variant: 'title', size: 'md' },
       slots: { default: '标题' }
     })
 
     expect(wrapper.text()).toBe('标题')
-    expect(wrapper.classes()).toContain('x-text--primary')
     expect(wrapper.classes()).toContain('x-text--title')
+    expect(wrapper.classes()).toContain('x-text--md')
   })
 
   it('exposes text appearance props', () => {

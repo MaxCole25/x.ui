@@ -98,7 +98,7 @@ const richTextFullHeightCode = `<div style="height: 520px; min-height: 0">
 | `toolbarTooltipPlacement` | 工具提示位置，兼容参考组件 API | `'top' \| 'bottom'` | `'bottom'` |
 | `showOutline` | 是否显示右侧大纲 | `boolean` | `true` |
 | `pasteImages` | 是否允许从剪贴板粘贴图片，粘贴后复用 `uploadImage` 管线 | `boolean` | `true` |
-| `contentBackground` | 编辑区域背景 | `string` | `var(--x-color-surface, #ffffff)` |
+| `contentBackgroundColor` | 编辑区域背景色 | `string` | `var(--x-color-surface, #ffffff)` |
 | `contentTextColor` | 编辑区域正文颜色，适合深色表单或自定义主题中直接覆盖 | `string` | `var(--x-color-text, #111827)` |
 | `contentFontSize` | 编辑区域正文字号，数字按 px 处理 | `number \| string` | `14` |
 | `theme` | 工具栏、内容区和浮层主题变量 | `RichTextEditorTheme` | `undefined` |

@@ -87,6 +87,20 @@ const rules = [
     recommendation: '图标组件外不要新增裸 color；主题色使用 accentColor，选中色使用 checkedColor，头像背景使用 avatarBackgroundColor，文字色使用 textColor。'
   },
   {
+    id: 'muted-color',
+    title: '缺少对象的弱色命名',
+    level: 'legacy',
+    match: (name) => name === 'mutedColor',
+    recommendation: '弱文字色使用 mutedTextColor；其它弱色必须加明确对象前缀。'
+  },
+  {
+    id: 'content-background',
+    title: '缺少颜色后缀的内容背景',
+    level: 'legacy',
+    match: (name) => name === 'contentBackground',
+    recommendation: '内容背景色使用 contentBackgroundColor。'
+  },
+  {
     id: 'bare-type',
     title: '裸 type 视觉/状态属性',
     level: 'legacy',
@@ -422,6 +436,9 @@ if (checkMode) {
   }
   if (stats.reviewFindingCount > maxReviewFindings) {
     failures.push(`review 命中次数 ${stats.reviewFindingCount} 超过上限 ${maxReviewFindings}`)
+  }
+  if (!fs.existsSync(reportPath) || fs.readFileSync(reportPath, 'utf8') !== buildMarkdownReport()) {
+    failures.push('审计报告不是基于当前源码生成，请运行 pnpm api:naming:audit:write')
   }
 
   if (failures.length) {

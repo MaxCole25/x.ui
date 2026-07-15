@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<FloatButtonGroupProps>(), {
   items: () => [],
   mode: 'menu',
   modelValue: undefined,
-  defaultExpanded: false,
+  defaultModelValue: false,
   direction: 'vertical',
   placement: 'bottom-right',
   position: 'fixed',
@@ -41,7 +41,7 @@ const emit = defineEmits<{
   'trigger-click': [expanded: boolean, event: MouseEvent]
 }>()
 
-const uncontrolledExpanded = ref(props.defaultExpanded)
+const uncontrolledExpanded = ref(props.defaultModelValue)
 const isExpanded = computed(() => props.modelValue ?? uncontrolledExpanded.value)
 const isMenuMode = computed(() => props.mode === 'menu')
 const shouldShowItems = computed(() => props.mode === 'direct' || isExpanded.value)

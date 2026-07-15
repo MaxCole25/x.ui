@@ -52,7 +52,7 @@ export interface ToolsProps extends ElementStyleProps {
   disabled?: boolean
   teleported?: boolean
   teleportTo?: string
-  zIndex?: number | string
+  zIndex?: number
   placement?: DropdownPlacement
   popperWidth?: number | string
 }

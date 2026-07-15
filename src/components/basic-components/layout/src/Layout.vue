@@ -16,22 +16,22 @@ const props = withDefaults(defineProps<LayoutProps>(), {
   topbarHeight: 55,
   footerHeight: 30,
   topbarBackgroundColor: '#1E6B73',
-  topbarColor: '#F9F9F9',
+  topbarTextColor: '#F9F9F9',
   topbarRadius: 0,
-  topbarBorder: 'none',
+  topbarBorderColor: 'transparent',
   sidebarBackgroundColor: '#185A61',
-  sidebarColor: '#F9F9F9',
+  sidebarTextColor: '#F9F9F9',
   sidebarRadius: 0,
-  sidebarBorder: 'none',
+  sidebarBorderColor: 'transparent',
   sidebarPadding: 12,
   contentBackgroundColor: 'transparent',
-  contentColor: '#F9F9F9',
+  contentTextColor: '#F9F9F9',
   contentPadding: 0,
   contentRadius: 0,
   footerBackgroundColor: '#124A50',
-  footerColor: '#F9F9F9',
+  footerTextColor: '#F9F9F9',
   footerRadius: 0,
-  footerBorder: 'none'
+  footerBorderColor: 'transparent'
 })
 
 function toCssLength(value: number | string) {
@@ -45,22 +45,22 @@ const shellStyle = computed(() => {
     '--x-layout-topbar-height': toCssLength(props.topbarHeight),
     '--x-layout-footer-height': toCssLength(props.footerHeight),
     '--x-layout-topbar-bg': props.topbarBackgroundColor,
-    '--x-layout-topbar-color': props.topbarColor,
+    '--x-layout-topbar-color': props.topbarTextColor,
     '--x-layout-topbar-radius': toCssLength(props.topbarRadius),
-    '--x-layout-topbar-border': props.topbarBorder,
+    '--x-layout-topbar-border': props.topbarBorderColor,
     '--x-layout-sidebar-bg': props.sidebarBackgroundColor,
-    '--x-layout-sidebar-color': props.sidebarColor,
+    '--x-layout-sidebar-color': props.sidebarTextColor,
     '--x-layout-sidebar-radius': toCssLength(props.sidebarRadius),
-    '--x-layout-sidebar-border': props.sidebarBorder,
+    '--x-layout-sidebar-border': props.sidebarBorderColor,
     '--x-layout-sidebar-padding': toCssLength(props.sidebarPadding),
     '--x-layout-content-bg': props.contentBackgroundColor,
-    '--x-layout-content-color': props.contentColor,
+    '--x-layout-content-color': props.contentTextColor,
     '--x-layout-content-padding': toCssLength(props.contentPadding),
     '--x-layout-content-radius': toCssLength(props.contentRadius),
     '--x-layout-footer-bg': props.footerBackgroundColor,
-    '--x-layout-footer-color': props.footerColor,
+    '--x-layout-footer-color': props.footerTextColor,
     '--x-layout-footer-radius': toCssLength(props.footerRadius),
-    '--x-layout-footer-border': props.footerBorder
+    '--x-layout-footer-border': props.footerBorderColor
   }
 })
 

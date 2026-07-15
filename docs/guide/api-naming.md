@@ -86,6 +86,8 @@
 
 新增普通弹层默认使用 `overlayZIndex.popper` 或 `--x-z-index-popper`；反馈浮层默认层级必须从 `overlayZIndex` 读取。
 
+普通弹层的尺寸与背景统一使用 `popperWidth`、`popperMaxWidth`、`popperMaxHeight`、`popperBackgroundColor`。可受控的显示或展开状态统一使用可选 `modelValue` 与 `update:modelValue`；未传入时由组件管理状态，初始值使用 `defaultModelValue`。
+
 ## 类型、事件和插槽
 
 - 公开 Props 接口统一命名为 `ComponentProps`，例如 `ButtonProps`、`DatePickerProps`。
@@ -95,6 +97,7 @@
 - `v-model` 事件固定为 `update:modelValue`，其它事件优先使用清晰动词或动词短语，例如 `change`、`clear`、`row-click`、`column-resize`。
 - 插槽命名优先使用语义名，例如 `default`、`header`、`footer`、`prefix`、`suffix`、`empty`、`action`。
 - `expose` 方法使用动词开头，例如 `focus`、`blur`、`validate`、`resetFields`、`scrollTo`。
+- 组件对外提供事件、插槽或 expose 时，应分别导出 `ComponentEmits`、`ComponentSlots`、`ComponentExpose` 类型，并让实现直接引用该类型。
 
 ## 避免裸语义属性
 

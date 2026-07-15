@@ -29,12 +29,12 @@ const props = withDefaults(defineProps<AutocompleteProps>(), {
   remoteTrigger: 'input',
   remoteDebounce: 200,
   remoteMinLength: 0,
-  dropdownMaxHeight: 260,
-  dropdownMaxWidth: 360,
+  popperMaxHeight: 260,
+  popperMaxWidth: 360,
   teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
-  dropdownBackgroundColor: '#ffffff',
+  popperBackgroundColor: '#ffffff',
   loading: false,
   loadingText: '加载中',
   emptyText: '暂无匹配数据',
@@ -102,10 +102,10 @@ const autocompleteStyle = computed(() => ({
   '--x-autocomplete-height': toCssSize(autocompleteHeight.value),
   '--x-autocomplete-option-font-size': toCssSize(optionFontSize.value),
   '--x-autocomplete-option-padding': toCssSize(optionPadding.value),
-  '--x-autocomplete-dropdown-max-height': toCssSize(props.dropdownMaxHeight),
-  '--x-autocomplete-dropdown-max-width': toCssSize(props.dropdownMaxWidth),
+  '--x-autocomplete-dropdown-max-height': toCssSize(props.popperMaxHeight),
+  '--x-autocomplete-dropdown-max-width': toCssSize(props.popperMaxWidth),
   '--x-autocomplete-dropdown-z-index': resolvedDropdownZIndex.value,
-  '--x-autocomplete-dropdown-bg': props.dropdownBackgroundColor
+  '--x-autocomplete-dropdown-bg': props.popperBackgroundColor
 }))
 const rootClass = computed(() => attrs.class)
 const rootStyle = computed(() => attrs.style)
@@ -166,12 +166,12 @@ const inputProps = computed(() => {
   delete next.remoteTrigger
   delete next.remoteDebounce
   delete next.remoteMinLength
-  delete next.dropdownMaxHeight
-  delete next.dropdownMaxWidth
+  delete next.popperMaxHeight
+  delete next.popperMaxWidth
   delete next.teleported
   delete next.teleportTo
   delete next.zIndex
-  delete next.dropdownBackgroundColor
+  delete next.popperBackgroundColor
   delete next.loading
   delete next.loadingText
   delete next.emptyText
@@ -280,7 +280,7 @@ const getCssPixelValue = (value: number | string | undefined, fallback: number) 
 }
 
 const getDropdownMaxWidth = (viewportWidth: number, gap: number) => {
-  const configuredMaxWidth = getCssPixelValue(props.dropdownMaxWidth, 360)
+  const configuredMaxWidth = getCssPixelValue(props.popperMaxWidth, 360)
   return Math.min(configuredMaxWidth, viewportWidth - gap * 2)
 }
 
@@ -291,7 +291,7 @@ const updateDropdownPosition = () => {
   const rect = autocompleteRef.value.getBoundingClientRect()
   const viewportHeight = window.innerHeight || document.documentElement.clientHeight
   const viewportWidth = window.innerWidth || document.documentElement.clientWidth
-  const configuredMaxHeight = getCssPixelValue(props.dropdownMaxHeight, 260)
+  const configuredMaxHeight = getCssPixelValue(props.popperMaxHeight, 260)
   const dropdownHeight = dropdownRef.value?.offsetHeight || configuredMaxHeight
   const spaceBelow = viewportHeight - rect.bottom - gap
   const spaceAbove = rect.top - gap
@@ -575,8 +575,8 @@ watch(
   () => [
     visibleOptions.value.map((option) => getOptionDisplayText(option)).join('\u0000'),
     isLoading.value,
-    props.dropdownMaxHeight,
-    props.dropdownMaxWidth,
+    props.popperMaxHeight,
+    props.popperMaxWidth,
     resolvedDropdownZIndex.value
   ],
   async () => {

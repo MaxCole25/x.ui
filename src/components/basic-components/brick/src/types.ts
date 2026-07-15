@@ -21,7 +21,7 @@ export interface BrickProps extends ElementStyleProps {
 }
 
 export interface BrickItemProps extends ElementStyleProps {
-  size?: BrickSize
+  itemSize?: BrickSize
   width?: BrickSize
   height?: BrickSize
   minSize?: BrickSize

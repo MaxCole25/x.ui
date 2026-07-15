@@ -32,8 +32,8 @@ const props = withDefaults(defineProps<SelectProps>(), {
   teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
-  dropdownMaxWidth: 360,
-  dropdownBackgroundColor: '#ffffff',
+  popperMaxWidth: 360,
+  popperBackgroundColor: '#ffffff',
   textAlign: 'left',
   showActiveBorder: true
 })
@@ -144,7 +144,7 @@ const selectStyle = computed(() => ({
   '--x-select-border-width': toCssSize(props.borderWidth),
   '--x-select-radius': resolvedInputRadius.value,
   '--x-select-bg': props.inputBackgroundColor ?? props.backgroundColor,
-  '--x-select-dropdown-bg': props.dropdownBackgroundColor,
+  '--x-select-dropdown-bg': props.popperBackgroundColor,
   '--x-select-text-color': props.textColor,
   '--x-select-disabled-bg': props.disabledBackgroundColor,
   '--x-select-disabled-text-color': props.disabledTextColor,
@@ -195,7 +195,7 @@ const dropdownStyle = computed(() => ({
   ...(props.teleported
     ? teleportedDropdownStyle.value
     : {
-        maxWidth: toCssSize(props.dropdownMaxWidth),
+        maxWidth: toCssSize(props.popperMaxWidth),
         zIndex: String(resolvedDropdownZIndex.value)
       })
 }))
@@ -338,7 +338,7 @@ const toggle = () => {
 
 const getDropdownMaxWidth = (viewportWidth: number, gap: number) => {
   const fallbackMaxWidth = 360
-  const rawMaxWidth = props.dropdownMaxWidth
+  const rawMaxWidth = props.popperMaxWidth
 
   if (typeof rawMaxWidth === 'number' && Number.isFinite(rawMaxWidth) && rawMaxWidth > 0) {
     return Math.min(rawMaxWidth, viewportWidth - gap * 2)
@@ -380,7 +380,7 @@ const updateDropdownPosition = () => {
     left: `${Math.round(left)}px`,
     top: `${Math.round(top)}px`,
     width: `${Math.round(width)}px`,
-    maxWidth: toCssSize(props.dropdownMaxWidth) ?? '360px',
+    maxWidth: toCssSize(props.popperMaxWidth) ?? '360px',
     maxHeight: `${maxHeight}px`,
     zIndex: String(resolvedDropdownZIndex.value)
   }
@@ -500,7 +500,7 @@ watch(
 )
 
 watch(
-  () => [props.dropdownMaxWidth, resolvedDropdownZIndex.value],
+  () => [props.popperMaxWidth, resolvedDropdownZIndex.value],
   async () => {
     if (!isOpen.value) return
     await nextTick()

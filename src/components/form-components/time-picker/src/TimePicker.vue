@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
+import { overlayZIndex } from '../../../_utils/zIndex'
 import { inputSizePreset } from '../../../_utils/inputSize'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { XDialog } from '../../../feedback-components/dialog'
@@ -22,6 +23,9 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
   hideClearButton: false,
   status: 'default',
   textAlign: 'center',
+  teleported: true,
+  teleportTo: 'body',
+  zIndex: overlayZIndex.dialog,
   showActiveBorder: true
 })
 
@@ -63,6 +67,9 @@ const inputProps = computed(() => {
   }
 
   omitPickerThemeProps(next)
+  delete next.teleported
+  delete next.teleportTo
+  delete next.zIndex
 
   return next
 })
@@ -236,6 +243,9 @@ watch(
       :min-height="420"
       :draggable="true"
       :resizable="false"
+      :teleported="props.teleported"
+      :teleport-to="props.teleportTo"
+      :z-index="props.zIndex"
       class="x-time-picker__dialog"
       :style="dialogStyle"
     >

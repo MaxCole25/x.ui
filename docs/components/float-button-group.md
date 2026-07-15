@@ -97,7 +97,7 @@ const directCode = `<XFloatButtonGroup
 | items | 按钮项数组 | `FloatButtonGroupItem[]` | `[]` |
 | mode | 显示状态，点击菜单或直接显示 | `menu \| direct` | `menu` |
 | modelValue | 菜单展开状态，仅 `menu` 模式使用 | `boolean` | `undefined` |
-| defaultExpanded | 非受控默认展开状态 | `boolean` | `false` |
+| defaultModelValue | 非受控默认展开状态 | `boolean` | `false` |
 | direction | 菜单按钮排列方向 | `horizontal \| vertical` | `vertical` |
 | placement | 固定位置 | `top-left \| top-right \| bottom-left \| bottom-right` | `bottom-right` |
 | position | 定位方式 | `fixed \| absolute` | `fixed` |
@@ -108,7 +108,7 @@ const directCode = `<XFloatButtonGroup
 | bottom | 自定义下方坐标，优先于 `placement` 推导 | `number \| string` | `undefined` |
 | left | 自定义左侧坐标，优先于 `placement` 推导 | `number \| string` | `undefined` |
 | size | 尺寸 | `sm \| md \| lg` | `md` |
-| zIndex | 层级 | `number \| string` | `2000` |
+| zIndex | 层级 | `number` | `2000` |
 | triggerIcon | 主按钮默认图标 | `string` | `customer-service-2` |
 | closeIcon | 兼容保留字段，默认渲染不再使用 | `string` | `close` |
 | triggerLabel | 主按钮提示文字 | `string` | `快捷菜单` |

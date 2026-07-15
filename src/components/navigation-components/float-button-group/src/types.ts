@@ -20,7 +20,7 @@ export interface FloatButtonGroupProps {
   items?: FloatButtonGroupItem[]
   mode?: FloatButtonGroupMode
   modelValue?: boolean
-  defaultExpanded?: boolean
+  defaultModelValue?: boolean
   direction?: FloatButtonGroupDirection
   placement?: FloatButtonGroupPlacement
   position?: FloatButtonGroupPosition
@@ -31,7 +31,7 @@ export interface FloatButtonGroupProps {
   bottom?: number | string
   left?: number | string
   size?: XSize
-  zIndex?: number | string
+  zIndex?: number
   triggerIcon?: string
   closeIcon?: string
   triggerLabel?: string

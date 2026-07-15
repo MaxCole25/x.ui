@@ -136,14 +136,14 @@ const previewCode = computed(() => {
           <template #topbar>
             <div class="layout-block layout-topbar">
               <span>Topbar</span>
-              <small>topbarBorder 只显示下边框</small>
+              <small>topbarBorderColor 只显示下边框</small>
             </div>
           </template>
 
           <template #sidebar>
             <div class="layout-block layout-sidebar">
               <span>Sidebar</span>
-              <small>sidebarBorder 只显示右边框</small>
+              <small>sidebarBorderColor 只显示右边框</small>
             </div>
           </template>
 
@@ -155,7 +155,7 @@ const previewCode = computed(() => {
           <template #footer>
             <div class="layout-block layout-footer">
               <span>Footer</span>
-              <small>footerBorder 只显示上边框</small>
+              <small>footerBorderColor 只显示上边框</small>
             </div>
           </template>
         </XLayout>

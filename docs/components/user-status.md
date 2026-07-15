@@ -98,9 +98,10 @@ const guestAction = ref('')
 | placement | 菜单弹出位置 | `DropdownPlacement` | `bottom-end` |
 | disabled | 是否禁用 | `boolean` | `false` |
 | hideOnClick | 点击菜单项后是否隐藏 | `boolean` | `true` |
-| teleported | 是否将弹层挂载到 `teleportTo` | `boolean` | `false` |
+| modelValue | 是否显示菜单；未传入时由组件内部控制 | `boolean` | — |
+| teleported | 是否将弹层挂载到 `teleportTo` | `boolean` | `true` |
 | teleportTo | 弹层挂载目标 | `string` | `body` |
-| zIndex | 弹层层级 | `number \| string` | `2000` |
+| zIndex | 弹层层级 | `number` | `2000` |
 | borderWidth | 触发区边框宽度 | `number \| string` | `0` |
 | borderColor | 触发区边框色 | `string` | `transparent` |
 | backgroundColor | 触发区背景色 | `string` | `transparent` |

@@ -4,7 +4,7 @@ const textBasicCode = `\x3Cscript setup lang="ts">
 
 <div class="x-demo-column">
     <XText>正文文本</XText>
-    <XText size="title">标题文本</XText>
+    <XText variant="title">标题文本</XText>
     <XText variant="muted">辅助文本</XText>
   </div>`
 
@@ -47,7 +47,7 @@ const textFormatterCode = `\x3Cscript setup lang="ts">
 <XDocDemo title="基础用法" :code="textBasicCode">
   <div class="x-demo-column">
     <XText>正文文本</XText>
-    <XText size="title">标题文本</XText>
+    <XText variant="title">标题文本</XText>
     <XText variant="muted">辅助文本</XText>
   </div>
 </XDocDemo>
@@ -56,7 +56,7 @@ const textFormatterCode = `\x3Cscript setup lang="ts">
 
 `XText` 支持常用外观属性，可用于在低代码配置面板中统一控制文本容器、边框和字号样式。
 当显式传入 `size="sm" | "md" | "lg"` 时，组件会按统一尺寸预设接管字号、高度、内边距和圆角：`sm` 为 `22px / 10px / 0 4px / 4px`，`md` 为 `30px / 12px / 0 8px / 6px`，`lg` 为 `38px / 14px / 0 10px / 8px`；未显式传入 `size` 时，仍可通过 `fontSize`、`height`、`padding`、`radius` 做局部外观调整，`width` 可独立控制组件宽度。
-`fontWeight` 用于控制字体粗细，支持 `400`、`700`、`normal`、`bold` 等 CSS `font-weight` 值；未传入时正文默认 `400`，`size="title"` 默认 `700`。
+`fontWeight` 用于控制字体粗细，支持 `400`、`700`、`normal`、`bold` 等 CSS `font-weight` 值；未传入时正文默认 `400`，`variant="title"` 默认 `700`。
 设置 `autoHeight` 后，组件会撑满父元素高度；如需控制文字在父元素内的垂直位置，可使用 `verticalAlign="top" | "middle" | "bottom"`。当需要更贴近底部对齐时，可配合 `lineHeight="1"` 减少文字行盒上下留白。
 
 <XDocDemo title="外观接口" :code="textAppearanceCode">
@@ -95,7 +95,7 @@ const textFormatterCode = `\x3Cscript setup lang="ts">
 | 名称 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | modelValue | 绑定文本值，无默认插槽时显示 | `string \| number` | `''` |
-| size | 文本尺寸 | `sm \| md \| lg \| title` | `md` |
+| size | 文本尺寸 | `sm \| md \| lg` | `md` |
 | variant | 文本视觉形态 | `default \| muted \| primary \| success \| warning \| danger` | `default` |
 | tag | 渲染标签 | `string` | `span` |
 | truncated | 是否单行省略 | `boolean` | `false` |

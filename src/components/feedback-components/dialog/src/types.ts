@@ -1,8 +1,9 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
+import type { OverlayProps } from '../../../_utils/overlay'
 import type { XSize } from '../../../_utils/size'
 
-export interface DialogProps extends ElementStyleProps {
-  modelValue: boolean
+export interface DialogProps extends ElementStyleProps, OverlayProps {
+  modelValue?: boolean
   title?: string
   size?: XSize
   width?: number | string
@@ -15,7 +16,6 @@ export interface DialogProps extends ElementStyleProps {
   resizable?: boolean
   showFullscreen?: boolean
   closeOnMaskClick?: boolean
-  zIndex?: number
   maskColor?: string
   titleColor?: string
   headerBackgroundColor?: string

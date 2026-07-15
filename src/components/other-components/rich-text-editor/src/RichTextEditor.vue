@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<RichTextEditorProps>(), {
   toolbarTooltipPlacement: 'bottom',
   showOutline: true,
   pasteImages: true,
-  contentBackground: 'var(--x-color-surface, #ffffff)',
+  contentBackgroundColor: 'var(--x-color-surface, #ffffff)',
   contentTextColor: 'var(--x-color-text, #111827)',
   contentFontSize: 14
 })
@@ -160,7 +160,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
       :show-outline="props.showOutline"
       :paste-images="props.pasteImages"
       :size="props.size"
-      :content-background="props.contentBackground"
+      :content-background="props.contentBackgroundColor"
       :content-text-color="props.contentTextColor"
       :content-font-size="props.contentFontSize"
       :theme="props.theme"

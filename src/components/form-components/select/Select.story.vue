@@ -25,7 +25,7 @@ const sample = reactive({
   teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
-  dropdownMaxWidth: 360,
+  popperMaxWidth: 360,
   autoWidth: false,
   showActiveBorder: true,
   displayField: 'label' as SelectDisplayField,
@@ -51,7 +51,7 @@ const sample = reactive({
   borderWidth: 1,
   borderColor: '#cbd5e1',
   backgroundColor: '#ffffff',
-  dropdownBackgroundColor: '#ffffff',
+  popperBackgroundColor: '#ffffff',
   textColor: '#0f172a',
   accentColor: '#1264f4'
 })
@@ -236,7 +236,7 @@ const querySampleOptions = async () => selectOptions
             </label>
             <label>
               <span>选项弹窗最大宽度</span>
-              <input v-model.number="sample.dropdownMaxWidth" type="number" min="80" />
+              <input v-model.number="sample.popperMaxWidth" type="number" min="80" />
             </label>
           </div>
 
@@ -263,7 +263,7 @@ const querySampleOptions = async () => selectOptions
             </label>
             <label>
               <span>选项弹窗背景色</span>
-              <input v-model="sample.dropdownBackgroundColor" type="color" />
+              <input v-model="sample.popperBackgroundColor" type="color" />
             </label>
             <label>
               <span>文字色</span>

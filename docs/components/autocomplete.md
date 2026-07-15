@@ -239,12 +239,12 @@ function queryCity() {
 | remoteTrigger | 服务端查询触发方式。`input` 为输入防抖查询，`enter` 为按回车查询 | `'input' \| 'enter'` | `'input'` |
 | remoteDebounce | 服务端查询防抖时间，单位毫秒 | `number` | `200` |
 | remoteMinLength | 触发服务端查询的最小输入长度 | `number` | `0` |
-| dropdownMaxHeight | 候选项弹层最大高度，候选项超过高度时可滚动选择。组件会先按输入内容筛选，再从筛选结果中最多渲染 50 条；输入内容为空时展示前 50 条 | `number \| string` | `260` |
-| dropdownMaxWidth | 候选项弹层最大宽度。弹层会按候选项内容自适应展开，但不会小于输入框宽度，也不会超过该最大宽度 | `number \| string` | `360` |
+| popperMaxHeight | 候选项弹层最大高度，候选项超过高度时可滚动选择。组件会先按输入内容筛选，再从筛选结果中最多渲染 50 条；输入内容为空时展示前 50 条 | `number \| string` | `260` |
+| popperMaxWidth | 候选项弹层最大宽度。弹层会按候选项内容自适应展开，但不会小于输入框宽度，也不会超过该最大宽度 | `number \| string` | `360` |
 | teleported | 是否将候选项弹层挂载到 `teleportTo`，用于避免被表格、滚动容器等父级裁剪 | `boolean` | `true` |
 | teleportTo | 候选项弹层挂载目标 | `string` | `body` |
-| zIndex | 候选项弹层层级 | `number \| string` | `2000` |
-| dropdownBackgroundColor | 候选项弹层背景色 | `string` | `#ffffff` |
+| zIndex | 候选项弹层层级 | `number` | `2000` |
+| popperBackgroundColor | 候选项弹层背景色 | `string` | `#ffffff` |
 | loading | 是否显示加载状态，可用于外部控制远程查询加载态 | `boolean` | `false` |
 | loadingText | 加载状态文案 | `string` | `'加载中'` |
 | emptyText | 空状态文案 | `string` | `'暂无匹配数据'` |

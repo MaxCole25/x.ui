@@ -30,7 +30,10 @@ const props = withDefaults(defineProps<CascaderProps>(), {
   textAlign: 'left',
   separator: ' / ',
   changeOnSelect: false,
-  dropdownMaxHeight: 260,
+  popperMaxHeight: 260,
+  teleported: true,
+  teleportTo: 'body',
+  zIndex: overlayZIndex.popper,
   showActiveBorder: true
 })
 
@@ -58,8 +61,8 @@ let isListeningForPositionChanges = false
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
 const canInteract = computed(() => !mergedDisabled.value && !props.readonly)
-const shouldTeleportPanel = computed(() => Boolean(props.teleportTo))
-const teleportTarget = computed(() => props.teleportTo ?? 'body')
+const shouldTeleportPanel = computed(() => props.teleported)
+const teleportTarget = computed(() => props.teleportTo)
 
 const sizePreset: Record<CascaderSize, Pick<CascaderProps, 'fontSize' | 'height' | 'padding' | 'radius'>> = {
   sm: {
@@ -181,7 +184,7 @@ const cascaderStyle = computed(() => ({
   '--x-cascader-height': props.autoHeight ? 'auto' : toCssSize(props.height ?? sizePreset[mergedSize.value].height),
   '--x-cascader-padding': toCssSize(props.padding ?? sizePreset[mergedSize.value].padding),
   '--x-cascader-text-align': props.textAlign,
-  '--x-cascader-dropdown-max-height': toCssSize(props.dropdownMaxHeight),
+  '--x-cascader-dropdown-max-height': toCssSize(props.popperMaxHeight),
   '--x-cascader-clear-icon-color': props.clearIconColor,
   '--x-cascader-clear-icon-size': toCssSize(props.clearIconSize)
 }))
@@ -193,7 +196,7 @@ const panelStyle = computed(() => {
     ...(shouldTeleportPanel.value
       ? teleportedPanelStyle.value
       : {
-          zIndex: String(overlayZIndex.popper)
+          zIndex: String(props.zIndex)
         })
   }
 })
@@ -230,7 +233,7 @@ const updatePanelPosition = () => {
     top: `${Math.round(top)}px`,
     width: `${Math.round(width)}px`,
     '--x-cascader-dropdown-max-height': `${Math.round(maxHeight)}px`,
-    zIndex: String(overlayZIndex.popper)
+    zIndex: String(props.zIndex)
   }
 }
 
@@ -370,7 +373,7 @@ watch(columns, async () => {
 })
 
 watch(
-  () => props.dropdownMaxHeight,
+  () => props.popperMaxHeight,
   async () => {
     if (!open.value) return
     await nextTick()

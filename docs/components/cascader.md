@@ -206,8 +206,10 @@ function queryArea() {
 | textAlign | 文本对齐 | `'left' \| 'center' \| 'right'` | `left` |
 | separator | 已选路径分隔符 | `string` | ` / ` |
 | changeOnSelect | 是否允许选择父级节点 | `boolean` | `false` |
-| dropdownMaxHeight | 弹层最大高度；每个级联列按内容高度收缩，超出时独立滚动；没有可选项的列不会显示 | `number \| string` | `260` |
-| teleportTo | 面板挂载目标。传入选择器（如 `body`）后，级联面板会通过 Teleport 挂载到该目标 | `string` | - |
+| popperMaxHeight | 弹层最大高度；每个级联列按内容高度收缩，超出时独立滚动；没有可选项的列不会显示 | `number \| string` | `260` |
+| teleported | 是否将面板挂载到 `teleportTo` | `boolean` | `true` |
+| teleportTo | 面板挂载目标 | `string` | `body` |
+| zIndex | 面板层级 | `number` | `2000` |
 | showActiveBorder | 是否显示激活边框 | `boolean` | `true` |
 | id | 控件 id | `string` | - |
 | name | 控件 name | `string` | - |

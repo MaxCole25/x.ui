@@ -322,8 +322,8 @@ const statusOptions = [
 | autoHeight | 是否自动高度 | `boolean` | `false` |
 | teleported | 是否将下拉弹层挂载到 `teleportTo`，用于避免被表格、滚动容器等父级裁剪 | `boolean` | `true` |
 | teleportTo | 下拉弹层挂载目标 | `string` | `body` |
-| zIndex | 下拉弹层层级 | `string \| number` | `2000` |
-| dropdownMaxWidth | 下拉弹层最大宽度，选项文本较长时会在该宽度内扩展 | `string \| number` | `360` |
+| zIndex | 下拉弹层层级 | `number` | `2000` |
+| popperMaxWidth | 下拉弹层最大宽度，选项文本较长时会在该宽度内扩展 | `string \| number` | `360` |
 | accentColor | 主题色，未设置激活边框色时作为激活边框色 | `string` | - |
 | activeBorderColor | 激活边框色 | `string` | - |
 | borderColor | 边框色 | `string` | - |
@@ -331,7 +331,7 @@ const statusOptions = [
 | radius | 圆角 | `string` | - |
 | inputBackgroundColor | 输入区域背景色，优先级高于 `backgroundColor` | `string` | - |
 | backgroundColor | 背景色，优先级低于 `inputBackgroundColor` | `string` | - |
-| dropdownBackgroundColor | 选项弹窗背景色 | `string` | `#ffffff` |
+| popperBackgroundColor | 选项弹窗背景色 | `string` | `#ffffff` |
 | textColor | 文字色 | `string` | - |
 | disabledBackgroundColor | 禁用背景色 | `string` | - |
 | disabledTextColor | 禁用文字色 | `string` | - |

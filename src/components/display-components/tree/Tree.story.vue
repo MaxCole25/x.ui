@@ -10,7 +10,7 @@ const lastAction = ref('')
 const dropLog = ref('')
 const extraLog = ref('')
 const size = ref<'sm' | 'md' | 'lg'>('md')
-const activeColor = ref('#2f66cf')
+const activeAccentColor = ref('#2f66cf')
 const hoverBackgroundColor = ref('#e0ecff')
 const activeBackgroundColor = ref('#dbeafe')
 const parentWidth = ref(420)
@@ -176,7 +176,7 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
               </label>
               <label style="display: grid; grid-template-columns: 72px 1fr; gap: 6px; align-items: center">
                 激活颜色
-                <input v-model="activeColor" type="color" style="min-width: 0" />
+                <input v-model="activeAccentColor" type="color" style="min-width: 0" />
               </label>
               <label style="display: grid; grid-template-columns: 72px 1fr; gap: 6px; align-items: center">
                 悬浮背景色
@@ -256,7 +256,7 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
             :current-tree-key="current"
             :current-user-id="currentUserId"
             :size="size"
-            :active-color="activeColor"
+            :active-accent-color="activeAccentColor"
             :hover-background-color="hoverBackgroundColor"
             :active-background-color="activeBackgroundColor"
             :can-create-child-by-node="() => flags.allowCreate"
@@ -276,7 +276,7 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
             :current-tree-key="current"
             :current-user-id="currentUserId"
             :size="size"
-            :active-color="activeColor"
+            :active-accent-color="activeAccentColor"
             :hover-background-color="hoverBackgroundColor"
             :active-background-color="activeBackgroundColor"
             :can-create-child-by-node="() => flags.allowCreate"

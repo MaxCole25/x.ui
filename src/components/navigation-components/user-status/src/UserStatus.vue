@@ -16,6 +16,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<UserStatusProps>(), {
   loggedIn: true,
+  modelValue: undefined,
   name: '',
   description: '',
   avatarSrc: '',
@@ -38,8 +39,11 @@ const props = withDefaults(defineProps<UserStatusProps>(), {
 })
 
 const emit = defineEmits<{
+  'update:modelValue': [visible: boolean]
   command: [command: unknown, item: UserStatusMenuItem]
   'visible-change': [visible: boolean]
+  show: []
+  hide: []
   'login-click': [event: MouseEvent]
   'register-click': [event: MouseEvent]
 }>()
@@ -87,6 +91,7 @@ function handleCommand(command: unknown) {
     :class="[`x-user-status--${props.size}`, { 'is-disabled': props.disabled }]"
     :style="statusStyle"
     :trigger="props.trigger"
+    :model-value="props.modelValue"
     :placement="props.placement"
     :size="props.size"
     :disabled="props.disabled"
@@ -97,7 +102,10 @@ function handleCommand(command: unknown) {
     :z-index="props.zIndex"
     popper-width="136px"
     @command="handleCommand"
+    @update:model-value="emit('update:modelValue', $event)"
     @visible-change="emit('visible-change', $event)"
+    @show="emit('show')"
+    @hide="emit('hide')"
   >
     <button class="x-user-status__trigger" type="button" :disabled="props.disabled">
       <slot name="avatar">

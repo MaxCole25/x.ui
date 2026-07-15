@@ -56,12 +56,12 @@ const sample = reactive({
   remote: false,
   remoteDebounce: 200,
   remoteMinLength: 0,
-  dropdownMaxHeight: 260,
-  dropdownMaxWidth: 360,
+  popperMaxHeight: 260,
+  popperMaxWidth: 360,
   teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
-  dropdownBackgroundColor: '#ffffff',
+  popperBackgroundColor: '#ffffff',
   loading: false,
   loadingText: '加载中',
   emptyText: '暂无匹配数据',
@@ -245,11 +245,11 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>选项框高度</span>
-              <input v-model.number="sample.dropdownMaxHeight" type="number" min="80" />
+              <input v-model.number="sample.popperMaxHeight" type="number" min="80" />
             </label>
             <label>
               <span>选项框宽度</span>
-              <input v-model.number="sample.dropdownMaxWidth" type="number" min="120" />
+              <input v-model.number="sample.popperMaxWidth" type="number" min="120" />
             </label>
             <label>
               <span>下拉层级</span>
@@ -296,7 +296,7 @@ const updateRadius = (event: Event) => {
             </label>
             <label>
               <span>下拉背景色</span>
-              <input v-model="sample.dropdownBackgroundColor" type="color" />
+              <input v-model="sample.popperBackgroundColor" type="color" />
             </label>
             <label>
               <span>挂载目标</span>

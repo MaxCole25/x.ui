@@ -54,6 +54,8 @@ const visible = ref(false)
 | maxWidth | 最大宽度（像素，`0` 表示按视口自适应上限） | `number` | `0` |
 | maxHeight | 最大高度（像素，`0` 表示按视口自适应上限） | `number` | `0` |
 | zIndex | 遮罩层级 | `number` | `1900` |
+| teleported | 是否将弹窗挂载到 `teleportTo` | `boolean` | `true` |
+| teleportTo | 弹窗挂载目标 | `string` | `body` |
 | draggable | 是否允许拖拽 | `boolean` | `true` |
 | resizable | 是否允许右下角缩放 | `boolean` | `true` |
 | showFullscreen | 是否显示全屏切换图标按钮，点击后弹窗在当前浏览器页面视口内铺满显示 | `boolean` | `false` |

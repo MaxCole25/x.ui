@@ -55,9 +55,9 @@ export interface TreeProps {
   treeData: TreeNodeData[]
   currentTreeKey?: string
   currentUserId?: number | null
-  activeColor?: string
+  activeAccentColor?: string
   textColor?: string
-  mutedColor?: string
+  mutedTextColor?: string
   hoverBackgroundColor?: string
   activeBackgroundColor?: string
   activeTextColor?: string

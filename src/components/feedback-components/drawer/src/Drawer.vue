@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { componentSizePreset } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -11,7 +11,6 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<DrawerProps>(), {
-  modelValue: false,
   title: '',
   direction: 'rtl',
   size: undefined,
@@ -20,6 +19,8 @@ const props = withDefaults(defineProps<DrawerProps>(), {
   showClose: true,
   closeOnMaskClick: true,
   destroyOnClose: false,
+  teleported: true,
+  teleportTo: 'body',
   zIndex: overlayZIndex.drawer
 })
 
@@ -29,7 +30,8 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const visible = computed(() => props.modelValue)
+const uncontrolledVisible = ref(false)
+const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
 const isHorizontal = computed(() => props.direction === 'rtl' || props.direction === 'ltr')
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
@@ -59,6 +61,7 @@ const drawerStyle = computed(() => ({
 }))
 
 function close() {
+  if (props.modelValue === undefined) uncontrolledVisible.value = false
   emit('update:modelValue', false)
   emit('close')
 }
@@ -69,7 +72,7 @@ function onMaskClick() {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <Transition name="x-drawer-fade" @after-enter="emit('open')">
       <div v-if="visible || !props.destroyOnClose" v-show="visible" class="x-drawer__mask" :style="maskStyle" @click.self="onMaskClick">
         <aside v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, `x-drawer--${mergedSize}`]" :style="drawerStyle" role="dialog" aria-modal="true">

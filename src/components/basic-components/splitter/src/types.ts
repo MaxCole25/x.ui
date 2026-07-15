@@ -16,7 +16,7 @@ export interface SplitterProps extends ElementStyleProps {
 }
 
 export interface SplitPaneProps {
-  size?: SplitterSize
+  paneSize?: SplitterSize
   minSize?: number
   maxSize?: number
   padding?: SplitterSize

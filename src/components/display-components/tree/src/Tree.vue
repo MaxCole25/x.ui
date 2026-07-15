@@ -9,9 +9,9 @@ defineOptions({ name: 'XTree' })
 const props = withDefaults(defineProps<TreeProps>(), {
   currentTreeKey: '',
   currentUserId: null,
-  activeColor: '#2f66cf',
+  activeAccentColor: '#2f66cf',
   textColor: 'var(--x-color-text, #121826)',
-  mutedColor: 'var(--x-color-muted, #606b7d)',
+  mutedTextColor: 'var(--x-color-muted, #606b7d)',
   hoverBackgroundColor: 'var(--x-color-primary-soft, #f5f8fb)',
   activeBackgroundColor: 'rgba(14, 116, 144, 0.12)',
   activeTextColor: 'var(--x-color-text, #121826)',
@@ -282,13 +282,13 @@ function resolveTreeStyle() {
   const paddingParts = sizePreset.padding.split(' ')
 
   return {
-    '--x-tree-active-color': props.activeColor,
+    '--x-tree-active-color': props.activeAccentColor,
     '--x-tree-text-color': props.textColor,
-    '--x-tree-muted-color': props.mutedColor,
+    '--x-tree-muted-color': props.mutedTextColor,
     '--x-tree-hover-bg-color': props.hoverBackgroundColor,
     '--x-tree-active-bg-color': props.activeBackgroundColor,
     '--x-tree-active-text-color': props.activeTextColor,
-    '--x-tree-active-icon-color': props.activeIconColor ?? props.activeColor,
+    '--x-tree-active-icon-color': props.activeIconColor ?? props.activeAccentColor,
     '--x-tree-row-height': `${sizePreset.height + 4}px`,
     '--x-tree-font-size': `${sizePreset.fontSize}px`,
     '--x-tree-icon-size': `${Math.max(12, sizePreset.fontSize + 2)}px`,

@@ -1,7 +1,7 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
-export type TextSize = 'sm' | 'md' | 'lg' | 'title'
-export type TextType = 'default' | 'muted' | 'primary' | 'success' | 'warning' | 'danger'
+export type TextSize = 'sm' | 'md' | 'lg'
+export type TextType = 'default' | 'title' | 'muted' | 'primary' | 'success' | 'warning' | 'danger'
 export type TextAlign = 'left' | 'center' | 'right'
 export type TextVerticalAlign = 'top' | 'middle' | 'bottom'
 export type TextFormatter = (value: string | number) => string

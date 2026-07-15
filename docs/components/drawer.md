@@ -54,6 +54,8 @@ const visible = ref(false)
 | closeOnMaskClick | 点击遮罩是否关闭 | `boolean` | `true` |
 | destroyOnClose | 关闭后是否销毁内容 | `boolean` | `false` |
 | zIndex | 遮罩层级 | `number` | `1800` |
+| teleported | 是否将抽屉挂载到 `teleportTo` | `boolean` | `true` |
+| teleportTo | 抽屉挂载目标 | `string` | `body` |
 | backgroundColor | 面板背景色，会写入 `--x-drawer-bg` 和 `--x-element-bg` | `string` | - |
 | textColor | 面板文字色，会写入 `--x-drawer-text` 和 `--x-element-text` | `string` | - |
 | borderColor | 面板边框色，会写入 `--x-drawer-border-color` 和 `--x-element-border-color` | `string` | - |

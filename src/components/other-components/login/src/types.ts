@@ -56,7 +56,7 @@ export interface LoginProps {
   radius?: string
   width?: string
   textColor?: string
-  mutedColor?: string
+  mutedTextColor?: string
   inputBackgroundColor?: string
   buttonTextColor?: string
   letterCaptchaText?: string

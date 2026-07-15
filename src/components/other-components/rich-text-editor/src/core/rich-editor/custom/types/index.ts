@@ -22,7 +22,7 @@ export interface RichEditorProps {
   minHeight?: number | string
   canSave?: boolean
   toolbarButtons?: string[]
-  contentBackground?: string
+  contentBackgroundColor?: string
   uploadImage?: (file: File) => Promise<UploadResult>
   uploadFile?: (file: File) => Promise<UploadResult>
 }

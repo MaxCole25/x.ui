@@ -89,24 +89,24 @@ const layoutModeCode = `\x3Cscript setup lang="ts">
 | topbarHeight | 顶部栏高度（支持数字像素或 CSS 长度） | `number \| string` | `55` |
 | footerHeight | 底部栏高度（支持数字像素或 CSS 长度） | `number \| string` | `30` |
 | topbarBackgroundColor | 顶部栏背景色 | `string` | `'#1E6B73'` |
-| topbarColor | 顶部栏前景色 | `string` | `'#F9F9F9'` |
+| topbarTextColor | 顶部栏文字色 | `string` | `'#F9F9F9'` |
 | topbarRadius | 顶部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
-| topbarBorder | 顶部栏下边框 | `string` | `'none'` |
+| topbarBorderColor | 顶部栏下边框色 | `string` | `'transparent'` |
 | sidebarBackgroundColor | 侧栏背景色 | `string` | `'#185A61'` |
-| sidebarColor | 侧栏前景色 | `string` | `'#F9F9F9'` |
+| sidebarTextColor | 侧栏文字色 | `string` | `'#F9F9F9'` |
 | sidebarRadius | 侧栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
-| sidebarBorder | 侧栏右边框 | `string` | `'none'` |
+| sidebarBorderColor | 侧栏右边框色 | `string` | `'transparent'` |
 | sidebarPadding | 侧栏内边距（支持数字像素或 CSS padding 写法） | `number \| string` | `12` |
 | contentBackgroundColor | 内容区背景色 | `string` | `'transparent'` |
-| contentColor | 内容区前景色 | `string` | `'#F9F9F9'` |
+| contentTextColor | 内容区文字色 | `string` | `'#F9F9F9'` |
 | contentPadding | 内容区内边距（支持数字像素或 CSS padding 写法） | `number \| string` | `0` |
 | contentRadius | 内容区圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
 | footerBackgroundColor | 底部栏背景色 | `string` | `'#124A50'` |
-| footerColor | 底部栏前景色 | `string` | `'#F9F9F9'` |
+| footerTextColor | 底部栏文字色 | `string` | `'#F9F9F9'` |
 | footerRadius | 底部栏圆角（支持数字像素或 CSS 长度） | `number \| string` | `0` |
-| footerBorder | 底部栏上边框 | `string` | `'none'` |
+| footerBorderColor | 底部栏上边框色 | `string` | `'transparent'` |
 
-边框属性只作用于对应区域的指定边：`topbarBorder` 对应 Topbar 下边框，`sidebarBorder` 对应 Sidebar 右边框，`footerBorder` 对应 Footer 上边框。Content 不提供边框属性。
+边框颜色属性只作用于对应区域的指定边：`topbarBorderColor` 对应 Topbar 下边框，`sidebarBorderColor` 对应 Sidebar 右边框，`footerBorderColor` 对应 Footer 上边框。Content 不提供边框属性。
 
 ## Slots
 

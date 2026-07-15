@@ -35,7 +35,7 @@ const displayValue = computed(() => {
 const hasValue = computed(() => textValue.value !== '')
 const mergedVariant = computed(() => props.variant ?? 'default')
 const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'size' in instance.vnode.props))
-const sizePreset = computed(() => props.size === 'title' ? null : componentSizePreset[props.size])
+const sizePreset = computed(() => componentSizePreset[props.size])
 const verticalAlignMap = {
   top: 'flex-start',
   middle: 'center',
