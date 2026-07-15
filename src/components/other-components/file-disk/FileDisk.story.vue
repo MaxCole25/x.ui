@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { XFileDisk } from './index'
 import type { FileDiskAdapter, FileDiskColors, FileDiskItem, FileDiskViewMode } from './src/types'
 import '../../../styles/index.css'
@@ -7,7 +7,7 @@ import '../../../styles/index.css'
 type Store = Record<string, FileDiskItem[]>
 
 const currentPath = ref('/合同附件')
-const viewMode = ref<FileDiskViewMode>('list')
+const viewMode = ref<FileDiskViewMode>('grid')
 const latestEvent = ref('暂无操作')
 const selectedCount = ref(0)
 const canRead = ref(true)
@@ -19,7 +19,8 @@ const showTitle = ref(true)
 const showToolbar = ref(true)
 const showPath = ref(true)
 const primaryColor = ref('#155e75')
-const themePreset = ref<'default' | 'dark'>('default')
+const themePreset = ref<'regular' | 'light' | 'dark'>('regular')
+const useCustomColors = ref(false)
 const backgroundColor = ref('#ffffff')
 const textColor = ref('#102a43')
 const mutedTextColor = ref('#64748b')
@@ -63,50 +64,19 @@ const permissions = computed(() => ({
   delete: canDelete.value,
   view: canView.value
 }))
-const colors = computed<FileDiskColors>(() => ({
-  primary: primaryColor.value,
-  primarySoft: `${primaryColor.value}1f`,
-  primaryWeak: `${primaryColor.value}12`,
-  selectedBorder: `${primaryColor.value}66`,
-  success: '#16a34a',
-  danger: '#dc2626'
-}))
-
-watch(themePreset, (value) => {
-  if (value === 'dark') {
-    backgroundColor.value = '#0f172a'
-    textColor.value = '#e2e8f0'
-    mutedTextColor.value = '#94a3b8'
-    borderColor.value = '#334155'
-    headerBackgroundColor.value = '#111827'
-    toolbarBackgroundColor.value = '#1e293b'
-    itemBackgroundColor.value = '#111827'
-    itemHoverBackgroundColor.value = '#1e3a5f'
-    itemActiveBackgroundColor.value = '#155e75'
-    itemActiveTextColor.value = '#f8fafc'
-    iconColor.value = '#cbd5e1'
-    activeIconColor.value = '#67e8f9'
-    emptyBackgroundColor.value = '#111827'
-    dragOverBackgroundColor.value = 'rgba(103, 232, 249, 0.14)'
-    primaryColor.value = '#67e8f9'
-    return
+const colors = computed<FileDiskColors | undefined>(() => {
+  if (!useCustomColors.value) {
+    return undefined
   }
 
-  backgroundColor.value = '#ffffff'
-  textColor.value = '#102a43'
-  mutedTextColor.value = '#64748b'
-  borderColor.value = '#cbd5e1'
-  headerBackgroundColor.value = '#f8fafc'
-  toolbarBackgroundColor.value = '#ffffff'
-  itemBackgroundColor.value = '#ffffff'
-  itemHoverBackgroundColor.value = '#eff6ff'
-  itemActiveBackgroundColor.value = '#eff6ff'
-  itemActiveTextColor.value = '#102a43'
-  iconColor.value = '#334155'
-  activeIconColor.value = '#155e75'
-  emptyBackgroundColor.value = '#ffffff'
-  dragOverBackgroundColor.value = 'rgba(14, 116, 144, 0.12)'
-  primaryColor.value = '#155e75'
+  return {
+    primary: primaryColor.value,
+    primarySoft: `${primaryColor.value}1f`,
+    primaryWeak: `${primaryColor.value}12`,
+    selectedBorder: `${primaryColor.value}66`,
+    success: '#16a34a',
+    danger: '#dc2626'
+  }
 })
 
 const adapter: FileDiskAdapter = {
@@ -287,12 +257,14 @@ function imageDataUrl(label: string, color: string, background: string) {
           <label><input v-model="showToolbar" type="checkbox" /> 工具栏</label>
           <label><input v-model="showPath" type="checkbox" /> 路径</label>
           <label>
-            主题示例
+            全局主题
             <select v-model="themePreset">
-              <option value="default">通用默认</option>
-              <option value="dark">暗色示例</option>
+              <option value="regular">常规</option>
+              <option value="light">浅色</option>
+              <option value="dark">暗色</option>
             </select>
           </label>
+          <label><input v-model="useCustomColors" type="checkbox" /> 启用局部配色覆盖</label>
           <label>主题色 <input v-model="primaryColor" type="color" /></label>
           <label>整体背景 <input v-model="backgroundColor" type="color" /></label>
           <label>主文字 <input v-model="textColor" type="color" /></label>
@@ -319,7 +291,7 @@ function imageDataUrl(label: string, color: string, background: string) {
           <span>{{ latestEvent }}</span>
         </div>
 
-        <div class="file-disk-story__stage">
+        <div class="file-disk-story__stage" :data-theme="themePreset">
           <XFileDisk
             v-model="currentPath"
             v-model:view-mode="viewMode"
@@ -327,20 +299,20 @@ function imageDataUrl(label: string, color: string, background: string) {
             :adapter="adapter"
             :permissions="permissions"
             :colors="colors"
-            :background-color="backgroundColor"
-            :text-color="textColor"
-            :muted-text-color="mutedTextColor"
-            :border-color="borderColor"
-            :header-background-color="headerBackgroundColor"
-            :toolbar-background-color="toolbarBackgroundColor"
-            :item-background-color="itemBackgroundColor"
-            :item-hover-background-color="itemHoverBackgroundColor"
-            :item-active-background-color="itemActiveBackgroundColor"
-            :item-active-text-color="itemActiveTextColor"
-            :icon-color="iconColor"
-            :active-icon-color="activeIconColor"
-            :empty-background-color="emptyBackgroundColor"
-            :drag-over-background-color="dragOverBackgroundColor"
+            :background-color="useCustomColors ? backgroundColor : undefined"
+            :text-color="useCustomColors ? textColor : undefined"
+            :muted-text-color="useCustomColors ? mutedTextColor : undefined"
+            :border-color="useCustomColors ? borderColor : undefined"
+            :header-background-color="useCustomColors ? headerBackgroundColor : undefined"
+            :toolbar-background-color="useCustomColors ? toolbarBackgroundColor : undefined"
+            :item-background-color="useCustomColors ? itemBackgroundColor : undefined"
+            :item-hover-background-color="useCustomColors ? itemHoverBackgroundColor : undefined"
+            :item-active-background-color="useCustomColors ? itemActiveBackgroundColor : undefined"
+            :item-active-text-color="useCustomColors ? itemActiveTextColor : undefined"
+            :icon-color="useCustomColors ? iconColor : undefined"
+            :active-icon-color="useCustomColors ? activeIconColor : undefined"
+            :empty-background-color="useCustomColors ? emptyBackgroundColor : undefined"
+            :drag-over-background-color="useCustomColors ? dragOverBackgroundColor : undefined"
             :show-header="showHeader"
             :show-title="showTitle"
             :show-toolbar="showToolbar"

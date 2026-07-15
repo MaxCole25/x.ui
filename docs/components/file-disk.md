@@ -106,7 +106,7 @@ const entries = [
 
 ## 主题配色
 
-通过主题 props 或 `colors` 可以覆盖文件磁盘常用配色，便于和业务系统主题色保持一致。x.ui 默认色保持通用，不内置具体业务系统主题；未传入的字段会继续使用组件默认色或全局设计变量。
+`XFileDisk` 默认跟随 x.ui 全局主题语义变量；切换 `data-theme="regular"`、`light` 或 `dark` 时，主体、表头、文字、边框、悬浮和选中状态会同步变化。通过主题 props 或 `colors` 可以局部覆盖文件磁盘常用配色；未传入的字段继续使用全局设计变量。
 
 <XDocDemo title="主题配色" :code="fileDiskThemeCode">
   <ClientOnly>
@@ -159,7 +159,7 @@ const entries = [
 | `entries` | 外部受控的当前目录文件列表 | `FileDiskItem[]` | `[]` |
 | `adapter` | 后端文件操作适配器 | `FileDiskAdapter` | - |
 | `permissions` | 读、写、删、看权限 | `Partial<Record<FileDiskPermission, boolean>>` | 全部允许 |
-| `viewMode` / `v-model:viewMode` | 显示方式 | `'list' \| 'grid'` | `list` |
+| `viewMode` / `v-model:viewMode` | 显示方式 | `'list' \| 'grid'` | `grid` |
 | `title` | 左上角标题 | `string` | `附件管理` |
 | `loading` | 外部加载状态 | `boolean` | `false` |
 | `colors` | 常用主题配色配置 | `FileDiskColors` | - |

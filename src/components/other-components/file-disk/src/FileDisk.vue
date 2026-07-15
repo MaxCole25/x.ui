@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
   modelValue: '/',
   entries: () => [],
   permissions: () => ({ read: true, write: true, delete: true, view: true }),
-  viewMode: 'list',
+  viewMode: 'grid',
   title: '附件管理',
   loading: false,
   emptyText: '暂无文件',
@@ -1456,7 +1456,7 @@ defineExpose({
 
 <style scoped>
 .x-file-disk {
-  background: var(--x-file-disk-bg, #fff);
+  background: var(--x-file-disk-bg, var(--x-color-surface, #fff));
   border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-border, var(--x-color-border, #cbd5e1)));
   border-radius: var(--x-file-disk-radius, 6px);
   box-sizing: border-box;
@@ -1475,8 +1475,8 @@ defineExpose({
 
 .x-file-disk__toolbar {
   align-items: center;
-  background: var(--x-file-disk-header-bg, var(--x-file-disk-toolbar-bg, #f8fafc));
-  border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #dbe4ee));
+  background: var(--x-file-disk-header-bg, var(--x-file-disk-toolbar-bg, var(--x-color-surface-soft, #f8fafc)));
+  border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #dbe4ee)));
   display: flex;
   flex: 0 0 auto;
   gap: 12px;
@@ -1510,7 +1510,7 @@ defineExpose({
 }
 
 .x-file-disk__count {
-  color: var(--x-file-disk-muted-text, #64748b);
+  color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #64748b)));
   font-size: var(--x-file-disk-font-size, 12px);
   white-space: nowrap;
 }
@@ -1523,10 +1523,10 @@ defineExpose({
 
 .x-file-disk__tool {
   align-items: center;
-  background: var(--x-file-disk-toolbar-bg, var(--x-file-disk-panel-bg, #fff));
-  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-border, #cbd5e1));
+  background: transparent;
+  border: 0;
   border-radius: var(--x-file-disk-radius, 6px);
-  color: var(--x-file-disk-icon-color, var(--x-file-disk-subtle-text, #334155));
+  color: var(--x-file-disk-icon-color, var(--x-file-disk-subtle-text, var(--x-color-text-muted, var(--x-color-muted, #334155))));
   cursor: pointer;
   display: inline-flex;
   font-size: var(--x-file-disk-font-size, 12px);
@@ -1557,18 +1557,17 @@ defineExpose({
 .x-file-disk__tool:hover:not(:disabled),
 .x-file-disk__tool.is-active {
   background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #ecfeff)));
-  border-color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
   color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
 }
 
 .x-file-disk__tool:disabled {
-  color: var(--x-file-disk-disabled-text, #9aa6b2);
+  color: var(--x-file-disk-disabled-text, var(--x-color-disabled-text, #9aa6b2));
   cursor: not-allowed;
   opacity: 0.68;
 }
 
 .x-file-disk__divider {
-  background: var(--x-file-disk-border-color, var(--x-file-disk-border, #cbd5e1));
+  background: var(--x-file-disk-border-color, var(--x-file-disk-border, var(--x-color-border, #cbd5e1)));
   height: 20px;
   width: 1px;
 }
@@ -1578,8 +1577,8 @@ defineExpose({
 }
 
 .x-file-disk__path {
-  background: var(--x-file-disk-header-bg, var(--x-file-disk-path-bg, #fff));
-  border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #e2e8f0));
+  background: var(--x-file-disk-header-bg, var(--x-file-disk-path-bg, var(--x-color-surface-soft, #fff)));
+  border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #e2e8f0)));
   flex: 0 0 auto;
   gap: 2px;
   overflow-x: auto;
@@ -1591,7 +1590,7 @@ defineExpose({
   background: transparent;
   border: 0;
   border-radius: var(--x-file-disk-radius, 6px);
-  color: var(--x-file-disk-icon-color, var(--x-file-disk-text, #1f2937));
+  color: var(--x-file-disk-icon-color, var(--x-file-disk-text, var(--x-color-text, #1f2937)));
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -1613,12 +1612,12 @@ defineExpose({
 }
 
 .x-file-disk__path-back:hover:not(:disabled) {
-  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, #eef6f8));
+  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eef6f8))));
   color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
 }
 
 .x-file-disk__path-back:disabled {
-  color: var(--x-file-disk-disabled-text, #a3afbd);
+  color: var(--x-file-disk-disabled-text, var(--x-color-disabled-text, #a3afbd));
   cursor: not-allowed;
 }
 
@@ -1627,7 +1626,7 @@ defineExpose({
   background: transparent;
   border: 0;
   border-radius: 4px;
-  color: var(--x-file-disk-muted-text, #475569);
+  color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #475569)));
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
@@ -1638,7 +1637,7 @@ defineExpose({
 }
 
 .x-file-disk__crumb:not(:last-child)::after {
-  color: var(--x-file-disk-disabled-text, #94a3b8);
+  color: var(--x-file-disk-disabled-text, var(--x-color-disabled-text, #94a3b8));
   content: "/";
   margin-left: 8px;
 }
@@ -1657,7 +1656,7 @@ defineExpose({
 
 .x-file-disk__crumb:hover,
 .x-file-disk__crumb.is-current {
-  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, #eef6f8));
+  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eef6f8))));
   color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
 }
 
@@ -1673,7 +1672,7 @@ defineExpose({
 .x-file-disk__empty {
   align-items: center;
   background: var(--x-file-disk-empty-bg, transparent);
-  color: var(--x-file-disk-muted-text, #64748b);
+  color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #64748b)));
   display: flex;
   font-size: 14px;
   height: 100%;
@@ -1693,10 +1692,10 @@ defineExpose({
 }
 
 .x-file-disk__tile {
-  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, #fff));
+  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, var(--x-color-surface, #fff)));
   border: 1px solid transparent;
   border-radius: var(--x-file-disk-radius, 6px);
-  color: var(--x-file-disk-text, #102a43);
+  color: var(--x-file-disk-text, var(--x-color-text, #102a43));
   cursor: pointer;
   display: grid;
   gap: 6px;
@@ -1707,14 +1706,14 @@ defineExpose({
 }
 
 .x-file-disk__tile:hover {
-  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-hover-bg, #eff6ff));
+  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-hover-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eff6ff))));
   border-color: transparent;
 }
 
 .x-file-disk__tile.is-selected {
-  background: var(--x-file-disk-item-active-bg, var(--x-file-disk-selected-bg, #eff6ff));
-  border-color: var(--x-file-disk-active-icon-color, var(--x-file-disk-selected-border, #93c5fd));
-  color: var(--x-file-disk-item-active-text, var(--x-file-disk-text, #102a43));
+  background: var(--x-file-disk-item-active-bg, var(--x-file-disk-selected-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eff6ff))));
+  border-color: var(--x-file-disk-active-icon-color, var(--x-file-disk-selected-border, var(--x-file-disk-primary, var(--x-color-primary, #93c5fd))));
+  color: var(--x-file-disk-item-active-text, var(--x-file-disk-text, var(--x-color-text, #102a43)));
 }
 
 .x-file-disk__tile-icon {
@@ -1750,8 +1749,8 @@ defineExpose({
 }
 
 .x-file-disk__thumb {
-  background: var(--x-file-disk-thumb-bg, #f1f5f9);
-  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #dbe4ee));
+  background: var(--x-file-disk-thumb-bg, var(--x-color-surface-soft, #f1f5f9));
+  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #dbe4ee)));
   border-radius: 5px;
   box-sizing: border-box;
   display: block;
@@ -1761,8 +1760,8 @@ defineExpose({
 }
 
 .x-file-disk__row-thumb {
-  background: var(--x-file-disk-thumb-bg, #f1f5f9);
-  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #dbe4ee));
+  background: var(--x-file-disk-thumb-bg, var(--x-color-surface-soft, #f1f5f9));
+  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #dbe4ee)));
   border-radius: 4px;
   box-sizing: border-box;
   display: block;
@@ -1775,11 +1774,11 @@ defineExpose({
 .x-file-disk__thumb-placeholder,
 .x-file-disk__row-thumb-placeholder {
   align-items: center;
-  background: var(--x-file-disk-empty-bg, var(--x-file-disk-thumb-bg, #f1f5f9));
-  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #dbe4ee));
+  background: var(--x-file-disk-empty-bg, var(--x-file-disk-thumb-bg, var(--x-color-surface-soft, #f1f5f9)));
+  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #dbe4ee)));
   border-radius: 5px;
   box-sizing: border-box;
-  color: var(--x-file-disk-muted-text, #64748b);
+  color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #64748b)));
   display: inline-flex;
   flex: 0 0 auto;
   font-size: 12px;
@@ -1810,12 +1809,12 @@ defineExpose({
 }
 
 .x-file-disk__name-input {
-  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, #fff));
+  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, var(--x-color-surface, #fff)));
   border: 1px solid var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
   border-radius: var(--x-file-disk-radius, 6px);
-  box-shadow: 0 0 0 2px var(--x-file-disk-primary-soft, rgba(14, 116, 144, 0.12));
+  box-shadow: 0 0 0 2px var(--x-file-disk-primary-soft, var(--x-color-primary-soft, rgba(14, 116, 144, 0.12)));
   box-sizing: border-box;
-  color: var(--x-file-disk-text, #102a43);
+  color: var(--x-file-disk-text, var(--x-color-text, #102a43));
   font: inherit;
   font-size: var(--x-file-disk-font-size, 12px);
   min-height: var(--x-file-disk-control-height, 30px);
@@ -1826,7 +1825,7 @@ defineExpose({
 }
 
 .x-file-disk__tile-meta {
-  color: var(--x-file-disk-muted-text, #64748b);
+  color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #64748b)));
   font-size: var(--x-file-disk-font-size, 12px);
 }
 
@@ -1852,8 +1851,8 @@ defineExpose({
 
 .x-file-disk__table th,
 .x-file-disk__table td {
-  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, #fff));
-  border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #e2e8f0));
+  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, var(--x-color-surface, #fff)));
+  border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #e2e8f0)));
   box-sizing: border-box;
   font-size: var(--x-file-disk-font-size, 12px);
   height: var(--x-file-disk-control-height, 30px);
@@ -1863,8 +1862,8 @@ defineExpose({
 }
 
 .x-file-disk__table th {
-  background: var(--x-file-disk-header-bg, var(--x-file-disk-toolbar-bg, #f8fafc));
-  color: var(--x-file-disk-muted-text, #475569);
+  background: var(--x-file-disk-header-bg, var(--x-file-disk-toolbar-bg, var(--x-color-surface-soft, #f8fafc)));
+  color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #475569)));
   font-weight: 600;
 }
 
@@ -1873,12 +1872,12 @@ defineExpose({
 }
 
 .x-file-disk__table tbody tr:hover td {
-  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-hover-bg, #eff6ff));
+  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-hover-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eff6ff))));
 }
 
 .x-file-disk__table tbody tr.is-selected td {
-  background: var(--x-file-disk-item-active-bg, var(--x-file-disk-selected-bg, #eff6ff));
-  color: var(--x-file-disk-item-active-text, var(--x-file-disk-text, #102a43));
+  background: var(--x-file-disk-item-active-bg, var(--x-file-disk-selected-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eff6ff))));
+  color: var(--x-file-disk-item-active-text, var(--x-file-disk-text, var(--x-color-text, #102a43)));
 }
 
 .x-file-disk__check-cell {
@@ -1911,7 +1910,7 @@ defineExpose({
 
 .x-file-disk__drop-mask {
   align-items: center;
-  background: var(--x-file-disk-drag-over-bg, var(--x-file-disk-drop-bg, rgba(14, 116, 144, 0.12)));
+  background: var(--x-file-disk-drag-over-bg, var(--x-file-disk-drop-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, rgba(14, 116, 144, 0.12)))));
   border: 2px dashed var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
   color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
   display: flex;
@@ -1938,8 +1937,8 @@ defineExpose({
 }
 
 .x-file-disk__selection-box {
-  background: var(--x-file-disk-selection-bg, rgba(37, 99, 235, 0.12));
-  border: 1px solid var(--x-file-disk-selection-border, #2563eb);
+  background: var(--x-file-disk-selection-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, rgba(37, 99, 235, 0.12))));
+  border: 1px solid var(--x-file-disk-selection-border, var(--x-file-disk-primary, var(--x-color-primary, #2563eb)));
   box-sizing: border-box;
   pointer-events: none;
   position: absolute;
@@ -1947,8 +1946,8 @@ defineExpose({
 }
 
 .x-file-disk__context-menu {
-  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, #fff));
-  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-border, #cbd5e1));
+  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, var(--x-color-surface, #fff)));
+  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-border, var(--x-color-border, #cbd5e1)));
   border-radius: var(--x-file-disk-radius, 6px);
   box-shadow: var(--x-file-disk-shadow, 0 14px 34px rgba(15, 23, 42, 0.16));
   display: grid;
@@ -1963,7 +1962,7 @@ defineExpose({
   background: transparent;
   border: 0;
   border-radius: var(--x-file-disk-radius, 6px);
-  color: var(--x-file-disk-text, var(--x-file-disk-subtle-text, #334155));
+  color: var(--x-file-disk-text, var(--x-file-disk-subtle-text, var(--x-color-text, #334155)));
   cursor: pointer;
   display: flex;
   font: inherit;
@@ -1975,12 +1974,12 @@ defineExpose({
 }
 
 .x-file-disk__context-menu button:hover:not(:disabled) {
-  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, #eef6f8));
+  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eef6f8))));
   color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
 }
 
 .x-file-disk__context-menu button:disabled {
-  color: var(--x-file-disk-disabled-text, #a3afbd);
+  color: var(--x-file-disk-disabled-text, var(--x-color-disabled-text, #a3afbd));
   cursor: not-allowed;
 }
 
@@ -1997,13 +1996,13 @@ defineExpose({
 }
 
 .x-file-disk__context-divider {
-  border-top: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #e2e8f0));
+  border-top: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #e2e8f0)));
   margin: 5px 0;
 }
 
 .x-file-disk__upload-panel {
-  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, rgba(255, 255, 255, 0.96)));
-  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-border, #cbd5e1));
+  background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, var(--x-color-surface, rgba(255, 255, 255, 0.96))));
+  border: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-border, var(--x-color-border, #cbd5e1)));
   border-radius: 8px;
   bottom: 12px;
   box-shadow: var(--x-file-disk-shadow, 0 16px 36px rgba(15, 23, 42, 0.18));
@@ -2024,7 +2023,7 @@ defineExpose({
 
 .x-file-disk__upload-head {
   align-items: center;
-  color: var(--x-file-disk-subtle-text, #334155);
+  color: var(--x-file-disk-subtle-text, var(--x-color-text-muted, var(--x-color-muted, #334155)));
   display: flex;
   font-size: 12px;
   gap: 10px;
@@ -2039,7 +2038,7 @@ defineExpose({
 }
 
 .x-file-disk__upload-track {
-  background: var(--x-file-disk-border-color, var(--x-file-disk-soft-border, #e2e8f0));
+  background: var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #e2e8f0)));
   border-radius: 999px;
   height: 6px;
   overflow: hidden;
@@ -2053,11 +2052,11 @@ defineExpose({
 }
 
 .x-file-disk__upload-item.is-success .x-file-disk__upload-bar {
-  background: var(--x-file-disk-success, #16a34a);
+  background: var(--x-file-disk-success, var(--x-color-success, #16a34a));
 }
 
 .x-file-disk__upload-item.is-error .x-file-disk__upload-bar {
-  background: var(--x-file-disk-danger, #dc2626);
+  background: var(--x-file-disk-danger, var(--x-color-danger, #dc2626));
 }
 
 .x-file-disk__preview {
