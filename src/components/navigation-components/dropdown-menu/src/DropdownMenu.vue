@@ -21,7 +21,7 @@ const menuStyle = computed(() => ({
 </script>
 
 <template>
-  <div class="x-dropdown-menu" :style="menuStyle" role="menu">
+  <div class="x-dropdown-menu x-scrollbar--native" :style="menuStyle" role="menu">
     <slot />
   </div>
 </template>

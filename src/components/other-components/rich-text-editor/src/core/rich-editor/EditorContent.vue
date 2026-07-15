@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="xl-editor__viewport" @mousedown="$emit('mousedown', $event)">
+  <div class="xl-editor__viewport x-scrollbar--native" @mousedown="$emit('mousedown', $event)">
     <div class="xl-editor__content">
       <TiptapEditorContent v-if="editor" :editor="editor" />
     </div>

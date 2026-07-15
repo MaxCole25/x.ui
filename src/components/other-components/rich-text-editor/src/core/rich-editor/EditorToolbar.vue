@@ -81,7 +81,7 @@
           <i class="ri-font-family"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
-        <div v-if="openMenu === 'fontFamily'" class="xl-toolbar__menu-dropdown">
+        <div v-if="openMenu === 'fontFamily'" class="xl-toolbar__menu-dropdown x-scrollbar--native">
           <button
             v-for="font in fontFamilyOptions"
             :key="font.value || 'default'"
@@ -100,7 +100,7 @@
           <i class="ri-font-size"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
-        <div v-if="openMenu === 'fontSize'" class="xl-toolbar__menu-dropdown">
+        <div v-if="openMenu === 'fontSize'" class="xl-toolbar__menu-dropdown x-scrollbar--native">
           <button
             v-for="size in fontSizeOptions"
             :key="size.value || 'default'"
@@ -118,7 +118,7 @@
         <button type="button" class="xl-toolbar__menu-trigger" title="文字颜色" :disabled="readonly" @click="toggleMenu('textColor')">
           <i class="ri-palette-line"></i>
         </button>
-        <div v-if="openMenu === 'textColor'" class="xl-toolbar__menu-dropdown xl-toolbar__color-panel">
+        <div v-if="openMenu === 'textColor'" class="xl-toolbar__menu-dropdown xl-toolbar__color-panel x-scrollbar--native">
           <button type="button" class="xl-toolbar__color-reset" @click="selectTextColor('')">默认文字</button>
           <div class="xl-toolbar__color-grid" aria-label="文字颜色预设">
             <button
@@ -150,7 +150,7 @@
         <button type="button" class="xl-toolbar__menu-trigger" title="高亮颜色" :disabled="readonly" @click="toggleMenu('highlight')">
           <i class="ri-mark-pen-line"></i>
         </button>
-        <div v-if="openMenu === 'highlight'" class="xl-toolbar__menu-dropdown xl-toolbar__color-panel">
+        <div v-if="openMenu === 'highlight'" class="xl-toolbar__menu-dropdown xl-toolbar__color-panel x-scrollbar--native">
           <button type="button" class="xl-toolbar__color-reset" @click="selectHighlightColor('')">清除高亮</button>
           <div class="xl-toolbar__color-grid" aria-label="高亮颜色预设">
             <button
@@ -187,7 +187,7 @@
           <i class="ri-heading"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
-        <div v-if="openMenu === 'heading'" class="xl-toolbar__menu-dropdown">
+        <div v-if="openMenu === 'heading'" class="xl-toolbar__menu-dropdown x-scrollbar--native">
           <button
             v-for="heading in headingOptions"
             :key="heading.value"
@@ -265,7 +265,7 @@
           <i class="ri-table-2"></i>
           <i class="xl-toolbar__menu-caret ri-arrow-down-s-line"></i>
         </button>
-        <div v-if="openMenu === 'table'" class="xl-toolbar__menu-dropdown">
+        <div v-if="openMenu === 'table'" class="xl-toolbar__menu-dropdown x-scrollbar--native">
           <button type="button" @click="selectTableCommand('insert-table')">插入 3x3 表格</button>
           <button type="button" @click="selectTableCommand('add-row-before')">上方插入行</button>
           <button type="button" @click="selectTableCommand('add-row-after')">下方插入行</button>

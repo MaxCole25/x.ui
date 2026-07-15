@@ -119,6 +119,7 @@ const dropdownStyle = computed(() => ({
 }))
 const dropdownClasses = computed(() => [
   'x-autocomplete__dropdown',
+  'x-scrollbar--native',
   `x-autocomplete__dropdown--${dropdownPlacement.value}`,
   {
     'is-teleported': props.teleported

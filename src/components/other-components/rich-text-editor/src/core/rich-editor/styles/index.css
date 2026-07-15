@@ -450,8 +450,6 @@
   max-width: 100%;
   overflow: auto;
   scrollbar-gutter: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
 }
 
 .xl-editor__viewport::-webkit-scrollbar,
@@ -466,26 +464,22 @@
 .xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-track,
 .xl-code-node__pre::-webkit-scrollbar-track,
 .xl-editor__content .ProseMirror pre::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--x-scrollbar-track-color, #f1f5f9);
 }
 
 .xl-editor__viewport::-webkit-scrollbar-thumb,
 .xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-thumb,
 .xl-code-node__pre::-webkit-scrollbar-thumb,
 .xl-editor__content .ProseMirror pre::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.45);
+  background: var(--x-scrollbar-thumb-color, #cbd5e1);
   border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 
 .xl-editor__viewport::-webkit-scrollbar-thumb:hover,
 .xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-thumb:hover,
 .xl-code-node__pre::-webkit-scrollbar-thumb:hover,
 .xl-editor__content .ProseMirror pre::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.62);
-  border: 2px solid transparent;
-  background-clip: padding-box;
+  background: var(--x-scrollbar-thumb-color, #cbd5e1);
 }
 
 .xl-editor__content {

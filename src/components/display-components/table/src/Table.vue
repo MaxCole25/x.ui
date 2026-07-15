@@ -3687,6 +3687,8 @@ defineExpose({
 }
 
 .x-table__scrollbar {
+  background: var(--x-scrollbar-track-color, #f1f5f9);
+  border-radius: 999px;
   pointer-events: none;
   position: absolute;
   z-index: 2;
@@ -3694,20 +3696,20 @@ defineExpose({
 
 .x-table__scrollbar--vertical {
   bottom: 8px;
-  right: 3px;
+  right: 2px;
   top: 8px;
-  width: 6px;
+  width: 8px;
 }
 
 .x-table__scrollbar--horizontal {
-  bottom: 3px;
-  height: 6px;
+  bottom: 2px;
+  height: 8px;
   left: 8px;
   right: 8px;
 }
 
 .x-table__scrollbar-thumb {
-  background: var(--x-table-scrollbar-thumb, rgba(100, 116, 139, 0.36));
+  background: var(--x-scrollbar-thumb-color, #cbd5e1);
   border-radius: 999px;
   pointer-events: auto;
 }
@@ -3718,10 +3720,6 @@ defineExpose({
 
 .x-table__scrollbar--horizontal .x-table__scrollbar-thumb {
   height: 100%;
-}
-
-.x-table__scrollbar-thumb:hover {
-  background: var(--x-table-scrollbar-thumb-hover, rgba(71, 85, 105, 0.54));
 }
 
 .x-table__row {

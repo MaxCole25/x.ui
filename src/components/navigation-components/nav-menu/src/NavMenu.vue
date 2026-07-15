@@ -274,7 +274,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
 
 <template>
   <nav
-    class="x-nav-menu"
+    class="x-nav-menu x-scrollbar--native"
     :class="[
       `x-nav-menu--${props.mode}`,
       {

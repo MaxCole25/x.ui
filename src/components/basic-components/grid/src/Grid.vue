@@ -68,7 +68,7 @@ const gridStyle = computed(() => {
       v-for="itemIndex in placeholderCount"
       v-else
       :key="itemIndex"
-      class="x-grid-item x-grid-item--placeholder"
+      class="x-grid-item x-grid-item--placeholder x-scrollbar--native"
       data-x-grid-item
     />
   </div>

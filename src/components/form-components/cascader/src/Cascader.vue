@@ -444,7 +444,7 @@ onBeforeUnmount(() => {
       <div v-show="open" ref="panelRef" :class="panelClasses" :style="panelStyle" role="listbox">
         <div v-if="isLoading" class="x-cascader__empty">{{ props.loadingText }}</div>
         <div v-else-if="!rootOptions.length" class="x-cascader__empty">{{ props.emptyText }}</div>
-        <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="x-cascader__column">
+        <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="x-cascader__column x-scrollbar--native">
           <button
             v-for="option in column"
             :key="String(option.value)"
@@ -472,7 +472,7 @@ onBeforeUnmount(() => {
     <div v-else v-show="open" ref="panelRef" :class="panelClasses" :style="panelStyle" role="listbox">
       <div v-if="isLoading" class="x-cascader__empty">{{ props.loadingText }}</div>
       <div v-else-if="!rootOptions.length" class="x-cascader__empty">{{ props.emptyText }}</div>
-      <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="x-cascader__column">
+      <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="x-cascader__column x-scrollbar--native">
         <button
           v-for="option in column"
           :key="String(option.value)"

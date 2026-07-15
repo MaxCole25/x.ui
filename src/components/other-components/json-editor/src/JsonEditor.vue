@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
           {{ i + 1 }}
         </div>
       </div>
-      <div ref="highlightRef" class="x-json-editor__highlight">
+      <div ref="highlightRef" class="x-json-editor__highlight x-scrollbar--native">
         <div
           v-for="(line, i) in highlightedLines"
           :key="i"
@@ -140,7 +140,7 @@ onBeforeUnmount(() => {
       </div>
       <textarea
         ref="textareaRef"
-        class="x-json-editor__textarea"
+        class="x-json-editor__textarea x-scrollbar--native"
         :class="{ 'is-fixed-size': !props.resizable }"
         :value="props.modelValue"
         @input="handleInput"

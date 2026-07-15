@@ -691,10 +691,10 @@ defineExpose<TabsExpose>({
       </button>
     </header>
 
-    <section class="x-tabs__content">
+    <section class="x-tabs__content x-scrollbar--native">
       <template v-if="hasItems">
         <template v-for="item in items" :key="`pane-${item.name}`">
-          <div v-if="shouldRenderPane(item)" v-show="item.name === activeName" class="x-tabs__pane">
+          <div v-if="shouldRenderPane(item)" v-show="item.name === activeName" class="x-tabs__pane x-scrollbar--native">
             <slot name="pane" :item="item">
               <slot :name="`pane-${item.name}`" :item="item" />
             </slot>

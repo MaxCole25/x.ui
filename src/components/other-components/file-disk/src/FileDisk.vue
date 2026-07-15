@@ -1187,13 +1187,13 @@ defineExpose({
     <div
       v-else
       ref="bodyRoot"
-      class="x-file-disk__body"
+      class="x-file-disk__body x-scrollbar--native"
       @mousedown="startBoxSelection"
       @contextmenu="openContextMenu"
     >
       <div v-if="!hasContent" class="x-file-disk__empty">{{ emptyText }}</div>
 
-      <div v-else-if="currentView === 'grid'" class="x-file-disk__grid" role="listbox" aria-label="文件列表">
+      <div v-else-if="currentView === 'grid'" class="x-file-disk__grid x-scrollbar--native" role="listbox" aria-label="文件列表">
         <div v-if="creatingFolder" class="x-file-disk__tile is-editing" data-file-disk-item>
           <span class="x-file-disk__tile-icon is-folder">
             <svg class="x-file-disk__file-svg" aria-hidden="true">
@@ -1256,7 +1256,7 @@ defineExpose({
         </button>
       </div>
 
-      <div v-else class="x-file-disk__table-wrap">
+      <div v-else class="x-file-disk__table-wrap x-scrollbar--native">
         <table class="x-file-disk__table">
           <thead>
             <tr>

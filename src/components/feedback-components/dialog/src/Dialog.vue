@@ -271,7 +271,7 @@ const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '�
           </div>
         </header>
 
-        <section class="x-dialog__body">
+        <section class="x-dialog__body x-scrollbar--native">
           <slot />
         </section>
 

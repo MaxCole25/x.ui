@@ -227,7 +227,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     ref="rootRef"
-    class="x-list"
+    class="x-list x-scrollbar--native"
     :class="[
       `x-list--${props.size}`,
       {

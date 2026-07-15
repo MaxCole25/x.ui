@@ -145,7 +145,7 @@ const clear = () => {
       v-bind="attrs"
       :id="nativeId"
       ref="textareaRef"
-      class="x-textarea__inner"
+      class="x-textarea__inner x-scrollbar--native"
       :value="inputValue"
       :name="props.name"
       :placeholder="props.placeholder"

@@ -99,7 +99,7 @@ const placeholderStyle = computed<CSSProperties>(() => {
       v-for="itemIndex in placeholderCount"
       v-else
       :key="itemIndex"
-      class="x-brick-item x-brick-item--placeholder"
+      class="x-brick-item x-brick-item--placeholder x-scrollbar--native"
       data-x-brick-item
       data-x-brick-resizable="false"
       :style="placeholderStyle"

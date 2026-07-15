@@ -280,7 +280,7 @@ defineExpose({
   >
     <div class="x-table-column-settings" @mouseup="resetDrag" @mouseleave="resetDrag">
       <p class="x-table-column-settings__hint">勾选显示列，拖拽列名调整顺序，也可以设置冻结、对齐和宽度。</p>
-      <div class="x-table-column-settings__scroll">
+      <div class="x-table-column-settings__scroll x-scrollbar--native">
         <div class="x-table-column-settings__header" aria-hidden="true">
           <span></span>
           <span>显示</span>

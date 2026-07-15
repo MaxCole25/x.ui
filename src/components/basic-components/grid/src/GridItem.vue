@@ -42,7 +42,7 @@ const itemStyle = computed(() => {
 </script>
 
 <template>
-  <section class="x-grid-item" :style="itemStyle" data-x-grid-item>
+  <section class="x-grid-item x-scrollbar--native" :style="itemStyle" data-x-grid-item>
     <slot />
   </section>
 </template>

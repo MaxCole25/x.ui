@@ -9,7 +9,7 @@
     <span class="xl-outline-panel__separator" aria-hidden="true"></span>
 
     <div class="xl-outline-panel__body">
-      <div class="xl-outline-panel__content">
+      <div class="xl-outline-panel__content x-scrollbar--native">
         <div v-if="visibleNodes.length" class="xl-outline-panel__list">
           <div
             v-for="item in visibleNodes"
@@ -449,11 +449,6 @@ function markActivePath(nodes: OutlineNode[]): boolean {
   padding-left: 10px;
   padding-bottom: 50px;
   box-sizing: border-box;
-}
-
-.xl-outline-panel__content::-webkit-scrollbar {
-  width: 0;
-  height: 0;
 }
 
 .xl-outline-panel__list {

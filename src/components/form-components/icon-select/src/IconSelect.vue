@@ -230,7 +230,7 @@ watch(
         </button>
       </div>
 
-      <div class="x-icon-select__icons" role="listbox" aria-label="图标选择显示区">
+      <div class="x-icon-select__icons x-scrollbar--native" role="listbox" aria-label="图标选择显示区">
         <button
           v-for="icon in visibleIcons"
           :key="icon.name"

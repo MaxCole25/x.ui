@@ -135,12 +135,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="rootRef" class="x-flow" :class="{ 'is-lazy': props.lazy }" :style="flowStyle" @scroll="handleScroll">
+  <div ref="rootRef" class="x-flow x-scrollbar--native" :class="{ 'is-lazy': props.lazy }" :style="flowStyle" @scroll="handleScroll">
     <template v-if="hasDataItems">
       <section
         v-for="(item, index) in renderedItems"
         :key="getItemKey(item, index)"
-        class="x-flow-item"
+        class="x-flow-item x-scrollbar--native"
         data-x-flow-item
       >
         <slot :item="item" :index="index">{{ item }}</slot>

@@ -93,7 +93,7 @@ const itemStyle = computed<CSSProperties>(() => {
 
 <template>
   <section
-    class="x-brick-item"
+    class="x-brick-item x-scrollbar--native"
     :class="[`x-brick-item--${direction}`, { 'is-fixed': mainSize !== undefined, 'is-fluid': mainSize === undefined }]"
     :style="itemStyle"
     data-x-brick-item

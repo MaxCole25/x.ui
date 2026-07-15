@@ -202,6 +202,7 @@ const dropdownStyle = computed(() => ({
 
 const dropdownClasses = computed(() => [
   'x-select__dropdown',
+  'x-scrollbar--native',
   `x-select__dropdown--${dropdownPlacement.value}`,
   {
     'is-teleported': props.teleported

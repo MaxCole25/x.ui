@@ -79,7 +79,7 @@ function onMaskClick() {
             </slot>
             <button v-if="props.showClose" type="button" class="x-drawer__close" aria-label="关闭抽屉" @click="close">×</button>
           </header>
-          <section class="x-drawer__body">
+          <section class="x-drawer__body x-scrollbar--native">
             <slot />
           </section>
           <footer v-if="$slots.footer" class="x-drawer__footer">

@@ -52,7 +52,7 @@
       <div class="xl-code-node__gutter" aria-hidden="true">
         <span v-for="line in lineNumbers" :key="line">{{ line }}</span>
       </div>
-      <pre class="xl-code-node__pre"><NodeViewContent as="code" class="xl-code-node__content" spellcheck="false" /></pre>
+      <pre class="xl-code-node__pre x-scrollbar--native"><NodeViewContent as="code" class="xl-code-node__content" spellcheck="false" /></pre>
     </div>
   </NodeViewWrapper>
 
@@ -60,7 +60,7 @@
     <div
       v-if="isLanguageMenuOpen"
       ref="languageDropdownRef"
-      class="xl-code-node__language-dropdown"
+      class="xl-code-node__language-dropdown x-scrollbar--native"
       :style="languageDropdownStyle"
       @click.stop
     >

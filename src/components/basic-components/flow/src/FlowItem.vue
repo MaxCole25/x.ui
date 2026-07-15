@@ -31,7 +31,7 @@ const itemStyle = computed<CSSProperties>(() => ({
 </script>
 
 <template>
-  <section class="x-flow-item" :style="itemStyle" data-x-flow-item>
+  <section class="x-flow-item x-scrollbar--native" :style="itemStyle" data-x-flow-item>
     <slot />
   </section>
 </template>
