@@ -250,6 +250,7 @@ function moveTab(payload: { source: string; target: string; position: 'before' |
 | 属性名 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | `tabGap` | 公开属性，详见类型定义 | `string \| number` | — |
+| `padding` | 内容区域内边距，支持 CSS 四边写法 | `string \| number` | — |
 | `verticalWidth` | vertical宽度 | `string \| number` | — |
 | `verticalLabelMinHeight` | vertical标签Min高度 | `string \| number` | — |
 

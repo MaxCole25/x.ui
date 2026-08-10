@@ -70,6 +70,7 @@ export interface TabsProps {
   tabFontSize?: number | string
   tabMinWidth?: number | string
   tabGap?: number | string
+  padding?: number | string
   verticalWidth?: number | string
   verticalLabelMinHeight?: number | string
   radius?: number | string

@@ -2,6 +2,8 @@ import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { OverlayProps } from '../../../_utils/overlay'
 import type { XSize } from '../../../_utils/size'
 
+export type DialogFooterDividerStyle = 'solid' | 'dashed' | 'dotted'
+
 export interface DialogProps extends ElementStyleProps, OverlayProps {
   modelValue?: boolean
   title?: string
@@ -23,6 +25,10 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
   footerBackgroundColor?: string
   headerBorderColor?: string
   footerBorderColor?: string
+  showFooterDivider?: boolean
+  footerDividerColor?: string
+  footerDividerWidth?: number | string
+  footerDividerStyle?: DialogFooterDividerStyle
   closeIconColor?: string
   closeIconHoverColor?: string
   closeIconHoverBackgroundColor?: string

@@ -241,7 +241,7 @@ export type {
 export type { DatePickerPanelProps } from './components/form-components/date-picker-panel'
 export type { DatePickerProps } from './components/form-components/date-picker'
 export type { DateTimePickerProps } from './components/form-components/date-time-picker'
-export type { DialogProps } from './components/feedback-components/dialog'
+export type { DialogFooterDividerStyle, DialogProps } from './components/feedback-components/dialog'
 export type { DividerBorderStyle, DividerContentPosition, DividerDirection, DividerProps } from './components/basic-components/divider'
 export type { DrawerDirection, DrawerProps } from './components/feedback-components/drawer'
 export type { DropdownItemProps } from './components/navigation-components/dropdown-item'

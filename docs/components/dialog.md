@@ -60,6 +60,10 @@ const visible = ref(false)
 | resizable | 是否允许右下角缩放 | `boolean` | `true` |
 | showFullscreen | 是否显示全屏切换图标按钮，点击后弹窗在当前浏览器页面视口内铺满显示 | `boolean` | `false` |
 | closeOnMaskClick | 点击遮罩是否关闭 | `boolean` | `true` |
+| showFooterDivider | `footer` 插槽存在时，是否显示内容区与底部区域之间的分割线 | `boolean` | `true` |
+| footerDividerColor | 底部分割线颜色，未设置时使用淡色主题变量 | `string` | - |
+| footerDividerWidth | 底部分割线粗细，数字按 px 处理 | `number \| string` | `1` |
+| footerDividerStyle | 底部分割线线型 | `solid \| dashed \| dotted` | `solid` |
 
 ## Events
 
@@ -83,6 +87,7 @@ const visible = ref(false)
 | `--x-dialog-header-padding` | 头部内边距 |
 | `--x-dialog-body-padding` | 正文内边距 |
 | `--x-dialog-footer-padding` | 底部内边距 |
+| `--x-dialog-footer-divider-color` | 底部分割线颜色 |
 | `--x-dialog-radius` | 弹窗圆角 |
 
 ## 手动验收建议

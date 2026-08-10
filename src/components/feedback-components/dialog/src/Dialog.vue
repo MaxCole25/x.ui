@@ -23,6 +23,8 @@ const props = withDefaults(defineProps<DialogProps>(), {
   resizable: true,
   showFullscreen: false,
   closeOnMaskClick: true,
+  showFooterDivider: true,
+  footerDividerStyle: 'solid',
   teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.dialog
@@ -243,6 +245,9 @@ const popupStyle = computed(() => ({
   '--x-dialog-footer-bg': props.footerBackgroundColor,
   '--x-dialog-header-border': props.headerBorderColor,
   '--x-dialog-footer-border': props.footerBorderColor,
+  '--x-dialog-footer-divider-color': props.footerDividerColor ?? props.footerBorderColor,
+  '--x-dialog-footer-divider-width': toCssSize(props.footerDividerWidth),
+  '--x-dialog-footer-divider-style': props.footerDividerStyle,
   '--x-dialog-close-icon': props.closeIconColor,
   '--x-dialog-close-icon-hover': props.closeIconHoverColor,
   '--x-dialog-close-hover-bg': props.closeIconHoverBackgroundColor,
@@ -281,7 +286,7 @@ const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '�
           <slot />
         </section>
 
-        <footer v-if="$slots.footer" class="x-dialog__footer">
+        <footer v-if="$slots.footer" class="x-dialog__footer" :class="{ 'has-divider': showFooterDivider }">
           <slot name="footer" />
         </footer>
 
@@ -385,15 +390,22 @@ const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '�
 
 .x-dialog__footer {
   background: var(--x-dialog-footer-bg, var(--x-element-bg, var(--x-dialog-bg, var(--x-color-surface, #fff))));
-  border-top: 1px solid var(--x-dialog-footer-border, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
   flex: 0 0 auto;
-  padding: var(--x-dialog-footer-padding, 0 18px 14px);
+  padding: var(--x-dialog-footer-padding, 8px 18px);
+}
+
+.x-dialog__footer.has-divider {
+  border-top: var(--x-dialog-footer-divider-width, 1px) var(--x-dialog-footer-divider-style, solid) var(--x-dialog-footer-divider-color, var(--x-dialog-footer-border, var(--x-color-border, #d8d9df)));
 }
 
 .x-dialog__resizer {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
+  right: 1px;
+  bottom: 1px;
   width: 20px;
   height: 20px;
   z-index: 20;

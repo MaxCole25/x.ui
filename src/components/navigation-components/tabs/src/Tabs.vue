@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<TabsProps>(), {
   tabFontSize: undefined,
   tabMinWidth: undefined,
   tabGap: 4,
+  padding: undefined,
   verticalWidth: undefined,
   verticalLabelMinHeight: undefined,
   radius: 4,
@@ -123,6 +124,7 @@ const tabsStyleVars = computed<Record<string, string>>(() => ({
   ...getTabsSizeVars(props.size),
   ...(props.tabFontSize === undefined ? {} : { '--x-tabs-label-font-size': toCssLength(props.tabFontSize) }),
   ...(props.tabMinWidth === undefined ? {} : { '--x-tabs-item-min-width': toCssLength(props.tabMinWidth) }),
+  ...(props.padding === undefined ? {} : { '--x-tabs-content-padding': toCssLength(props.padding) }),
   ...(props.verticalWidth === undefined ? {} : { '--x-tabs-vertical-width': toCssLength(props.verticalWidth) }),
   ...(props.verticalLabelMinHeight === undefined
     ? {}

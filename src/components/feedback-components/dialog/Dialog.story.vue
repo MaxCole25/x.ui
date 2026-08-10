@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import { overlayZIndex } from '../../_utils/zIndex'
 import { XButton } from '../../basic-components/button'
-import { XDialog } from './index'
+import { XDialog, type DialogFooterDividerStyle } from './index'
 import '../../../styles/index.css'
 
 const visible = ref(false)
@@ -16,7 +16,11 @@ const state = reactive({
   draggable: true,
   resizable: true,
   showFullscreen: true,
-  closeOnMaskClick: true
+  closeOnMaskClick: true,
+  showFooterDivider: true,
+  footerDividerColor: '#dbe5f3',
+  footerDividerWidth: 1,
+  footerDividerStyle: 'solid' as DialogFooterDividerStyle
 })
 const logs = ref<string[]>([])
 
@@ -42,6 +46,10 @@ function onClose() {
           <label><input v-model="state.resizable" type="checkbox" />可缩放</label>
           <label><input v-model="state.showFullscreen" type="checkbox" />全屏按钮</label>
           <label><input v-model="state.closeOnMaskClick" type="checkbox" />遮罩关闭</label>
+          <label><input v-model="state.showFooterDivider" type="checkbox" />显示底部分割线</label>
+          <label>分割线色 <input v-model="state.footerDividerColor" type="color" /></label>
+          <label>分割线宽 <input v-model.number="state.footerDividerWidth" type="number" min="1" max="8" style="width: 64px" /></label>
+          <label>分割线型 <select v-model="state.footerDividerStyle"><option value="solid">实线</option><option value="dashed">虚线</option><option value="dotted">点线</option></select></label>
         </div>
 
         <div style="font-size: 12px; color: #6b7c93">
@@ -61,6 +69,10 @@ function onClose() {
         :resizable="state.resizable"
         :show-fullscreen="state.showFullscreen"
         :close-on-mask-click="state.closeOnMaskClick"
+        :show-footer-divider="state.showFooterDivider"
+        :footer-divider-color="state.footerDividerColor"
+        :footer-divider-width="state.footerDividerWidth"
+        :footer-divider-style="state.footerDividerStyle"
         @close="onClose"
       >
         <template #header>

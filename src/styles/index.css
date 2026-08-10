@@ -77,6 +77,7 @@
   --x-dialog-footer-bg: var(--x-dialog-bg);
   --x-dialog-header-border: transparent;
   --x-dialog-footer-border: transparent;
+  --x-dialog-footer-divider-color: #dbe5f3;
   --x-dialog-close-icon: var(--x-color-muted, var(--x-color-text-muted, #606b7d));
   --x-dialog-close-icon-hover: var(--x-color-text, #121826);
   --x-dialog-close-hover-bg: var(--x-color-primary-soft, #e0ecff);
@@ -234,6 +235,7 @@
   --x-dialog-footer-bg: var(--x-dialog-bg);
   --x-dialog-header-border: var(--x-color-border, #203247);
   --x-dialog-footer-border: var(--x-color-border, #203247);
+  --x-dialog-footer-divider-color: #263b53;
   --x-dialog-close-icon: var(--x-color-text-muted, #8da0b8);
   --x-dialog-close-icon-hover: var(--x-color-text, #eef4fb);
   --x-dialog-close-hover-bg: rgba(148, 163, 184, 0.14);
@@ -344,6 +346,7 @@
   --x-dialog-footer-bg: var(--x-color-surface);
   --x-dialog-header-border: var(--x-color-border);
   --x-dialog-footer-border: var(--x-color-border);
+  --x-dialog-footer-divider-color: #e0e7ef;
   --x-dialog-close-icon: var(--x-color-text-muted);
   --x-dialog-close-icon-hover: var(--x-color-text);
   --x-dialog-close-hover-bg: var(--x-color-primary-soft);
@@ -4601,7 +4604,7 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 12px;
+  padding: var(--x-tabs-content-padding, 12px);
 }
 
 .x-tabs.is-fill-height .x-tabs__content {
@@ -4710,19 +4713,19 @@
 .x-tabs--line .x-tabs__content {
   border: 0;
   border-radius: 0;
-  padding: 12px 0 0;
+  padding: var(--x-tabs-content-padding, 12px 0 0);
 }
 
 .x-tabs--line.x-tabs--bottom .x-tabs__content {
-  padding: 0 0 12px;
+  padding: var(--x-tabs-content-padding, 0 0 12px);
 }
 
 .x-tabs--line.is-vertical .x-tabs__content {
-  padding: 0 0 0 12px;
+  padding: var(--x-tabs-content-padding, 0 0 0 12px);
 }
 
 .x-tabs--line.x-tabs--right .x-tabs__content {
-  padding: 0 12px 0 0;
+  padding: var(--x-tabs-content-padding, 0 12px 0 0);
 }
 
 .x-tabs--border-card {
@@ -5993,7 +5996,7 @@
 }
 
 .x-cascader__control {
-  background: var(--x-cascader-bg, var(--x-element-bg, #fff));
+  background: var(--x-cascader-bg, var(--x-element-bg, var(--x-color-surface, #fff)));
   border-color: var(--x-cascader-border-color, var(--x-element-border-color, var(--x-color-border)));
   border-radius: var(--x-cascader-radius, 6px);
   border-width: var(--x-cascader-border-width, var(--x-element-border-width, 1px));
@@ -6106,7 +6109,7 @@
 
 .x-cascader__column {
   align-self: flex-start;
-  background: var(--x-cascader-bg, var(--x-element-bg, #fff));
+  background: var(--x-cascader-bg, var(--x-element-bg, var(--x-color-surface, #fff)));
   border: var(--x-cascader-border-width, var(--x-element-border-width, 1px)) solid var(--x-cascader-border-color, var(--x-element-border-color, #e4e9f2));
   border-radius: 0;
   box-sizing: border-box;
@@ -6138,7 +6141,7 @@
 }
 
 .x-cascader__panel > .x-cascader__empty {
-  background: var(--x-cascader-bg, var(--x-element-bg, #fff));
+  background: var(--x-cascader-bg, var(--x-element-bg, var(--x-color-surface, #fff)));
   border: var(--x-cascader-border-width, var(--x-element-border-width, 1px)) solid var(--x-cascader-border-color, var(--x-element-border-color, #e4e9f2));
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
 }
