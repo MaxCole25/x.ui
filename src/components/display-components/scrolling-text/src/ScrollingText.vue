@@ -26,6 +26,9 @@ const effectiveFlowDirection = computed<ScrollingTextFlowDirection>(() => {
 const rootStyle = computed(() => ({
   '--x-scrolling-text-width': isHorizontal.value ? toCssSize(props.width) : undefined,
   '--x-scrolling-text-height': isHorizontal.value ? undefined : toCssSize(props.height),
+  '--x-scrolling-text-gap': toCssSize(props.gap),
+  '--x-scrolling-text-content-size': `${measureContentSize()}px`,
+  '--x-scrolling-text-container-size': `${measureContainerSize()}px`,
   '--x-scrolling-text-duration': `${duration.value}s`,
   '--x-scrolling-text-font-family': props.fontFamily,
   '--x-scrolling-text-font-size': toCssSize(props.fontSize),
@@ -41,9 +44,17 @@ function measureContentSize() {
   return isHorizontal.value ? rect.width || content.scrollWidth : rect.height || content.scrollHeight
 }
 
+function measureContainerSize() {
+  const root = rootRef.value
+  if (!root) return 0
+
+  const rect = root.getBoundingClientRect()
+  return isHorizontal.value ? rect.width || root.clientWidth : rect.height || root.clientHeight
+}
+
 function updateDuration() {
   const speed = typeof props.speed === 'number' && props.speed > 0 ? props.speed : 40
-  const distance = measureContentSize()
+  const distance = measureContentSize() + measureContainerSize()
   duration.value = Math.max(distance / speed, 0.1)
 }
 
@@ -66,7 +77,7 @@ onBeforeUnmount(() => {
 })
 
 watch(
-  () => [props.displayDirection, props.flowDirection, props.speed, props.width, props.height, props.fontFamily, props.fontSize],
+  () => [props.displayDirection, props.flowDirection, props.speed, props.width, props.height, props.gap, props.fontFamily, props.fontSize],
   scheduleDurationUpdate
 )
 </script>
@@ -83,7 +94,6 @@ watch(
   >
     <div class="x-scrolling-text__track">
       <span ref="contentRef" class="x-scrolling-text__content"><slot /></span>
-      <span class="x-scrolling-text__content" aria-hidden="true"><slot /></span>
     </div>
   </div>
 </template>

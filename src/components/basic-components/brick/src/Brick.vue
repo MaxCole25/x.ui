@@ -61,15 +61,23 @@ const hasDefaultContent = computed(() => visibleSlotNodes.value.length > 0)
 const placeholderCount = computed(() => Math.max(0, Math.floor(Number(props.count) || 0)))
 
 const brickStyle = computed(() => ({
-  '--x-element-border-width': toCssSize(props.borderWidth),
-  '--x-element-border-color': props.borderColor,
-  '--x-element-text': props.textColor,
+  '--x-brick-border-width': toCssSize(props.borderWidth),
+  '--x-brick-border-color': props.borderColor,
+  '--x-brick-radius': toCssSize(props.radius),
+  '--x-brick-text': props.textColor,
   '--x-brick-bg': props.backgroundColor,
   '--x-brick-gap': toCssSize(props.gap),
   '--x-brick-width': toCssSize(props.width),
   '--x-brick-height': toCssSize(props.height),
   justifyContent: mergedDirection.value === 'horizontal' && mergedRightAlign.value ? 'flex-end' : undefined,
-  alignItems: mergedDirection.value === 'vertical' && mergedRightAlign.value ? 'flex-end' : undefined
+  alignItems:
+    mergedDirection.value === 'horizontal'
+      ? mergedVerticalCenter.value
+        ? 'center'
+        : undefined
+      : mergedRightAlign.value
+        ? 'flex-end'
+        : undefined
 }))
 
 const placeholderStyle = computed<CSSProperties>(() => {

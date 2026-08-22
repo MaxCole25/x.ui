@@ -6,6 +6,7 @@ export interface ScrollingTextProps {
   flowDirection?: ScrollingTextFlowDirection
   width?: number | string
   height?: number | string
+  gap?: number | string
   speed?: number
   fontFamily?: string
   fontSize?: number | string

@@ -525,8 +525,8 @@
 }
 
 .x-card {
-  background: var(--x-element-bg, var(--x-color-surface));
-  border: var(--x-element-border-width, 1px) solid var(--x-element-border-color, var(--x-color-border));
+  background: var(--x-card-bg, var(--x-color-surface));
+  border: var(--x-card-border-width, 1px) solid var(--x-card-border-color, var(--x-color-border));
   border-radius: var(--x-card-radius, var(--x-radius-md));
   box-sizing: border-box;
   color: var(--x-element-text, var(--x-color-text));
@@ -541,7 +541,7 @@
 }
 
 .x-card--always {
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .x-card--hover:hover {
@@ -554,7 +554,7 @@
 
 .x-card__header,
 .x-card__footer {
-  color: var(--x-element-text, var(--x-color-text));
+  color: var(--x-card-text, var(--x-color-text));
   flex: 0 0 auto;
   font-size: calc(var(--x-card-font-size, 12px) + 2px);
   line-height: 1.5;
@@ -577,7 +577,7 @@
   line-height: 1.6;
   min-height: 0;
   min-width: 0;
-  padding: 16px;
+  padding: var(--x-card-padding, 16px);
 }
 
 .x-tag {
@@ -1506,7 +1506,7 @@
   background: var(--x-element-bg, transparent);
   border: var(--x-element-border-width, 0) solid var(--x-element-border-color, transparent);
   box-sizing: border-box;
-  color: var(--x-element-text, var(--x-color-text));
+  color: var(--x-card-text, var(--x-color-text));
   display: inline-flex;
   font-family: var(--x-font-family);
   gap: 6px;
@@ -5540,13 +5540,20 @@
   white-space: nowrap;
 }
 
+.x-scrolling-text--horizontal .x-scrolling-text__content {
+  padding-inline-end: var(--x-scrolling-text-gap, 0);
+}
+
+.x-scrolling-text--vertical .x-scrolling-text__content {
+  padding-block-end: var(--x-scrolling-text-gap, 0);
+}
+
 .x-scrolling-text--to-left .x-scrolling-text__track {
   animation-name: x-scrolling-text-left;
 }
 
 .x-scrolling-text--to-right .x-scrolling-text__track {
   animation-name: x-scrolling-text-right;
-  transform: translateX(-50%);
 }
 
 .x-scrolling-text--to-up .x-scrolling-text__track {
@@ -5555,30 +5562,45 @@
 
 .x-scrolling-text--to-down .x-scrolling-text__track {
   animation-name: x-scrolling-text-down;
-  transform: translateY(-50%);
 }
 
 @keyframes x-scrolling-text-left {
+  from {
+    transform: translateX(var(--x-scrolling-text-container-size, 0));
+  }
+
   to {
-    transform: translateX(-50%);
+    transform: translateX(calc(-1 * var(--x-scrolling-text-content-size, 0)));
   }
 }
 
 @keyframes x-scrolling-text-right {
+  from {
+    transform: translateX(calc(-1 * var(--x-scrolling-text-content-size, 0)));
+  }
+
   to {
-    transform: translateX(0);
+    transform: translateX(var(--x-scrolling-text-container-size, 0));
   }
 }
 
 @keyframes x-scrolling-text-up {
+  from {
+    transform: translateY(var(--x-scrolling-text-container-size, 0));
+  }
+
   to {
-    transform: translateY(-50%);
+    transform: translateY(calc(-1 * var(--x-scrolling-text-content-size, 0)));
   }
 }
 
 @keyframes x-scrolling-text-down {
+  from {
+    transform: translateY(calc(-1 * var(--x-scrolling-text-content-size, 0)));
+  }
+
   to {
-    transform: translateY(0);
+    transform: translateY(var(--x-scrolling-text-container-size, 0));
   }
 }
 
@@ -7138,7 +7160,10 @@
 
 .x-brick {
   background: var(--x-brick-bg, transparent);
+  border: var(--x-brick-border-width, 0) solid var(--x-brick-border-color, transparent);
+  border-radius: var(--x-brick-radius, 0);
   box-sizing: border-box;
+  color: var(--x-brick-text, var(--x-color-text));
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;

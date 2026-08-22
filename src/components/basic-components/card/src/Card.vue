@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
+import { toCssSize } from '../../../_utils/elementStyle'
 import { componentSizePreset } from '../../../_utils/size'
 import type { CardProps } from './types'
 
@@ -16,9 +16,13 @@ const props = withDefaults(defineProps<CardProps>(), {
 const mergedSize = computed(() => props.size ?? 'md')
 const sizePreset = computed(() => componentSizePreset[mergedSize.value])
 const cardStyle = computed(() => ({
-  ...createElementStyleVars(props),
+  '--x-card-border-width': toCssSize(props.borderWidth),
+  '--x-card-border-color': props.borderColor,
+  '--x-card-bg': props.backgroundColor,
+  '--x-card-text': props.textColor,
   '--x-card-width': toCssSize(props.width),
   '--x-card-height': toCssSize(props.height),
+  '--x-card-padding': toCssSize(props.padding),
   '--x-card-font-size': `${sizePreset.value.fontSize}px`
 }))
 </script>

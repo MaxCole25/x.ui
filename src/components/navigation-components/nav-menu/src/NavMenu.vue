@@ -285,6 +285,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
     ]"
     :style="navMenuStyleVars"
   >
+    <slot name="header" />
     <ul class="x-nav-menu__list">
       <NavMenuItem
         v-for="item in normalizedItems"
@@ -304,5 +305,6 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
         @toggle-open="handleToggleOpen"
       />
     </ul>
+    <slot name="footer" />
   </nav>
 </template>

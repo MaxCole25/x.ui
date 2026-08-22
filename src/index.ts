@@ -23,7 +23,7 @@ import { XBrick, XBrickItem } from './components/basic-components/brick'
 import { XSplitPane, XSplitter } from './components/basic-components/splitter'
 import { XCard } from './components/basic-components/card'
 import { XGroupContainer } from './components/basic-components/group-container'
-import { XChart } from './components/display-components/chart'
+import { registerXChartAnalyticsModules, XChart } from './components/display-components/chart'
 import { XCascader } from './components/form-components/cascader'
 import { XCheckbox } from './components/form-components/checkbox'
 import { XColorPicker } from './components/form-components/color-picker'
@@ -60,7 +60,7 @@ import { XRegister } from './components/other-components/register'
 import { XLoading, vLoading, XLoadingService } from './components/feedback-components/loading'
 import { XMessage, XMessageComponent } from './components/feedback-components/message'
 import { XMessageBox, XMessageBoxComponent } from './components/feedback-components/message-box'
-import { XNavMenu } from './components/navigation-components/nav-menu'
+import { XHorizontalMenu, XNavMenu, XVerticalMenu } from './components/navigation-components/nav-menu'
 import { XRadio, XRadioButton } from './components/form-components/radio'
 import { XRichTextEditor } from './components/other-components/rich-text-editor'
 import { XScrollbar } from './components/basic-components/scrollbar'
@@ -110,6 +110,7 @@ export { XSplitPane }
 export { XCard }
 export { XGroupContainer }
 export { XChart }
+export { registerXChartAnalyticsModules }
 export { XCascader }
 export { XCheckbox }
 export { XColorPicker }
@@ -152,6 +153,8 @@ export { XLoading, XLoadingService, vLoading }
 export { XMessage, XMessageComponent }
 export { XMessageBox, XMessageBoxComponent }
 export { XNavMenu }
+export { XHorizontalMenu }
+export { XVerticalMenu }
 export { XOption }
 export { XRadio }
 export { XRadioButton }
@@ -197,7 +200,8 @@ export type {
   ChartExpose,
   ChartLoadingOptions,
   ChartProps,
-  ChartTheme
+  ChartTheme,
+  XChartOption
 } from './components/display-components/chart'
 export type {
   CascaderOption,
@@ -306,7 +310,13 @@ export type {
 } from './components/display-components/list'
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
 export type { MessageBoxAction, MessageBoxOptions, MessageBoxProps, MessageBoxType } from './components/feedback-components/message-box'
-export type { NavMenuItem, NavMenuMode, NavMenuProps } from './components/navigation-components/nav-menu'
+export type {
+  HorizontalMenuProps,
+  NavMenuItem,
+  NavMenuMode,
+  NavMenuProps,
+  VerticalMenuProps,
+} from './components/navigation-components/nav-menu'
 export type { RadioButtonProps, RadioProps, RadioSize } from './components/form-components/radio'
 export type { RichTextEditorExpose, RichTextEditorProps, RichTextEditorTheme, RichTextEditorToolbarButton, RichTextEditorValue, UploadResult } from './components/other-components/rich-text-editor'
 export type { ScrollbarProps } from './components/basic-components/scrollbar'
@@ -463,6 +473,8 @@ const components = [
   XFileDisk,
   XLayout,
   XNavMenu,
+  XHorizontalMenu,
+  XVerticalMenu,
   XTree,
   XTreeTable,
   XTabs,

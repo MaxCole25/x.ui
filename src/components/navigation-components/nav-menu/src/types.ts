@@ -43,3 +43,10 @@ export interface NavMenuProps {
   showSubmenuArrow?: boolean
   submenuArrowIcon?: string | Component
 }
+
+export type HorizontalMenuProps = Omit<
+  NavMenuProps,
+  'mode' | 'collapsed' | 'allowCollapse' | 'accordion'
+>
+
+export type VerticalMenuProps = Omit<NavMenuProps, 'mode'>

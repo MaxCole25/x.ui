@@ -11,5 +11,6 @@ export interface CardProps extends ElementStyleProps {
   shadow?: CardShadow
   width?: number | string
   height?: number | string
+  padding?: number | string
   bodyStyle?: CSSProperties
 }
