@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 export type TreeContextAction =
   | 'new-root'
   | 'new-node'
@@ -51,7 +50,7 @@ export interface TreeNodeData {
 }
 
 export interface TreeProps {
-  size?: XSize
+  fontSize?: number
   treeData: TreeNodeData[]
   currentTreeKey?: string
   currentUserId?: number | null

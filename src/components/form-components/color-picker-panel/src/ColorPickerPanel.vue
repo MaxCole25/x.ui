@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, ref, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import type { ColorPickerPanelProps } from './types'
@@ -153,6 +154,7 @@ watch(
 const hueColor = computed(() => hsvToHex({ h: parsedHsv.value.h, s: 1, v: 1 }))
 
 const panelStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   '--x-color-picker-value': normalizeHex(props.modelValue) || props.modelValue,
   '--x-color-picker-hue': hueColor.value,

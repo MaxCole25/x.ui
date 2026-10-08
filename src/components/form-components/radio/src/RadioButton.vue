@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { formContextKey } from '../../form/src/context'
 import type { RadioButtonProps } from './types'
 
@@ -12,7 +12,7 @@ defineOptions({
 const props = withDefaults(defineProps<RadioButtonProps>(), {
   disabled: false,
   direction: 'horizontal',
-  size: undefined
+  fontSize: undefined
 })
 
 const emit = defineEmits<{
@@ -22,9 +22,9 @@ const emit = defineEmits<{
 
 const form = inject(formContextKey, null)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
-const usesExplicitSize = computed(() => props.size != null || form?.size.value != null)
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
+const usesExplicitSize = computed(() => props.fontSize != null || form?.fontSize.value != null)
 const checked = computed(() => props.modelValue === props.value)
 const buttonColor = computed(() => props.buttonColor)
 const textColor = computed(() => props.textColor ?? props.labelColor)
@@ -42,9 +42,9 @@ const radioButtonStyle = computed(() => ({
   '--x-radio-button-font-family': props.fontFamily,
   '--x-radio-button-font-size': toCssSize(usesExplicitSize.value ? sizePreset.value.fontSize : props.fontSize),
   '--x-radio-button-width': toCssSize(props.width),
-  '--x-radio-button-height': toCssSize(usesExplicitSize.value ? sizePreset.value.height : props.height ?? props.buttonSize),
-  '--x-radio-button-padding': usesExplicitSize.value ? sizePreset.value.padding : undefined,
-  '--x-radio-button-radius': usesExplicitSize.value ? sizePreset.value.radius : toCssSize(props.radius),
+  '--x-radio-button-height': toCssSize(props.height ?? props.buttonSize),
+  '--x-radio-button-padding': undefined,
+  '--x-radio-button-radius': toCssSize(props.radius),
   '--x-radio-button-active-bg': activeBackgroundColor.value,
   '--x-radio-button-active-border-color': activeBorderColor.value,
   '--x-radio-button-active-text': props.activeTextColor
@@ -71,12 +71,12 @@ const select = () => {
     :data-name="props.name"
     :data-value="String(props.value)"
     :class="[
-      `x-radio-button--${mergedSize}`,
+      'x-radio-button',
       `x-radio-button--${props.variant ?? 'outline'}`,
       `x-radio-button--${props.direction}`,
       { 'is-checked': checked, 'is-disabled': mergedDisabled }
     ]"
-    :style="radioButtonStyle"
+    :style="[radioButtonStyle, createFontStyle(mergedSize)]"
     @click="select"
     @keydown.enter.prevent="select"
     @keydown.space.prevent="select"

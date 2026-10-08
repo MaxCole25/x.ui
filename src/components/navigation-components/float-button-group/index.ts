@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import FloatButtonGroup from './src/FloatButtonGroup.vue'
 
-export const XFloatButtonGroup = FloatButtonGroup
+export const XFloatButtonGroup = FloatButtonGroup as ComponentWithInstall<typeof FloatButtonGroup>
 
 export type {
   FloatButtonGroupDirection,

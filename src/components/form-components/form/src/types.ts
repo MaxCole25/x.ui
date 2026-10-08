@@ -1,9 +1,9 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
-import type { XSize } from '../../../_utils/size'
+import type { FontSize } from '../../../_utils/size'
 
-export type FormSize = XSize
-export type FormPublicSize = XSize
-export type FormControlSize = 'sm' | 'md' | 'lg'
+export type FormFontSize = FontSize
+export type FormPublicFontSize = FontSize
+export type FormControlFontSize = number
 export type FormLabelPosition = 'left' | 'right' | 'top'
 export type FormItemAlign = 'start' | 'center'
 export type FormItemHorizontalAlign = 'left' | 'center' | 'right'
@@ -32,14 +32,14 @@ export interface FormProps extends ElementStyleProps {
   model?: Record<string, unknown>
   rules?: FormRules
   disabled?: boolean
-  size?: FormSize
+  fontSize?: number
   inline?: boolean
   height?: string | number
   labelWidth?: string | number
   labelPosition?: FormLabelPosition
   loading?: boolean
   accentColor?: string
-  radius?: string
+  radius?: number | string
 }
 
 export interface FormItemProps {
@@ -49,7 +49,7 @@ export interface FormItemProps {
   rules?: FormItemRule[]
   error?: string
   help?: string
-  size?: FormSize
+  fontSize?: number
   disabled?: boolean
   labelWidth?: string | number
   labelHeight?: string | number

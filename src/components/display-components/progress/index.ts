@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Progress from './src/Progress.vue'
 
-export const XProgress = Progress
+export const XProgress = Progress as ComponentWithInstall<typeof Progress>
 
 export type { ProgressProps } from './src/types'
 

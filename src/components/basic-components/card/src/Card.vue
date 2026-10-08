@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { CardProps } from './types'
 
 defineOptions({
@@ -9,12 +9,12 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<CardProps>(), {
-  size: undefined,
+  fontSize: undefined,
   shadow: 'always'
 })
 
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const cardStyle = computed(() => ({
   '--x-card-border-width': toCssSize(props.borderWidth),
   '--x-card-border-color': props.borderColor,
@@ -28,7 +28,7 @@ const cardStyle = computed(() => ({
 </script>
 
 <template>
-  <section class="x-card" :class="[`x-card--${props.shadow}`, `x-card--${mergedSize}`]" :style="cardStyle">
+  <section class="x-card" :class="[`x-card--${props.shadow}`, 'x-card']" :style="[cardStyle, createFontStyle(mergedSize)]">
     <header v-if="$slots.header || props.header" class="x-card__header">
       <slot name="header">{{ props.header }}</slot>
     </header>

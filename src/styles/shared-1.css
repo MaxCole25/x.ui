@@ -1,0 +1,5 @@
+@keyframes x-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

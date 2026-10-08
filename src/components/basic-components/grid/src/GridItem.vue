@@ -8,7 +8,8 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<GridItemProps>(), {
-  overflow: 'auto'
+  overflow: 'auto',
+  horizontalCenter: false
 })
 
 const toPositiveSpan = (value?: number) => {
@@ -42,7 +43,12 @@ const itemStyle = computed(() => {
 </script>
 
 <template>
-  <section class="x-grid-item x-scrollbar--native" :style="itemStyle" data-x-grid-item>
+  <section
+    class="x-grid-item x-scrollbar--native"
+    :class="{ 'is-horizontal-center': props.horizontalCenter }"
+    :style="itemStyle"
+    data-x-grid-item
+  >
     <slot />
   </section>
 </template>

@@ -1,0 +1,118 @@
+.x-tools {
+  align-items: center;
+  background: var(--x-element-bg, transparent);
+  border: var(--x-element-border-width, 0) solid var(--x-element-border-color, transparent);
+  box-sizing: border-box;
+  color: var(--x-card-text, var(--x-color-text));
+  display: inline-flex;
+  font-family: var(--x-font-family);
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: visible;
+  padding: 4px 6px;
+}
+
+.x-tools.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.x-tools__separator {
+  background: var(--x-element-border-color, var(--x-color-border));
+  flex: 0 0 auto;
+  height: 34px;
+  margin: 0 4px;
+  width: 1px;
+}
+
+.x-tools__item,
+.x-tools__arrow {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  justify-content: center;
+  min-width: 0;
+  padding: 0;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.x-tools__item {
+  flex-direction: column;
+  gap: 3px;
+  min-height: 44px;
+  padding: 4px 6px;
+  width: 50px;
+}
+
+.x-tools--horizontal .x-tools__item {
+  flex: 0 0 auto;
+  flex-direction: row;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 8px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.x-tools--horizontal .x-tools__arrow {
+  height: 30px;
+}
+
+.x-tools__arrow {
+  align-self: center;
+  height: 24px;
+  width: 20px;
+}
+
+.x-tools__item:hover:not(:disabled),
+.x-tools__arrow:hover:not(:disabled) {
+  background: var(--x-color-primary-soft);
+  color: var(--x-color-primary);
+}
+
+.x-tools__item:focus-visible,
+.x-tools__arrow:focus-visible {
+  box-shadow: var(--x-shadow-focus);
+  outline: none;
+}
+
+.x-tools__item:disabled,
+.x-tools__arrow:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.x-tools__dropdown {
+  color: inherit;
+  flex: 0 0 auto;
+}
+
+.x-tools__split {
+  align-items: center;
+  display: inline-flex;
+  min-width: 0;
+}
+
+.x-tools__split.is-dropdown-only .x-tools__item--trigger {
+  cursor: pointer;
+}
+
+.x-tools__icon-wrap {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  line-height: 1;
+  min-height: 1em;
+  min-width: 1em;
+  position: relative;
+}

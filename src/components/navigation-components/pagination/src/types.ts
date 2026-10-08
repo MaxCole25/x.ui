@@ -1,6 +1,6 @@
-import type { XSize } from '../../../_utils/size'
 
 export interface PaginationProps {
+  height?: number | string
   modelValue?: number
   total?: number
   pageSize?: number
@@ -9,5 +9,5 @@ export interface PaginationProps {
   showTotal?: boolean
   showPageSize?: boolean
   pageSizes?: number[]
-  size?: XSize
+  fontSize?: number
 }

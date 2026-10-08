@@ -1,0 +1,27 @@
+.x-nav-menu {
+  --x-nav-menu-text-color: var(--x-color-text);
+  --x-nav-menu-active-text-color: #fff;
+  --x-nav-menu-submenu-active-text-color: var(--x-nav-menu-active-text-color);
+  --x-nav-menu-active-bg-color: var(--x-color-primary);
+  --x-nav-menu-font-size: 14px;
+  --x-nav-menu-font-weight: var(--x-font-weight-regular, 400);
+  --x-nav-menu-active-font-weight: 600;
+  --x-nav-menu-font-family: var(--x-font-family);
+  --x-nav-menu-arrow-size: 24px;
+  width: 100%;
+}
+
+.x-nav-menu.is-hidden {
+  display: none;
+}
+
+.x-nav-menu--vertical.is-scrollable {
+  max-height: var(--x-nav-menu-max-height, 100%);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.x-nav-menu--horizontal.is-scrollable {
+  overflow: visible;
+}

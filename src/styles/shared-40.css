@@ -1,0 +1,129 @@
+.x-time-picker__time-column::before,
+.x-time-picker__time-column::after,
+.x-time-select__time-column::before,
+.x-time-select__time-column::after {
+  content: '';
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  z-index: 3;
+}
+
+.x-time-picker__time-column::before,
+.x-time-select__time-column::before {
+  background: linear-gradient(
+    var(--x-picker-time-mask-top, #fff) 0%,
+    var(--x-picker-time-mask-middle, rgba(255, 255, 255, 0.82)) 58%,
+    var(--x-picker-time-mask-bottom, rgba(255, 255, 255, 0))
+  );
+  height: 88px;
+  top: 24px;
+}
+
+.x-time-picker__time-column::after,
+.x-time-select__time-column::after {
+  background: linear-gradient(
+    var(--x-picker-time-mask-bottom, rgba(255, 255, 255, 0)),
+    var(--x-picker-time-mask-middle, rgba(255, 255, 255, 0.82)) 42%,
+    var(--x-picker-time-mask-top, #fff) 100%
+  );
+  bottom: 0;
+  height: 88px;
+}
+
+.x-time-picker__time-label,
+.x-time-select__time-label {
+  color: var(--x-picker-time-label-text, var(--x-picker-panel-muted-text, var(--x-color-muted)));
+  font: 700 12px/24px var(--x-font-family);
+  text-align: center;
+}
+
+.x-time-picker__time-list,
+.x-time-select__time-list {
+  box-sizing: border-box;
+  height: 264px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 110px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.x-time-picker__time-list::-webkit-scrollbar,
+.x-time-select__time-list::-webkit-scrollbar {
+  display: none;
+}
+
+.x-time-picker__time-option,
+.x-time-select__time-option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--x-picker-time-option-text, #475569);
+  cursor: pointer;
+  display: flex;
+  font: 600 15px/1 var(--x-font-family);
+  height: 44px;
+  justify-content: center;
+  transition: background-color 160ms ease, color 160ms ease, font-size 160ms ease, font-weight 160ms ease;
+  width: 100%;
+}
+
+.x-time-picker__time-option:hover,
+.x-time-select__time-option:hover {
+  color: var(--x-picker-time-option-hover-text, var(--x-color-primary));
+}
+
+.x-time-picker__time-option.is-active,
+.x-time-select__time-option.is-active {
+  background: var(--x-picker-time-option-active-bg, transparent);
+  color: var(--x-picker-time-option-active-text, var(--x-color-primary));
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.x-time-picker__footer,
+.x-time-select__footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.x-time-picker__primary,
+.x-time-picker__secondary,
+.x-time-select__primary,
+.x-time-select__secondary {
+  border-radius: 6px;
+  cursor: pointer;
+  font: 600 13px/1 var(--x-font-family);
+  min-height: 32px;
+  padding: 0 14px;
+}
+
+.x-time-picker__primary,
+.x-time-select__primary {
+  background: var(--x-picker-primary-button-bg, var(--x-color-primary));
+  border: 0;
+  color: var(--x-picker-primary-button-text, #fff);
+}
+
+.x-time-picker__secondary,
+.x-time-select__secondary {
+  background: var(--x-picker-secondary-button-bg, #fff);
+  border: 1px solid var(--x-picker-secondary-button-border, var(--x-color-border));
+  color: var(--x-picker-secondary-button-text, var(--x-color-text));
+}
+
+.x-time-picker__primary:hover,
+.x-time-select__primary:hover {
+  background: var(--x-picker-primary-button-hover-bg, #0f56d9);
+}
+
+.x-time-picker__secondary:hover,
+.x-time-select__secondary:hover {
+  background: var(--x-picker-secondary-button-hover-bg, var(--x-picker-secondary-button-bg, #fff));
+  border-color: var(--x-picker-secondary-button-hover-border, var(--x-color-primary));
+  color: var(--x-picker-secondary-button-hover-text, var(--x-color-primary));
+}

@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type NotificationStatus = 'success' | 'warning' | 'info' | 'error'
 export type NotificationPlacement = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
@@ -11,7 +10,7 @@ export interface NotificationProps {
   placement?: NotificationPlacement
   duration?: number
   showClose?: boolean
-  size?: XSize
+  fontSize?: number
   zIndex?: number
 }
 

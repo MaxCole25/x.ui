@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import List from './src/List.vue'
 
-export const XList = List
+export const XList = List as ComponentWithInstall<typeof List>
 
 export type {
   ListItem,
@@ -11,7 +12,7 @@ export type {
   ListItemValue,
   ListProps,
   ListReorderPosition,
-  ListSize
+  ListFontSize
 } from './src/types'
 
 XList.install = (app: App) => {

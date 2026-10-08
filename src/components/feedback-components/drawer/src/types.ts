@@ -1,6 +1,5 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { OverlayProps } from '../../../_utils/overlay'
-import type { XSize } from '../../../_utils/size'
 
 export type DrawerDirection = 'rtl' | 'ltr' | 'ttb' | 'btt'
 
@@ -8,11 +7,12 @@ export interface DrawerProps extends ElementStyleProps, OverlayProps {
   modelValue?: boolean
   title?: string
   direction?: DrawerDirection
-  size?: XSize
+  fontSize?: number
   panelSize?: number | string
   withHeader?: boolean
   showClose?: boolean
   closeOnMaskClick?: boolean
+  closeOnEsc?: boolean
   destroyOnClose?: boolean
   maskColor?: string
   titleColor?: string

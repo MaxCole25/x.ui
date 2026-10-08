@@ -1,11 +1,10 @@
-import type { XSize } from '../../../_utils/size'
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right'
 export type TooltipTrigger = 'hover' | 'click' | 'focus'
 
 export interface TooltipProps extends ElementStyleProps {
-  size?: XSize
+  fontSize?: number
   modelValue?: boolean
   content?: string
   placement?: TooltipPlacement

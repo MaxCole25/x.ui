@@ -1,12 +1,12 @@
-import type { XSize } from '../../../_utils/size'
+import type { FontSize } from '../../../_utils/size'
 
 export type IconVariant = 'line' | 'fill'
-export type IconSize = XSize
+export type IconFontSize = FontSize
 
 export interface IconProps {
   name: string
   variant?: IconVariant
-  size?: IconSize
+  fontSize?: number
   iconSize?: number | string
   offsetY?: number | string
   color?: string

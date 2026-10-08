@@ -37,15 +37,15 @@ describe('XButton', () => {
     expect(wrapper.classes()).toContain('x-button--outline')
   })
 
-  it('uses md visual dimensions by default', () => {
+  it('uses documented font and layout defaults', () => {
     const wrapper = mount(XButton)
 
     const style = wrapper.attributes('style')
 
-    expect(wrapper.classes()).toContain('x-button--md')
+    expect(wrapper.classes()).not.toContain('x-button--md')
     expect(style).toContain('--x-button-width: 120px')
-    expect(style).toContain('--x-button-height: 30px')
-    expect(style).toContain('--x-button-font-size: 12px')
+    expect(style).toContain('--x-button-height: 32px')
+    expect(style).toContain('--x-button-font-size: 14px')
     expect(style).toContain('--x-button-padding: 0 8px')
     expect(style).toContain('--x-button-radius: 6px')
   })

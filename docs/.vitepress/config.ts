@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitepress'
+import { exampleImports } from './example-imports'
 
 export default defineConfig({
-  title: 'x.ui',
+  title: '@x-soft88/x-ui',
   description: 'Vue 3 UI 组件库',
   lang: 'zh-CN',
   themeConfig: {
@@ -14,19 +15,20 @@ export default defineConfig({
     sidebar: [
       {
         text: '指南',
+        collapsed: true,
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
           { text: '主题基础色', link: '/guide/theme' },
+          { text: '字体与控件高度', link: '/guide/typography' },
           { text: '接口命名规范', link: '/guide/api-naming' },
           { text: '接口命名审计', link: '/guide/api-naming-audit' },
           { text: '组件测试', link: '/guide/testing' }
         ]
       },
-      {
-        text: '组件',
-        items: [
+
           {
             text: '基础组件',
+            collapsed: true,
             items: [
               { text: '按钮 Button', link: '/components/button' },
               { text: '按钮组 ButtonGroup', link: '/components/button-group' },
@@ -46,6 +48,7 @@ export default defineConfig({
           },
           {
             text: 'Form 组件',
+            collapsed: true,
             items: [
               { text: '输入框 Input', link: '/components/input' },
               { text: '多行输入框 Textarea', link: '/components/textarea' },
@@ -72,8 +75,10 @@ export default defineConfig({
           },
           {
             text: '展示组件',
+            collapsed: true,
             items: [
               { text: '头像 Avatar', link: '/components/avatar' },
+              { text: '聊天消息 Chat', link: '/components/chat' },
               { text: '图表 Chart', link: '/components/chart' },
               { text: '空状态 Empty', link: '/components/empty' },
               { text: '徽标 Badge', link: '/components/badge' },
@@ -92,6 +97,7 @@ export default defineConfig({
           },
           {
             text: '导航组件',
+            collapsed: true,
             items: [
               { text: '下拉菜单 Dropdown', link: '/components/dropdown' },
               { text: '下拉菜单容器 DropdownMenu', link: '/components/dropdown-menu' },
@@ -108,6 +114,7 @@ export default defineConfig({
           },
           {
             text: '反馈组件',
+            collapsed: true,
             items: [
               { text: '弹窗 Dialog', link: '/components/dialog' },
               { text: '抽屉 Drawer', link: '/components/drawer' },
@@ -123,6 +130,7 @@ export default defineConfig({
           },
           {
             text: '其它组件',
+            collapsed: true,
             items: [
               { text: '文件磁盘 FileDisk', link: '/components/file-disk' },
               { text: '数据表设置 DataTableSettings', link: '/components/data-table-settings' },
@@ -134,15 +142,16 @@ export default defineConfig({
               { text: '富文本 RichTextEditor', link: '/components/rich-text-editor' }
             ]
           }
-        ]
-      }
     ],
+    search: { provider: 'local' },
+    outline: { level: [2, 3], label: '本页目录' },
     socialLinks: []
   },
   vite: {
+    plugins: [exampleImports()],
     resolve: {
       alias: {
-        'x.ui': '/src/index.ts'
+        '@x-soft88/x-ui': '/src/index.ts'
       }
     }
   }

@@ -1,0 +1,50 @@
+.x-select.is-disabled {
+  color: var(--x-select-disabled-text-color, var(--x-form-disabled-text, #a8abb2));
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.x-select.is-auto-width {
+  width: auto;
+}
+
+.x-select.is-auto-height {
+  height: 100%;
+  min-height: 0;
+}
+
+.x-select__control {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  color: inherit;
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  outline: none;
+  width: 100%;
+}
+
+.x-select__placeholder {
+  color: #a8abb2;
+}
+
+.x-select {
+  font-size: var(--x-select-font-size, 14px);
+  min-height: var(--x-select-height, 32px);
+}
+
+.x-select__arrow {
+  align-items: center;
+  color: #a8abb2;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.x-select__suffix {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-width: 0;
+}

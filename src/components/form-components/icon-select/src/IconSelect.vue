@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { XIcon } from '../../../basic-components/icon'
 import { remixIconNames } from '../../../basic-components/icon/src/iconNames'
 import type { IconSelectCategoryName, IconSelectIconInfo, IconSelectProps } from './types'
@@ -11,7 +11,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<IconSelectProps>(), {
-  size: 'md',
+  fontSize: 14,
   disabled: false,
   readonly: false,
   placeholder: '双击选择图标',
@@ -141,13 +141,13 @@ const visibleIcons = computed(() => {
 const selectedName = computed(() => props.modelValue ?? '')
 const selectedIcon = computed(() => iconInfos.value.find((icon) => icon.name === selectedName.value))
 const previewIcon = computed(() => iconInfos.value.find((icon) => icon.name === previewName.value) ?? selectedIcon.value)
-const mergedIconSize = computed(() => toCssSize(props.iconSize) ?? `${componentSizePreset[props.size].fontSize + 8}px`)
+const mergedIconSize = computed(() => toCssSize(props.iconSize) ?? `${getComponentMetrics(props.fontSize).fontSize + 8}px`)
 
 const panelStyle = computed(() => ({
   '--x-icon-select-height': toCssSize(props.panelHeight),
-  '--x-icon-select-font-size': `${componentSizePreset[props.size].fontSize}px`,
-  '--x-icon-select-radius': componentSizePreset[props.size].radius,
-  '--x-icon-select-padding': componentSizePreset[props.size].padding,
+  '--x-icon-select-font-size': `${getComponentMetrics(props.fontSize).fontSize}px`,
+  '--x-icon-select-radius': getComponentMetrics(props.fontSize).radius,
+  '--x-icon-select-padding': getComponentMetrics(props.fontSize).padding,
   '--x-icon-select-accent-color': props.accentColor,
   '--x-icon-select-icon-size': mergedIconSize.value,
   '--x-icon-select-icon-color': props.iconColor,
@@ -189,13 +189,13 @@ watch(
   <div
     class="x-icon-select"
     :class="[
-      `x-icon-select--${props.size}`,
+      'x-icon-select',
       {
         'is-disabled': props.disabled,
         'is-readonly': props.readonly
       }
     ]"
-    :style="panelStyle"
+    :style="[panelStyle, createFontStyle(props.fontSize ?? 14)]"
   >
     <div class="x-icon-select__summary">
       <div class="x-icon-select__summary-icon" aria-hidden="true">
@@ -264,7 +264,7 @@ watch(
 <style scoped>
 .x-icon-select {
   --x-icon-select-height: 320px;
-  --x-icon-select-font-size: 12px;
+  --x-icon-select-font-size: 14px;
   --x-icon-select-radius: 6px;
   --x-icon-select-padding: 0 8px;
   --x-icon-select-accent-color: #1264f4;
@@ -464,26 +464,6 @@ watch(
 
 .x-icon-select button:disabled {
   cursor: not-allowed;
-}
-
-.x-icon-select--sm .x-icon-select__summary {
-  padding: 8px 10px;
-}
-
-.x-icon-select--sm .x-icon-select__summary-icon {
-  flex-basis: 30px;
-  height: 30px;
-  width: 30px;
-}
-
-.x-icon-select--lg .x-icon-select__summary {
-  padding: 12px 14px;
-}
-
-.x-icon-select--lg .x-icon-select__summary-icon {
-  flex-basis: 42px;
-  height: 42px;
-  width: 42px;
 }
 
 @media (max-width: 640px) {

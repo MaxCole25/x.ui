@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
-import { inputSizePreset } from '../../../_utils/inputSize'
+import { getInputMetrics } from '../../../_utils/inputSize'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { formContextKey } from '../../form/src/context'
@@ -9,7 +10,7 @@ import type {
   AutocompleteOption,
   AutocompleteOptionSource,
   AutocompleteProps,
-  AutocompleteSize
+  AutocompleteFontSize
 } from './types'
 
 defineOptions({
@@ -72,27 +73,25 @@ let isListeningForPositionChanges = false
 const maxVisibleOptionCount = 50
 const displayInputValue = computed(() => props.inputValue ?? props.modelValue ?? '')
 const keyword = computed(() => currentInputValue.value)
-const mergedSize = computed<AutocompleteSize>(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed<AutocompleteFontSize>(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 
 const optionFontSize = computed(() => {
-  if (props.size) return inputSizePreset[props.size].fontSize
+  if (props.fontSize) return getInputMetrics(props.fontSize).fontSize
 
-  return props.fontSize ?? inputSizePreset[mergedSize.value].fontSize
+  return props.fontSize ?? getInputMetrics(mergedSize.value).fontSize
 })
 
 const optionPadding = computed(() => {
-  if (props.size) return inputSizePreset[props.size].padding
-  if (props.padding) return props.padding
+    if (props.padding) return props.padding
 
-  return inputSizePreset[mergedSize.value].padding
+  return getInputMetrics(mergedSize.value).padding
 })
 const resolvedDropdownZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 
 const autocompleteHeight = computed(() => {
-  if (props.size) return inputSizePreset[props.size].height
 
-  return props.height ?? inputSizePreset[mergedSize.value].height
+  return props.height ?? getInputMetrics(mergedSize.value).height
 })
 
 const autocompleteStyle = computed(() => ({
@@ -137,8 +136,8 @@ const inputAttrs = computed(() => {
 })
 
 const inputProps = computed(() => {
-  const preset = inputSizePreset[mergedSize.value]
-  const usesExplicitSize = props.size != null
+  const preset = getInputMetrics(mergedSize.value)
+  const usesExplicitSize = props.fontSize != null
   const next: Record<string, unknown> = {
     ...props,
     modelValue: currentInputValue.value,
@@ -146,11 +145,10 @@ const inputProps = computed(() => {
     clearable: false,
     hideClearButton: true,
     disabled: mergedDisabled.value,
-    size: mergedSize.value,
     fontSize: usesExplicitSize ? preset.fontSize : props.fontSize ?? preset.fontSize,
-    height: usesExplicitSize ? preset.height : props.height ?? preset.height,
-    padding: usesExplicitSize ? preset.padding : props.padding ?? preset.padding,
-    radius: usesExplicitSize ? preset.radius : props.radius ?? preset.radius,
+    height: props.height ?? preset.height,
+    padding: props.padding ?? preset.padding,
+    radius: props.radius ?? preset.radius,
     suffix: undefined
   }
 
@@ -546,28 +544,22 @@ watch(visibleOptions, () => {
 })
 
 watch(
-  () => open.value,
-  async (isOpen) => {
-    if (!isOpen) {
+  [open, () => props.teleported, () => props.teleportTo],
+  async ([opened], _previous, onCleanup) => {
+    let active = true
+    onCleanup(() => {
+      active = false
       removePositionListeners()
+    })
+    teleportedDropdownStyle.value = {}
+    if (!opened) {
       return
     }
 
     await nextTick()
+    if (!active || !open.value || !props.teleported || !autocompleteRef.value || !dropdownRef.value) return
     updateDropdownPosition()
     addPositionListeners()
-  }
-)
-
-watch(
-  () => props.teleported,
-  async () => {
-    removePositionListeners()
-    await nextTick()
-    if (open.value) {
-      updateDropdownPosition()
-      addPositionListeners()
-    }
   }
 )
 
@@ -620,7 +612,7 @@ onBeforeUnmount(() => {
         'is-active-border-hidden': !props.showActiveBorder
       }
     ]"
-    :style="[autocompleteStyle, rootStyle]"
+    :style="[[autocompleteStyle, rootStyle], createFontStyle(mergedSize)]"
   >
     <XBaseInput
       v-bind="{ ...inputAttrs, ...inputProps }"

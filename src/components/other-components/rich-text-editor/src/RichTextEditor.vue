@@ -1,4 +1,5 @@
 ﻿<script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { JSONContent } from '@tiptap/core'
 import type { RichEditorExpose, UploadResult } from './core/rich-editor/custom/types'
@@ -147,7 +148,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
   <div
     class="x-rich-text-editor"
     :class="{ 'x-rich-text-editor--fill-height': props.fullHeight }"
-    :style="{ '--xl-editor-min-height': editorMinHeight }"
+    :style="[{ '--xl-editor-min-height': editorMinHeight }, createFontStyle(props.fontSize ?? 14)]"
   >
     <RichEditor
       ref="editorRef"
@@ -159,7 +160,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
       :toolbar-tooltip-placement="props.toolbarTooltipPlacement"
       :show-outline="props.showOutline"
       :paste-images="props.pasteImages"
-      :size="props.size"
+      :font-size="props.fontSize"
       :content-background="props.contentBackgroundColor"
       :content-text-color="props.contentTextColor"
       :content-font-size="props.contentFontSize"

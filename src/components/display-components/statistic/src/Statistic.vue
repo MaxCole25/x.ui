@@ -22,7 +22,7 @@ const styleVars = computed(() => ({ '--x-statistic-value': props.valueColor, '--
 
 <style scoped>
 .x-statistic { color: var(--x-statistic-value, var(--x-color-text)); display: inline-grid; font-family: var(--x-font-family); gap: 6px; min-width: 0; }
-.x-statistic__title { color: var(--x-statistic-title, var(--x-color-muted)); font-size: 13px; line-height: 1.4; }
+.x-statistic__title { color: var(--x-statistic-title, var(--x-color-muted)); font-size: 14px; line-height: 1.4; }
 .x-statistic__value { align-items: baseline; display: inline-flex; font-size: 26px; font-weight: 800; gap: 4px; line-height: 1.2; min-width: 0; }
 .x-statistic__prefix, .x-statistic__suffix { font-size: 14px; font-weight: 700; }
 </style>

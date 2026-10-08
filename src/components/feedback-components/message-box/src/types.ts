@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 import type { OverlayProps } from '../../../_utils/overlay'
 
 export type MessageBoxType = 'success' | 'warning' | 'info' | 'error'
@@ -9,11 +8,12 @@ export interface MessageBoxProps extends OverlayProps {
   title?: string
   message?: string
   status?: MessageBoxType
-  size?: XSize
+  fontSize?: number
   showCancelButton?: boolean
   showConfirmButton?: boolean
   showClose?: boolean
   closeOnMaskClick?: boolean
+  closeOnEsc?: boolean
   confirmButtonText?: string
   cancelButtonText?: string
   distinguishCancelAndClose?: boolean

@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import TimePicker from './src/TimePicker.vue'
 
-export const XTimePicker = TimePicker
+export const XTimePicker = TimePicker as ComponentWithInstall<typeof TimePicker>
 
 export type { TimePickerProps } from './src/types'
 

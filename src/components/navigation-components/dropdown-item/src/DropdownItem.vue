@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject } from 'vue'
 import { dropdownContextKey } from '../../dropdown/src/context'
 import type { DropdownItemProps } from './types'
@@ -10,7 +11,7 @@ defineOptions({
 const props = withDefaults(defineProps<DropdownItemProps>(), {
   disabled: false,
   divided: false,
-  size: 'md',
+  fontSize: 14,
   active: false
 })
 
@@ -45,8 +46,8 @@ function handleClick(event: MouseEvent) {
 <template>
   <button
     class="x-dropdown-item"
-    :class="[`x-dropdown-item--${props.size}`, { 'is-disabled': props.disabled, 'is-divided': props.divided, 'is-active': props.active }]"
-    :style="itemStyle"
+    :class="['x-dropdown-item', { 'is-disabled': props.disabled, 'is-divided': props.divided, 'is-active': props.active }]"
+    :style="[itemStyle, createFontStyle(props.fontSize ?? 14)]"
     type="button"
     role="menuitem"
     :disabled="props.disabled"

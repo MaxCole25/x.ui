@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import DateTimePicker from './src/DateTimePicker.vue'
 
-export const XDateTimePicker = DateTimePicker
+export const XDateTimePicker = DateTimePicker as ComponentWithInstall<typeof DateTimePicker>
 
 export type { DateTimePickerProps } from './src/types'
 

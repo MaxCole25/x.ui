@@ -18,8 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@x-soft88/x-ui": ["src"],
-      "xl.ui": ["src"]
+      "@x-soft88/x-ui": ["src"]
     }
   },
   "include": ["src", "tests", "docs"],

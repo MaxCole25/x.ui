@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Popover from './src/Popover.vue'
 
-export const XPopover = Popover
+export const XPopover = Popover as ComponentWithInstall<typeof Popover>
 
 export type { PopoverProps } from './src/types'
 

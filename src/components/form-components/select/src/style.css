@@ -1,0 +1,20 @@
+.x-select {
+  box-sizing: border-box;
+  color: var(--x-select-text-color, var(--x-color-text));
+  font-family: var(--x-select-font-family, var(--x-font-family));
+  font-size: var(--x-select-font-size, 14px);
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  width: 100%;
+}
+
+.x-select {
+  --x-select-color: var(--x-form-color, var(--x-color-primary));
+  --x-select-active-border-color: var(--x-select-color);
+  --x-select-border-color: var(--x-form-border-color, #dcdfe6);
+  --x-select-hover-border-color: var(--x-form-hover-border-color, #c0c4cc);
+  --x-select-radius: var(--x-form-radius, 6px);
+  --x-select-bg: var(--x-color-surface);
+}

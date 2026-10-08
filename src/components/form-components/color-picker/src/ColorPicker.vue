@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import XPopover from '../../../feedback-components/popover'
@@ -12,13 +13,14 @@ defineOptions({
 const props = withDefaults(defineProps<ColorPickerProps>(), {
   modelValue: '#1264f4',
   disabled: false,
-  panelMode: 'inline',
+  panelMode: 'popover',
   hideInlinePanel: false,
   showValue: true,
   showActiveBorder: true
 })
 
 const colorPickerStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   '--x-color-picker-width': toCssSize(props.width),
   '--x-color-picker-padding': toCssSize(props.padding)
@@ -54,9 +56,17 @@ const commit = (value: string) => {
     :class="{ 'is-disabled': props.disabled, 'is-active-border-hidden': !props.showActiveBorder, 'is-value-hidden': !props.showValue }"
     :style="colorPickerStyle"
   >
-    <span v-if="shouldUsePopoverPanel" class="x-color-picker__trigger" tabindex="0">
+    <span class="x-color-picker__trigger">
       <XPopover trigger="click" placement="bottom" :width="248" :show-arrow="false" content-plain :disabled="props.disabled">
-        <span class="x-color-picker__chip" :class="{ 'is-transparent': isTransparentColor }" :style="{ backgroundColor: props.modelValue }" />
+        <button
+          type="button"
+          class="x-color-picker__chip"
+          :class="{ 'is-transparent': isTransparentColor }"
+          :style="{ backgroundColor: props.modelValue }"
+          :disabled="props.disabled"
+          aria-label="选择颜色"
+          @focus="emit('focus', $event)"
+        />
         <template #content>
           <slot name="panel">
             <XColorPickerPanel v-bind="panelProps" @update:model-value="commit" />
@@ -74,22 +84,7 @@ const commit = (value: string) => {
         @input="commit(($event.target as HTMLInputElement).value)"
       />
     </span>
-    <template v-else>
-      <span class="x-color-picker__trigger" tabindex="0">
-        <label class="x-color-picker__chip" :class="{ 'is-transparent': isTransparentColor }" :style="{ backgroundColor: props.modelValue }">
-          <input class="x-color-picker__native-input" :value="props.modelValue" type="color" :disabled="props.disabled" @focus="emit('focus', $event)" @input="commit(($event.target as HTMLInputElement).value)" />
-        </label>
-        <input
-          v-if="props.showValue"
-          class="x-color-picker__value-input"
-          :value="props.modelValue"
-          type="text"
-          :disabled="props.disabled"
-          @click.stop
-          @focus="emit('focus', $event)"
-          @input="commit(($event.target as HTMLInputElement).value)"
-        />
-      </span>
+    <template v-if="!shouldUsePopoverPanel">
       <slot name="panel">
         <XColorPickerPanel v-bind="panelProps" @update:model-value="commit" />
       </slot>

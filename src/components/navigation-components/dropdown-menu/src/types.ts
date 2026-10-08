@@ -1,8 +1,7 @@
-import type { XSize } from '../../../_utils/size'
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
 export interface DropdownMenuProps extends ElementStyleProps {
-  size?: XSize
+  fontSize?: number
   width?: number | string
   maxHeight?: number | string
   minWidth?: number | string

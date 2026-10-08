@@ -1,9 +1,9 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
-import type { XSize } from '../../../_utils/size'
+import type { FontSize } from '../../../_utils/size'
 import type { IconVariant } from '../../../basic-components/icon'
 
 export type AvatarShape = 'circle' | 'square'
-export type AvatarSize = XSize
+export type AvatarFontSize = FontSize
 
 export interface AvatarProps extends ElementStyleProps {
   src?: string
@@ -15,7 +15,7 @@ export interface AvatarProps extends ElementStyleProps {
   iconColor?: string
   iconTitle?: string
   iconSpin?: boolean
-  size?: AvatarSize
+  fontSize?: number
   avatarSize?: number | string
   shape?: AvatarShape
   avatarBackgroundColor?: string

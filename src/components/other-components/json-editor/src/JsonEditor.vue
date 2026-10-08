@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import type { JsonEditorProps } from './types'
 
@@ -112,7 +113,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="x-json-editor">
+  <section class="x-json-editor" :style="createFontStyle(props.fontSize ?? 14)">
     <div class="x-json-editor__toolbar">
       <span>{{ props.title }}</span>
       <button type="button" @click="formatValue">格式化</button>

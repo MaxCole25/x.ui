@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey, formItemContextKey } from '../../../form-components/form/src/context'
@@ -18,7 +19,7 @@ const props = withDefaults(defineProps<BaseInputProps>(), {
   formatOnBlur: true,
   autoHeight: false,
   hideClearButton: false,
-  size: undefined,
+  fontSize: undefined,
   status: 'default',
   showActiveBorder: true
 })
@@ -39,7 +40,7 @@ const form = inject(formContextKey, null)
 const formItem = inject(formItemContextKey, null)
 
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const nativeId = computed(() => props.id ?? formItem?.id)
 const inputValue = computed(() => props.modelValue ?? '')
 const hasValue = computed(() => inputValue.value !== '')
@@ -58,11 +59,11 @@ const inputStyle = computed(() => ({
   '--x-base-input-clear-icon-size': toCssSize(props.clearIconSize),
   '--x-base-input-disabled-bg': props.disabledBackgroundColor,
   '--x-base-input-disabled-text-color': props.disabledTextColor,
-  '--x-base-input-radius': props.radius,
+  '--x-base-input-radius': toCssSize(props.radius),
   '--x-base-input-bg': props.inputBackgroundColor ?? props.backgroundColor,
   '--x-base-input-text-color': props.textColor,
   '--x-base-input-font-family': props.fontFamily,
-  '--x-base-input-font-size': toCssSize(props.fontSize),
+  '--x-base-input-font-size': toCssSize(mergedSize.value),
   '--x-base-input-width': toCssSize(props.width),
   '--x-base-input-height': props.autoHeight ? 'auto' : toCssSize(props.height),
   '--x-base-input-padding': toCssSize(props.padding),
@@ -137,7 +138,7 @@ const handleKeyup = (event: KeyboardEvent) => {
   <div
     class="x-base-input"
     :class="[
-      `x-base-input--${mergedSize}`,
+      'x-base-input',
       `x-base-input--${props.status}`,
       {
         'is-disabled': mergedDisabled,
@@ -148,7 +149,7 @@ const handleKeyup = (event: KeyboardEvent) => {
         'has-suffix': Boolean(props.suffix !== undefined || $slots.suffix || (props.clearable && !props.hideClearButton))
       }
     ]"
-    :style="inputStyle"
+    :style="[inputStyle, createFontStyle(mergedSize)]"
   >
     <span v-if="props.prefix || $slots.prefix" class="x-base-input__affix x-base-input__prefix">
       <slot name="prefix">{{ props.prefix }}</slot>

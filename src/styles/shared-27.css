@@ -1,0 +1,14 @@
+.x-input-number.is-disabled,
+.x-autocomplete.is-disabled .x-autocomplete__control,
+.x-cascader.is-disabled .x-cascader__control,
+.x-color-picker.is-disabled .x-color-picker__trigger,
+.x-slider.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.x-input-number.is-disabled,
+.x-autocomplete.is-disabled .x-autocomplete__control,
+.x-cascader.is-disabled .x-cascader__control {
+  background: var(--x-cascader-disabled-bg, #f5f7fa);
+}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, useSlots } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import type { DividerProps } from './types'
@@ -17,6 +18,7 @@ const slots = useSlots()
 const hasDividerText = computed(() => props.direction === 'horizontal' && Boolean(slots.default))
 
 const dividerStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   '--x-divider-margin': toCssSize(props.margin),
   '--x-divider-thickness': toCssSize(props.thickness),

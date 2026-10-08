@@ -1,0 +1,5 @@
+.x-autocomplete:not(.is-active-border-hidden) .x-autocomplete__control:focus-within {
+  border-color: var(--x-autocomplete-active-border-color, var(--x-color-primary));
+  box-shadow: var(--x-shadow-focus);
+  outline: none;
+}

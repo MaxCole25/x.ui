@@ -1,163 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const columns = [
-  { key: 'label', label: '名称', minWidth: 180 },
-  { key: 'path', label: '路径', minWidth: 220 }
-]
-
-const rows = [
-  {
-    id: 'sales',
-    label: '销售',
-    path: '/销售',
-    children: [
-      { id: 'sales-quote', label: '报价表', path: '/auto-pages/bao-jia-biao' },
-      { id: 'sales-customer', label: '客户表', path: '/auto-pages/ke-hu-biao' },
-      { id: 'sales-contract', label: '合同表', path: '/auto-pages/he-tong-biao' },
-      { id: 'sales-product', label: '物品表', path: '/auto-pages/wu-pin-biao' }
-    ]
-  },
-  { id: 'workbench', label: '工作台', path: '/workbench' },
-  {
-    id: 'task-center',
-    label: '任务中心',
-    path: '/task-center',
-    children: [
-      { id: 'task-settings', label: '任务设置', path: '/task-center/settings' },
-      { id: 'my-tasks', label: '我的任务', path: '/task-center/tasks' }
-    ]
-  },
-  {
-    id: 'system',
-    label: '用户权限',
-    path: '/system/user-permission',
-    children: [
-      { id: 'users', label: '用户管理', path: '/system/user-permission/users' },
-      { id: 'roles', label: '角色管理', path: '/system/user-permission/roles' }
-    ]
-  },
-  {
-    id: 'dev-settings',
-    label: '开发设置',
-    path: '/dev-settings',
-    children: [
-      { id: 'menu', label: '菜单管理', path: '/menu' },
-      { id: 'tables', label: '数据表管理', path: '/data-management/tables' }
-    ]
-  }
-]
-
-const expandedRowKeys = ref<Array<string | number>>(['sales', 'task-center', 'system', 'dev-settings'])
-const selectedRowKeys = ref<Array<string | number>>([])
-
-const basicCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const columns = [
-  { key: 'label', label: '名称', minWidth: 180 },
-  { key: 'path', label: '路径', minWidth: 220 }
-]
-
-const rows = [
-  {
-    id: 'sales',
-    label: '销售',
-    path: '/销售',
-    children: [
-      { id: 'sales-quote', label: '报价表', path: '/auto-pages/bao-jia-biao' },
-      { id: 'sales-customer', label: '客户表', path: '/auto-pages/ke-hu-biao' }
-    ]
-  },
-  { id: 'workbench', label: '工作台', path: '/workbench' }
-]
-
-const expandedRowKeys = ref<Array<string | number>>(['sales'])
-const selectedRowKeys = ref<Array<string | number>>([])
-<\/script>
-
-<XTreeTable
-  v-model:expanded-row-keys="expandedRowKeys"
-  v-model:selected-row-keys="selectedRowKeys"
-  :data="rows"
-  :columns="columns"
-  show-selection
-  :show-header="false"
-/>`
-
-const headerCode = `\x3Cscript setup lang="ts">
-const columns = [
-  { key: 'label', label: '名称', minWidth: 180 },
-  { key: 'path', label: '路径', minWidth: 220 }
-]
-
-const rows = [
-  {
-    id: 'system',
-    label: '用户权限',
-    path: '/system/user-permission',
-    children: [
-      { id: 'users', label: '用户管理', path: '/system/user-permission/users' },
-      { id: 'roles', label: '角色管理', path: '/system/user-permission/roles' }
-    ]
-  }
-]
-<\/script>
-
-<XTreeTable :data="rows" :columns="columns" default-expand-all />`
+import Example1 from '../examples/tree-table/Example1.vue'
+import Example1Source from '../examples/tree-table/Example1.vue?raw'
+import Example2 from '../examples/tree-table/Example2.vue'
+import Example2Source from '../examples/tree-table/Example2.vue?raw'
 </script>
-
 # 树表 TreeTable
 
 `XTreeTable` 用于展示树形层级和多列字段，适合菜单、页面、权限、目录、分类等数据。首版聚焦展示、展开收起和独立行勾选。
 
-## 无表头菜单
+## 使用示例
+
+### 无表头菜单
 
 `show-header="false"` 可以得到接近菜单配置页的紧凑树表。父级行左侧会显示展开按钮，点击后展开或收起子级。
 
-<XDocDemo title="无表头菜单" :code="basicCode">
-  <ClientOnly>
-    <XTreeTable
-      v-model:expanded-row-keys="expandedRowKeys"
-      v-model:selected-row-keys="selectedRowKeys"
-      :data="rows"
-      :columns="columns"
-      show-selection
-      :show-header="false"
-    />
-  </ClientOnly>
+<XDocDemo title="无表头菜单" :code="Example1Source">
+  <Example1 />
 </XDocDemo>
 
-## 显示表头
+### 显示表头
 
 保留表头时，树形列仍由 `treeColumnKey` 控制。默认使用第一列作为树形列。
 
-<XDocDemo title="显示表头" :code="headerCode">
-  <ClientOnly>
-    <XTreeTable :data="rows" :columns="columns" default-expand-all />
-  </ClientOnly>
+<XDocDemo title="显示表头" :code="Example2Source">
+  <Example2 />
 </XDocDemo>
 
-## Props
-
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| data | 树表数据 | `TreeTableRowData[]` | 必填 |
-| columns | 列配置 | `TreeTableColumn[]` | 必填 |
-| rowKey | 行唯一键字段 | `string` | `'id'` |
-| childrenKey | 子级字段 | `string` | `'children'` |
-| treeColumnKey | 承载缩进和展开按钮的列，不传时使用第一列 | `string` | 第一列 key |
-| labelKey | 树形列兜底文本字段 | `string` | `'label'` |
-| size | 尺寸规格 | `'sm' \| 'md' \| 'lg'` | `'md'` |
-| showHeader | 是否显示表头 | `boolean` | `true` |
-| showSelection | 是否显示选择列 | `boolean` | `false` |
-| selectedRowKeys | 选中行 key，支持 `v-model:selected-row-keys` | `Array<string \| number>` | - |
-| expandedRowKeys | 展开行 key，支持 `v-model:expanded-row-keys` | `Array<string \| number>` | - |
-| defaultExpandedRowKeys | 非受控模式下默认展开的行 key | `Array<string \| number>` | - |
-| defaultExpandAll | 非受控模式下是否默认展开全部 | `boolean` | `false` |
-| emptyText | 空数据文案 | `string` | `'暂无数据'` |
-
-## TreeTableColumn
+### TreeTableColumn
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
@@ -168,33 +37,212 @@ const rows = [
 | align | 内容对齐方式 | `'left' \| 'center' \| 'right'` | `'left'` |
 | formatter | 单元格格式化函数 | `(value, row) => string` | - |
 
-## Events
+## 属性
 
-| 名称 | 说明 | 参数 |
+默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
+
+### 数据与绑定
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `data` | 树表数据 | `Row[]` | `—` | — |
+| `rowKey` | 行唯一键字段 | `string` | `'id'` | — |
+
+### 内容与展示
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `labelKey` | 树形列兜底文本字段 | `string` | `'label'` | — |
+| `emptyText` | 空数据文案 | `string` | `'暂无数据'` | — |
+
+### 外观与排版
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `fontSize` | 字号，数字单位 px，不影响高度、内边距和圆角 | `number` | `14` | px |
+
+### 状态与交互
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `showHeader` | 是否显示表头 | `boolean` | `true` | — |
+| `showSelection` | 是否显示选择列 | `boolean` | `false` | — |
+
+### 组件专有功能
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `columns` | 列配置 | `TreeTableColumn<Row>[]` | `—` | — |
+| `childrenKey` | 子级字段 | `string` | `'children'` | — |
+| `treeColumnKey` | 承载缩进和展开按钮的列，不传时使用第一列 | `string` | `undefined` | — |
+| `selectedRowKeys` | 选中行 key，支持 `v-model:selected-row-keys` | `TreeTableRowKey[]` | `undefined` | — |
+| `expandedRowKeys` | 展开行 key，支持 `v-model:expanded-row-keys` | `TreeTableRowKey[]` | `undefined` | — |
+| `defaultExpandedRowKeys` | 非受控模式下默认展开的行 key | `TreeTableRowKey[]` | `undefined` | — |
+| `defaultExpandAll` | 非受控模式下是否默认展开全部 | `boolean` | `false` | — |
+
+## 事件
+
+### 数据与绑定
+
+| 事件名 | 触发说明 | 参数 |
 | --- | --- | --- |
-| update:selectedRowKeys | 选中行变化时触发 | `string[]` |
-| selection-change | 选中行变化时触发，包含选中 key 和行数据 | `{ keys, rows }` |
-| update:expandedRowKeys | 展开行变化时触发 | `string[]` |
-| expand-change | 单行展开或收起时触发 | `{ row, rowKey, expanded, expandedRowKeys }` |
-| row-click | 点击行时触发 | `{ row, rowKey, rowIndex, event }` |
+| `update:selectedRowKeys` | 选中行变化时触发 | `[value: string[]]` |
+| `update:expandedRowKeys` | 展开行变化时触发 | `[value: string[]]` |
 
-## Slots
+### 状态与交互
 
-| 名称 | 说明 | 参数 |
+| 事件名 | 触发说明 | 参数 |
 | --- | --- | --- |
-| tree-cell | 自定义树形列内容 | `{ row, rowKey, rowIndex, depth, expanded, hasChildren }` |
-| cell-[key] | 自定义普通列单元格 | `{ row, value, column, rowIndex }` |
+| `selection-change` | 选中行变化时触发，包含选中 key 和行数据 | `[value: TreeTableSelectionChangePayload]` |
+| `expand-change` | 单行展开或收起时触发 | `[value: TreeTableExpandChangePayload]` |
+| `row-click` | 点击行时触发 | `[value: TreeTableRowClickPayload]` |
 
-## Exposes
+## 插槽
 
-| 名称 | 说明 | 类型 |
+### 组件专有功能
+
+| 插槽名 | 说明 | 作用域参数 |
 | --- | --- | --- |
-| expandAll | 展开全部有子级的行 | `() => void` |
-| collapseAll | 收起全部行 | `() => void` |
-| toggleRow | 切换指定行展开状态 | `(rowKey) => void` |
-| getExpandedRowKeys | 获取当前展开行 key | `() => string[]` |
+| `tree-cell` | 自定义树形列内容 | `TreeTableRowInfo` |
+| `cell-${key}` | cell-${key} 插槽 | `row: TreeTableRowData; value: unknown; column: TreeTableColumn; rowIndex: number` |
 
-## 手动验收建议
+## 实例方法
+
+### 组件专有功能
+
+| 方法名 | 说明 | 签名 |
+| --- | --- | --- |
+| `expandAll` | 展开全部有子级的行 | `() => void` |
+| `collapseAll` | 收起全部行 | `() => void` |
+| `toggleRow` | 切换指定行展开状态 | `(rowKey: TreeTableRowKey) => void` |
+| `getExpandedRowKeys` | 获取当前展开行 key | `() => string[]` |
+
+## 公开类型
+
+以下类型可从 `@x-soft88/x-ui` 导入。
+
+### TreeTableAlign
+
+```ts
+export type TreeTableAlign = 'left' | 'center' | 'right'
+```
+
+### TreeTableRowKey
+
+```ts
+export type TreeTableRowKey = string | number
+```
+
+### TreeTableColumn
+
+```ts
+export interface TreeTableColumn<Row extends TreeTableRowData = TreeTableRowData> {
+  key: string
+  label: string
+  width?: number | string
+  minWidth?: number | string
+  align?: TreeTableAlign
+  formatter?: (value: unknown, row: Row) => string
+}
+```
+
+### TreeTableRowData
+
+```ts
+export interface TreeTableRowData {
+  id: TreeTableRowKey
+  label?: string
+  children?: TreeTableRowData[]
+  [key: string]: unknown
+}
+```
+
+### TreeTableRowInfo
+
+```ts
+export interface TreeTableRowInfo<Row extends TreeTableRowData = TreeTableRowData> {
+  row: Row
+  rowKey: string
+  rowIndex: number
+  depth: number
+  expanded: boolean
+  hasChildren: boolean
+}
+```
+
+### TreeTableSelectionChangePayload
+
+```ts
+export interface TreeTableSelectionChangePayload<Row extends TreeTableRowData = TreeTableRowData> {
+  keys: string[]
+  rows: Row[]
+}
+```
+
+### TreeTableExpandChangePayload
+
+```ts
+export interface TreeTableExpandChangePayload<Row extends TreeTableRowData = TreeTableRowData> {
+  row: Row
+  rowKey: string
+  expanded: boolean
+  expandedRowKeys: string[]
+}
+```
+
+### TreeTableRowClickPayload
+
+```ts
+export interface TreeTableRowClickPayload<Row extends TreeTableRowData = TreeTableRowData> {
+  row: Row
+  rowKey: string
+  rowIndex: number
+  event: MouseEvent
+}
+```
+
+### TreeTableProps
+
+```ts
+export interface TreeTableProps<Row extends TreeTableRowData = TreeTableRowData> {
+  data: Row[]
+  columns: TreeTableColumn<Row>[]
+  rowKey?: string
+  childrenKey?: string
+  treeColumnKey?: string
+  labelKey?: string
+  fontSize?: number
+  showHeader?: boolean
+  showSelection?: boolean
+  selectedRowKeys?: TreeTableRowKey[]
+  expandedRowKeys?: TreeTableRowKey[]
+  defaultExpandedRowKeys?: TreeTableRowKey[]
+  defaultExpandAll?: boolean
+  emptyText?: string
+}
+```
+
+### TreeTableSlots
+
+```ts
+export interface TreeTableSlots<Row extends TreeTableRowData = TreeTableRowData> {
+  'tree-cell'?: (props: TreeTableRowInfo<Row>) => unknown
+  [key: `cell-${string}`]: ((props: { row: Row; value: unknown; column: TreeTableColumn<Row>; rowIndex: number }) => unknown) | undefined
+}
+```
+
+### TreeTableExpose
+
+```ts
+export interface TreeTableExpose {
+  expandAll: () => void
+  collapseAll: () => void
+  toggleRow: (rowKey: TreeTableRowKey) => void
+  getExpandedRowKeys: () => string[]
+}
+```
+
+## 验收说明
 
 - 检查 `show-header="false"` 时是否呈现为无表头菜单风格。
 - 点击父级展开按钮，确认子级行显示或隐藏。

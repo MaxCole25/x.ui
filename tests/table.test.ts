@@ -1,8 +1,9 @@
+import { readCssSource } from './_utils/readCssSource'
 import { flushPromises, mount } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { h, nextTick } from 'vue'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as XLSX from 'xlsx'
 import { XAutocomplete, XSelect, XTable } from '../src'
 import type { TableColumn } from '../src'
@@ -14,17 +15,22 @@ describe('XTable', () => {
     { key: 'count', label: '数量', width: 96, align: 'right', formatter: (value) => `${value} 个` }
   ]
 
-  const data = [
+  const initialData = [
     { id: 1, name: '工作台', status: '启用', count: 12 },
     { id: 2, name: '成员管理', status: '停用', count: 5 }
   ]
+
+  let data = initialData.map(row => ({ ...row }))
+  beforeEach(() => {
+    data = initialData.map(row => ({ ...row }))
+  })
 
   function readTableSource() {
     return readFileSync(resolve(__dirname, '../src/components/display-components/table/src/Table.vue'), 'utf8').replace(/\r\n/g, '\n')
   }
 
   function readGlobalStyles() {
-    return readFileSync(resolve(__dirname, '../src/styles/index.css'), 'utf8').replace(/\r\n/g, '\n')
+    return readCssSource().replace(/\r\n/g, '\n')
   }
 
   function getCssRule(source: string, selector: string) {
@@ -1103,6 +1109,7 @@ describe('XTable', () => {
       props: {
         columns,
         data,
+        editableDataStrategy: 'emit',
         editable: true
       }
     })
@@ -1159,6 +1166,7 @@ describe('XTable', () => {
       props: {
         columns,
         data,
+        editableDataStrategy: 'emit',
         editable: true
       }
     })
@@ -1175,6 +1183,7 @@ describe('XTable', () => {
       props: {
         columns,
         data,
+        editableDataStrategy: 'emit',
         editable: true,
         showSelection: true,
         selectionMode: 'cell',
@@ -1195,6 +1204,7 @@ describe('XTable', () => {
       props: {
         columns,
         data,
+        editableDataStrategy: 'emit',
         editable: true,
         showSelection: true,
         selectionMode: 'cell',
@@ -1217,6 +1227,7 @@ describe('XTable', () => {
       props: {
         columns,
         data,
+        editableDataStrategy: 'emit',
         editable: true,
         showSelection: true,
         showAppendRowButton: true,
@@ -1607,6 +1618,7 @@ describe('XTable', () => {
       props: {
         columns: computedColumns,
         data,
+        editableDataStrategy: 'emit',
         editable: true,
         showSelection: true,
         selectionMode: 'cell',

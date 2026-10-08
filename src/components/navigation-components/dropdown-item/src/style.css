@@ -1,0 +1,45 @@
+.x-dropdown-item {
+  align-items: center;
+  background: transparent;
+  border: var(--x-element-border-width, 0) solid var(--x-element-border-color, transparent);
+  border-radius: var(--x-dropdown-item-radius, var(--x-radius-sm));
+  color: var(--x-element-text, #606266);
+  cursor: pointer;
+  display: flex;
+  font: 14px/1.4 var(--x-font-family);
+  gap: 8px;
+  min-height: var(--x-dropdown-item-height, 32px);
+  min-width: 0;
+  padding: var(--x-dropdown-item-padding, 0 10px);
+  text-align: left;
+  width: 100%;
+}
+
+.x-dropdown-item:hover:not(:disabled) {
+  background: var(--x-dropdown-item-hover-bg, var(--x-dropdown-hover-bg, var(--x-color-primary-soft)));
+  color: var(--x-dropdown-item-hover-text, var(--x-dropdown-hover-text, var(--x-color-primary)));
+}
+
+.x-dropdown-item.is-active {
+  background: var(--x-dropdown-item-active-bg, var(--x-dropdown-active-bg, var(--x-color-primary)));
+  color: var(--x-dropdown-item-active-text, var(--x-dropdown-active-text, #fff));
+}
+
+.x-dropdown-item {
+  font-size: 14px;
+  min-height: var(--x-dropdown-item-height, 32px);
+}
+
+.x-dropdown-item.is-disabled,
+.x-dropdown-item:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.x-dropdown-item.is-divided {
+  border-top: 1px solid var(--x-dropdown-item-divided-color, #edf1f7);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: 6px;
+  padding-top: 6px;
+}

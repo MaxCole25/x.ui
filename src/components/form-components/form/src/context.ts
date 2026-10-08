@@ -1,10 +1,10 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { FormControlSize, FormItemRule, FormLabelPosition, FormPublicSize } from './types'
+import type { FormControlFontSize, FormItemRule, FormLabelPosition, FormPublicFontSize } from './types'
 
 export interface FormContext {
   disabled: Ref<boolean>
-  size: Ref<FormControlSize>
-  publicSize: Ref<FormPublicSize>
+  fontSize: Ref<FormControlFontSize>
+  publicSize: Ref<FormPublicFontSize>
   labelWidth: Ref<string | number>
   labelPosition: Ref<FormLabelPosition>
   model: Ref<Record<string, unknown> | undefined>

@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type MessageType = 'success' | 'warning' | 'info' | 'error'
 export type MessagePlacement = 'top' | 'top-left' | 'top-right' | 'bottom' | 'bottom-left' | 'bottom-right'
@@ -7,7 +6,7 @@ export interface MessageProps {
   id?: string
   message?: string
   status?: MessageType
-  size?: XSize
+  fontSize?: number
   duration?: number
   showClose?: boolean
   plain?: boolean

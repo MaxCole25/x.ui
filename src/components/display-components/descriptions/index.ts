@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Descriptions from './src/Descriptions.vue'
 
-export const XDescriptions = Descriptions
+export const XDescriptions = Descriptions as ComponentWithInstall<typeof Descriptions>
 
 export type { DescriptionsProps } from './src/types'
 

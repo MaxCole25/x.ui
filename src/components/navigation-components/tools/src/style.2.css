@@ -1,0 +1,16 @@
+.x-tools__icon {
+  color: currentColor;
+  font-size: 18px;
+}
+
+.x-tools__name {
+  display: block;
+  font-size: 12px;
+  line-height: 1.2;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

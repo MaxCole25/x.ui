@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Skeleton from './src/Skeleton.vue'
 
-export const XSkeleton = Skeleton
+export const XSkeleton = Skeleton as ComponentWithInstall<typeof Skeleton>
 
 export type { SkeletonProps } from './src/types'
 

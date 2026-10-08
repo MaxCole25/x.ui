@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src",
+    "docs",
+    "docs/.vitepress/**/*.ts",
+    "docs/.vitepress/**/*.vue"
+  ],
+  "exclude": [
+    "src/**/*.story.vue",
+    "src/components/_story",
+    "tests",
+    "dist",
+    "docs/.vitepress/dist"
+  ]
+}

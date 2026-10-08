@@ -123,10 +123,10 @@ describe('XBrick', () => {
     expect(items[1].attributes('style')).toContain('flex: 1 1 0')
   })
 
-  it('lets size override width or height on the main axis', () => {
+  it('lets itemSize override width or height on the main axis', () => {
     const wrapper = mount(XBrickItem, {
       props: {
-        size: '160px',
+        itemSize: '160px',
         width: '240px',
         height: '80px'
       }
@@ -275,7 +275,7 @@ describe('XBrick', () => {
       `
     })
 
-    expect(wrapper.find('.x-brick').attributes('style')).toContain('--x-element-text: #123456')
+    expect(wrapper.find('.x-brick').attributes('style')).toContain('--x-brick-text: #123456')
   })
 
   it('keeps item background transparent when brick background is configured', () => {

@@ -1,0 +1,22 @@
+.x-brick-item {
+  background: var(--x-element-bg, transparent);
+  border: var(--x-element-border-width, 0) solid var(--x-element-border-color, transparent);
+  box-sizing: border-box;
+  color: var(--x-element-text, var(--x-color-text));
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  position: relative;
+}
+
+.x-brick-item--placeholder {
+  background:
+    linear-gradient(135deg, rgba(18, 100, 244, 0.08) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(18, 100, 244, 0.08) 25%, transparent 25%),
+    var(--x-color-surface, #fff);
+  background-position:
+    8px 0,
+    8px 0;
+  background-size: 16px 16px;
+  border: 1px dashed var(--x-color-border, #d1d9e6);
+}

@@ -1,0 +1,22 @@
+.x-grid {
+  align-items: var(--x-grid-align-items, stretch);
+  background: var(--x-grid-bg, transparent);
+  border: var(--x-grid-border-width, 0) var(--x-grid-border-style, solid) var(--x-grid-border-color, transparent);
+  border-radius: var(--x-grid-radius, 0);
+  box-sizing: border-box;
+  color: var(--x-grid-text-color, var(--x-color-text));
+  column-gap: var(--x-grid-column-gap, var(--x-grid-gap, 0));
+  display: grid;
+  font-family: var(--x-font-family);
+  grid-auto-columns: var(--x-grid-auto-columns, auto);
+  grid-auto-rows: var(--x-grid-auto-rows, auto);
+  grid-template-columns: var(--x-grid-columns, repeat(3, minmax(0, 1fr)));
+  grid-template-rows: var(--x-grid-rows, none);
+  height: var(--x-grid-height, auto);
+  justify-items: var(--x-grid-justify-items, stretch);
+  min-height: var(--x-grid-min-height, 0);
+  min-width: var(--x-grid-min-width, 0);
+  padding: var(--x-grid-padding, 0);
+  row-gap: var(--x-grid-row-gap, var(--x-grid-gap, 0));
+  width: var(--x-grid-width, 100%);
+}

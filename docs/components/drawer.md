@@ -1,78 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const visible = ref(false)
-
-const drawerBasicCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const visible = ref(false)
-<\/script>
-
-<div>
-      <button
-        type="button"
-        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
-        @click="visible = true"
-      >
-        打开抽屉
-      </button><XDrawer v-model="visible" title="配置面板" panel-size="360px"><div class="x-demo-column"><p>抽屉内容</p><p class="x-demo-label">适合承载配置项、详情说明和操作入口。</p></div></XDrawer>
-    </div>`
+import Example1 from '../examples/drawer/Example1.vue'
+import Example1Source from '../examples/drawer/Example1.vue?raw'
 </script>
-
 # 抽屉 Drawer
 
 从屏幕边缘滑出的容器，适合配置面板、详情面板和页面构建器属性面板。
 
-## 基础用法
+## 使用示例
 
-<XDocDemo title="基础用法" :code="drawerBasicCode">
-  <ClientOnly>
-    <div>
-      <button
-        type="button"
-        style="height: 30px; min-width: 120px; border: 1px solid var(--x-color-primary); border-radius: 6px; background: var(--x-color-primary); color: #fff; cursor: pointer"
-        @click="visible = true"
-      >
-        打开抽屉
-      </button><XDrawer v-model="visible" title="配置面板" panel-size="360px"><div class="x-demo-column"><p>抽屉内容</p><p class="x-demo-label">适合承载配置项、详情说明和操作入口。</p></div></XDrawer>
-    </div>
-  </ClientOnly>
+### 基础用法
+
+<XDocDemo title="基础用法" :code="Example1Source">
+  <Example1 />
 </XDocDemo>
 
-## Props
-
-| 名称 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| modelValue | 显示状态 | `boolean` | `false` |
-| title | 标题 | `string` | - |
-| direction | 展开方向 | `rtl \| ltr \| ttb \| btt` | `rtl` |
-| size | 尺寸规格，仅影响字号和关闭按钮尺寸，不影响头部、正文、底部留白与面板圆角 | `sm \| md \| lg` | `md` |
-| panelSize | 面板宽度或高度，左右抽屉控制宽度，上下抽屉控制高度 | `number \| string` | `30%` |
-| withHeader | 是否显示头部 | `boolean` | `true` |
-| showClose | 是否显示关闭按钮 | `boolean` | `true` |
-| closeOnMaskClick | 点击遮罩是否关闭 | `boolean` | `true` |
-| destroyOnClose | 关闭后是否销毁内容 | `boolean` | `false` |
-| zIndex | 遮罩层级 | `number` | `1800` |
-| teleported | 是否将抽屉挂载到 `teleportTo` | `boolean` | `true` |
-| teleportTo | 抽屉挂载目标 | `string` | `body` |
-| backgroundColor | 面板背景色，会写入 `--x-drawer-bg` 和 `--x-element-bg` | `string` | - |
-| textColor | 面板文字色，会写入 `--x-drawer-text` 和 `--x-element-text` | `string` | - |
-| borderColor | 面板边框色，会写入 `--x-drawer-border-color` 和 `--x-element-border-color` | `string` | - |
-| borderWidth | 面板边框宽度，会写入 `--x-drawer-border-width` 和 `--x-element-border-width` | `number \| string` | - |
-| maskColor | 遮罩背景色 | `string` | - |
-| titleColor | 标题文字色 | `string` | - |
-| headerBackgroundColor | 头部背景色 | `string` | - |
-| bodyBackgroundColor | 内容区背景色 | `string` | - |
-| footerBackgroundColor | 底部背景色 | `string` | - |
-| headerBorderColor | 头部分割线颜色 | `string` | - |
-| footerBorderColor | 底部分割线颜色 | `string` | - |
-| closeIconColor | 关闭按钮图标颜色 | `string` | - |
-| closeIconHoverColor | 关闭按钮悬浮图标颜色 | `string` | - |
-| closeIconHoverBackgroundColor | 关闭按钮悬浮背景色 | `string` | - |
-| shadow | 面板阴影 | `string` | - |
-
-## 主题变量
+### 主题变量
 
 `XDrawer` 的默认颜色可由全局 CSS 变量统一控制，单个实例传入 props 时优先级更高。
 
@@ -98,31 +40,138 @@ const visible = ref(false)
 | `--x-drawer-shadow` | 面板阴影 |
 | `--x-drawer-z-index` | 遮罩层级 |
 
-## Events
+## 属性
 
-| 名称 | 说明 |
-| --- | --- |
-| update:modelValue | 显示状态变化 |
-| open | 打开动画结束后触发 |
-| close | 请求关闭时触发 |
+默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
 
-## Slots
+### 数据与绑定
 
-| 名称 | 说明 |
-| --- | --- |
-| default | 抽屉主体内容 |
-| header | 自定义头部内容 |
-| footer | 自定义底部内容 |
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `modelValue` | 显示状态 | `boolean` | `—` | — |
 
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
-## 公开属性补充
+### 内容与展示
 
-以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `title` | 标题 | `string` | `''` | — |
 
-### XDrawer / `DrawerProps`
+### 布局与尺寸
 
-| 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `direction` | 展开方向 | `DrawerDirection` | `'rtl'` | — |
+| `panelSize` | 面板宽度或高度，左右抽屉控制宽度，上下抽屉控制高度 | `number \| string` | `'30%'` | 数字为 px；字符串使用 CSS 单位 |
 
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->
+### 外观与排版
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `fontSize` | 字号，数字单位 px，不影响高度、内边距和圆角 | `number` | `undefined` | px |
+| `titleColor` | 标题文字色 | `string` | `—` | — |
+| `headerBackgroundColor` | 头部背景色 | `string` | `—` | — |
+| `bodyBackgroundColor` | 内容区背景色 | `string` | `—` | — |
+| `footerBackgroundColor` | 底部背景色 | `string` | `—` | — |
+| `headerBorderColor` | 头部分割线颜色 | `string` | `—` | — |
+| `footerBorderColor` | 底部分割线颜色 | `string` | `—` | — |
+| `closeIconColor` | 关闭按钮图标颜色 | `string` | `—` | — |
+| `closeIconHoverColor` | 关闭按钮悬浮图标颜色 | `string` | `—` | — |
+| `closeIconHoverBackgroundColor` | 关闭按钮悬浮背景色 | `string` | `—` | — |
+| `shadow` | 面板阴影 | `string` | `—` | — |
+| `borderWidth` | 面板边框宽度，会写入 `--x-drawer-border-width` 和 `--x-element-border-width` | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `borderColor` | 面板边框色，会写入 `--x-drawer-border-color` 和 `--x-element-border-color` | `string` | `—` | — |
+| `radius` | 整体圆角，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `backgroundColor` | 面板背景色，会写入 `--x-drawer-bg` 和 `--x-element-bg` | `string` | `—` | — |
+| `textColor` | 面板文字色，会写入 `--x-drawer-text` 和 `--x-element-text` | `string` | `—` | — |
+
+### 状态与交互
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `showClose` | 是否显示关闭按钮 | `boolean` | `true` | — |
+| `destroyOnClose` | 关闭后是否销毁内容 | `boolean` | `false` | — |
+
+### 浮层与定位
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `closeOnMaskClick` | 点击遮罩是否关闭 | `boolean` | `true` | — |
+| `closeOnEsc` | 是否允许按 Esc 关闭；仅作用于最上层模态框 | `boolean` | `true` | — |
+| `maskColor` | 遮罩背景色 | `string` | `—` | — |
+| `teleported` | 是否将抽屉挂载到 `teleportTo` | `boolean` | `true` | — |
+| `teleportTo` | 抽屉挂载目标 | `string` | `'body'` | — |
+| `zIndex` | 遮罩层级 | `number` | `1800` | — |
+
+### 组件专有功能
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `withHeader` | 是否显示头部 | `boolean` | `true` | — |
+
+## 事件
+
+### 数据与绑定
+
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `update:modelValue` | 显示状态变化 | `[value: boolean]` |
+
+### 状态与交互
+
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `open` | 打开动画结束后触发 | `[]` |
+| `close` | 请求关闭时触发 | `[]` |
+
+## 插槽
+
+### 内容与展示
+
+| 插槽名 | 说明 | 作用域参数 |
+| --- | --- | --- |
+| `header` | 自定义头部内容 | `无作用域参数` |
+| `default` | 抽屉主体内容 | `无作用域参数` |
+| `footer` | 自定义底部内容 | `无作用域参数` |
+
+## 公开类型
+
+以下类型可从 `@x-soft88/x-ui` 导入。
+
+### DrawerDirection
+
+```ts
+export type DrawerDirection = 'rtl' | 'ltr' | 'ttb' | 'btt'
+```
+
+### DrawerProps
+
+```ts
+export interface DrawerProps extends ElementStyleProps, OverlayProps {
+  modelValue?: boolean
+  title?: string
+  direction?: DrawerDirection
+  fontSize?: number
+  panelSize?: number | string
+  withHeader?: boolean
+  showClose?: boolean
+  closeOnMaskClick?: boolean
+  closeOnEsc?: boolean
+  destroyOnClose?: boolean
+  maskColor?: string
+  titleColor?: string
+  headerBackgroundColor?: string
+  bodyBackgroundColor?: string
+  footerBackgroundColor?: string
+  headerBorderColor?: string
+  footerBorderColor?: string
+  closeIconColor?: string
+  closeIconHoverColor?: string
+  closeIconHoverBackgroundColor?: string
+  shadow?: string
+}
+```
+
+## 验收说明
+
+- 调整各功能分组中的属性，核对实际显示与默认值。
+- 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。

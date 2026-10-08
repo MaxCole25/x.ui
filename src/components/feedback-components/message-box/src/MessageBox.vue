@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { computed, ref, useId } from 'vue'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
+import { useModal } from '../../../_utils/useModal'
 import type { MessageBoxAction, MessageBoxProps } from './types'
 
 defineOptions({
@@ -12,11 +13,12 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   title: '提示',
   message: '',
   status: 'info',
-  size: undefined,
+  fontSize: undefined,
   showCancelButton: false,
   showConfirmButton: true,
   showClose: true,
   closeOnMaskClick: true,
+  closeOnEsc: true,
   confirmButtonText: '确定',
   cancelButtonText: '取消',
   distinguishCancelAndClose: false,
@@ -27,6 +29,7 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   maxWidth: 'calc(100vw - 32px)',
   zIndex: overlayZIndex.messageBox
 })
+const titleId = useId()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -55,8 +58,8 @@ const iconClass = computed(() => {
   }
   return iconMap[mergedStatus.value]
 })
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 
 const boxStyle = computed(() => ({
   '--x-message-box-width': typeof props.width === 'number' ? `${props.width}px` : props.width,
@@ -93,14 +96,16 @@ function finish(action: MessageBoxAction) {
 function onMaskClick() {
   if (props.closeOnMaskClick) finish(props.distinguishCancelAndClose ? 'close' : 'cancel')
 }
+const modalRef = ref<HTMLElement | null>(null)
+useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: () => finish(props.distinguishCancelAndClose ? 'close' : 'cancel') })
 </script>
 
 <template>
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <div v-if="visible" class="x-message-box__mask" :style="boxStyle" @click.self="onMaskClick">
-      <section class="x-message-box" :class="`x-message-box--${mergedSize}`" role="dialog" aria-modal="true" :aria-label="props.title">
+      <section ref="modalRef" tabindex="-1" :style="createFontStyle(mergedSize)" class="x-message-box" :class="'x-message-box'" role="dialog" aria-modal="true" :aria-labelledby="titleId" :aria-label="props.title">
         <header class="x-message-box__header">
-          <div class="x-message-box__title">
+          <div :id="titleId" class="x-message-box__title">
             <i class="x-message-box__icon" :class="[iconClass, `x-message-box__icon--${mergedStatus}`]" aria-hidden="true"></i>
             <slot name="title">{{ props.title }}</slot>
           </div>

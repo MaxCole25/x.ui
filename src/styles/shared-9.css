@@ -1,0 +1,12 @@
+.x-select__indicator,
+.x-autocomplete__indicator {
+  align-items: center;
+  color: #a8abb2;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 20px;
+  height: 20px;
+  justify-content: center;
+  position: relative;
+  width: 20px;
+}

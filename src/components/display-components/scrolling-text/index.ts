@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import ScrollingText from './src/ScrollingText.vue'
 
-export const XScrollingText = ScrollingText
+export const XScrollingText = ScrollingText as ComponentWithInstall<typeof ScrollingText>
 
 export type { ScrollingTextDisplayDirection, ScrollingTextFlowDirection, ScrollingTextProps } from './src/types'
 

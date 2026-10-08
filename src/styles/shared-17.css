@@ -1,0 +1,5 @@
+.x-checkbox:focus-within .x-checkbox__box,
+.x-radio:focus-within .x-radio__dot,
+.x-radio-button:focus-within {
+  box-shadow: var(--x-shadow-focus);
+}

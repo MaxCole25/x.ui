@@ -1,0 +1,3 @@
+.x-radio:hover:not(.is-disabled) .x-radio__dot {
+  border-color: var(--x-radio-hover-border-color);
+}

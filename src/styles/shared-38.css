@@ -1,0 +1,16 @@
+.x-date-time-picker__panel-shell .x-date-panel {
+  border: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.x-date-time-picker__panel-shell .x-date-panel__header {
+  display: none;
+}
+
+.x-date-time-picker__panel-shell .x-date-panel__day {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  justify-self: center;
+  width: 36px;
+}

@@ -1,5 +1,4 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
-import type { XSize } from '../../../_utils/size'
 import type { DropdownPlacement, DropdownTrigger } from '../../dropdown/src/types'
 
 export interface UserStatusMenuItem {
@@ -25,7 +24,7 @@ export interface UserStatusProps extends ElementStyleProps {
   hoverBackgroundColor?: string
   openBackgroundColor?: string
   items?: UserStatusMenuItem[]
-  size?: XSize
+  fontSize?: number
   trigger?: DropdownTrigger
   placement?: DropdownPlacement
   disabled?: boolean

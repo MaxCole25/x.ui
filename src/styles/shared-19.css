@@ -1,0 +1,19 @@
+.x-radio-button.is-disabled {
+  background: var(--x-radio-button-disabled-bg, #f5f7fa);
+  border-color: var(--x-radio-button-disabled-border-color, #dcdfe6);
+  color: var(--x-radio-button-disabled-text, #a8abb2);
+}
+
+.x-radio-button.is-disabled.is-checked {
+  background: var(--x-radio-button-disabled-active-bg, #a0cfff);
+  border-color: var(--x-radio-button-disabled-active-border-color, #a0cfff);
+  color: var(--x-radio-button-disabled-active-text, #ffffff);
+}
+
+.x-checkbox__label,
+.x-radio__label,
+.x-radio-button__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

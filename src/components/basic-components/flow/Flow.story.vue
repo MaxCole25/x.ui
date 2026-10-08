@@ -1,11 +1,10 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { computed, reactive } from 'vue'
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XIcon } from '../icon'
 import { XFlow } from './index'
 import type { FlowAlign, FlowItemOverflow } from './src/types'
 import '../../../styles/index.css'
-
 const iconNames = [
   'ri-home-4-line',
   'ri-search-line',
@@ -28,7 +27,6 @@ const iconNames = [
   'ri-eye-line',
   'ri-image-line'
 ]
-
 const appearance = reactive({
   itemWidth: '72px',
   count: 240,
@@ -60,7 +58,6 @@ const appearance = reactive({
   initialCount: 80,
   loadCount: 40
 })
-
 const sampleItems = computed(() =>
   Array.from({ length: Math.max(0, Math.floor(Number(appearance.count) || 0)) }, (_, index) => ({
     id: index + 1,
@@ -68,65 +65,24 @@ const sampleItems = computed(() =>
     label: `图标 ${index + 1}`
   }))
 )
-
-const previewCode = computed(() => `<XFlow
-  :items="icons"
-  item-key="id"
-  item-width="${appearance.itemWidth}"
-  :gap="${appearance.gap}"
-  height="${appearance.height}"
-  :lazy="${appearance.lazy}"
-  :initial-count="${appearance.initialCount}"
-  :load-count="${appearance.loadCount}"
->
-  <template #default="{ item }">
-    <XIcon :name="item.name" />
-  </template>
-</XFlow>`)
-
-function normalizeSize(value: string) {
-  return value.trim() === '' ? undefined : value
-}
 </script>
 
 <template>
   <Story title="基础组件/Flow 流式布局" group="components">
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
+      <ApiPlayground component="XFlow">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XFlow
-            v-bind="styleProps"
             :items="sampleItems"
             item-key="id"
-            :item-width="normalizeSize(appearance.itemWidth)"
-            :gap="appearance.gap"
-            :row-gap="normalizeSize(appearance.rowGap)"
-            :column-gap="normalizeSize(appearance.columnGap)"
-            :width="normalizeSize(appearance.width)"
-            :height="normalizeSize(appearance.height)"
-            :min-width="normalizeSize(appearance.minWidth)"
-            :min-height="normalizeSize(appearance.minHeight)"
-            :padding="normalizeSize(appearance.padding)"
+
             :justify-items="appearance.justifyItems"
-            :align-items="appearance.alignItems"
-            :background-color="appearance.backgroundColor"
-            :text-color="appearance.textColor"
-            :border-color="appearance.borderColor"
-            :border-width="appearance.borderWidth"
-            :border-style="appearance.borderStyle"
-            :radius="normalizeSize(appearance.radius)"
-            :item-background-color="appearance.itemBackgroundColor"
-            :item-text-color="appearance.itemTextColor"
-            :item-border-color="appearance.itemBorderColor"
-            :item-border-width="appearance.itemBorderWidth"
-            :item-border-style="appearance.itemBorderStyle"
-            :item-radius="normalizeSize(appearance.itemRadius)"
-            :item-padding="normalizeSize(appearance.itemPadding)"
+
             :item-overflow="appearance.itemOverflow"
             :lazy="appearance.lazy"
             :initial-count="appearance.initialCount"
             :load-count="appearance.loadCount"
-          >
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
             <template #default="{ item }">
               <div class="flow-story-icon">
                 <XIcon :name="item.name" />
@@ -135,94 +91,7 @@ function normalizeSize(value: string) {
             </template>
           </XFlow>
         </template>
-
-        <template #column-1>
-          <label><span>元素宽度</span><input v-model="appearance.itemWidth" /></label>
-          <label><span>数量</span><input v-model.number="appearance.count" type="number" min="0" max="1000" /></label>
-          <label><span>横竖间距</span><input v-model.number="appearance.gap" type="number" min="0" max="40" /></label>
-          <label><span>竖向间距</span><input v-model="appearance.rowGap" placeholder="默认跟随 gap" /></label>
-          <label><span>横向间距</span><input v-model="appearance.columnGap" placeholder="默认跟随 gap" /></label>
-          <label class="flow-story-check"><input v-model="appearance.lazy" type="checkbox" /><span>增量渲染</span></label>
-          <label><span>初始数量</span><input v-model.number="appearance.initialCount" type="number" min="0" max="1000" /></label>
-          <label><span>追加数量</span><input v-model.number="appearance.loadCount" type="number" min="1" max="500" /></label>
-        </template>
-
-        <template #column-2>
-          <label><span>宽度</span><input v-model="appearance.width" /></label>
-          <label><span>高度</span><input v-model="appearance.height" /></label>
-          <label><span>最小宽度</span><input v-model="appearance.minWidth" /></label>
-          <label><span>最小高度</span><input v-model="appearance.minHeight" /></label>
-          <label><span>内边距</span><input v-model="appearance.padding" /></label>
-          <label><span>圆角</span><input v-model="appearance.radius" /></label>
-          <label><span>边框</span><input v-model.number="appearance.borderWidth" type="number" min="0" max="8" /></label>
-          <label><span>边框色</span><input v-model="appearance.borderColor" type="color" /></label>
-        </template>
-
-        <template #column-3>
-          <label><span>背景色</span><input v-model="appearance.backgroundColor" type="color" /></label>
-          <label><span>文本色</span><input v-model="appearance.textColor" type="color" /></label>
-          <label><span>边框样式</span><input v-model="appearance.borderStyle" /></label>
-          <label>
-            <span>水平对齐</span>
-            <select v-model="appearance.justifyItems">
-              <option value="start">start</option>
-              <option value="center">center</option>
-              <option value="end">end</option>
-              <option value="stretch">stretch</option>
-            </select>
-          </label>
-          <label>
-            <span>垂直对齐</span>
-            <select v-model="appearance.alignItems">
-              <option value="start">start</option>
-              <option value="center">center</option>
-              <option value="end">end</option>
-              <option value="stretch">stretch</option>
-            </select>
-          </label>
-        </template>
-
-        <template #column-4>
-          <label><span>子项背景色</span><input v-model="appearance.itemBackgroundColor" type="color" /></label>
-          <label><span>子项文本色</span><input v-model="appearance.itemTextColor" type="color" /></label>
-          <label><span>子项边框色</span><input v-model="appearance.itemBorderColor" type="color" /></label>
-          <label><span>子项边框</span><input v-model.number="appearance.itemBorderWidth" type="number" min="0" max="8" /></label>
-          <label><span>子项边框样式</span><input v-model="appearance.itemBorderStyle" /></label>
-          <label><span>子项圆角</span><input v-model="appearance.itemRadius" /></label>
-          <label><span>子项内边距</span><input v-model="appearance.itemPadding" /></label>
-          <label>
-            <span>子项溢出</span>
-            <select v-model="appearance.itemOverflow">
-              <option value="visible">visible</option>
-              <option value="hidden">hidden</option>
-              <option value="clip">clip</option>
-              <option value="scroll">scroll</option>
-              <option value="auto">auto</option>
-            </select>
-          </label>
-        </template>
-
-        <template #interfaces>
-          <section class="flow-story-meta">
-            <p><code>XFlow</code> 推荐使用 <code>items</code> 数据驱动模式；默认插槽接收 <code>{ item, index }</code>。</p>
-            <pre><code>{{ previewCode }}</code></pre>
-          </section>
-        </template>
-
-        <template #types>
-          <section class="flow-story-meta">
-            <p><code>FlowAlign = 'start' | 'center' | 'end' | 'stretch'</code></p>
-            <p><code>FlowItemOverflow = 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto'</code></p>
-            <p><code>FlowItemKey = string | number | ((item, index) =&gt; string | number)</code></p>
-          </section>
-        </template>
-
-        <template #events>
-          <section class="flow-story-meta">
-            <p><code>XFlow</code> 和 <code>XFlowItem</code> 是静态布局组件，当前不触发业务事件。</p>
-          </section>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

@@ -173,7 +173,7 @@ describe('XTree', () => {
         treeData: [{ id: '1', label: '节点A' }],
         currentTreeKey: '1',
         textColor: '#f8fafc',
-        mutedColor: '#94a3b8',
+        mutedTextColor: '#94a3b8',
         hoverBackgroundColor: '#1e293b',
         activeBackgroundColor: '#0f172a',
         activeTextColor: '#ffffff',
@@ -204,19 +204,19 @@ describe('XTree', () => {
     expect(style).toContain('--x-tree-active-bg-color: #bfdbfe')
   })
 
-  it('maps size prop to tree css variables', () => {
+  it('maps fontSize to text and icon variables with a fixed row height', () => {
     const wrapper = mount(XTree, {
       props: {
-        size: 'lg',
+        fontSize: 18,
         treeData: [{ id: '1', label: '节点A' }],
       }
     })
 
     const style = wrapper.attributes('style')
-    expect(wrapper.classes()).toContain('x-tree--lg')
-    expect(style).toContain('--x-tree-row-height: 42px')
-    expect(style).toContain('--x-tree-font-size: 14px')
-    expect(style).toContain('--x-tree-icon-size: 16px')
+    expect(wrapper.classes()).not.toContain('x-tree--lg')
+    expect(style).toContain('--x-tree-row-height: 36px')
+    expect(style).toContain('--x-tree-font-size: 18px')
+    expect(style).toContain('--x-tree-icon-size: 20px')
   })
 
   it('clears drag drop indicators after drag leave and drag end', async () => {

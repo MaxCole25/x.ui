@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type UploadStatus = 'ready' | 'uploading' | 'success' | 'error'
 export type UploadListType = 'text' | 'card'
@@ -19,6 +18,7 @@ export interface UploadProgressHandler {
 }
 
 export interface UploadProps {
+  height?: number | string
   modelValue?: UploadFile[]
   accept?: string
   multiple?: boolean
@@ -30,6 +30,6 @@ export interface UploadProps {
   buttonText?: string
   tip?: string
   listType?: UploadListType
-  size?: XSize
+  fontSize?: number
   requestMethod?: (file: File, onProgress: UploadProgressHandler) => Promise<unknown>
 }

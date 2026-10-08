@@ -1,32 +1,22 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { XDropdownItem } from '../dropdown-item'
 import { XDropdownMenu } from './index'
 import '../../../styles/index.css'
-
-const appearance = reactive({
-  width: 180,
-  maxHeight: 160
-})
 </script>
 
 <template>
   <Story title="导航组件/DropdownMenu 下拉菜单容器" group="components">
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
-          <XDropdownMenu v-bind="styleProps" :width="appearance.width" :max-height="appearance.maxHeight">
+      <ApiPlayground component="XDropdownMenu">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XDropdownMenu     v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
             <XDropdownItem>菜单一</XDropdownItem>
             <XDropdownItem>菜单二</XDropdownItem>
             <XDropdownItem divided>分割菜单</XDropdownItem>
           </XDropdownMenu>
         </template>
-        <template #column-2>
-          <label><span>弹窗宽度</span><input v-model.number="appearance.width" type="number" min="80" /></label>
-          <label><span>最大高度</span><input v-model.number="appearance.maxHeight" type="number" min="60" /></label>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

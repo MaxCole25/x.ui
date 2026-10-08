@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { toCssSize } from '../../../_utils/elementStyle'
 import type { ProgressProps } from './types'
 
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<ProgressProps>(), {
   percentage: 0,
   status: 'primary',
   variant: 'line',
-  size: 'md',
+  fontSize: 14,
   strokeWidth: 8,
   showText: true,
   textInside: false,
@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<ProgressProps>(), {
 })
 
 const normalized = computed(() => Math.min(100, Math.max(0, props.percentage)))
-const preset = computed(() => componentSizePreset[props.size])
+const preset = computed(() => getComponentMetrics(props.fontSize))
 const radius = 46
 const perimeter = 2 * Math.PI * radius
 const styleVars = computed(() => ({
@@ -35,7 +35,7 @@ const styleVars = computed(() => ({
 </script>
 
 <template>
-  <div class="x-progress" :class="['x-progress--' + props.status, 'x-progress--' + props.variant, { 'is-text-inside': props.textInside }]" :style="styleVars" role="progressbar" :aria-valuenow="normalized" aria-valuemin="0" aria-valuemax="100">
+  <div class="x-progress" :class="['x-progress--' + props.status, 'x-progress--' + props.variant, { 'is-text-inside': props.textInside }]" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]" role="progressbar" :aria-valuenow="normalized" aria-valuemin="0" aria-valuemax="100">
     <template v-if="props.variant === 'circle'">
       <svg class="x-progress__circle" viewBox="0 0 100 100" aria-hidden="true">
         <circle class="x-progress__circle-track" cx="50" cy="50" :r="radius" />

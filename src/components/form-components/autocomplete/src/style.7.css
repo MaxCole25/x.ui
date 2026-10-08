@@ -1,0 +1,17 @@
+.x-autocomplete__dropdown {
+  background: var(--x-autocomplete-dropdown-bg, var(--x-element-bg, #fff));
+  margin-top: 2px;
+  max-height: var(--x-autocomplete-dropdown-max-height, 260px);
+  max-width: min(var(--x-autocomplete-dropdown-max-width, 360px), calc(100vw - 16px));
+  min-width: 100%;
+  overflow-y: auto;
+  width: max-content;
+  z-index: var(--x-autocomplete-dropdown-z-index, var(--x-z-index-popper, 2000));
+}
+
+.x-autocomplete__dropdown.is-teleported {
+  margin-top: 0;
+  min-width: 0;
+  position: fixed;
+  top: auto;
+}

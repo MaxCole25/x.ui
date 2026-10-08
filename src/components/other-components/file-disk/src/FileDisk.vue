@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { useFileSelection } from './useFileSelection'
+import { useFileContextMenu } from './useFileContextMenu'
+import { useFileUploadTasks } from './useFileUploadTasks'
+
+import { createColorStyle } from './theme'
+
+import { normalizePath, joinPath, parentPath } from './paths'
+
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type {
   FileDiskAdapter,
   FileDiskClipboardAction,
@@ -37,7 +45,8 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
   showTitle: true,
   showToolbar: true,
   showPath: true,
-  size: undefined
+  enableMinimize: false,
+  fontSize: undefined
 })
 
 const emit = defineEmits<{
@@ -65,7 +74,6 @@ const folderNameInput = ref<HTMLInputElement | null>(null)
 const renameInput = ref<HTMLInputElement | HTMLInputElement[] | null>(null)
 const innerPath = ref(normalizePath(props.modelValue))
 const innerEntries = ref<FileDiskItem[]>([])
-const selectedIds = ref<Array<FileDiskItem['id']>>([])
 const busy = ref(false)
 const dragging = ref(false)
 const selecting = ref(false)
@@ -81,18 +89,6 @@ const selectionBox = ref({
   currentX: 0,
   currentY: 0
 })
-const contextMenu = ref({
-  visible: false,
-  x: 0,
-  y: 0
-})
-const uploadTasks = ref<Array<{
-  id: string
-  name: string
-  size: number
-  percent: number
-  status: FileDiskUploadStatus
-}>>([])
 const clipboard = ref<{
   action: FileDiskClipboardAction
   sourcePath: string
@@ -117,10 +113,8 @@ const canWrite = computed(() => props.permissions.write !== false && !props.disa
 const canDelete = computed(() => props.permissions.delete !== false && !props.disabled)
 const canView = computed(() => props.permissions.view !== false)
 const isBusy = computed(() => props.loading || busy.value)
-const currentView = computed({
-  get: () => props.viewMode,
-  set: (value: FileDiskViewMode) => emit('update:viewMode', value)
-})
+const currentView = ref<FileDiskViewMode>(props.viewMode)
+watch(() => props.viewMode, (value) => { currentView.value = value })
 const sourceEntries = computed(() => (props.adapter?.list ? innerEntries.value : props.entries))
 const sortedEntries = computed(() => {
   return [...sourceEntries.value].sort((left, right) => {
@@ -130,12 +124,13 @@ const sortedEntries = computed(() => {
     return left.name.localeCompare(right.name, 'zh-CN')
   })
 })
+const { selectedIds, selectedItems, allSelected, isSelected, emitSelection, clearSelection, toggleAll, selectItem, toggleItem } = useFileSelection(props, sortedEntries, cancelEditing, emit)
+const { contextMenu, closeContextMenu, openContextMenu, adjustContextMenuPosition } = useFileContextMenu(contextMenuRoot, isSelected, selectItem)
+const { uploadTasks, startUploadTasks, updateUploadProgress, finishUploadTasks, clampPercent } = useFileUploadTasks()
+
 const imageEntries = computed(() => sortedEntries.value.filter((item) => isImageItem(item)))
 const previewItem = computed(() => imageEntries.value[previewIndex.value])
 const previewSource = computed(() => (previewItem.value ? imageSource(previewItem.value, 'preview') : ''))
-const selectedItems = computed(() =>
-  sortedEntries.value.filter((item) => selectedIds.value.some((id) => String(id) === String(item.id)))
-)
 const breadcrumbItems = computed(() => {
   const segments = innerPath.value.split('/').filter(Boolean)
   const items = [{ label: '根目录', path: '/' }]
@@ -159,10 +154,8 @@ const hasUploadTasks = computed(() => uploadTasks.value.length > 0)
 const previewImageStyle = computed<CSSProperties>(() => ({
   transform: `translate3d(${previewOffset.value.x}px, ${previewOffset.value.y}px, 0) scale(${previewScale.value})`
 }))
-const allSelected = computed(
-  () => sortedEntries.value.length > 0 && sortedEntries.value.every((item) => selectedIds.value.includes(item.id))
-)
-const hasContent = computed(() => sortedEntries.value.length > 0 || creatingFolder.value)
+const showParentEntry = computed(() => innerPath.value !== '/')
+const hasContent = computed(() => showParentEntry.value || sortedEntries.value.length > 0 || creatingFolder.value)
 const selectionStyle = computed(() => {
   const left = Math.min(selectionBox.value.startX, selectionBox.value.currentX)
   const top = Math.min(selectionBox.value.startY, selectionBox.value.currentY)
@@ -179,8 +172,8 @@ const contextMenuStyle = computed(() => ({
   left: `${contextMenu.value.x}px`,
   top: `${contextMenu.value.y}px`
 }))
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const colorStyle = computed<CSSProperties>(() => createColorStyle(props))
 const rootStyle = computed<CSSProperties>(() => ({
   ...colorStyle.value,
@@ -230,81 +223,6 @@ onBeforeUnmount(() => {
   stopPreviewDrag()
 })
 
-function normalizePath(path?: string) {
-  const raw = String(path || '/').trim().replace(/\\/g, '/')
-  const segments = raw.split('/').filter(Boolean)
-  return segments.length ? `/${segments.join('/')}` : '/'
-}
-
-function createColorStyle(theme: FileDiskProps) {
-  const style: Record<string, string> = {}
-  const colors = theme.colors
-  const themeVars: Array<[string | undefined, string, string[]?]> = [
-    [theme.backgroundColor ?? colors?.backgroundColor ?? colors?.background, '--x-file-disk-bg'],
-    [theme.textColor ?? colors?.textColor ?? colors?.text, '--x-file-disk-text'],
-    [theme.mutedTextColor ?? colors?.mutedTextColor ?? colors?.mutedText, '--x-file-disk-muted-text'],
-    [theme.borderColor ?? colors?.borderColor ?? colors?.border, '--x-file-disk-border-color', ['--x-file-disk-border']],
-    [theme.headerBackgroundColor ?? colors?.headerBackgroundColor ?? colors?.toolbarBackground, '--x-file-disk-header-bg'],
-    [theme.toolbarBackgroundColor ?? colors?.toolbarBackgroundColor ?? colors?.toolbarBackground, '--x-file-disk-toolbar-bg'],
-    [theme.itemBackgroundColor ?? colors?.itemBackgroundColor ?? colors?.panelBackground, '--x-file-disk-item-bg', ['--x-file-disk-panel-bg']],
-    [theme.itemHoverBackgroundColor ?? colors?.itemHoverBackgroundColor ?? colors?.hoverBackground, '--x-file-disk-item-hover-bg', ['--x-file-disk-hover-bg']],
-    [theme.itemActiveBackgroundColor ?? colors?.itemActiveBackgroundColor ?? colors?.selectedBackground, '--x-file-disk-item-active-bg', ['--x-file-disk-selected-bg']],
-    [theme.itemActiveTextColor ?? colors?.itemActiveTextColor, '--x-file-disk-item-active-text'],
-    [theme.iconColor ?? colors?.iconColor ?? colors?.subtleText, '--x-file-disk-icon-color'],
-    [theme.activeIconColor ?? colors?.activeIconColor ?? colors?.primary, '--x-file-disk-active-icon-color'],
-    [theme.emptyBackgroundColor ?? colors?.emptyBackgroundColor ?? colors?.panelBackground, '--x-file-disk-empty-bg'],
-    [theme.dragOverBackgroundColor ?? colors?.dragOverBackgroundColor ?? colors?.dropBackground, '--x-file-disk-drag-over-bg', ['--x-file-disk-drop-bg']]
-  ]
-  const colorVars: Array<[keyof FileDiskColors, string]> = [
-    ['primary', '--x-file-disk-primary'],
-    ['primarySoft', '--x-file-disk-primary-soft'],
-    ['primaryWeak', '--x-file-disk-primary-weak'],
-    ['background', '--x-file-disk-bg'],
-    ['toolbarBackground', '--x-file-disk-toolbar-bg'],
-    ['pathBackground', '--x-file-disk-path-bg'],
-    ['panelBackground', '--x-file-disk-panel-bg'],
-    ['text', '--x-file-disk-text'],
-    ['mutedText', '--x-file-disk-muted-text'],
-    ['subtleText', '--x-file-disk-subtle-text'],
-    ['border', '--x-file-disk-border'],
-    ['softBorder', '--x-file-disk-soft-border'],
-    ['hoverBackground', '--x-file-disk-hover-bg'],
-    ['selectedBackground', '--x-file-disk-selected-bg'],
-    ['selectedBorder', '--x-file-disk-selected-border'],
-    ['disabledText', '--x-file-disk-disabled-text'],
-    ['thumbBackground', '--x-file-disk-thumb-bg'],
-    ['selectionBackground', '--x-file-disk-selection-bg'],
-    ['selectionBorder', '--x-file-disk-selection-border'],
-    ['dropBackground', '--x-file-disk-drop-bg'],
-    ['success', '--x-file-disk-success'],
-    ['danger', '--x-file-disk-danger'],
-    ['previewBackground', '--x-file-disk-preview-bg'],
-    ['previewText', '--x-file-disk-preview-text'],
-    ['previewControlBackground', '--x-file-disk-preview-control-bg'],
-    ['previewControlBorder', '--x-file-disk-preview-control-border'],
-    ['previewControlHoverBackground', '--x-file-disk-preview-control-hover-bg'],
-    ['shadow', '--x-file-disk-shadow']
-  ]
-
-  colorVars.forEach(([key, variable]) => {
-    const value = colors?.[key]
-    if (value) {
-      style[variable] = value
-    }
-  })
-
-  themeVars.forEach(([value, variable, aliases]) => {
-    if (value) {
-      style[variable] = value
-      aliases?.forEach((alias) => {
-        style[alias] = value
-      })
-    }
-  })
-
-  return style
-}
-
 function ensureFileIconSprite() {
   if (typeof document === 'undefined' || document.getElementById('x-file-disk-iconfont-script')) {
     return
@@ -314,63 +232,6 @@ function ensureFileIconSprite() {
   script.src = new URL('./fileico/iconfont.js', import.meta.url).href
   script.async = true
   document.body.appendChild(script)
-}
-
-function joinPath(base: string, name: string) {
-  return normalizePath(`${base === '/' ? '' : base}/${name}`)
-}
-
-function parentPath(path: string) {
-  const segments = normalizePath(path).split('/').filter(Boolean)
-  segments.pop()
-  return segments.length ? `/${segments.join('/')}` : '/'
-}
-
-function isSelected(item: FileDiskItem) {
-  return selectedIds.value.some((id) => String(id) === String(item.id))
-}
-
-function emitSelection() {
-  emit('selection-change', selectedItems.value)
-}
-
-function clearSelection() {
-  selectedIds.value = []
-  emitSelection()
-}
-
-function closeContextMenu() {
-  contextMenu.value.visible = false
-}
-
-function toggleAll() {
-  cancelEditing()
-  selectedIds.value = allSelected.value ? [] : sortedEntries.value.map((item) => item.id)
-  emitSelection()
-}
-
-function selectItem(item: FileDiskItem, event?: MouseEvent) {
-  if (item.disabled) {
-    return
-  }
-  cancelEditing()
-
-  if (props.multiple && (event?.ctrlKey || event?.metaKey)) {
-    selectedIds.value = isSelected(item)
-      ? selectedIds.value.filter((id) => String(id) !== String(item.id))
-      : [...selectedIds.value, item.id]
-  } else {
-    selectedIds.value = [item.id]
-  }
-  emitSelection()
-}
-
-function toggleItem(item: FileDiskItem) {
-  cancelEditing()
-  selectedIds.value = isSelected(item)
-    ? selectedIds.value.filter((id) => String(id) !== String(item.id))
-    : [...selectedIds.value, item.id]
-  emitSelection()
 }
 
 function openPath(path: string) {
@@ -663,47 +524,6 @@ async function pasteItems() {
   })
 }
 
-function startUploadTasks(files: File[]) {
-  const now = Date.now()
-  uploadTasks.value = [
-    ...uploadTasks.value,
-    ...files.map((file, index) => ({
-      id: `${now}-${index}-${file.name}`,
-      name: file.name,
-      size: file.size,
-      percent: 0,
-      status: 'uploading' as FileDiskUploadStatus
-    }))
-  ]
-}
-
-function updateUploadProgress(progress: FileDiskUploadProgress) {
-  uploadTasks.value = uploadTasks.value.map((task) =>
-    task.name === progress.file.name && task.size === progress.file.size
-      ? { ...task, percent: clampPercent(progress.percent), status: 'uploading' }
-      : task
-  )
-}
-
-function finishUploadTasks(files: File[], status: FileDiskUploadStatus) {
-  const fileKeys = new Set(files.map((file) => `${file.name}:${file.size}`))
-  uploadTasks.value = uploadTasks.value.map((task) =>
-    fileKeys.has(`${task.name}:${task.size}`)
-      ? { ...task, percent: status === 'success' ? 100 : task.percent, status }
-      : task
-  )
-  window.setTimeout(() => {
-    uploadTasks.value = uploadTasks.value.filter((task) => !fileKeys.has(`${task.name}:${task.size}`))
-  }, status === 'success' ? 1400 : 4200)
-}
-
-function clampPercent(value: number) {
-  if (!Number.isFinite(value)) {
-    return 0
-  }
-  return Math.max(0, Math.min(100, Math.round(value)))
-}
-
 function setItemElement(id: FileDiskItem['id'], element: unknown) {
   const key = String(id)
   if (element instanceof HTMLElement) {
@@ -785,43 +605,14 @@ function isInteractiveTarget(target: EventTarget | null) {
   return target instanceof HTMLElement && Boolean(target.closest('button, input, select, textarea, a, [data-file-disk-item]'))
 }
 
-function openContextMenu(event: MouseEvent, item?: FileDiskItem) {
-  event.preventDefault()
-  if (item && !isSelected(item)) {
-    selectItem(item)
-  }
-  contextMenu.value = {
-    visible: true,
-    x: event.clientX,
-    y: event.clientY
-  }
-  nextTick(adjustContextMenuPosition)
-}
-
-function adjustContextMenuPosition() {
-  const menu = contextMenuRoot.value
-  if (!menu || !contextMenu.value.visible || typeof window === 'undefined') {
-    return
-  }
-
-  const viewportPadding = 8
-  const maxX = Math.max(viewportPadding, window.innerWidth - menu.offsetWidth - viewportPadding)
-  const maxY = Math.max(viewportPadding, window.innerHeight - menu.offsetHeight - viewportPadding)
-  const nextX = Math.min(Math.max(viewportPadding, contextMenu.value.x), maxX)
-  const nextY = Math.min(Math.max(viewportPadding, contextMenu.value.y), maxY)
-
-  if (nextX !== contextMenu.value.x || nextY !== contextMenu.value.y) {
-    contextMenu.value = {
-      ...contextMenu.value,
-      x: nextX,
-      y: nextY
-    }
-  }
-}
-
 function switchViewMode(mode: FileDiskViewMode) {
   currentView.value = mode
+  emit('update:viewMode', mode)
   closeContextMenu()
+}
+
+function openParent() {
+  if (!isBusy.value) openPath(parentPath(innerPath.value))
 }
 
 function makeUniqueName(baseName: string) {
@@ -1095,15 +886,15 @@ defineExpose({
 <template>
   <section
     class="x-file-disk"
-    :class="{ 'is-dragging': dragging, 'is-busy': isBusy, [`x-file-disk--${mergedSize}`]: true }"
-    :style="rootStyle"
+    :class="{ 'is-dragging': dragging, 'is-busy': isBusy, ['x-file-disk']: true }"
+    :style="[rootStyle, createFontStyle(mergedSize)]"
     @dragover="handleDragOver"
     @dragleave="handleDragLeave"
     @drop="handleDrop"
     @click="closeContextMenu"
     @contextmenu="openContextMenu"
   >
-    <header v-if="showHeader" class="x-file-disk__toolbar">
+    <header v-if="showHeader && !enableMinimize" class="x-file-disk__toolbar">
       <div v-if="showTitle" class="x-file-disk__title-wrap">
         <strong class="x-file-disk__title">{{ title }}</strong>
         <span class="x-file-disk__count">{{ sortedEntries.length }} 项</span>
@@ -1159,16 +950,7 @@ defineExpose({
 
     <input ref="fileInput" class="x-file-disk__file-input" type="file" :multiple="multiple" :accept="accept" @change="handleFileChange" />
 
-    <nav v-if="showPath" class="x-file-disk__path" aria-label="当前路径">
-      <button
-        type="button"
-        class="x-file-disk__path-back"
-        :disabled="innerPath === '/' || isBusy"
-        title="返回上级"
-        @click="openPath(parentPath(innerPath))"
-      >
-        <i class="ri-arrow-go-back-line" aria-hidden="true" />
-      </button>
+    <nav v-if="showPath && !enableMinimize" class="x-file-disk__path" aria-label="当前路径">
       <button
         v-for="(item, index) in breadcrumbItems"
         :key="item.path"
@@ -1194,6 +976,11 @@ defineExpose({
       <div v-if="!hasContent" class="x-file-disk__empty">{{ emptyText }}</div>
 
       <div v-else-if="currentView === 'grid'" class="x-file-disk__grid x-scrollbar--native" role="listbox" aria-label="文件列表">
+        <button v-if="showParentEntry" type="button" class="x-file-disk__tile x-file-disk__parent" :disabled="isBusy" title="返回上级" @click="openParent" @contextmenu.stop.prevent="closeContextMenu">
+          <span class="x-file-disk__tile-icon"><span class="x-file-disk__parent-badge"><svg class="x-file-disk__parent-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></span>
+          <span class="x-file-disk__tile-name">上级目录</span>
+          <span class="x-file-disk__tile-meta">返回上一层</span>
+        </button>
         <div v-if="creatingFolder" class="x-file-disk__tile is-editing" data-file-disk-item>
           <span class="x-file-disk__tile-icon is-folder">
             <svg class="x-file-disk__file-svg" aria-hidden="true">
@@ -1258,6 +1045,13 @@ defineExpose({
 
       <div v-else class="x-file-disk__table-wrap x-scrollbar--native">
         <table class="x-file-disk__table">
+          <colgroup>
+            <col class="x-file-disk__column-check" />
+            <col />
+            <col class="x-file-disk__column-type" />
+            <col class="x-file-disk__column-size" />
+            <col class="x-file-disk__column-date" />
+          </colgroup>
           <thead>
             <tr>
               <th class="x-file-disk__check-cell">
@@ -1270,6 +1064,15 @@ defineExpose({
             </tr>
           </thead>
           <tbody>
+            <tr v-if="showParentEntry" class="x-file-disk__parent" data-file-disk-item @click="openParent" @contextmenu.stop.prevent="closeContextMenu">
+              <td class="x-file-disk__check-cell" />
+              <td>
+                <button type="button" class="x-file-disk__parent-link x-file-disk__name" :disabled="isBusy" title="返回上级" @click.stop="openParent">
+                  <span class="x-file-disk__parent-badge"><svg class="x-file-disk__parent-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span><span>上级目录</span>
+                </button>
+              </td>
+              <td>-</td><td>-</td><td>-</td>
+            </tr>
             <tr v-if="creatingFolder" class="is-editing">
               <td class="x-file-disk__check-cell" />
               <td>
@@ -1463,7 +1266,7 @@ defineExpose({
   color: var(--x-file-disk-text, var(--x-color-text, #102a43));
   display: flex;
   flex-direction: column;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   font-family: var(--x-font-family);
   height: 100%;
   min-height: 0;
@@ -1503,7 +1306,7 @@ defineExpose({
 }
 
 .x-file-disk__title {
-  font-size: calc(var(--x-file-disk-font-size, 12px) + 3px);
+  font-size: calc(var(--x-file-disk-font-size, 14px) + 3px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1511,7 +1314,7 @@ defineExpose({
 
 .x-file-disk__count {
   color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #64748b)));
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   white-space: nowrap;
 }
 
@@ -1529,7 +1332,7 @@ defineExpose({
   color: var(--x-file-disk-icon-color, var(--x-file-disk-subtle-text, var(--x-color-text-muted, var(--x-color-muted, #334155))));
   cursor: pointer;
   display: inline-flex;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   gap: 5px;
   height: var(--x-file-disk-control-height, 30px);
   justify-content: center;
@@ -1543,11 +1346,11 @@ defineExpose({
   align-items: center;
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: calc(var(--x-file-disk-font-size, 12px) + 3px);
-  height: calc(var(--x-file-disk-font-size, 12px) + 3px);
+  font-size: calc(var(--x-file-disk-font-size, 14px) + 3px);
+  height: calc(var(--x-file-disk-font-size, 14px) + 3px);
   justify-content: center;
   line-height: 1;
-  width: calc(var(--x-file-disk-font-size, 12px) + 3px);
+  width: calc(var(--x-file-disk-font-size, 14px) + 3px);
 }
 
 .x-file-disk__tool svg {
@@ -1585,42 +1388,6 @@ defineExpose({
   padding: 8px 12px;
 }
 
-.x-file-disk__path-back {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: var(--x-file-disk-radius, 6px);
-  color: var(--x-file-disk-icon-color, var(--x-file-disk-text, var(--x-color-text, #1f2937)));
-  cursor: pointer;
-  display: inline-flex;
-  flex: 0 0 auto;
-  height: var(--x-file-disk-control-height, 30px);
-  justify-content: center;
-  margin-right: 2px;
-  width: var(--x-file-disk-control-height, 30px);
-}
-
-.x-file-disk__path-back svg,
-.x-file-disk__path-back i {
-  align-items: center;
-  display: inline-flex;
-  font-size: 18px;
-  height: 18px;
-  justify-content: center;
-  line-height: 1;
-  width: 18px;
-}
-
-.x-file-disk__path-back:hover:not(:disabled) {
-  background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-primary-weak, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eef6f8))));
-  color: var(--x-file-disk-active-icon-color, var(--x-file-disk-primary, var(--x-color-primary, #155e75)));
-}
-
-.x-file-disk__path-back:disabled {
-  color: var(--x-file-disk-disabled-text, var(--x-color-disabled-text, #a3afbd));
-  cursor: not-allowed;
-}
-
 .x-file-disk__crumb {
   align-items: center;
   background: transparent;
@@ -1630,7 +1397,7 @@ defineExpose({
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   gap: 4px;
   min-height: var(--x-file-disk-control-height, 30px);
   padding: var(--x-file-disk-control-padding, 0 8px);
@@ -1647,7 +1414,7 @@ defineExpose({
   align-items: center;
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   height: 14px;
   justify-content: center;
   line-height: 1;
@@ -1683,9 +1450,12 @@ defineExpose({
 
 .x-file-disk__grid {
   align-content: start;
+  align-items: start;
+  box-sizing: border-box;
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(0, min(112px, 100%)));
+  grid-auto-rows: max-content;
   height: 100%;
   overflow: auto;
   padding: 12px;
@@ -1697,11 +1467,14 @@ defineExpose({
   border-radius: var(--x-file-disk-radius, 6px);
   color: var(--x-file-disk-text, var(--x-color-text, #102a43));
   cursor: pointer;
+  align-content: start;
+  box-sizing: border-box;
   display: grid;
+  font: inherit;
   gap: 6px;
-  min-height: 118px;
+  grid-template-rows: 48px auto auto;
   min-width: 0;
-  padding: var(--x-file-disk-control-padding, 0 8px);
+  padding: 10px 8px;
   text-align: center;
 }
 
@@ -1727,6 +1500,47 @@ defineExpose({
   height: 38px;
   width: 38px;
 }
+
+.x-file-disk__parent-badge {
+  align-items: center;
+  background: var(--x-file-disk-primary-soft, var(--x-color-success-soft, #e8f8ee));
+  border-radius: 10px;
+  color: var(--x-file-disk-icon-color, var(--x-color-success, #0b806a));
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.x-file-disk__parent-badge .x-file-disk__parent-icon {
+  height: 24px;
+  width: 24px;
+}
+
+.x-file-disk__parent-link .x-file-disk__parent-badge {
+  border-radius: 5px;
+  height: 22px;
+  width: 22px;
+}
+
+.x-file-disk__parent-link .x-file-disk__parent-icon {
+  height: 16px;
+  width: 16px;
+}
+
+.x-file-disk__parent-link {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  width: 100%;
+}
+
+.x-file-disk__parent:disabled,
+.x-file-disk__parent-link:disabled { cursor: progress; }
 
 .x-file-disk__file-svg {
   display: block;
@@ -1804,8 +1618,9 @@ defineExpose({
 }
 
 .x-file-disk__tile-name {
-  font-size: var(--x-file-disk-font-size, 12px);
-  font-weight: 600;
+  font-size: var(--x-file-disk-font-size, 14px);
+  font-weight: 400;
+  line-height: 20px;
 }
 
 .x-file-disk__name-input {
@@ -1816,7 +1631,7 @@ defineExpose({
   box-sizing: border-box;
   color: var(--x-file-disk-text, var(--x-color-text, #102a43));
   font: inherit;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   min-height: var(--x-file-disk-control-height, 30px);
   min-width: 0;
   outline: none;
@@ -1826,7 +1641,8 @@ defineExpose({
 
 .x-file-disk__tile-meta {
   color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #64748b)));
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .x-file-disk__table-wrap {
@@ -1835,13 +1651,20 @@ defineExpose({
   overflow: auto;
 }
 
-.x-file-disk__table {
+.x-file-disk .x-file-disk__table {
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 720px;
+  display: table;
+  margin: 0;
+  min-width: 560px;
   table-layout: fixed;
   width: 100%;
 }
+
+.x-file-disk__column-check { width: 40px; }
+.x-file-disk__column-type { width: 72px; }
+.x-file-disk__column-size { width: 80px; }
+.x-file-disk__column-date { width: 168px; }
 
 .x-file-disk__table thead {
   position: sticky;
@@ -1849,19 +1672,21 @@ defineExpose({
   z-index: 2;
 }
 
-.x-file-disk__table th,
-.x-file-disk__table td {
+.x-file-disk .x-file-disk__table th,
+.x-file-disk .x-file-disk__table td {
   background: var(--x-file-disk-item-bg, var(--x-file-disk-panel-bg, var(--x-color-surface, #fff)));
+  border: 0;
   border-bottom: 1px solid var(--x-file-disk-border-color, var(--x-file-disk-soft-border, var(--x-color-border, #e2e8f0)));
   box-sizing: border-box;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   height: var(--x-file-disk-control-height, 30px);
   padding: var(--x-file-disk-control-padding, 0 8px);
   text-align: left;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
-.x-file-disk__table th {
+.x-file-disk .x-file-disk__table th {
   background: var(--x-file-disk-header-bg, var(--x-file-disk-toolbar-bg, var(--x-color-surface-soft, #f8fafc)));
   color: var(--x-file-disk-muted-text, var(--x-color-text-muted, var(--x-color-muted, #475569)));
   font-weight: 600;
@@ -1871,18 +1696,18 @@ defineExpose({
   cursor: pointer;
 }
 
-.x-file-disk__table tbody tr:hover td {
+.x-file-disk .x-file-disk__table tbody tr:hover td {
   background: var(--x-file-disk-item-hover-bg, var(--x-file-disk-hover-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eff6ff))));
 }
 
-.x-file-disk__table tbody tr.is-selected td {
+.x-file-disk .x-file-disk__table tbody tr.is-selected td {
   background: var(--x-file-disk-item-active-bg, var(--x-file-disk-selected-bg, var(--x-file-disk-primary-soft, var(--x-color-primary-soft, #eff6ff))));
   color: var(--x-file-disk-item-active-text, var(--x-file-disk-text, var(--x-color-text, #102a43)));
 }
 
-.x-file-disk__check-cell {
+.x-file-disk .x-file-disk__table .x-file-disk__check-cell {
   text-align: center;
-  width: 44px;
+  width: 40px;
 }
 
 .x-file-disk__check-cell input {
@@ -1896,7 +1721,9 @@ defineExpose({
   gap: 8px;
 }
 
-.x-file-disk__name span {
+.x-file-disk__name > span:last-child {
+  display: block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1966,7 +1793,7 @@ defineExpose({
   cursor: pointer;
   display: flex;
   font: inherit;
-  font-size: var(--x-file-disk-font-size, 12px);
+  font-size: var(--x-file-disk-font-size, 14px);
   gap: 8px;
   min-height: var(--x-file-disk-control-height, 30px);
   padding: var(--x-file-disk-control-padding, 0 8px);
@@ -2103,7 +1930,7 @@ defineExpose({
 .x-file-disk__preview-count {
   color: var(--x-file-disk-soft-border, #cbd5e1);
   flex: 0 0 auto;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .x-file-disk__preview-close,

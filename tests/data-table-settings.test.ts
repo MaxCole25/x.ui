@@ -146,7 +146,7 @@ describe('XDataTableSettings', () => {
       backgroundColor: '#f9fafb',
       textColor: '#0f172a',
       borderColor: '#cbd5e1',
-      dropdownBackgroundColor: '#ffffff'
+      popperBackgroundColor: '#ffffff'
     })
 
     const saveButton = wrapper.findAllComponents({ name: 'XButton' }).find((item) => item.text() === '保存配置')

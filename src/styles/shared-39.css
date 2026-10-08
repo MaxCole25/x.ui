@@ -1,0 +1,87 @@
+.x-dialog.x-time-picker__dialog,
+.x-dialog.x-time-select__dialog {
+  background: var(--x-picker-panel-bg, #fff);
+  border-color: var(--x-picker-panel-border, var(--x-color-border));
+  border-radius: 8px;
+  box-shadow: var(--x-picker-panel-shadow, 0 24px 80px rgba(15, 23, 42, 0.22));
+  color: var(--x-picker-panel-text, var(--x-color-text));
+}
+
+.x-time-picker__dialog .x-dialog__body,
+.x-time-select__dialog .x-dialog__body {
+  background: var(--x-picker-panel-bg, #fff);
+  padding: 0 16px;
+}
+
+.x-time-picker__dialog .x-dialog__header,
+.x-time-select__dialog .x-dialog__header {
+  background: var(--x-picker-panel-bg, #fff);
+  color: var(--x-picker-panel-header-text, var(--x-picker-panel-text, var(--x-color-text)));
+  cursor: move;
+}
+
+.x-time-picker__dialog .x-dialog__title,
+.x-time-select__dialog .x-dialog__title {
+  color: var(--x-picker-panel-header-text, var(--x-picker-panel-text, var(--x-color-text)));
+}
+
+.x-time-picker__dialog .x-dialog__close,
+.x-time-select__dialog .x-dialog__close {
+  color: var(--x-picker-panel-close-icon, var(--x-picker-panel-muted-text, #8c93a6));
+}
+
+.x-time-picker__dialog .x-dialog__close:hover,
+.x-time-select__dialog .x-dialog__close:hover {
+  background: var(--x-picker-time-selection-bg, #f7f8fb);
+  color: var(--x-picker-panel-close-icon-hover, var(--x-picker-panel-text, #2f3445));
+}
+
+.x-time-picker__dialog .x-dialog__footer,
+.x-time-select__dialog .x-dialog__footer {
+  background: var(--x-picker-panel-bg, #fff);
+}
+
+.x-time-picker__panel-shell,
+.x-time-select__panel-shell {
+  display: grid;
+  min-width: 0;
+}
+
+.x-time-picker__time,
+.x-time-select__time {
+  align-items: stretch;
+  background: var(--x-picker-time-bg, #fff);
+  border: 1px solid var(--x-picker-time-border, transparent);
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+}
+
+.x-time-picker__time::before,
+.x-time-select__time::before {
+  background: var(--x-picker-time-selection-bg, #f2f6ff);
+  border: 1px solid var(--x-picker-time-selection-border, #d9e6ff);
+  border-radius: 8px;
+  content: '';
+  height: 44px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 140px;
+  z-index: 0;
+}
+
+.x-time-picker__time-column,
+.x-time-select__time-column {
+  display: grid;
+  gap: 6px;
+  grid-template-rows: 24px 264px;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}

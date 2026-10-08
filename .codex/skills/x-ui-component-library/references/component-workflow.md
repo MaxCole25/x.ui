@@ -1,4 +1,4 @@
-# x.ui 组件开发工作流
+# @x-soft88/x-ui 组件开发工作流
 
 ## 新增组件文件结构
 
@@ -228,7 +228,7 @@ pnpm build:watch
 第三方项目：
 
 ```bash
-pnpm link --global x.ui
+pnpm link --global @x-soft88/x-ui
 pnpm dev
 ```
 
@@ -236,8 +236,8 @@ pnpm dev
 
 ```ts
 import { createApp } from 'vue'
-import XUi from 'x.ui'
-import 'x.ui/style.css'
+import XUi from '@x-soft88/x-ui'
+import '@x-soft88/x-ui/style.css'
 
 createApp(App).use(XUi).mount('#app')
 ```

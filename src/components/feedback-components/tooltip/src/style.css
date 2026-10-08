@@ -1,0 +1,102 @@
+.x-tooltip {
+  display: inline-flex;
+  position: relative;
+  vertical-align: middle;
+}
+
+.x-tooltip__popper {
+  background: var(--x-element-bg, var(--x-tooltip-bg, #1f2937));
+  border: var(--x-element-border-width, var(--x-tooltip-border-width, 0)) solid var(--x-element-border-color, var(--x-tooltip-border-color, transparent));
+  border-radius: var(--x-radius-sm);
+  box-shadow: var(--x-tooltip-shadow, 0 8px 20px rgba(15, 23, 42, 0.18));
+  box-sizing: border-box;
+  color: var(--x-element-text, var(--x-tooltip-text, #fff));
+  font: var(--x-tooltip-font-size, 14px)/1.4 var(--x-font-family);
+  max-width: 240px;
+  padding: 6px 10px;
+  position: absolute;
+  white-space: normal;
+  width: max-content;
+  z-index: var(--x-tooltip-z-index, var(--x-z-index-tooltip, 2000));
+}
+
+.x-tooltip__popper.is-teleported {
+  position: fixed;
+  transform: none;
+}
+
+.x-tooltip__popper--top {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.x-tooltip__popper.is-teleported.x-tooltip__popper--top {
+  bottom: auto;
+  transform: none;
+}
+
+.x-tooltip__popper--bottom {
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+}
+
+.x-tooltip__popper.is-teleported.x-tooltip__popper--bottom {
+  top: auto;
+  transform: none;
+}
+
+.x-tooltip__popper--left {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.x-tooltip__popper.is-teleported.x-tooltip__popper--left {
+  right: auto;
+  top: auto;
+  transform: none;
+}
+
+.x-tooltip__popper--right {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.x-tooltip__popper.is-teleported.x-tooltip__popper--right {
+  left: auto;
+  top: auto;
+  transform: none;
+}
+
+.x-tooltip__arrow {
+  background: inherit;
+  border: inherit;
+  box-sizing: border-box;
+  height: 8px;
+  position: absolute;
+  transform: rotate(45deg);
+  width: 8px;
+}
+
+.x-tooltip__popper--top .x-tooltip__arrow {
+  bottom: -4px;
+  left: calc(50% - 4px);
+}
+
+.x-tooltip__popper--bottom .x-tooltip__arrow {
+  left: calc(50% - 4px);
+  top: -4px;
+}
+
+.x-tooltip__popper--left .x-tooltip__arrow {
+  right: -4px;
+  top: calc(50% - 4px);
+}
+
+.x-tooltip__popper--right .x-tooltip__arrow {
+  left: -4px;
+  top: calc(50% - 4px);
+}

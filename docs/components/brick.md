@@ -1,92 +1,58 @@
 <script setup lang="ts">
-const brickBasicCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<XBrick direction="horizontal" :gap="8" height="220px">
-    <XBrickItem width="160px" background-color="#e0ecff">左侧</XBrickItem>
-    <XBrickItem background-color="#f8fafc">中间自适应</XBrickItem>
-    <XBrickItem width="30%" background-color="#f0fdf4">右侧</XBrickItem>
-  </XBrick>`
-
-const brickVerticalCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<XBrick direction="vertical" height="260px" :gap="8">
-    <XBrickItem height="64px" background-color="#e0ecff">顶部</XBrickItem>
-    <XBrickItem background-color="#f8fafc">内容一</XBrickItem>
-    <XBrickItem background-color="#f0fdf4">内容二</XBrickItem>
-  </XBrick>`
-
-const brickCountCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<XBrick :count="3" height="180px" :gap="8" />`
-
-const brickAlignCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<XBrick height="220px" right-align vertical-center horizontal-center padding="16px">
-    <XBrickItem width="180px" background-color="#e0ecff">区块整体靠右，内容继承居中</XBrickItem>
-    <XBrickItem :vertical-center="false" padding="8px" background-color="#f8fafc">覆盖父级配置</XBrickItem>
-    <XBrickItem width="30%" bottom-align right-align background-color="#f0fdf4">内容右下对齐</XBrickItem>
-  </XBrick>`
+import Example1 from '../examples/brick/Example1.vue'
+import Example1Source from '../examples/brick/Example1.vue?raw'
+import Example2 from '../examples/brick/Example2.vue'
+import Example2Source from '../examples/brick/Example2.vue?raw'
+import Example3 from '../examples/brick/Example3.vue'
+import Example3Source from '../examples/brick/Example3.vue?raw'
+import Example4 from '../examples/brick/Example4.vue'
+import Example4Source from '../examples/brick/Example4.vue?raw'
 </script>
-
 # 砖格 Brick
 
 `XBrick` 用于把一个容器按单一方向分隔成多个区域，适合面板、左右栏、上下分区和可嵌套的局部布局。
 
 固定尺寸区域会先占用空间，未设置尺寸的区域会平分剩余空间。复杂二维布局可以通过嵌套 `XBrick` 实现。
 
-## 基础用法
+## 使用示例
 
-<XDocDemo title="基础用法" :code="brickBasicCode">
-  <XBrick direction="horizontal" :gap="8" height="220px">
-    <XBrickItem width="160px" background-color="#e0ecff">左侧</XBrickItem>
-    <XBrickItem background-color="#f8fafc">中间自适应</XBrickItem>
-    <XBrickItem width="30%" background-color="#f0fdf4">右侧</XBrickItem>
-  </XBrick>
+### 基础用法
+
+<XDocDemo title="基础用法" :code="Example1Source">
+  <Example1 />
 </XDocDemo>
 
-## 竖向分隔
+### 竖向分隔
 
-<XDocDemo title="竖向分隔" :code="brickVerticalCode">
-  <XBrick direction="vertical" height="260px" :gap="8">
-    <XBrickItem height="64px" background-color="#e0ecff">顶部</XBrickItem>
-    <XBrickItem background-color="#f8fafc">内容一</XBrickItem>
-    <XBrickItem background-color="#f0fdf4">内容二</XBrickItem>
-  </XBrick>
+<XDocDemo title="竖向分隔" :code="Example2Source">
+  <Example2 />
 </XDocDemo>
 
-## 根据数量生成空容器
+### 根据数量生成空容器
 
 当没有传入内部容器插槽时，可以通过 `count` 生成指定数量的空区域，用于占位或后续动态填充。
 
-<XDocDemo title="根据数量生成空容器" :code="brickCountCode">
-  <XBrick :count="3" height="180px" :gap="8" />
+<XDocDemo title="根据数量生成空容器" :code="Example3Source">
+  <Example3 />
 </XDocDemo>
 
-## 区块对齐、内容对齐和内边距
+### 区块对齐、内容对齐和内边距
 
 `XBrick` 的 `rightAlign` 用于让直接子区块整体靠右排列；横向分隔时会把区块组推到右侧，竖向分隔时会把区块贴到右侧。横向右对齐时，未设置主轴尺寸的 `XBrickItem` 会按内容收缩，避免继续平分剩余空间。
 
 `XBrick` 仍可以为所有内部容器统一设置内容垂直居中、水平居中、下对齐和内边距；`XBrickItem` 传入同名属性时会覆盖父级配置。`XBrickItem` 的 `rightAlign` 用于控制当前容器内部内容右对齐。若同时开启居中和末端对齐，末端对齐优先。
 
-<XDocDemo title="区块对齐、内容对齐和内边距" :code="brickAlignCode">
-  <XBrick height="220px" right-align vertical-center horizontal-center padding="16px">
-    <XBrickItem width="180px" background-color="#e0ecff">区块整体靠右，内容继承居中</XBrickItem>
-    <XBrickItem :vertical-center="false" padding="8px" background-color="#f8fafc">覆盖父级配置</XBrickItem>
-    <XBrickItem width="30%" bottom-align right-align background-color="#f0fdf4">内容右下对齐</XBrickItem>
-  </XBrick>
+<XDocDemo title="区块对齐、内容对齐和内边距" :code="Example4Source">
+  <Example4 />
 </XDocDemo>
 
-## 滚动条样式
+### 滚动条样式
 
 `XBrickItem` 默认使用 `overflow="auto"`，内容过多时会显示较细的半透明滚动条。需要隐藏滚动条和溢出内容时，可以显式设置 `overflow="hidden"`。
 
 滚动条颜色可以通过 `--x-brick-scrollbar-thumb` 和 `--x-brick-scrollbar-thumb-hover` 覆盖。
 
-## 尺寸规则
+### 尺寸规则
 
 - `direction="horizontal"` 表示从左到右分隔，固定项按 `size || width` 占宽度。
 - `direction="vertical"` 表示从上到下分隔，固定项按 `size || height` 占高度。
@@ -96,7 +62,7 @@ const brickAlignCode = `\x3Cscript setup lang="ts">
 - `XBrickItem` 的 `verticalCenter`、`horizontalCenter`、`bottomAlign`、`rightAlign` 和 `padding` 优先级高于 `XBrick` 的内容布局同名属性。
 - `XBrickItem` 内继续嵌套 `XBrick` 时，内层 `XBrick` 会继承外层 item 已合并后的居中和内边距；内层 `XBrick` 显式传入同名属性时仍以显式值为准。
 
-## Brick Props
+### Brick Props
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
@@ -114,7 +80,7 @@ const brickAlignCode = `\x3Cscript setup lang="ts">
 | textColor | 内部容器文字颜色，会通过 CSS 变量传递给 `XBrickItem` | `string` | `undefined` |
 | padding | 内部容器默认内边距，支持数字像素或 CSS 长度 | `number \| string` | `undefined` |
 
-## BrickItem Props
+### BrickItem Props
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
@@ -131,30 +97,149 @@ const brickAlignCode = `\x3Cscript setup lang="ts">
 | rightAlign | 是否让当前容器内容右对齐，优先级高于 `XBrick` 和 `horizontalCenter` | `boolean` | `undefined` |
 | padding | 当前容器内边距，优先级高于 `XBrick` | `number \| string` | `undefined` |
 
-## Slots
+## 属性
 
-| 插槽名 | 说明 |
-| --- | --- |
-| `default` | 放置 `XBrickItem`，也可以嵌套其它 `XBrick` 形成组合布局 |
+默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
 
-## 手动验收建议
+### XBrick · 布局与尺寸
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `direction` | 分隔方向 | `BrickDirection` | `'horizontal'` | — |
+| `gap` | 容器间距，支持数字像素或 CSS 长度 | `BrickSize` | `0` | 数字为 px；字符串使用 CSS 单位 |
+| `width` | 外层宽度，支持数字像素或 CSS 长度 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `height` | 外层高度，支持数字像素或 CSS 长度 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+
+### XBrick · 外观与排版
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `backgroundColor` | 外层背景色，会通过 `--x-brick-bg` 写到 `XBrick` 自身，不会向子组件写入通用背景变量 | `string` | `—` | — |
+| `bottomAlign` | 是否让内部容器内容下对齐，优先级高于 `verticalCenter` | `boolean` | `undefined` | — |
+| `rightAlign` | 是否让直接子区块整体靠右排列；横向分隔时未设置主轴尺寸的子区块会按内容收缩 | `boolean` | `undefined` | — |
+| `padding` | 内部容器默认内边距，支持数字像素或 CSS 长度 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `borderColor` | 边框颜色 | `string` | `—` | — |
+| `radius` | 整体圆角，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `textColor` | 内部容器文字颜色，会通过 CSS 变量传递给 `XBrickItem` | `string` | `—` | — |
+
+### XBrick · 组件专有功能
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `count` | 无内部容器时生成的空容器数量 | `number` | `0` | — |
+| `wrap` | 是否允许换行 | `boolean` | `false` | — |
+| `verticalCenter` | 是否让内部容器内容垂直居中 | `boolean` | `undefined` | — |
+| `horizontalCenter` | 是否让内部容器内容水平居中 | `boolean` | `undefined` | — |
+
+### XBrickItem · 布局与尺寸
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `itemSize` | 沿主轴的固定尺寸，优先级高于 `width` 或 `height` | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `width` | 宽度；横向分隔时也作为主轴尺寸 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `height` | 高度；竖向分隔时也作为主轴尺寸 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `minSize` | 沿主轴的最小尺寸 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `maxSize` | 沿主轴的最大尺寸 | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+
+### XBrickItem · 外观与排版
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `backgroundColor` | 当前容器背景色 | `string` | `'transparent'` | — |
+| `bottomAlign` | 是否让当前容器内容下对齐，优先级高于 `XBrick` 和 `verticalCenter` | `boolean` | `undefined` | — |
+| `rightAlign` | 是否让当前容器内容右对齐，优先级高于 `XBrick` 和 `horizontalCenter` | `boolean` | `undefined` | — |
+| `padding` | 当前容器内边距，优先级高于 `XBrick` | `BrickSize` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `borderColor` | 边框颜色 | `string` | `—` | — |
+| `radius` | 整体圆角，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `textColor` | 当前容器文字颜色；未设置时沿用父容器文字颜色 | `string` | `—` | — |
+
+### XBrickItem · 组件专有功能
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `overflow` | 内容溢出方式 | `BrickItemOverflow` | `'auto'` | — |
+| `verticalCenter` | 是否让当前容器内容垂直居中，优先级高于 `XBrick` | `boolean` | `undefined` | — |
+| `horizontalCenter` | 是否让当前容器内容水平居中，优先级高于 `XBrick` | `boolean` | `undefined` | — |
+
+## 插槽
+
+### XBrick · 内容与展示
+
+| 插槽名 | 说明 | 作用域参数 |
+| --- | --- | --- |
+| `default` | 放置 `XBrickItem`，也可以嵌套其它 `XBrick` 形成组合布局 | `无作用域参数` |
+
+### XBrickItem · 内容与展示
+
+| 插槽名 | 说明 | 作用域参数 |
+| --- | --- | --- |
+| `default` | 当前容器内部内容，支持嵌套 XBrick 组合布局 | `无作用域参数` |
+
+## 公开类型
+
+以下类型可从 `@x-soft88/x-ui` 导入。
+
+### BrickDirection
+
+```ts
+export type BrickDirection = 'horizontal' | 'vertical'
+```
+
+### BrickSize
+
+```ts
+export type BrickSize = number | string
+```
+
+### BrickItemOverflow
+
+```ts
+export type BrickItemOverflow = 'visible' | 'hidden' | 'clip' | 'scroll' | 'auto'
+```
+
+### BrickProps
+
+```ts
+export interface BrickProps extends ElementStyleProps {
+  direction?: BrickDirection
+  count?: number
+  gap?: BrickSize
+  width?: BrickSize
+  height?: BrickSize
+  wrap?: boolean
+  backgroundColor?: string
+  verticalCenter?: boolean
+  horizontalCenter?: boolean
+  bottomAlign?: boolean
+  rightAlign?: boolean
+  padding?: BrickSize
+}
+```
+
+### BrickItemProps
+
+```ts
+export interface BrickItemProps extends ElementStyleProps {
+  itemSize?: BrickSize
+  width?: BrickSize
+  height?: BrickSize
+  minSize?: BrickSize
+  maxSize?: BrickSize
+  backgroundColor?: string
+  overflow?: BrickItemOverflow
+  verticalCenter?: boolean
+  horizontalCenter?: boolean
+  bottomAlign?: boolean
+  rightAlign?: boolean
+  padding?: BrickSize
+}
+```
+
+## 验收说明
 
 1. 在 Histoire 中切换横向和竖向，确认固定尺寸和自适应区域分配正确。
 2. 清空中间区域尺寸，确认多个未设尺寸的容器平分剩余空间。
 3. 关闭内部容器开关，调整 `count`，确认可以生成指定数量的空容器。
 4. 开启 `XBrick` 的右对齐，确认直接子区块整体靠右排列；再开启 `XBrickItem` 的右对齐和下对齐，确认子项内部内容右下对齐。
-
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
-## 公开属性补充
-
-以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
-
-### XBrick / `BrickProps`
-
-| 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
-| `borderColor` | 边框颜色 | `string` | — |
-| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
-
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

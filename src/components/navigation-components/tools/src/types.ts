@@ -1,5 +1,4 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
-import type { XSize } from '../../../_utils/size'
 import type { BadgeProps } from '../../../display-components/badge'
 import type { DropdownPlacement } from '../../dropdown/src/types'
 
@@ -49,7 +48,7 @@ export type ToolsItem = ToolsActionItem | ToolsSeparatorItem
 
 export interface ToolsProps extends ElementStyleProps {
   items?: ToolsItem[]
-  size?: XSize
+  fontSize?: number
   itemLayout?: ToolsItemLayout
   disabled?: boolean
   teleported?: boolean

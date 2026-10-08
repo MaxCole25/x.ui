@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { reactive } from 'vue'
 import { XColorPicker } from './index'
 import '../../../styles/index.css'
-
-const appearance = reactive({
+const appearance = reactive({ fontSize: 14,
   disabled: false,
-  panelMode: 'inline' as 'inline' | 'popover',
+  panelMode: 'popover' as 'inline' | 'popover',
   hideInlinePanel: false,
   showValue: true,
   width: 180,
   padding: '0 12px'
 })
-
 const sample = reactive({
   input: '外观接口预览',
   autocomplete: '上海',
@@ -30,62 +28,16 @@ const sample = reactive({
 
 <template>
   <Story title="Form 组件/ColorPicker 颜色选择器" group="components">
-    
-
-    
-
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
-          <XColorPicker
-            v-bind="styleProps"
+      <ApiPlayground component="XColorPicker">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XColorPicker 
             v-model="sample.color"
-            :disabled="appearance.disabled"
             :panel-mode="appearance.panelMode"
-            :hide-inline-panel="appearance.hideInlinePanel"
-            :show-value="appearance.showValue"
-            :width="appearance.width"
-            :padding="appearance.padding"
-          />
+
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>
-        <template #column-1>
-          <label>
-            <span>面板模式</span>
-            <select v-model="appearance.panelMode">
-              <option value="inline">inline</option>
-              <option value="popover">popover</option>
-            </select>
-          </label>
-          <label>
-            <span>宽度</span>
-            <input v-model.number="appearance.width" type="number" min="80" max="480" step="10" />
-          </label>
-        </template>
-        <template #column-3>
-          <label>
-            <span>绑定值</span>
-            <input v-model="sample.color" type="text" />
-          </label>
-          <label>
-            <span>内边距</span>
-            <input v-model="appearance.padding" type="text" />
-          </label>
-        </template>
-        <template #column-4>
-          <label>
-            <input v-model="appearance.hideInlinePanel" type="checkbox" />
-            <span>隐藏内联面板</span>
-          </label>
-          <label>
-            <input v-model="appearance.showValue" type="checkbox" />
-            <span>显示色值</span>
-          </label>
-          <label>
-            <input v-model="appearance.disabled" type="checkbox" />
-            <span>禁用</span>
-          </label>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

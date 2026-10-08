@@ -1,5 +1,5 @@
 {
-  "name": "xl.ui",
+  "name": "@x-soft88/x-ui",
   "version": "0.1.0",
   "description": "A Vue 3 UI component library.",
   "type": "module",
@@ -12,10 +12,10 @@
   },
   "main": "./dist/x-ui.js",
   "module": "./dist/x-ui.js",
-  "types": "./dist/x-ui.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/x-ui.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/x-ui.js"
     },
     "./style.css": "./dist/style.css",
@@ -26,20 +26,28 @@
   ],
   "scripts": {
     "dev": "vitepress dev docs",
-    "story": "set VITE_CJS_IGNORE_WARNING=true&& histoire dev",
-    "story:build": "set VITE_CJS_IGNORE_WARNING=true&& histoire build",
-    "story:preview": "set VITE_CJS_IGNORE_WARNING=true&& histoire preview",
+    "story": "node scripts/histoire.mjs dev",
+    "story:build": "node scripts/histoire.mjs build",
+    "story:preview": "node scripts/histoire.mjs preview",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "api:naming:audit": "node scripts/audit-api-naming.mjs",
     "api:naming:audit:write": "node scripts/audit-api-naming.mjs --write",
     "api:naming:audit:check": "node scripts/audit-api-naming.mjs --check --max-legacy=0 --max-review=0",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit -p tsconfig.build.json && vite build",
     "build:watch": "vite build --watch",
     "prepublishOnly": "pnpm api:naming:audit:check && pnpm test && pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "node scripts/lint.mjs",
+    "api:inventory": "node scripts/component-api.mjs",
+    "api:inventory:check": "node scripts/component-api.mjs --check",
+    "docs:api": "node scripts/update-api-docs.mjs",
+    "typecheck:lib": "vue-tsc --noEmit -p tsconfig.build.json",
+    "typecheck:docs": "vue-tsc --noEmit -p tsconfig.docs.json",
+    "typecheck:story": "vue-tsc --noEmit -p tsconfig.story.json",
+    "check": "node scripts/check.mjs"
   },
   "peerDependencies": {
     "echarts": "^5.0.0",

@@ -1,0 +1,17 @@
+@media (max-width: 1024px) {
+  .x-grid {
+    grid-template-columns: var(--x-grid-columns-lg, var(--x-grid-columns, repeat(3, minmax(0, 1fr))));
+  }
+}
+
+@media (max-width: 768px) {
+  .x-grid {
+    grid-template-columns: var(--x-grid-columns-md, var(--x-grid-columns-lg, var(--x-grid-columns, repeat(3, minmax(0, 1fr)))));
+  }
+}
+
+@media (max-width: 640px) {
+  .x-grid {
+    grid-template-columns: var(--x-grid-columns-sm, var(--x-grid-columns-md, var(--x-grid-columns-lg, var(--x-grid-columns, repeat(3, minmax(0, 1fr))))));
+  }
+}

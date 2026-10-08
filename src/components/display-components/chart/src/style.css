@@ -1,0 +1,19 @@
+.x-chart {
+  background: var(--x-element-bg, var(--x-chart-bg, var(--x-color-surface, #fff)));
+  border: var(--x-element-border-width, 0) solid var(--x-element-border-color, transparent);
+  box-sizing: border-box;
+  color: var(--x-element-text, var(--x-color-text));
+  font-family: var(--x-font-family);
+  height: var(--x-chart-height, 320px);
+  min-height: var(--x-chart-min-height, 240px);
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  width: var(--x-chart-width, 100%);
+}
+
+.x-chart__canvas {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}

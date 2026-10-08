@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
-import { inputSizePreset } from '../../../_utils/inputSize'
+import { getInputMetrics } from '../../../_utils/inputSize'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { XDialog } from '../../../feedback-components/dialog'
 import { createPickerThemeVars, omitPickerThemeProps } from '../../_utils/pickerTheme'
@@ -37,7 +38,7 @@ const optionScrollTimer = ref<number>()
 const timeSelectStyle = computed(() => createElementStyleVars(props))
 const dialogStyle = computed(() => createPickerThemeVars(props))
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -49,18 +50,17 @@ const emit = defineEmits<{
 }>()
 
 const inputProps = computed(() => {
-  const preset = inputSizePreset[mergedSize.value]
-  const usesExplicitSize = props.size != null
+  const preset = getInputMetrics(mergedSize.value)
+  const usesExplicitSize = props.fontSize != null
 
   const next: Record<string, unknown> = {
     ...props,
     type: 'text' as const,
     disabled: mergedDisabled.value,
-    size: mergedSize.value,
     fontSize: usesExplicitSize ? preset.fontSize : props.fontSize ?? preset.fontSize,
-    height: usesExplicitSize ? preset.height : props.height ?? preset.height,
-    padding: usesExplicitSize ? preset.padding : props.padding ?? preset.padding,
-    radius: usesExplicitSize ? preset.radius : props.radius ?? preset.radius
+    height: props.height ?? preset.height,
+    padding: props.padding ?? preset.padding,
+    radius: props.radius ?? preset.radius
   }
 
   omitPickerThemeProps(next)
@@ -200,7 +200,7 @@ watch(
   <div
     class="x-time-select"
     :class="{ 'is-disabled': mergedDisabled, 'is-active-border-hidden': !props.showActiveBorder }"
-    :style="timeSelectStyle"
+    :style="[timeSelectStyle, createFontStyle(mergedSize)]"
   >
     <XBaseInput
       v-bind="{ ...attrs, ...inputProps }"

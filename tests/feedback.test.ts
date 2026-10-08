@@ -42,11 +42,11 @@ describe('feedback components', () => {
     expect(wrapper.find('.x-message').classes()).not.toContain('x-message--success')
   })
 
-  it('keeps message size from owning padding and radius', () => {
+  it('keeps message font size independent from padding and radius', () => {
     const wrapper = mount(XMessageComponent, {
       props: {
         message: '保存成功',
-        size: 'sm',
+        fontSize: 10,
         padding: '18px 20px',
         radius: 12,
         duration: 0
@@ -55,7 +55,7 @@ describe('feedback components', () => {
 
     const style = wrapper.find('.x-message').attributes('style')
     expect(style).toContain('--x-message-font-size: 10px')
-    expect(style).toContain('--x-message-min-height: 22px')
+    expect(style).toContain('--x-message-min-height: 32px')
     expect(style).toContain('--x-message-padding: 18px 20px')
     expect(style).toContain('--x-message-radius: 12px')
   })
@@ -107,12 +107,12 @@ describe('feedback components', () => {
     wrapper.unmount()
   })
 
-  it('keeps message box size from owning padding and radius', () => {
+  it('keeps message box font size independent from padding and radius', () => {
     const wrapper = mount(XMessageBoxComponent, {
       props: {
         modelValue: true,
         message: '确认删除',
-        size: 'lg',
+        fontSize: 14,
         padding: '22px',
         radius: 14
       },
@@ -121,7 +121,7 @@ describe('feedback components', () => {
 
     const style = (document.body.querySelector('.x-message-box__mask') as HTMLElement).getAttribute('style')
     expect(style).toContain('--x-message-box-font-size: 14px')
-    expect(style).toContain('--x-message-box-control-height: 38px')
+    expect(style).toContain('--x-message-box-control-height: 32px')
     expect(style).toContain('--x-message-box-padding: 22px')
     expect(style).toContain('--x-message-box-radius: 14px')
     wrapper.unmount()
@@ -170,7 +170,7 @@ describe('feedback components', () => {
         XDropdownItem
       },
       template: `
-        <XDropdown trigger="click" placement="right-end" show-arrow @command="$emit('command', $event)">
+        <XDropdown :teleported="false" trigger="click" placement="right-end" show-arrow @command="$emit('command', $event)">
           <button>更多</button>
           <template #dropdown>
             <XDropdownMenu>

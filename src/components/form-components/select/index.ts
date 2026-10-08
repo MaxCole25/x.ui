@@ -1,9 +1,10 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Select from './src/Select.vue'
 import Option from './src/Option.vue'
 
-export const XSelect = Select
-export const XOption = Option
+export const XSelect = Select as ComponentWithInstall<typeof Select>
+export const XOption = Option as ComponentWithInstall<typeof Option>
 
 export type {
   OptionProps,
@@ -11,7 +12,7 @@ export type {
   SelectOption,
   SelectOptionValue,
   SelectProps,
-  SelectSize,
+  SelectFontSize,
   SelectStatus,
   SelectTextAlign
 } from './src/types'

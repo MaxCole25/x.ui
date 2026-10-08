@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { MessageProps } from './types'
 
@@ -11,7 +11,7 @@ defineOptions({
 const props = withDefaults(defineProps<MessageProps>(), {
   message: '',
   status: 'info',
-  size: undefined,
+  fontSize: undefined,
   duration: 3000,
   showClose: false,
   plain: false,
@@ -38,8 +38,8 @@ const defaultIcon = computed(() => {
   }
   return props.icon || iconMap[mergedStatus.value]
 })
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 
 const messageStyle = computed(() => ({
   '--x-message-offset': `${props.offset}px`,
@@ -84,8 +84,8 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="x-message"
-    :class="[`x-message--${mergedStatus}`, `x-message--${props.placement}`, `x-message--${mergedSize}`, { 'is-plain': props.plain, 'is-round': props.round, 'is-center': props.center }]"
-    :style="messageStyle"
+    :class="[`x-message--${mergedStatus}`, `x-message--${props.placement}`, 'x-message', { 'is-plain': props.plain, 'is-round': props.round, 'is-center': props.center }]"
+    :style="[messageStyle, createFontStyle(mergedSize)]"
     role="alert"
     @mouseenter="stopTimer"
     @mouseleave="startTimer"

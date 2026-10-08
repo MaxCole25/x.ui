@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue'
-import { inputSizePreset } from '../../../_utils/inputSize'
+import { getInputMetrics } from '../../../_utils/inputSize'
 import { XBaseInput } from '../../../basic-components/base-input'
 import type { InputProps } from './types'
 
@@ -31,17 +31,7 @@ const emit = defineEmits<{
 
 const attrs = useAttrs()
 
-const baseProps = computed(() => {
-  const preset = props.size ? inputSizePreset[props.size] : undefined
-
-  return {
-    ...props,
-    fontSize: preset?.fontSize ?? props.fontSize,
-    height: preset?.height ?? props.height,
-    padding: preset?.padding ?? props.padding,
-    radius: preset?.radius ?? props.radius
-  }
-})
+const baseProps = computed(() => props)
 </script>
 
 <template>

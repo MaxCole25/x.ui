@@ -1,6 +1,5 @@
-import type { XSize } from '../../../_utils/size'
 export interface JsonEditorProps {
-  size?: XSize
+  fontSize?: number
   modelValue: string
   title?: string
   externalError?: string

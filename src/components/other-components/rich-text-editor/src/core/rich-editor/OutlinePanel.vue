@@ -526,7 +526,7 @@ function markActivePath(nodes: OutlineNode[]): boolean {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.45;
   color: inherit;
 }
@@ -534,7 +534,7 @@ function markActivePath(nodes: OutlineNode[]): boolean {
 .xl-outline-panel__empty {
   padding: 12px 0;
   color: var(--xl-outline-panel-empty);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 :global([data-doc-theme-scheme='dark']) .xl-outline-panel .xl-outline-panel__title {

@@ -1,0 +1,25 @@
+.x-brick {
+  background: var(--x-brick-bg, transparent);
+  border: var(--x-brick-border-width, 0) solid var(--x-brick-border-color, transparent);
+  border-radius: var(--x-brick-radius, 0);
+  box-sizing: border-box;
+  color: var(--x-brick-text, var(--x-color-text));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-family: var(--x-font-family);
+  gap: var(--x-brick-gap, 0);
+  height: var(--x-brick-height, auto);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  width: var(--x-brick-width, 100%);
+}
+
+.x-brick--vertical {
+  flex-direction: column;
+}
+
+.x-brick.is-wrap {
+  flex-wrap: wrap;
+}

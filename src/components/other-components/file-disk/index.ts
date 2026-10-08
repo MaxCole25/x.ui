@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import FileDisk from './src/FileDisk.vue'
 
-export const XFileDisk = FileDisk
+export const XFileDisk = FileDisk as ComponentWithInstall<typeof FileDisk>
 
 export type {
   FileDiskAdapter,

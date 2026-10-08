@@ -1,8 +1,10 @@
-# x.ui Agent 开发指南
+# @x-soft88/x-ui Agent 开发指南
 
-本仓库是 Vue 3 UI 组件库 `x.ui`。第三方 AI、Codex 5.3 或其它代码代理在本仓库中开发组件时，必须优先遵循本文档。
+本仓库是 Vue 3 UI 组件库 `@x-soft88/x-ui`。第三方 AI、Codex 5.3 或其它代码代理在本仓库中开发组件时，必须优先遵循本文档。
 
-> 中文备注：本文档已同步仓库内 `.codex/skills/x-ui-component-library/SKILL.md` 的关键约束，作为所有 Agent 在 x.ui 仓库内开发、文档化、测试和联调组件时的统一入口。
+包名、安装命令、导入路径和本地 link 命令统一使用 `@x-soft88/x-ui`。组件名继续使用 `X` 前缀，插件变量保留 `XUi`，CSS 类名前缀保留 `x-`，构建产物文件名保留 `x-ui`。
+
+> 中文备注：本文档已同步仓库内 `.codex/skills/x-ui-component-library/SKILL.md` 的关键约束，作为所有 Agent 在 @x-soft88/x-ui 仓库内开发、文档化、测试和联调组件时的统一入口。
 
 ## 项目目标
 
@@ -103,7 +105,7 @@ docs/.vitepress/config.ts
 
 新增或修改公开 Props、事件、插槽、类型和 `expose` 方法时，必须优先遵守 `docs/guide/api-naming.md`。
 
-- 基础属性统一使用 `modelValue`、`size`、`disabled`、`readonly`、`loading`、`clearable`。
+- 基础属性统一使用 `modelValue`、`fontSize`、`disabled`、`readonly`、`loading`、`clearable`。
 - 颜色属性统一使用 `xxxColor`、`xxxTextColor`、`xxxBackgroundColor`、`xxxBorderColor`，主题色用 `accentColor`，选中色用 `checkedColor`，头像背景用 `avatarBackgroundColor`，不要新增 `BgColor` 缩写或裸 `background` / `color`。
 - 整体圆角使用 `radius`，局部圆角使用 `partRadius`，不要为整体圆角新增 `borderRadius`。
 - 布尔属性按语义使用 `showXxx`、`hideXxx`、`enableXxx`、`allowXxx`、`canXxx`。
@@ -111,7 +113,7 @@ docs/.vitepress/config.ts
 - 视觉形态属性优先使用 `variant`，反馈状态属性优先使用 `status`；原生输入 `type` 可保留，其它场景不要新增裸 `type`。
 - `color`、`background`、`value`、`label` 这类裸语义属性必须谨慎新增，语义不够明确时加业务前缀。
 
-x.ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props 时直接使用规范新名称，不新增旧命名别名、兼容 fallback 或 `@deprecated` Props；除非用户明确要求兼容迁移。
+@x-soft88/x-ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props 时直接使用规范新名称，不新增旧命名别名、兼容 fallback 或 `@deprecated` Props；除非用户明确要求兼容迁移。
 
 ## 组件分类目录约束
 
@@ -178,28 +180,17 @@ x.ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props �
 
 > 中文备注：Histoire 是组件人工验收入口，后续新增或修改组件时，优先维护 `外观接口` 的完整性，而不是新增零散演示变体。
 
-## 尺寸选项强制约定
+## 字体与控件高度规范
 
-组件提供 `size` 属性时，必须优先使用 `sm`、`md`、`lg` 三档，并按下表统一尺寸。除非用户明确要求特例，不要为单个组件另行定义同名尺寸含义。
-
-组件属性中同时提供 `size` 与高度、字体大小、圆角、padding 等外观属性时，一旦设置了 `size`，这些属性必须自动失效，由 `size` 统一接管对应样式；`size` 不影响宽度和字体族，避免同一组件出现多套尺寸来源互相覆盖。
-
-| 尺寸 | 高度 | 字体 | padding | 圆角 |
-| --- | --- | --- | --- | --- |
-| `sm` | `22px` | `10px` | `0 4px` | `4px` |
-| `md` | `30px` | `12px` | `0 8px` | `6px` |
-| `lg` | `38px` | `14px` | `0 10px` | `8px` |
-
-### 尺寸特例
-
-以下组件已被业务确认需要保留特殊尺寸规则，修改相关组件时必须优先遵守：
-
-- `XTabs`：`size` 只接管内部高度变量、字号、图标尺寸等，不接管标签外层框高度、标签内边距和默认最小宽度；`sm`、`md`、`lg` 三档 `.x-tabs__item-frame` 高度都固定为 `30px`，标签内边距都固定使用 md 规格 `0 8px`，默认最小宽度都固定使用 md 规格 `140px`。业务若需要特殊宽度，应通过 `tabMinWidth` 显式覆盖。
-- `XSwitch`：`size` 接管字号，但轨道视觉宽高按统一尺寸高度的 `80%` 渲染，即 `sm` 为 `17.6px` 高、`md` 为 `24px` 高、`lg` 为 `30.4px` 高；轨道宽度保持高度的 2 倍，因此宽度也同步缩小 20%。`size` 不接管圆角，开关轨道必须始终保持左右半圆的胶囊边线，默认使用 `999px` 圆角，不随 `sm`、`md`、`lg` 变化为 `4px`、`6px`、`8px`。
-- `XDialog`：`size` 只接管弹窗字号和关闭按钮尺寸，不接管弹窗圆角，也不接管头部、正文、底部 padding；弹窗空间节奏必须使用稳定默认值或 `--x-dialog-header-padding`、`--x-dialog-body-padding`、`--x-dialog-footer-padding` 覆盖，圆角使用稳定默认值或 `--x-dialog-radius` 覆盖，避免表单弹窗因 `sm/md/lg` 变得拥挤。
-- `XDrawer`、`XMessage`、`XMessageBox`、`XTooltip`、`XCard`：`size` 不接管容器 padding 和 radius。`XDrawer` 的 `size` 只接管字号和关闭按钮尺寸；`XMessage` 的 `size` 只接管字号和最小高度；`XMessageBox` 的 `size` 只接管字号和按钮高度；`XTooltip`、`XCard` 的 `size` 只接管字号。容器留白与圆角必须使用稳定默认值、显式 props 或对应 CSS 变量覆盖。
-
-> 中文备注：统一尺寸规则用于减少组件之间的视觉偏差；已列出的特例是业务确认结果，不能在常规重构中抹平。
+- 字号属性统一为 fontSize，类型为 number，单位固定 px；模板写作 :font-size="14"。
+- 移除字号用途的 size 属性和 sm/md/lg 档位，不保留兼容别名。布局响应式断点、文件大小等其他尺寸语义不受影响。
+- 常规按钮、单行输入框、选择器等默认字号 14px、高度 32px，height 独立调整高度；fontSize 不改变高度、padding 或 radius。
+- 其它组件正文和文本区域默认字号同样为 14px；标题与辅助说明使用语义字号。
+- 卡片、容器、表格、弹窗、抽屉和多行文本保留独立布局与行高规则，不强制容器高 32px。
+- XTabs 标签外框默认高 30px、内边距 0 8px、最小宽度 140px；字体变化不联动这些尺寸。
+- XSwitch 默认轨道视觉高度保持 24px、宽高比 2:1、胶囊圆角，可通过 height 调整，fontSize 只影响文字。
+- 字体、字重、行高、标题层级优先使用 src/styles/index.css 中的全局排版变量，具体约定见 docs/guide/typography.md。
+- Histoire 的字号使用数字输入框，新增或调整属性时同步更新文档和外观接口。
 
 ## 浮层层级强制约定
 
@@ -277,7 +268,7 @@ pnpm build:watch
 在第三方 Vue 3 项目中执行：
 
 ```bash
-pnpm link --global x.ui
+pnpm link --global @x-soft88/x-ui
 pnpm dev
 ```
 
@@ -285,8 +276,8 @@ pnpm dev
 
 ```ts
 import { createApp } from 'vue'
-import XUi from 'x.ui'
-import 'x.ui/style.css'
+import XUi from '@x-soft88/x-ui'
+import '@x-soft88/x-ui/style.css'
 
 createApp(App).use(XUi).mount('#app')
 ```
@@ -295,8 +286,8 @@ createApp(App).use(XUi).mount('#app')
 
 ```vue
 <script setup lang="ts">
-import { XButton } from 'x.ui'
-import 'x.ui/style.css'
+import { XButton } from '@x-soft88/x-ui'
+import '@x-soft88/x-ui/style.css'
 </script>
 
 <template>
@@ -316,7 +307,7 @@ resolve: {
 
 - 不要把本项目替换成其它 UI 库脚手架。
 - 不要移除 VitePress、Histoire、Vitest，除非用户明确要求。
-- 不要破坏 `package.json` 中的导出路径：`dist/x-ui.js`、`dist/x-ui.umd.cjs`、`dist/index.d.ts`、`dist/style.css`。
+- 不要破坏 `package.json` 中的导出路径：`dist/x-ui.js`、`dist/index.d.ts`、`dist/style.css`，仅发布 ES 模块。
 - Vue 必须保持为 `peerDependencies`。
 - 不要提交或依赖生成目录，例如 `dist`、`docs/.vitepress/dist`、`.histoire`。
 - 修改中文文件后，必须用 UTF-8 重新读取关键文件，确认没有乱码。

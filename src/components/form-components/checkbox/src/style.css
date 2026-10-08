@@ -1,0 +1,6 @@
+.x-checkbox {
+  --x-checkbox-color: var(--x-form-color, var(--x-color-primary));
+  --x-checkbox-border-color: var(--x-form-border-color, #dcdfe6);
+  --x-checkbox-hover-border-color: var(--x-form-hover-border-color, #c0c4cc);
+  --x-checkbox-radius: 2px;
+}

@@ -1,0 +1,5 @@
+@keyframes x-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

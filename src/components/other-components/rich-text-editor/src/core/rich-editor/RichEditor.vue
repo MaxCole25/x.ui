@@ -55,7 +55,7 @@ import type { JSONContent } from '@tiptap/core'
 import type { Editor } from '@tiptap/vue-3'
 import '../../../../../../styles/index.css'
 import './styles/index.css'
-import { componentSizePreset, type XSize } from '../../../../../_utils/size'
+import { getComponentMetrics, type FontSize } from '../../../../../_utils/size'
 import { toHtml } from './custom/adapters/htmlAdapter'
 import { toJson } from './custom/adapters/jsonAdapter'
 import { fromMarkdown } from './custom/adapters/markdownAdapter'
@@ -98,7 +98,7 @@ const props = withDefaults(
     showToolbar?: boolean
     showOutline?: boolean
     pasteImages?: boolean
-    size?: XSize
+    fontSize?: number
     contentBackgroundColor?: string
     contentTextColor?: string
     contentFontSize?: number | string
@@ -116,7 +116,7 @@ const props = withDefaults(
     showToolbar: true,
     showOutline: true,
     pasteImages: true,
-    size: undefined,
+    fontSize: undefined,
     contentBackgroundColor: 'var(--x-color-surface, #ffffff)',
     contentTextColor: 'var(--x-color-text, #111827)',
     contentFontSize: 14,
@@ -151,8 +151,8 @@ const showOutline = ref(props.showOutline)
 const hasSelectedImage = ref(false)
 const selectedImageWidth = ref(100)
 const commands = useEditorCommands(editorRef)
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const editorStyle = computed(() => {
   const theme = props.theme || {}
   const preset = sizePreset.value

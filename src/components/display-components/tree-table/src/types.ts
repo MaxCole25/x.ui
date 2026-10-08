@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type TreeTableAlign = 'left' | 'center' | 'right'
 export type TreeTableRowKey = string | number
@@ -54,7 +53,7 @@ export interface TreeTableProps<Row extends TreeTableRowData = TreeTableRowData>
   childrenKey?: string
   treeColumnKey?: string
   labelKey?: string
-  size?: XSize
+  fontSize?: number
   showHeader?: boolean
   showSelection?: boolean
   selectedRowKeys?: TreeTableRowKey[]

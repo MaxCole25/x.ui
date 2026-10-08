@@ -1,0 +1,29 @@
+.x-login--logo-right .x-login__brand,
+.x-register--logo-right .x-register__brand {
+flex-direction: row-reverse;
+}
+
+.x-login__control--prefix .x-login__input,
+.x-register__control--prefix .x-register__input {
+padding-left: 42px;
+}
+
+.x-login__control--suffix .x-login__input,
+.x-register__control--suffix .x-register__input {
+padding-right: 42px;
+}
+
+.x-login__slider-captcha.is-verified .x-login__slider-track,
+.x-register__slider-captcha.is-verified .x-register__slider-track {
+background: #dff8ea;
+}
+
+.x-login,
+.x-register {
+padding: 22px;
+}
+
+.x-login__field--inline,
+.x-register__field--inline {
+grid-template-columns: 1fr;
+}

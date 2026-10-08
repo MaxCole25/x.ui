@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, useId, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
+import { useModal } from '../../../_utils/useModal'
 import type { DialogProps } from './types'
 
 defineOptions({
@@ -12,7 +13,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<DialogProps>(), {
   title: '',
-  size: undefined,
+  fontSize: undefined,
   width: 920,
   height: 760,
   minWidth: 720,
@@ -23,6 +24,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   resizable: true,
   showFullscreen: false,
   closeOnMaskClick: true,
+  closeOnEsc: true,
   showFooterDivider: true,
   footerDividerStyle: 'solid',
   teleported: true,
@@ -36,6 +38,7 @@ const emit = defineEmits<{
 }>()
 
 const uncontrolledVisible = ref(false)
+const titleId = useId()
 const visible = computed({
   get: () => props.modelValue ?? uncontrolledVisible.value,
   set: (value: boolean) => {
@@ -70,37 +73,32 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
-function toPixelNumber(value: number | string | undefined, fallback: number) {
+function toPixelNumber(value: number | undefined, fallback: number) {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : fallback
-  }
-
-  if (typeof value === 'string') {
-    const parsed = Number.parseFloat(value)
-    return Number.isFinite(parsed) ? parsed : fallback
   }
 
   return fallback
 }
 
 function getMinWidth() {
-  return toPixelNumber(props.minWidth, 720)
+  return Math.min(toPixelNumber(props.minWidth, 720), Math.max(0, window.innerWidth - 24))
 }
 
 function getMinHeight() {
-  return toPixelNumber(props.minHeight, 520)
+  return Math.min(toPixelNumber(props.minHeight, 520), Math.max(0, window.innerHeight - 24))
 }
 
 function getMaxWidth() {
   const minWidth = getMinWidth()
   const maxWidth = toPixelNumber(props.maxWidth, 0)
-  return maxWidth > 0 ? maxWidth : Math.max(minWidth, window.innerWidth - 24)
+  return maxWidth > 0 ? Math.max(minWidth, Math.min(maxWidth, window.innerWidth - 24)) : Math.max(minWidth, window.innerWidth - 24)
 }
 
 function getMaxHeight() {
   const minHeight = getMinHeight()
   const maxHeight = toPixelNumber(props.maxHeight, 0)
-  return maxHeight > 0 ? maxHeight : Math.max(minHeight, window.innerHeight - 24)
+  return maxHeight > 0 ? Math.max(minHeight, Math.min(maxHeight, window.innerHeight - 24)) : Math.max(minHeight, window.innerHeight - 24)
 }
 
 function centerPopup() {
@@ -172,8 +170,15 @@ function moveResize(event: MouseEvent) {
   }
   const nextWidth = resizeState.startWidth + (event.clientX - resizeState.startX)
   const nextHeight = resizeState.startHeight + (event.clientY - resizeState.startY)
-  popupWidth.value = clamp(nextWidth, getMinWidth(), getMaxWidth())
-  popupHeight.value = clamp(nextHeight, getMinHeight(), getMaxHeight())
+  popupWidth.value = clamp(nextWidth, getMinWidth(), Math.min(getMaxWidth(), window.innerWidth - popupLeft.value - 12))
+  popupHeight.value = clamp(nextHeight, getMinHeight(), Math.min(getMaxHeight(), window.innerHeight - popupTop.value - 12))
+}
+
+function fitViewport() {
+  popupWidth.value = clamp(popupWidth.value, getMinWidth(), getMaxWidth())
+  popupHeight.value = clamp(popupHeight.value, getMinHeight(), getMaxHeight())
+  popupLeft.value = clamp(popupLeft.value, 12, Math.max(12, window.innerWidth - popupWidth.value - 12))
+  popupTop.value = clamp(popupTop.value, 12, Math.max(12, window.innerHeight - popupHeight.value - 12))
 }
 
 function stopResize() {
@@ -185,7 +190,7 @@ watch(
   ([isVisible]) => {
     popupWidth.value = toPixelNumber(props.width, 920)
     popupHeight.value = toPixelNumber(props.height, 760)
-    if (isVisible) {
+    if (isVisible && typeof window !== 'undefined') {
       centerPopup()
     }
   },
@@ -195,7 +200,9 @@ watch(
 watch(
   () => visible.value,
   (value) => {
+    if (typeof window === 'undefined') return
     if (value) {
+      window.addEventListener('resize', fitViewport)
       window.addEventListener('mousemove', moveDrag)
       window.addEventListener('mouseup', stopDrag)
       window.addEventListener('mousemove', moveResize)
@@ -205,6 +212,7 @@ watch(
     isFullscreen.value = false
     stopDrag()
     stopResize()
+    window.removeEventListener('resize', fitViewport)
     window.removeEventListener('mousemove', moveDrag)
     window.removeEventListener('mouseup', stopDrag)
     window.removeEventListener('mousemove', moveResize)
@@ -223,6 +231,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', fitViewport)
   window.removeEventListener('mousemove', moveDrag)
   window.removeEventListener('mouseup', stopDrag)
   window.removeEventListener('mousemove', moveResize)
@@ -235,6 +244,7 @@ const popupStyle = computed(() => ({
   height: isFullscreen.value ? '100vh' : `${popupHeight.value}px`,
   left: isFullscreen.value ? '0px' : `${popupLeft.value}px`,
   top: isFullscreen.value ? '0px' : `${popupTop.value}px`,
+  '--x-dialog-radius': toCssSize(props.radius),
   '--x-dialog-bg': props.backgroundColor,
   '--x-dialog-text': props.textColor,
   '--x-dialog-border-color': props.borderColor,
@@ -253,8 +263,8 @@ const popupStyle = computed(() => ({
   '--x-dialog-close-hover-bg': props.closeIconHoverBackgroundColor,
   '--x-dialog-shadow': props.shadow,
   '--x-dialog-resizer-color': props.resizerColor,
-  '--x-dialog-font-size': `${componentSizePreset[props.size ?? 'md'].fontSize}px`,
-  '--x-dialog-control-height': `${componentSizePreset[props.size ?? 'md'].height}px`
+  '--x-dialog-font-size': `${getComponentMetrics(props.fontSize ?? 14).fontSize}px`,
+  '--x-dialog-control-height': `${getComponentMetrics(props.fontSize ?? 14).height}px`
 }))
 
 const maskStyle = computed(() => ({
@@ -264,16 +274,16 @@ const maskStyle = computed(() => ({
 
 const fullscreenIconClass = computed(() => (isFullscreen.value ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line'))
 const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '全屏显示'))
+const modalRef = ref<HTMLElement | null>(null)
+useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
 </script>
 
 <template>
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <div v-if="visible" class="x-dialog__mask" :style="maskStyle" @click.self="onMaskClick">
-      <div class="x-dialog" v-bind="$attrs" :class="[`x-dialog--${props.size ?? 'md'}`, { 'is-fullscreen': isFullscreen }]" :style="popupStyle">
+      <div ref="modalRef" role="dialog" aria-modal="true" :aria-labelledby="props.title || $slots.header ? titleId : undefined" :aria-label="props.title || '弹窗'" tabindex="-1" class="x-dialog" v-bind="$attrs" :class="['x-dialog', { 'is-fullscreen': isFullscreen }]" :style="[popupStyle, createFontStyle(props.fontSize ?? 14)]">
         <header class="x-dialog__header" @mousedown="startDrag">
-          <slot name="header">
-            <div class="x-dialog__title">{{ title }}</div>
-          </slot>
+          <div :id="titleId" class="x-dialog__title"><slot name="header">{{ title }}</slot></div>
           <div class="x-dialog__actions" @mousedown.stop>
             <button v-if="showFullscreen" type="button" class="x-dialog__fullscreen" :aria-label="fullscreenLabel" :title="fullscreenLabel" @click="toggleFullscreen">
               <i :class="fullscreenIconClass" aria-hidden="true" />
@@ -337,8 +347,8 @@ const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '�
 .x-dialog__title {
   min-width: 0;
   flex: 1 1 auto;
-  font-size: calc(var(--x-dialog-font-size, 12px) + 4px);
-  font-weight: 700;
+  font-size: var(--x-font-size-dialog-title, 16px);
+  font-weight: var(--x-font-weight-semibold, 600);
   color: inherit;
 }
 
@@ -369,7 +379,7 @@ const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '�
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(var(--x-dialog-font-size, 12px) + 4px);
+  font-size: calc(var(--x-dialog-font-size, 14px) + 4px);
 }
 
 .x-dialog__close:hover,

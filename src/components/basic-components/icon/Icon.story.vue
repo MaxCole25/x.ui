@@ -1,106 +1,34 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
+import { reactive } from 'vue'
 import { XIcon } from './index'
-import { remixIconNames } from './src/iconNames'
-import type { IconSize, IconVariant } from './src/types'
+import type { IconFontSize, IconVariant } from './src/types'
 import '../../../styles/index.css'
-
 const state = reactive({
   name: 'home',
   variant: 'line' as IconVariant,
-  size: 'lg' as IconSize,
+  fontSize: 14 as IconFontSize,
   offsetY: '',
   color: '#1264f4',
   title: '首页',
   spin: false
-})
-
-const previewCode = computed(() => {
-  const attrs = [
-    `name="${state.name}"`,
-    state.variant !== 'line' ? `variant="${state.variant}"` : '',
-    state.size !== 'md' ? `size="${state.size}"` : '',
-    state.offsetY ? `offset-y="${state.offsetY}"` : '',
-    state.color ? `color="${state.color}"` : '',
-    state.title ? `title="${state.title}"` : '',
-    state.spin ? 'spin' : ''
-  ].filter(Boolean)
-
-  return `<XIcon ${attrs.join(' ')} />`
 })
 </script>
 
 <template>
   <Story title="基础组件/Icon 图标" group="components">
     <Variant title="外观接口">
-      <div class="story-playground">
-        <div class="story-preview">
+      <ApiPlayground component="XIcon">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XIcon
             :name="state.name"
-            :variant="state.variant"
-            :size="state.size"
-            :offset-y="state.offsetY"
-            :color="state.color"
+
             :title="state.title"
             :spin="state.spin"
-          />
-          <span class="story-muted">当前图标：{{ state.name }}</span>
-        </div>
-
-        <div class="story-controls">
-          <label>
-            <span>图标名</span>
-            <input v-model="state.name" list="x-icon-story-names" />
-            <datalist id="x-icon-story-names">
-              <option v-for="iconName in remixIconNames" :key="iconName" :value="iconName" />
-            </datalist>
-          </label>
-
-          <label>
-            <span>风格</span>
-            <select v-model="state.variant">
-              <option value="line">line</option>
-              <option value="fill">fill</option>
-            </select>
-          </label>
-
-          <label>
-            <span>尺寸</span>
-            <select v-model="state.size">
-              <option value="sm">sm</option>
-              <option value="md">md</option>
-              <option value="lg">lg</option>
-            </select>
-          </label>
-
-          <label>
-            <span>颜色</span>
-            <input v-model="state.color" type="color" />
-          </label>
-
-          <label>
-            <span>垂直偏移</span>
-            <input v-model="state.offsetY" placeholder="-1px / 1px" />
-          </label>
-
-          <label>
-            <span>标题</span>
-            <input v-model="state.title" />
-          </label>
-
-          <label class="story-check">
-            <input v-model="state.spin" type="checkbox" />
-            <span>旋转</span>
-          </label>
-        </div>
-
-        <pre><code>{{ previewCode }}</code></pre>
-      </div>
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
+        </template>
+      </ApiPlayground>
     </Variant>
-
-    
-
-    
   </Story>
 </template>
 

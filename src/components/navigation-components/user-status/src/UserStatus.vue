@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { XIcon } from '../../../basic-components/icon'
 import { XAvatar } from '../../../display-components/avatar'
@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<UserStatusProps>(), {
   hoverBackgroundColor: undefined,
   openBackgroundColor: undefined,
   items: () => [],
-  size: 'md',
+  fontSize: 14,
   trigger: 'click',
   placement: 'bottom-end',
   disabled: false,
@@ -50,8 +50,8 @@ const emit = defineEmits<{
 
 const statusStyle = computed(() => ({
   ...createElementStyleVars(props),
-  '--x-user-status-font-size': `${componentSizePreset[props.size].fontSize}px`,
-  '--x-user-status-radius': componentSizePreset[props.size].radius,
+  '--x-user-status-font-size': `${getComponentMetrics(props.fontSize).fontSize}px`,
+  '--x-user-status-radius': getComponentMetrics(props.fontSize).radius,
   '--x-user-status-hover-bg': props.hoverBackgroundColor,
   '--x-user-status-open-bg': props.openBackgroundColor
 }))
@@ -74,8 +74,8 @@ function handleCommand(command: unknown) {
   <div
     v-if="!props.loggedIn"
     class="x-user-status x-user-status--guest"
-    :class="[`x-user-status--${props.size}`, { 'is-disabled': props.disabled }]"
-    :style="statusStyle"
+    :class="['x-user-status', { 'is-disabled': props.disabled }]"
+    :style="[statusStyle, createFontStyle(props.fontSize ?? 14)]"
   >
     <button class="x-user-status__guest-action" type="button" :disabled="props.disabled" @click="emit('login-click', $event)">
       登录
@@ -88,12 +88,12 @@ function handleCommand(command: unknown) {
   <XDropdown
     v-else
     class="x-user-status"
-    :class="[`x-user-status--${props.size}`, { 'is-disabled': props.disabled }]"
-    :style="statusStyle"
+    :class="['x-user-status', { 'is-disabled': props.disabled }]"
+    :style="[statusStyle, createFontStyle(props.fontSize ?? 14)]"
     :trigger="props.trigger"
     :model-value="props.modelValue"
     :placement="props.placement"
-    :size="props.size"
+    :font-size="props.fontSize"
     :disabled="props.disabled"
     :hide-on-click="props.hideOnClick"
     :show-arrow="false"
@@ -117,7 +117,7 @@ function handleCommand(command: unknown) {
           :icon-color="props.avatarIconColor"
           :avatar-background-color="props.avatarBackgroundColor"
           :icon-full="props.avatarIconFull"
-          :size="props.size"
+          :font-size="props.fontSize"
         />
       </slot>
 
@@ -126,7 +126,7 @@ function handleCommand(command: unknown) {
           <span class="x-user-status__name">
             <slot name="name">{{ props.name }}</slot>
           </span>
-          <XIcon class="x-user-status__arrow" name="arrow-down-s" :size="props.size" />
+          <XIcon class="x-user-status__arrow" name="arrow-down-s" :font-size="props.fontSize" />
         </span>
         <span v-if="props.description || $slots.description" class="x-user-status__description">
           <slot name="description">{{ props.description }}</slot>
@@ -135,7 +135,7 @@ function handleCommand(command: unknown) {
     </button>
 
     <template #dropdown>
-      <slot name="menu" :items="props.items" :size="props.size">
+      <slot name="menu" :items="props.items" :font-size="props.fontSize">
         <XDropdownMenu class="x-user-status__menu" width="136px" padding="6px 0" radius="4px">
           <XDropdownItem
             v-for="(item, index) in props.items"
@@ -144,13 +144,13 @@ function handleCommand(command: unknown) {
             :disabled="item.disabled"
             :divided="item.divided"
             :active="item.active"
-            :size="props.size"
+            :font-size="props.fontSize"
             padding="0 14px"
             height="32px"
             radius="0"
           >
             <span class="x-user-status__menu-item">
-              <XIcon v-if="item.icon" class="x-user-status__menu-icon" :name="item.icon" :size="props.size" />
+              <XIcon v-if="item.icon" class="x-user-status__menu-icon" :name="item.icon" :font-size="props.fontSize" />
               <span class="x-user-status__menu-text">{{ item.text }}</span>
             </span>
           </XDropdownItem>

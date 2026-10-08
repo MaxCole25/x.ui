@@ -1,7 +1,7 @@
 import type { InputProps, InputStatus, InputTextAlign } from '../../input'
 import type { SelectOptionValue } from '../../select'
 
-export type CascaderSize = 'sm' | 'md' | 'lg'
+export type CascaderFontSize = number
 export type CascaderStatus = InputStatus
 export type CascaderTextAlign = InputTextAlign
 export type CascaderDisplayField = 'label' | 'value'
@@ -46,7 +46,7 @@ export interface CascaderProps
   readonly?: boolean
   clearable?: boolean
   hideClearButton?: boolean
-  size?: CascaderSize
+  fontSize?: number
   status?: CascaderStatus
   prefix?: string
   suffix?: string

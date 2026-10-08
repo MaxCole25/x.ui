@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -18,6 +18,8 @@ const props = withDefaults(
 
 const expanded = ref(props.defaultExpanded)
 const copied = ref(false)
+let copyTimer: ReturnType<typeof setTimeout> | undefined
+onBeforeUnmount(() => clearTimeout(copyTimer))
 
 const normalizedCode = computed(() => props.code.trim())
 
@@ -32,7 +34,8 @@ async function copyCode() {
     }
 
     copied.value = true
-    window.setTimeout(() => {
+    clearTimeout(copyTimer)
+    copyTimer = setTimeout(() => {
       copied.value = false
     }, 1600)
   } catch {
@@ -72,7 +75,7 @@ function fallbackCopy(text: string) {
         <button class="x-doc-demo__button" type="button" @click="copyCode">
           {{ copied ? '已复制' : '复制代码' }}
         </button>
-        <button class="x-doc-demo__button" type="button" @click="expanded = !expanded">
+        <button class="x-doc-demo__button" type="button" :aria-expanded="expanded" @click="expanded = !expanded">
           {{ expanded ? '隐藏源码' : '显示源码' }}
         </button>
       </div>
@@ -116,10 +119,6 @@ function fallbackCopy(text: string) {
 .x-doc-demo__preview {
   background: var(--vp-c-bg);
   padding: 24px;
-}
-
-.x-doc-demo__preview :deep(.x-demo-row) {
-  margin: 0;
 }
 
 .x-doc-demo__toolbar {

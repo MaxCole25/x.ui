@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import InputNumber from './src/InputNumber.vue'
 
-export const XInputNumber = InputNumber
+export const XInputNumber = InputNumber as ComponentWithInstall<typeof InputNumber>
 
 export type { InputNumberProps } from './src/types'
 

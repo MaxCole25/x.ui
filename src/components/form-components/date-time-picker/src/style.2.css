@@ -1,0 +1,46 @@
+.x-date-time-picker__panel-shell {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 324px 120px;
+  min-width: 0;
+}
+
+.x-date-time-picker__calendar {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.x-date-time-picker__toolbar {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 32px 32px 1fr 32px 32px;
+}
+
+.x-date-time-picker__tool {
+  align-items: center;
+  background: var(--x-picker-tool-bg, #f8fafc);
+  border: 1px solid var(--x-picker-tool-border, var(--x-color-border));
+  border-radius: 6px;
+  color: var(--x-picker-tool-text, var(--x-picker-panel-text, var(--x-color-text)));
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 18px;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.x-date-time-picker__tool:hover {
+  background: var(--x-picker-tool-hover-bg, #eef6ff);
+  border-color: var(--x-picker-tool-hover-border, var(--x-color-primary));
+  color: var(--x-picker-tool-hover-text, var(--x-color-primary));
+}
+
+.x-date-time-picker__current {
+  color: var(--x-picker-current-text, var(--x-picker-panel-header-text, var(--x-picker-panel-text, var(--x-color-text))));
+  font: 700 15px/1.4 var(--x-font-family);
+  min-width: 0;
+  text-align: center;
+}

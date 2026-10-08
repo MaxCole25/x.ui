@@ -1,5 +1,5 @@
+import { readCssSource } from './_utils/readCssSource'
 import { mount } from '@vue/test-utils'
-import { readFileSync } from 'node:fs'
 import { h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import {
@@ -130,7 +130,7 @@ describe('new element components', () => {
   })
 
   it('keeps XTooltip theme variable fallback chains in CSS', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8')
+    const css = readCssSource()
 
     expect(css).toContain('--x-tooltip-bg: #1f2937')
     expect(css).toContain('--x-tooltip-text: #ffffff')
@@ -145,11 +145,11 @@ describe('new element components', () => {
     expect(css).toContain('--x-tooltip-border-color: #203247')
   })
 
-  it('keeps size from owning card, tooltip and drawer shell spacing or radius', async () => {
+  it('keeps font size independent from card, tooltip and drawer shell spacing or radius', async () => {
     vi.useFakeTimers()
     const card = mount(XCard, {
       props: {
-        size: 'sm'
+        fontSize: 10
       },
       slots: {
         default: '卡片内容'
@@ -158,7 +158,7 @@ describe('new element components', () => {
     const tooltip = mount(XTooltip, {
       props: {
         content: '提示',
-        size: 'lg',
+        fontSize: 14,
         trigger: 'click',
         teleported: false
       },
@@ -169,7 +169,7 @@ describe('new element components', () => {
     const drawer = mount(XDrawer, {
       props: {
         modelValue: true,
-        size: 'sm'
+        fontSize: 10
       },
       attachTo: document.body
     })
@@ -189,7 +189,7 @@ describe('new element components', () => {
     expect(tooltipStyle).not.toContain('--x-tooltip-padding')
     expect(tooltipStyle).not.toContain('--x-tooltip-radius')
     expect(drawerStyle).toContain('--x-drawer-font-size: 10px')
-    expect(drawerStyle).toContain('--x-drawer-control-height: 22px')
+    expect(drawerStyle).toContain('--x-drawer-control-height: 32px')
     expect(drawerStyle).not.toContain('--x-drawer-padding')
     expect(drawerStyle).not.toContain('--x-drawer-radius')
 
@@ -200,7 +200,7 @@ describe('new element components', () => {
   })
 
   it('keeps overlay layer tokens ordered and used by shared poppers', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8')
+    const css = readCssSource()
 
     expect(overlayZIndex).toEqual({
       drawer: 1800,
@@ -237,7 +237,7 @@ describe('new element components', () => {
     expect(wrapper.attributes('style')).toContain('--x-divider-border-style: dashed')
     expect(wrapper.attributes('style')).toContain('--x-divider-thickness: 3px')
 
-    const css = readFileSync('src/styles/index.css', 'utf8')
+    const css = readCssSource()
     expect(css).toContain('border-top-width: var(--x-divider-thickness, var(--x-element-border-width, 1px))')
     expect(css).toContain('border-left-width: var(--x-divider-thickness, var(--x-element-border-width, 1px))')
   })
@@ -319,7 +319,7 @@ describe('new element components', () => {
   })
 
   it('keeps XDrawer theme variable fallback chains in CSS', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8')
+    const css = readCssSource()
 
     expect(css).toContain('--x-drawer-mask: rgba(18, 28, 45, 0.42)')
     expect(css).toContain('--x-drawer-bg: var(--x-color-surface, #ffffff)')
@@ -334,6 +334,7 @@ describe('new element components', () => {
   it('emits dropdown command from dropdown item', async () => {
     const wrapper = mount(XDropdown, {
       props: {
+        teleported: false,
         trigger: 'click'
       },
       slots: {

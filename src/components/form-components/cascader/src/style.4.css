@@ -1,0 +1,4 @@
+.x-cascader__option {
+  font-size: var(--x-cascader-font-size, inherit);
+  padding: var(--x-cascader-padding, 0 10px);
+}

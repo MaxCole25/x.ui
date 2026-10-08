@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type IconSelectCategoryName =
   | '全部'
@@ -22,7 +21,7 @@ export interface IconSelectIconInfo {
 
 export interface IconSelectProps {
   modelValue?: string
-  size?: XSize
+  fontSize?: number
   disabled?: boolean
   readonly?: boolean
   placeholder?: string

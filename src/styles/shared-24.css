@@ -1,0 +1,39 @@
+@keyframes x-scrolling-text-left {
+  from {
+    transform: translateX(var(--x-scrolling-text-container-size, 0));
+  }
+
+  to {
+    transform: translateX(calc(-1 * var(--x-scrolling-text-content-size, 0)));
+  }
+}
+
+@keyframes x-scrolling-text-right {
+  from {
+    transform: translateX(calc(-1 * var(--x-scrolling-text-content-size, 0)));
+  }
+
+  to {
+    transform: translateX(var(--x-scrolling-text-container-size, 0));
+  }
+}
+
+@keyframes x-scrolling-text-up {
+  from {
+    transform: translateY(var(--x-scrolling-text-container-size, 0));
+  }
+
+  to {
+    transform: translateY(calc(-1 * var(--x-scrolling-text-content-size, 0)));
+  }
+}
+
+@keyframes x-scrolling-text-down {
+  from {
+    transform: translateY(calc(-1 * var(--x-scrolling-text-content-size, 0)));
+  }
+
+  to {
+    transform: translateY(var(--x-scrolling-text-container-size, 0));
+  }
+}

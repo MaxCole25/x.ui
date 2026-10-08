@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 export type TableAlign = 'left' | 'center' | 'right'
 export type TableFixed = 'left' | 'right' | 'none'
 export type TableRowKey = string | number
@@ -139,7 +138,7 @@ export interface TableExcelImportPayload<Row extends Record<string, unknown> = R
 }
 
 export interface TableProps<Row extends Record<string, unknown> = Record<string, unknown>> {
-  size?: XSize
+  fontSize?: number
   rowHeight?: number | string
   data: Row[]
   columns: TableColumn<Row>[]

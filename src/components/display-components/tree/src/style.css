@@ -1,0 +1,11 @@
+.x-tree {
+  color: var(--x-tree-text-color, var(--x-color-text));
+  display: grid;
+  gap: 2px;
+}
+
+.x-tree__empty {
+  color: var(--x-tree-muted-color, var(--x-color-muted));
+  font-size: 12px;
+  padding: 16px;
+}

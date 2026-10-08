@@ -1,0 +1,17 @@
+.x-flow-item {
+  align-self: var(--x-flow-item-align-self, auto);
+  background: var(--x-flow-item-bg, var(--x-flow-default-item-bg, transparent));
+  border: var(--x-flow-item-border-width, var(--x-flow-default-item-border-width, 0))
+    var(--x-flow-item-border-style, var(--x-flow-default-item-border-style, solid))
+    var(--x-flow-item-border-color, var(--x-flow-default-item-border-color, transparent));
+  border-radius: var(--x-flow-item-radius, var(--x-flow-default-item-radius, 0));
+  box-sizing: border-box;
+  color: var(--x-flow-item-text-color, var(--x-flow-default-item-text-color, inherit));
+  height: var(--x-flow-item-height, auto);
+  justify-self: var(--x-flow-item-justify-self, auto);
+  min-height: var(--x-flow-item-min-height, 0);
+  min-width: var(--x-flow-item-min-width, 0);
+  overflow: var(--x-flow-item-overflow, var(--x-flow-default-item-overflow, auto));
+  padding: var(--x-flow-item-padding, var(--x-flow-default-item-padding, 0));
+  width: var(--x-flow-item-width, auto);
+}

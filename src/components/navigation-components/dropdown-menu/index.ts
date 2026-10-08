@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import DropdownMenu from './src/DropdownMenu.vue'
 
-export const XDropdownMenu = DropdownMenu
+export const XDropdownMenu = DropdownMenu as ComponentWithInstall<typeof DropdownMenu>
 
 export type { DropdownMenuProps } from './src/types'
 

@@ -1,6 +1,6 @@
 import type { InputProps } from '../../input'
 
-export type AutocompleteSize = NonNullable<InputProps['size']>
+export type AutocompleteFontSize = NonNullable<InputProps['fontSize']>
 export type AutocompleteOptionValue = string | number
 export type AutocompleteDisplayField = 'label' | 'value'
 export type AutocompleteRemoteTrigger = 'input' | 'enter'

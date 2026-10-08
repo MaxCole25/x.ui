@@ -1,11 +1,12 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import BaseInput from './src/BaseInput.vue'
 
-export const XBaseInput = BaseInput
+export const XBaseInput = BaseInput as ComponentWithInstall<typeof BaseInput>
 
 export type {
   BaseInputProps,
-  BaseInputSize,
+  BaseInputFontSize,
   BaseInputStatus,
   BaseInputTextAlign,
   BaseInputType

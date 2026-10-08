@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { LoadingProps } from './types'
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<LoadingProps>(), {
 })
 
 const loadingStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   '--x-loading-bg': props.backgroundColor,
   '--x-loading-text': props.textColor,
   '--x-loading-spinner': props.spinnerColor,

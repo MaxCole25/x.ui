@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { defineComponent, h, reactive } from 'vue'
 import { XNavMenu } from './index'
 import type { NavMenuItem, NavMenuMode } from './src/types'
 import '../../../styles/index.css'
-
 const ExternalReportIcon = defineComponent({
   name: 'ExternalReportIcon',
   setup() {
@@ -28,7 +28,6 @@ const ExternalReportIcon = defineComponent({
       )
   }
 })
-
 const navItems: NavMenuItem[] = [
   { key: 'dashboard', label: '控制台', icon: 'dashboard' },
   {
@@ -87,7 +86,6 @@ const navItems: NavMenuItem[] = [
     ]
   }
 ]
-
 const state = reactive({
   mode: 'vertical' as NavMenuMode,
   hidden: false,
@@ -113,7 +111,6 @@ const state = reactive({
   showSubmenuArrow: true,
   submenuArrowIcon: ''
 })
-
 function handleSelect(key: string) {
   state.activeKey = key
 }
@@ -122,140 +119,25 @@ function handleSelect(key: string) {
 <template>
   <Story title="导航组件/菜单 NavMenu" group="components">
     <Variant title="外观接口">
-      <div class="menu-playground">
-        <div class="menu-controls">
-          <label>
-            <span>菜单模式</span>
-            <select v-model="state.mode">
-              <option value="vertical">纵向菜单</option>
-              <option value="horizontal">横向菜单</option>
-            </select>
-          </label>
-
-          <label class="menu-check">
-            <input v-model="state.hidden" type="checkbox" />
-            <span>隐藏侧边栏</span>
-          </label>
-
-          <label class="menu-check">
-            <input v-model="state.collapsed" type="checkbox" />
-            <span>收起纵向菜单</span>
-          </label>
-
-          <label class="menu-check">
-            <input v-model="state.teleported" type="checkbox" />
-            <span>挂载到外部</span>
-          </label>
-          <label>
-            <span>挂载目标</span>
-            <input v-model="state.teleportTo" type="text" />
-          </label>
-
-          <label class="menu-check">
-            <input v-model="state.scrollable" type="checkbox" />
-            <span>菜单内部滚动</span>
-          </label>
-
-          <label>
-            <span>最大高度</span>
-            <input v-model.number="state.maxHeight" type="number" min="120" max="520" />
-          </label>
-
-          <label class="menu-check">
-            <input v-model="state.accordion" type="checkbox" />
-            <span>同级仅展开一个</span>
-          </label>
-
-          <span class="menu-active">当前选中：{{ state.activeKey }}</span>
-          <label>
-            <span>默认文字色</span>
-            <input v-model="state.textColor" type="color" />
-          </label>
-          <label>
-            <span>激活文字色</span>
-            <input v-model="state.activeTextColor" type="color" />
-          </label>
-          <label>
-            <span>弹层激活文字色</span>
-            <input v-model="state.submenuActiveTextColor" type="color" />
-          </label>
-          <label>
-            <span>激活背景色</span>
-            <input v-model="state.activeBackgroundColor" type="color" />
-          </label>
-          <label>
-            <span>字号</span>
-            <input v-model.number="state.fontSize" type="number" min="11" max="24" />
-          </label>
-          <label>
-            <span>默认字重</span>
-            <input v-model.number="state.fontWeight" type="number" min="100" max="900" step="100" />
-          </label>
-          <label>
-            <span>激活字重</span>
-            <input v-model.number="state.activeFontWeight" type="number" min="100" max="900" step="100" />
-          </label>
-          <label>
-            <span>字体族</span>
-            <input v-model="state.fontFamily" type="text" />
-          </label>
-          <label>
-            <span>菜单项间距</span>
-            <input v-model="state.itemGap" type="text" placeholder="4 / 0.75rem" />
-          </label>
-          <label>
-            <span>菜单项圆角</span>
-            <input v-model.number="state.itemRadius" type="number" min="0" max="32" />
-          </label>
-          <label>
-            <span>子菜单项圆角</span>
-            <input v-model.number="state.submenuItemRadius" type="number" min="0" max="32" />
-          </label>
-          <label>
-            <span>子菜单弹出间距</span>
-            <input v-model.number="state.submenuPopupGap" type="number" min="0" max="40" />
-          </label>
-          <label class="menu-check">
-            <input v-model="state.showSubmenuArrow" type="checkbox" />
-            <span>显示子菜单箭头</span>
-          </label>
-          <label>
-            <span>子菜单箭头图标</span>
-            <input v-model="state.submenuArrowIcon" type="text" placeholder="ri-arrow-right-s-line" />
-          </label>
-        </div>
-
-        <div class="menu-preview" :class="[`menu-preview--${state.mode}`, { 'is-collapsed': state.collapsed }]">
+      <ApiPlayground component="XNavMenu">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XNavMenu
             :items="navItems"
             :active-key="state.activeKey"
             :mode="state.mode"
             :hidden="state.hidden"
             :collapsed="state.collapsed"
-            :teleported="state.teleported"
-            :teleport-to="state.teleportTo"
+
             :allow-collapse="true"
             :scrollable="state.scrollable"
-            :max-height="state.maxHeight"
+
             :accordion="state.accordion"
-            :text-color="state.textColor"
-            :active-text-color="state.activeTextColor"
-            :submenu-active-text-color="state.submenuActiveTextColor"
-            :active-background-color="state.activeBackgroundColor"
-            :font-size="state.fontSize"
-            :font-weight="state.fontWeight"
-            :active-font-weight="state.activeFontWeight"
-            :font-family="state.fontFamily"
-            :item-gap="state.itemGap"
-            :item-radius="state.itemRadius"
-            :submenu-item-radius="state.submenuItemRadius"
-            :submenu-popup-gap="state.submenuPopupGap"
-            :show-submenu-arrow="state.showSubmenuArrow"
+
             :submenu-arrow-icon="state.submenuArrowIcon || undefined"
             @select="handleSelect"
-          />
-        </div>
-      </div>
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
+        </template>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

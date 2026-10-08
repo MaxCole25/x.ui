@@ -5,7 +5,7 @@ export interface DropdownItemProps extends ElementStyleProps {
   disabled?: boolean
   divided?: boolean
   icon?: string
-  size?: 'sm' | 'md' | 'lg'
+  fontSize?: number
   active?: boolean
   height?: number | string
   padding?: string

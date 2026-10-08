@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import type { SliderProps } from './types'
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 
 const percent = computed(() => `${((props.modelValue - props.min) / (props.max - props.min)) * 100}%`)
 const sliderStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   '--x-slider-percent': percent.value
 }))

@@ -1,11 +1,11 @@
 import { mount } from '@vue/test-utils'
-import { readFileSync } from 'node:fs'
+import { readCssSource } from './_utils/readCssSource'
 import { describe, expect, it } from 'vitest'
 import { nextTick } from 'vue'
 import { XForm, XFormItem, XInput, XSelect, XSwitch } from '../src'
 import type { FormExpose, FormRules } from '../src'
 
-const styles = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
+const styles = readCssSource().replace(/\r\n/g, '\n')
 const getCssRule = (selector: string) => styles.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{[^}]+\\}`))?.[0] ?? ''
 
 describe('form', () => {
@@ -54,11 +54,11 @@ describe('form', () => {
     expect((wrapper.findAll('input')[1].element as HTMLInputElement).value).toBe('')
   })
 
-  it('passes size, disabled and label settings through provide and inject', () => {
+  it('passes fontSize, disabled and label settings through provide and inject', () => {
     const wrapper = mount({
       components: { XForm, XFormItem, XInput, XSelect },
       template: `
-        <XForm size="sm" disabled label-width="120px" label-position="right">
+        <XForm :font-size="10" disabled label-width="120px" label-position="right">
           <XFormItem label="用户名">
             <XInput />
           </XFormItem>
@@ -69,17 +69,17 @@ describe('form', () => {
       `
     })
 
-    expect(wrapper.find('.x-form').classes()).toContain('x-form--sm')
-    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--sm')
-    expect(wrapper.find('.x-select').classes()).toContain('x-select--sm')
+    expect(wrapper.find('.x-form').attributes('style')).toContain('font-size: 10px')
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-font-size: 10px')
+    expect(wrapper.find('.x-select').attributes('style')).toContain('--x-select-font-size: 10px')
     expect(wrapper.find('input').attributes('disabled')).toBeDefined()
     expect(wrapper.find('.x-select__control').attributes('disabled')).toBeDefined()
     expect(wrapper.find('.x-form-item__label').attributes('style')).toContain('width: 120px')
-    expect(getCssRule('.x-form-item__label')).toContain('font-size: var(--x-form-item-label-font-size, 12px)')
+    expect(getCssRule('.x-form-item__label')).toContain('font-size: var(--x-form-item-label-font-size, 14px)')
     expect(getCssRule('.x-form-item__label')).toContain('display: inline-flex')
-    expect(getCssRule('.x-form-item__label')).toContain('min-height: var(--x-form-control-height, 30px)')
-    expect(getCssRule('.x-form--label-top .x-form-item__label,\n.x-form-item--label-top .x-form-item__label')).toContain('min-height: 0')
-    expect(getCssRule('.x-form--sm,\n.x-form-item--sm')).toContain('--x-form-item-label-font-size: 10px')
+    expect(getCssRule('.x-form-item__label')).toContain('min-height: var(--x-form-control-height, 32px)')
+    expect(getCssRule('.x-form--label-top .x-form-item:not(.x-form-item--label-left):not(.x-form-item--label-right) .x-form-item__label,\n.x-form-item--label-top .x-form-item__label')).toContain('min-height: 0')
+    expect(wrapper.find('.x-form-item__label').attributes('style')).toContain('--x-form-item-label-font-size: 10px')
   })
 
   it('uses XForm accentColor variable', () => {

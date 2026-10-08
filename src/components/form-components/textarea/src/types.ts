@@ -1,22 +1,22 @@
 import type {
-  BaseInputSize,
+  BaseInputFontSize,
   BaseInputStatus,
   BaseInputTextAlign
 } from '../../../basic-components/base-input/src/types'
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
-export type TextareaSize = BaseInputSize
+export type TextareaFontSize = BaseInputFontSize
 export type TextareaStatus = BaseInputStatus
 export type TextareaTextAlign = BaseInputTextAlign
 
 export interface TextareaProps extends ElementStyleProps {
+  showActiveBorder?: boolean
   modelValue?: string
   placeholder?: string
   disabled?: boolean
   readonly?: boolean
   clearable?: boolean
   hideClearButton?: boolean
-  size?: TextareaSize
   status?: TextareaStatus
   rows?: number
   maxRows?: number
@@ -30,7 +30,7 @@ export interface TextareaProps extends ElementStyleProps {
   disabledBackgroundColor?: string
   disabledTextColor?: string
   fontFamily?: string
-  fontSize?: number | string
+  fontSize?: number
   width?: number | string
   height?: number | string
   padding?: number | string

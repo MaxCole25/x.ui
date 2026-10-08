@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
-import { inputSizePreset } from '../../../_utils/inputSize'
+import { getInputMetrics } from '../../../_utils/inputSize'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { formContextKey, formItemContextKey } from '../../form/src/context'
@@ -28,7 +29,7 @@ const props = withDefaults(defineProps<SelectProps>(), {
   hideClearButton: false,
   multiple: false,
   status: 'default',
-  size: undefined,
+  fontSize: undefined,
   teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
@@ -63,7 +64,7 @@ const teleportedDropdownStyle = ref<Record<string, string>>({})
 let remoteRequestId = 0
 let isListeningForPositionChanges = false
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const canInteract = computed(() => !mergedDisabled.value && !props.readonly)
 const resolvedDropdownZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 const selectedValues = computed<SelectOptionValue[]>(() => {
@@ -129,11 +130,11 @@ const showClear = computed(() =>
   canInteract.value
 )
 const isLoading = computed(() => props.loading || remoteLoading.value)
-const selectedSizePreset = computed(() => (props.size ? inputSizePreset[props.size] : undefined))
-const resolvedInputFontSize = computed(() => selectedSizePreset.value?.fontSize ?? props.fontSize ?? inputSizePreset[mergedSize.value].fontSize)
-const resolvedInputHeight = computed(() => selectedSizePreset.value?.height ?? props.height ?? inputSizePreset[mergedSize.value].height)
-const resolvedInputPadding = computed(() => selectedSizePreset.value?.padding ?? props.padding ?? inputSizePreset[mergedSize.value].padding)
-const resolvedInputRadius = computed(() => selectedSizePreset.value?.radius ?? props.radius ?? inputSizePreset[mergedSize.value].radius)
+const selectedSizePreset = computed(() => (props.fontSize ? getInputMetrics(props.fontSize) : undefined))
+const resolvedInputFontSize = computed(() => selectedSizePreset.value?.fontSize ?? props.fontSize ?? getInputMetrics(mergedSize.value).fontSize)
+const resolvedInputHeight = computed(() => props.height ?? getInputMetrics(mergedSize.value).height)
+const resolvedInputPadding = computed(() => props.padding ?? getInputMetrics(mergedSize.value).padding)
+const resolvedInputRadius = computed(() => props.radius ?? getInputMetrics(mergedSize.value).radius)
 
 const selectStyle = computed(() => ({
   ...createElementStyleVars(props),
@@ -165,7 +166,6 @@ const baseInputProps = computed(() => ({
   readonly: props.readonly,
   clearable: false,
   hideClearButton: true,
-  size: mergedSize.value,
   status: props.status,
   prefix: props.prefix,
   suffix: undefined,
@@ -473,29 +473,23 @@ const handleDocumentPointerdown = (event: PointerEvent) => {
 }
 
 watch(
-  () => isOpen.value,
-  async (open) => {
-    if (!open) {
+  [isOpen, () => props.teleported, () => props.teleportTo],
+  async ([opened], _previous, onCleanup) => {
+    let active = true
+    onCleanup(() => {
+      active = false
       removePositionListeners()
+    })
+    teleportedDropdownStyle.value = {}
+    if (!opened) {
       activeOptionIndex.value = -1
       return
     }
 
     await nextTick()
+    if (!active || !isOpen.value || !props.teleported || !selectRef.value || !dropdownRef.value) return
     updateDropdownPosition()
     addPositionListeners()
-  }
-)
-
-watch(
-  () => props.teleported,
-  async () => {
-    removePositionListeners()
-    await nextTick()
-    if (isOpen.value) {
-      updateDropdownPosition()
-      addPositionListeners()
-    }
   }
 )
 
@@ -544,7 +538,7 @@ onBeforeUnmount(() => {
     v-bind="attrs"
     class="x-select"
     :class="[
-      `x-select--${mergedSize}`,
+      'x-select',
       `x-select--${props.status}`,
       {
         'is-open': isOpen,
@@ -557,7 +551,7 @@ onBeforeUnmount(() => {
         'is-active-border-hidden': !props.showActiveBorder
       }
     ]"
-    :style="selectStyle"
+    :style="[selectStyle, createFontStyle(mergedSize)]"
   >
     <XBaseInput
       v-bind="baseInputProps"

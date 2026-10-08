@@ -1,10 +1,10 @@
-import type { XSize } from '../../../_utils/size'
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
 export type ColorPickerPanelMode = 'inline' | 'popover'
 
 export interface ColorPickerProps extends ElementStyleProps {
-  size?: XSize
+  showActiveBorder?: boolean
+  fontSize?: number
   modelValue?: string
   disabled?: boolean
   panelMode?: ColorPickerPanelMode

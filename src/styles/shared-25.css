@@ -1,0 +1,24 @@
+.x-input-number,
+.x-autocomplete__control,
+.x-cascader__control,
+.x-color-picker__trigger {
+  align-items: center;
+  background: var(--x-element-bg, #fff);
+  border: var(--x-element-border-width, 1px) solid var(--x-element-border-color, var(--x-color-border));
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--x-element-text, var(--x-color-text));
+  display: inline-flex;
+  font-family: var(--x-font-family);
+  font-size: 14px;
+  min-height: 40px;
+  min-width: 0;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.x-cascader.is-open:not(.is-active-border-hidden) .x-cascader__control,
+.x-color-picker:not(.is-active-border-hidden) .x-color-picker__trigger:focus-within {
+  border-color: var(--x-cascader-active-border-color, var(--x-color-primary));
+  box-shadow: var(--x-shadow-focus);
+  outline: none;
+}

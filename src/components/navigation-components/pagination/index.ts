@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Pagination from './src/Pagination.vue'
 
-export const XPagination = Pagination
+export const XPagination = Pagination as ComponentWithInstall<typeof Pagination>
 
 export type { PaginationProps } from './src/types'
 

@@ -1,0 +1,5 @@
+.x-radio-button {
+  font-size: var(--x-radio-button-font-size, 14px);
+  min-height: var(--x-radio-button-height, 32px);
+  padding: var(--x-radio-button-padding, 0 8px);
+}

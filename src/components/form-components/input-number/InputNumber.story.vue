@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { reactive } from 'vue'
 import { XInputNumber } from './index'
 import '../../../styles/index.css'
-
-const inputNumberAppearance = reactive({
+const inputNumberAppearance = reactive({ height: 32,
   min: 0,
   max: 100,
   step: 1,
@@ -19,15 +18,6 @@ const inputNumberAppearance = reactive({
   decreaseButtonBackgroundColor: '#e2e8f0',
   increaseButtonBackgroundColor: '#1264f4'
 })
-
-const fontOptions = [
-  { label: 'Arial', value: 'Arial' },
-  { label: 'Verdana', value: 'Verdana' },
-  { label: 'Georgia', value: 'Georgia' },
-  { label: 'Courier New', value: 'Courier New' },
-  { label: '系统字体', value: 'var(--x-font-family)' }
-]
-
 const sample = reactive({
   input: '外观接口预览',
   autocomplete: '上海',
@@ -45,94 +35,12 @@ const sample = reactive({
 
 <template>
   <Story title="Form 组件/InputNumber 数字输入框" group="components">
-    
-
-    
-
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
-          <XInputNumber v-bind="{ ...styleProps, ...inputNumberAppearance }" v-model="sample.number" :placeholder="sample.input" />
+      <ApiPlayground component="XInputNumber">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XInputNumber v-bind="{ ...({ ...styleProps, ...inputNumberAppearance }), ...(apiProps) }" v-model="sample.number" :placeholder="sample.input"   v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>
-        <template #column-1>
-          <label>
-            <span>占位文本</span>
-            <input v-model="sample.input" type="text" />
-          </label>
-          <label>
-            <span>字体</span>
-            <select v-model="inputNumberAppearance.fontFamily">
-              <option v-for="option in fontOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
-          </label>
-        </template>
-        <template #column-2>
-              <label>
-                <span>最小值</span>
-                <input
-                  v-model.number="inputNumberAppearance.min"
-                  type="number"
-                  :max="inputNumberAppearance.max"
-                  :step="inputNumberAppearance.step"
-                />
-              </label>
-              <label>
-                <span>最大值</span>
-                <input
-                  v-model.number="inputNumberAppearance.max"
-                  type="number"
-                  :min="inputNumberAppearance.min"
-                  :step="inputNumberAppearance.step"
-                />
-              </label>
-              <label>
-                <span>步进</span>
-                <input v-model.number="inputNumberAppearance.step" type="number" min="0.1" max="20" step="0.1" />
-              </label>
-              <label>
-                <span>圆角</span>
-                <input v-model.number="inputNumberAppearance.radius" type="number" min="0" max="40" step="1" />
-              </label>
-              <label>
-                <span>字体大小</span>
-                <input v-model.number="inputNumberAppearance.fontSize" type="number" min="12" max="32" step="1" />
-              </label>
-        </template>
-        <template #column-3>
-              <label>
-                <span>减号背景色</span>
-                <input v-model="inputNumberAppearance.decreaseButtonBackgroundColor" type="color" />
-              </label>
-              <label>
-                <span>加号背景色</span>
-                <input v-model="inputNumberAppearance.increaseButtonBackgroundColor" type="color" />
-              </label>
-              <label>
-                <span>边框颜色</span>
-                <input v-model="inputNumberAppearance.borderColor" type="color" />
-              </label>
-              <label>
-                <span>主题色</span>
-                <input v-model="inputNumberAppearance.accentColor" type="color" />
-              </label>
-              <label>
-                <span>激活边框色</span>
-                <input v-model="inputNumberAppearance.activeBorderColor" type="color" />
-              </label>
-        </template>
-        <template #column-4>
-          <label>
-            <input v-model="inputNumberAppearance.fullWidth" type="checkbox" />
-            <span>撑满父元素宽度</span>
-          </label>
-          <label>
-            <input v-model="inputNumberAppearance.fullHeight" type="checkbox" />
-            <span>撑满父元素高度</span>
-          </label>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

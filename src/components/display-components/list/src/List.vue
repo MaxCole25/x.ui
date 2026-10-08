@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
 import type { CSSProperties } from 'vue'
 import type {
   ListItem,
-  ListItemAlign,
   ListItemClickPayload,
   ListItemReorderPayload,
   ListItemSlotProps,
@@ -21,12 +21,11 @@ const props = withDefaults(defineProps<ListProps>(), {
   items: () => [],
   disabled: false,
   draggable: false,
-  size: 'md',
+  fontSize: 14,
+  itemGap: 8,
   bordered: true,
   hoverable: true,
   enableEqualItemHeight: false,
-  itemAlign: 'stretch',
-  itemContentWidthMode: 'auto',
   loading: false,
   loadingText: '加载中',
   finished: false,
@@ -66,15 +65,13 @@ const listStyle = computed<CSSProperties>(() => ({
   '--x-list-item-gap': toCssSize(props.itemGap),
   '--x-list-item-radius': toCssSize(props.itemRadius),
   '--x-list-item-padding': toCssSize(props.padding),
-  '--x-list-item-content-width': toCssSize(props.itemContentWidth),
-  '--x-list-item-content-max-width': toCssSize(props.itemContentMaxWidth),
-  '--x-list-title-font-size': toCssSize(props.titleFontSize),
+  '--x-list-title-font-size': toCssSize(props.titleFontSize ?? props.fontSize),
   '--x-list-title-text-color': props.titleTextColor,
-  '--x-list-description-font-size': toCssSize(props.descriptionFontSize),
+  '--x-list-description-font-size': toCssSize(props.descriptionFontSize ?? props.fontSize),
   '--x-list-description-text-color': props.descriptionTextColor,
   '--x-list-icon-font-size': toCssSize(props.iconFontSize),
   '--x-list-icon-text-color': props.iconTextColor,
-  '--x-list-extra-font-size': toCssSize(props.extraFontSize),
+  '--x-list-extra-font-size': toCssSize(props.extraFontSize ?? props.fontSize),
   '--x-list-extra-text-color': props.extraTextColor,
   '--x-list-active-bg': props.activeBackgroundColor,
   '--x-list-active-border': props.activeBorderColor,
@@ -98,10 +95,6 @@ function canDrag(item: ListItem) {
 
 function canReceiveDrop(item: ListItem) {
   return Boolean(props.draggable && draggingValue.value !== null && draggingValue.value !== item.value)
-}
-
-function getItemAlign(item: ListItem): ListItemAlign {
-  return item.align ?? props.itemAlign ?? 'stretch'
 }
 
 function getSlotProps(item: ListItem, index: number): ListItemSlotProps {
@@ -229,7 +222,7 @@ onBeforeUnmount(() => {
     ref="rootRef"
     class="x-list x-scrollbar--native"
     :class="[
-      `x-list--${props.size}`,
+      'x-list',
       {
         'is-bordered': props.bordered,
         'is-hoverable': props.hoverable,
@@ -238,7 +231,7 @@ onBeforeUnmount(() => {
         'is-scrollable': hasScrollableLimit
       }
     ]"
-    :style="listStyle"
+    :style="[listStyle, createFontStyle(props.fontSize ?? 14)]"
     @scroll="handleScroll"
   >
     <button
@@ -267,11 +260,7 @@ onBeforeUnmount(() => {
     >
       <span
         class="x-list__item-content"
-        :class="[
-          `x-list__item-content--${getItemAlign(item)}`,
-          `x-list__item-content--width-${props.itemContentWidthMode}`,
-          { 'has-custom-item-slot': Boolean($slots.item) }
-        ]"
+:class="{ 'has-custom-item-slot': Boolean($slots.item) }"
       >
         <slot name="item" v-bind="getSlotProps(item, index)">
           <span v-if="$slots.icon || item.avatar || item.icon" class="x-list__media">
@@ -309,7 +298,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .x-list {
-  --x-list-default-radius: 6px;
+  --x-list-default-radius: 8px;
   box-sizing: border-box;
   color: var(--x-color-text);
   display: grid;
@@ -355,47 +344,33 @@ onBeforeUnmount(() => {
   border: 1px solid transparent;
   border-radius: var(--x-list-item-radius, var(--x-list-default-radius));
   box-sizing: border-box;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  max-width: min(var(--x-list-item-content-max-width, 100%), 100%);
+  display: flex;
+  gap: 12px;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
+  min-height: 64px;
   min-width: 0;
   padding: var(--x-list-item-padding);
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.x-list__item-content--stretch {
-  width: var(--x-list-item-content-width, 100%);
-}
-
-.x-list__item-content--start {
-  margin-right: auto;
-}
-
-.x-list__item-content--end {
-  margin-left: auto;
-}
-
-.x-list__item-content--start.x-list__item-content--width-auto,
-.x-list__item-content--end.x-list__item-content--width-auto {
-  width: var(--x-list-item-content-width, fit-content);
-}
-
-.x-list__item-content--start.x-list__item-content--width-equal,
-.x-list__item-content--end.x-list__item-content--width-equal {
-  width: var(--x-list-item-content-width, var(--x-list-item-content-max-width, 100%));
-}
-
 .x-list__item-content.has-custom-item-slot {
-  grid-template-columns: minmax(0, 1fr);
+  display: block;
 }
 
 .x-list__item-content.has-custom-item-slot > * {
   min-width: 0;
 }
 
-.x-list.is-bordered .x-list__item-content {
-  border-color: var(--x-color-border);
+.x-list.is-bordered {
+  border: 1px solid var(--x-color-border);
+  border-radius: var(--x-list-default-radius);
+  padding: 4px;
+}
+
+.x-list.is-bordered .x-list__item + .x-list__item {
+  border-top: 1px solid color-mix(in srgb, var(--x-color-border) 55%, transparent);
 }
 
 .x-list.is-hoverable .x-list__item:not(.is-disabled):hover .x-list__item-content {
@@ -403,12 +378,23 @@ onBeforeUnmount(() => {
 }
 
 .x-list__item.is-active {
-  color: var(--x-list-active-text, var(--x-color-primary));
+  color: var(--x-list-active-text, var(--x-color-text));
 }
 
 .x-list__item.is-active .x-list__item-content {
-  background: var(--x-list-active-bg, rgba(18, 100, 244, 0.1));
-  border-color: var(--x-list-active-border, var(--x-color-primary));
+  background: var(--x-list-active-bg, var(--x-color-primary-soft));
+}
+
+.x-list__item.is-active .x-list__item-content::before {
+  background: var(--x-list-active-border, var(--x-color-primary));
+  border-radius: 3px;
+  bottom: 14px;
+  content: '';
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 14px;
+  width: 3px;
 }
 
 .x-list__item.is-disabled {
@@ -454,11 +440,12 @@ onBeforeUnmount(() => {
   display: inline-flex;
   justify-content: center;
   min-width: 0;
+  flex: 0 0 auto;
 }
 
 .x-list__avatar,
 .x-list__icon {
-  border-radius: 999px;
+  border-radius: 8px;
   flex: 0 0 auto;
   height: var(--x-list-media-size);
   width: var(--x-list-media-size);
@@ -472,7 +459,7 @@ onBeforeUnmount(() => {
 .x-list__icon {
   align-items: center;
   background: var(--x-color-surface-soft);
-  color: var(--x-list-icon-text-color, currentColor);
+  color: var(--x-list-icon-text-color, var(--x-color-primary));
   display: inline-flex;
   font-size: var(--x-list-icon-font-size);
   justify-content: center;
@@ -480,6 +467,8 @@ onBeforeUnmount(() => {
 
 .x-list__content {
   display: grid;
+  flex: 1;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -492,23 +481,12 @@ onBeforeUnmount(() => {
 .x-list__title {
   color: var(--x-list-title-text-color, currentColor);
   font-size: var(--x-list-title-font-size);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .x-list__description {
   color: var(--x-list-description-text-color, var(--x-color-muted));
   font-size: var(--x-list-description-font-size);
-}
-
-.x-list__item.is-active .x-list__title,
-.x-list__item.is-active .x-list__icon,
-.x-list__item.is-active .x-list__side,
-.x-list__item.is-active .x-list__extra {
-  color: currentColor;
-}
-
-.x-list__item.is-active .x-list__description {
-  color: color-mix(in srgb, currentColor 70%, white);
 }
 
 .x-list__side {
@@ -519,21 +497,17 @@ onBeforeUnmount(() => {
   gap: 4px;
   justify-content: flex-end;
   justify-self: end;
-  min-width: max-content;
+  min-width: 0;
+  max-width: 35%;
+  flex-wrap: wrap;
   text-align: right;
-  white-space: nowrap;
-}
-
-.x-list__item.is-active .x-list__side {
-  color: currentColor;
 }
 
 .x-list__extra {
   font-size: var(--x-list-extra-font-size);
-  min-width: max-content;
-  overflow: visible;
-  overflow-wrap: normal;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .x-list__action {
@@ -548,30 +522,12 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.x-list--sm {
-  --x-list-default-radius: 4px;
-  --x-list-description-font-size: 10px;
-  --x-list-icon-font-size: 12px;
-  --x-list-item-padding: 0 4px;
-  --x-list-media-size: 22px;
-  --x-list-title-font-size: 10px;
-}
-
-.x-list--md {
-  --x-list-default-radius: 6px;
-  --x-list-description-font-size: 12px;
-  --x-list-icon-font-size: 14px;
-  --x-list-item-padding: 0 8px;
-  --x-list-media-size: 30px;
-  --x-list-title-font-size: 12px;
-}
-
-.x-list--lg {
+.x-list {
   --x-list-default-radius: 8px;
-  --x-list-description-font-size: 13px;
-  --x-list-icon-font-size: 16px;
-  --x-list-item-padding: 0 10px;
-  --x-list-media-size: 38px;
+  --x-list-description-font-size: 14px;
+  --x-list-icon-font-size: 14px;
+  --x-list-item-padding: 12px 16px;
+  --x-list-media-size: 36px;
   --x-list-title-font-size: 14px;
 }
 </style>

@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Tooltip from './src/Tooltip.vue'
 
-export const XTooltip = Tooltip
+export const XTooltip = Tooltip as ComponentWithInstall<typeof Tooltip>
 
 export type { TooltipPlacement, TooltipProps, TooltipTrigger } from './src/types'
 

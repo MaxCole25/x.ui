@@ -1,0 +1,52 @@
+.x-form {
+  --x-form-color: var(--x-color-primary);
+  --x-form-border-color: var(--x-color-border);
+  --x-form-hover-border-color: color-mix(in srgb, var(--x-color-border) 72%, var(--x-color-text));
+  --x-form-radius: 4px;
+  --x-form-error-color: var(--x-color-danger);
+  --x-form-help-color: var(--x-color-text-muted);
+  --x-form-disabled-bg: var(--x-color-disabled-bg);
+  --x-form-disabled-text: var(--x-color-disabled-text);
+  background: var(--x-form-bg, transparent);
+  border: var(--x-form-border-width, 0) solid var(--x-form-border-color);
+  color: var(--x-form-text-color, var(--x-color-text));
+  display: grid;
+  font-family: var(--x-font-family);
+  gap: var(--x-form-item-gap, 18px);
+  height: var(--x-form-height, auto);
+  min-height: 0;
+  position: relative;
+}
+
+.x-form.is-disabled {
+  opacity: 1;
+}
+
+.x-form--inline {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+}
+
+.x-form__loading {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--x-form-color);
+  display: flex;
+  font-size: 14px;
+  gap: 8px;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  z-index: 2;
+}
+
+.x-form__spinner {
+  animation: x-form-spin 760ms linear infinite;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  height: 16px;
+  width: 16px;
+}

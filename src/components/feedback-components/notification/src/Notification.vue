@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { NotificationProps } from './types'
 
 defineOptions({ name: 'XNotification' })
 
-const props = withDefaults(defineProps<NotificationProps>(), { title: '', message: '', status: 'info', placement: 'top-right', duration: 4500, showClose: true, size: 'md', zIndex: overlayZIndex.message })
+const props = withDefaults(defineProps<NotificationProps>(), { title: '', message: '', status: 'info', placement: 'top-right', duration: 4500, showClose: true, fontSize: 14, zIndex: overlayZIndex.message })
 const emit = defineEmits<{ close: [] }>()
 let timer: number | undefined
-const preset = computed(() => componentSizePreset[props.size])
+const preset = computed(() => getComponentMetrics(props.fontSize))
 const styleVars = computed(() => ({ '--x-notification-font-size': preset.value.fontSize + 'px', '--x-notification-z-index': props.zIndex }))
 function close() { window.clearTimeout(timer); emit('close') }
 onMounted(() => { if (props.duration > 0) timer = window.setTimeout(close, props.duration) })
@@ -17,7 +17,7 @@ onBeforeUnmount(() => window.clearTimeout(timer))
 </script>
 
 <template>
-  <section class="x-notification" :class="['x-notification--' + props.status, 'x-notification--' + props.placement]" :style="styleVars" role="status">
+  <section class="x-notification" :class="['x-notification--' + props.status, 'x-notification--' + props.placement]" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]" role="status">
     <div class="x-notification__main"><strong v-if="props.title" class="x-notification__title">{{ props.title }}</strong><p v-if="props.message || $slots.default" class="x-notification__message"><slot>{{ props.message }}</slot></p></div>
     <button v-if="props.showClose" class="x-notification__close" type="button" aria-label="关闭通知" @click="close">×</button>
   </section>

@@ -14,13 +14,13 @@ export type DropdownPlacement =
   | 'right-start'
   | 'right'
   | 'right-end'
-export type DropdownSize = 'sm' | 'md' | 'lg'
+export type DropdownFontSize = number
 
 export interface DropdownProps extends ElementStyleProps {
   modelValue?: boolean
   trigger?: DropdownTrigger
   placement?: DropdownPlacement
-  size?: DropdownSize
+  fontSize?: number
   disabled?: boolean
   hideOnClick?: boolean
   showArrow?: boolean

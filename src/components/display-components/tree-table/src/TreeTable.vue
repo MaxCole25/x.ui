@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useSlots, watch } from 'vue'
 import type { CSSProperties } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type {
   TreeTableColumn,
   TreeTableExpandChangePayload,
@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<TreeTableProps>(), {
   childrenKey: 'children',
   treeColumnKey: undefined,
   labelKey: 'label',
-  size: 'md',
+  fontSize: 14,
   showHeader: true,
   showSelection: false,
   selectedRowKeys: undefined,
@@ -49,8 +49,8 @@ const internalSelectedRowKeys = ref<string[]>([])
 const internalExpandedRowKeys = ref<string[]>([])
 
 const treeColumnKey = computed(() => props.treeColumnKey || props.columns[0]?.key || '')
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const rowKeyMap = computed(() => {
   const map = new Map<string, TreeTableRowData>()
   walkRows(props.data, (row) => map.set(getRowKey(row), row))
@@ -290,7 +290,7 @@ defineExpose({ expandAll, collapseAll, toggleRow, getExpandedRowKeys })
 </script>
 
 <template>
-  <div class="x-tree-table" :class="`x-tree-table--${mergedSize}`" :style="tableStyle">
+  <div class="x-tree-table" :class="'x-tree-table'" :style="[tableStyle, createFontStyle(mergedSize)]">
     <div v-if="showHeader" class="x-tree-table__row x-tree-table__row--header" :style="{ gridTemplateColumns }" role="row">
       <div v-if="showSelection" class="x-tree-table__cell x-tree-table__cell--selection x-tree-table__cell--header" role="columnheader"></div>
       <div
@@ -377,7 +377,7 @@ defineExpose({ expandAll, collapseAll, toggleRow, getExpandedRowKeys })
   border-radius: var(--x-tree-table-radius, 6px);
   box-sizing: border-box;
   color: var(--x-tree-table-text-color, var(--x-color-text, #1f2937));
-  font-size: var(--x-tree-table-font-size, 12px);
+  font-size: var(--x-tree-table-font-size, 14px);
   min-width: 0;
   overflow: hidden;
   width: 100%;

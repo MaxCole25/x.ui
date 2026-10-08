@@ -1,0 +1,71 @@
+.x-nav-menu--horizontal .x-nav-menu-item__trigger {
+  min-height: 36px;
+}
+
+.x-nav-menu--horizontal .x-nav-menu-item .x-nav-menu-submenu {
+  background: var(--x-nav-menu-popup-bg, #fff);
+  border: 1px solid var(--x-color-border);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(16, 42, 67, 0.14);
+  display: none;
+  left: 0;
+  min-width: 180px;
+  padding: 8px;
+  position: absolute;
+  top: calc(100% + var(--x-nav-menu-submenu-popup-gap, 8px));
+  z-index: var(--x-z-index-popper, 2000);
+}
+
+.x-nav-menu--horizontal .x-nav-menu-item.has-children.is-open > .x-nav-menu-submenu,
+.x-nav-menu--horizontal .x-nav-menu-item.has-children:hover > .x-nav-menu-submenu {
+  display: grid;
+  gap: 4px;
+}
+
+.x-nav-menu--horizontal .x-nav-menu-item > .x-nav-menu-submenu::before {
+  content: "";
+  height: var(--x-nav-menu-submenu-popup-gap, 8px);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: calc(0px - var(--x-nav-menu-submenu-popup-gap, 8px));
+}
+
+.x-nav-menu--horizontal .x-nav-menu-item > .x-nav-menu-submenu::after {
+  background: var(--x-nav-menu-popup-bg, #fff);
+  border-left: 1px solid var(--x-color-border);
+  border-top: 1px solid var(--x-color-border);
+  content: "";
+  height: 10px;
+  left: 18px;
+  position: absolute;
+  top: -6px;
+  transform: rotate(45deg);
+  width: 10px;
+}
+
+.x-nav-menu--horizontal .x-nav-menu-submenu .x-nav-menu-submenu {
+  left: calc(100% + var(--x-nav-menu-submenu-popup-gap, 8px));
+  top: 0;
+}
+
+.x-nav-menu--horizontal .x-nav-menu-submenu .x-nav-menu-submenu::before {
+  bottom: 0;
+  height: auto;
+  left: calc(0px - var(--x-nav-menu-submenu-popup-gap, 8px));
+  right: auto;
+  top: 0;
+  width: var(--x-nav-menu-submenu-popup-gap, 8px);
+}
+
+.x-nav-menu--horizontal .x-nav-menu-submenu .x-nav-menu-submenu::after {
+  border-bottom: 1px solid var(--x-color-border);
+  border-left: 1px solid var(--x-color-border);
+  border-top: 0;
+  left: -6px;
+  top: 18px;
+}
+
+.x-nav-menu--horizontal .x-nav-menu-submenu .x-nav-menu-item__trigger {
+  border-radius: var(--x-nav-menu-submenu-item-radius, 7px);
+}

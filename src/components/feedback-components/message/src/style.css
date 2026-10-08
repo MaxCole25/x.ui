@@ -1,0 +1,106 @@
+.x-message {
+  align-items: center;
+  background: var(--x-message-bg, var(--x-color-info-soft));
+  border: 1px solid var(--x-message-border-color, var(--x-color-info-border));
+  border-radius: var(--x-message-radius, 8px);
+  box-shadow: var(--x-message-shadow, 0 10px 28px rgba(15, 23, 42, 0.14));
+  box-sizing: border-box;
+  color: var(--x-message-text, var(--x-color-info-text));
+  display: flex;
+  font-size: var(--x-message-font-size, 14px);
+  font-family: var(--x-font-family);
+  gap: 8px;
+  left: 50%;
+  line-height: 1.5;
+  max-width: var(--x-message-max-width, calc(100vw - 32px));
+  min-height: var(--x-message-min-height, 30px);
+  min-width: var(--x-message-min-width, 280px);
+  padding: var(--x-message-padding, 10px 14px);
+  position: fixed;
+  top: var(--x-message-offset, 20px);
+  transform: translateX(-50%);
+  width: var(--x-message-width, auto);
+  z-index: var(--x-message-z-index, var(--x-z-index-message, 2200));
+}
+
+.x-message--success {
+  --x-message-bg: var(--x-color-success-soft);
+  --x-message-border-color: var(--x-color-success-border);
+  --x-message-text: var(--x-color-success-text);
+}
+
+.x-message--warning {
+  --x-message-bg: var(--x-color-warning-soft);
+  --x-message-border-color: var(--x-color-warning-border);
+  --x-message-text: var(--x-color-warning-text);
+}
+
+.x-message--info {
+  --x-message-bg: var(--x-color-info-soft);
+  --x-message-border-color: var(--x-color-info-border);
+  --x-message-text: var(--x-color-info-text);
+}
+
+.x-message--error {
+  --x-message-bg: var(--x-color-danger-soft);
+  --x-message-border-color: var(--x-color-danger-border);
+  --x-message-text: var(--x-color-danger-text);
+}
+
+.x-message--top-left,
+.x-message--bottom-left {
+  left: var(--x-message-offset, 20px);
+  transform: none;
+}
+
+.x-message--top-right,
+.x-message--bottom-right {
+  left: auto;
+  right: var(--x-message-offset, 20px);
+  transform: none;
+}
+
+.x-message--bottom,
+.x-message--bottom-left,
+.x-message--bottom-right {
+  bottom: var(--x-message-offset, 20px);
+  top: auto;
+}
+
+.x-message.is-plain {
+  background: #fff;
+}
+
+.x-message.is-round {
+  border-radius: 999px;
+}
+
+.x-message.is-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.x-message__icon {
+  color: var(--x-message-icon-color, currentColor);
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+
+.x-message__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.x-message__close {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--x-message-close-color, currentColor);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 20px/1 var(--x-font-family);
+  height: 24px;
+  padding: 0;
+  width: 24px;
+}

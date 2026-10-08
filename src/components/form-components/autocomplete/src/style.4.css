@@ -1,0 +1,9 @@
+.x-autocomplete {
+  font-size: var(--x-autocomplete-option-font-size, 14px);
+  height: auto;
+  min-height: var(--x-autocomplete-height, 32px);
+}
+
+.x-autocomplete.is-auto-width {
+  width: auto;
+}

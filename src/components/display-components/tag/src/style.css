@@ -1,0 +1,93 @@
+.x-tag {
+  --x-tag-primary: var(--x-color-primary);
+  --x-tag-success: var(--x-color-success);
+  --x-tag-warning: var(--x-color-warning);
+  --x-tag-danger: var(--x-color-danger);
+  --x-tag-info: var(--x-color-info);
+  align-items: center;
+  border: var(--x-element-border-width, 1px) solid transparent;
+  border-radius: var(--x-radius-sm);
+  box-sizing: border-box;
+  display: inline-flex;
+  font-family: var(--x-font-family);
+  font-weight: 600;
+  gap: 4px;
+  line-height: 1;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.x-tag {
+  font-size: 12px;
+  min-height: 30px;
+  padding: 0 8px;
+}
+
+.x-tag--primary { --x-tag-type-color: var(--x-tag-color, var(--x-tag-primary)); }
+
+.x-tag--success { --x-tag-type-color: var(--x-tag-color, var(--x-tag-success)); }
+
+.x-tag--warning { --x-tag-type-color: var(--x-tag-color, var(--x-tag-warning)); }
+
+.x-tag--danger { --x-tag-type-color: var(--x-tag-color, var(--x-tag-danger)); }
+
+.x-tag--info { --x-tag-type-color: var(--x-tag-color, var(--x-tag-info)); }
+
+.x-tag--light {
+  background: color-mix(in srgb, var(--x-tag-type-color) 12%, #fff);
+  border-color: color-mix(in srgb, var(--x-tag-type-color) 28%, #fff);
+  color: var(--x-element-text, var(--x-tag-type-color));
+}
+
+.x-tag--dark {
+  background: var(--x-element-bg, var(--x-tag-type-color));
+  color: var(--x-element-text, var(--x-color-primary-text));
+}
+
+.x-tag--plain {
+  background: var(--x-element-bg, #fff);
+  border-color: var(--x-element-border-color, var(--x-tag-type-color));
+  color: var(--x-element-text, var(--x-tag-type-color));
+}
+
+.x-tag.is-round {
+  border-radius: 999px;
+}
+
+.x-tag.is-hit {
+  border-color: currentColor;
+}
+
+.x-tag.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.x-tag__content {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.x-tag__close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: currentColor;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 16px;
+  justify-content: center;
+  line-height: 1;
+  margin-right: -2px;
+  padding: 0;
+  width: 16px;
+}
+
+.x-tag__close:hover {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}

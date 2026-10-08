@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Scrollbar from './src/Scrollbar.vue'
 
-export const XScrollbar = Scrollbar
+export const XScrollbar = Scrollbar as ComponentWithInstall<typeof Scrollbar>
 
 export type { ScrollbarProps } from './src/types'
 

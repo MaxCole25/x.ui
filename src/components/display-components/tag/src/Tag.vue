@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import type { TagProps } from './types'
@@ -10,7 +11,7 @@ defineOptions({
 const props = withDefaults(defineProps<TagProps>(), {
   variant: 'primary',
   effect: 'light',
-  size: 'md',
+  fontSize: 14,
   closable: false,
   round: false,
   hit: false,
@@ -44,10 +45,10 @@ function handleClose(event: MouseEvent) {
     :class="[
       `x-tag--${mergedVariant}`,
       `x-tag--${props.effect}`,
-      `x-tag--${props.size}`,
+      'x-tag',
       { 'is-round': props.round, 'is-hit': props.hit, 'is-disabled': props.disabled }
     ]"
-    :style="tagStyle"
+    :style="[tagStyle, createFontStyle(props.fontSize ?? 14)]"
     @click="handleClick"
   >
     <span class="x-tag__content"><slot /></span>

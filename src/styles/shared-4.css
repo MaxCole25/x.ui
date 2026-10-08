@@ -1,0 +1,15 @@
+.x-tools__icon-wrap .x-badge {
+  line-height: 1;
+}
+
+.x-tools__icon-wrap .x-badge__content {
+  right: -2px;
+  top: -2px;
+  transform: translate(70%, -60%);
+}
+
+.x-tools__icon-wrap .x-badge__content.is-dot {
+  right: -1px;
+  top: -1px;
+  transform: translate(55%, -55%);
+}

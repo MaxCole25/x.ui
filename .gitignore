@@ -11,7 +11,7 @@ coverage
 histoire-*.log
 histoire-*.err.log
 vitepress-*.log
-*.png
-*.svg
 *.xlsx
 .tmp-*
+
+.pnpm-store/

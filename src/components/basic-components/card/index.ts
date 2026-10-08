@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Card from './src/Card.vue'
 
-export const XCard = Card
+export const XCard = Card as ComponentWithInstall<typeof Card>
 
 export type { CardProps, CardShadow } from './src/types'
 

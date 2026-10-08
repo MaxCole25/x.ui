@@ -150,15 +150,17 @@ describe('XRichTextEditor', () => {
     expect((customWrapper.find('.xl-rich-editor').element as HTMLElement).style.getPropertyValue('--xl-editor-content-font-size')).toBe('18px')
   })
 
-  it('anchors color inputs on toolbar color buttons', () => {
+  it('anchors color inputs on toolbar color buttons', async () => {
     const wrapper = mount(XRichTextEditor, {
       props: {
         modelValue: '<p>a</p>'
       }
     })
 
-    expect(wrapper.findAll('.xl-toolbar__color-picker')).toHaveLength(2)
+    expect(wrapper.findAll('.xl-toolbar__color-menu')).toHaveLength(2)
+    await wrapper.find('button[title="文字颜色"]').trigger('click')
     expect(wrapper.find('input[aria-label="文字颜色"]').classes()).toContain('xl-toolbar__color-input')
+    await wrapper.find('button[title="高亮颜色"]').trigger('click')
     expect(wrapper.find('input[aria-label="高亮颜色"]').classes()).toContain('xl-toolbar__color-input')
   })
 

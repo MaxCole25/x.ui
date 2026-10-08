@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import DataTableSettings from './src/DataTableSettings.vue'
 
-export const XDataTableSettings = DataTableSettings
+export const XDataTableSettings = DataTableSettings as ComponentWithInstall<typeof DataTableSettings>
 
 export type {
   DataTableSettingsAdapter,

@@ -1,6 +1,5 @@
-import type { XSize } from '../../../_utils/size'
 export interface LoadingProps {
-  size?: XSize
+  fontSize?: number
   modelValue?: boolean
   text?: string
   fullscreen?: boolean

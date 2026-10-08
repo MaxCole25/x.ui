@@ -13,6 +13,8 @@ export default defineConfig(() => {
         dts({
           entryRoot: 'src',
           include: ['src'],
+          exclude: ['src/**/*.story.vue', 'src/components/_story/**'],
+          tsconfigPath: 'tsconfig.build.json',
           insertTypesEntry: true,
           rollupTypes: true
         })

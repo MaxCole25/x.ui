@@ -1,0 +1,11 @@
+.x-dropdown-item__icon {
+  flex: 0 0 auto;
+}
+
+.x-dropdown-item__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

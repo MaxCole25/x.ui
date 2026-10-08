@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type ProgressStatus = 'primary' | 'success' | 'warning' | 'danger'
 export type ProgressVariant = 'line' | 'circle'
@@ -7,7 +6,7 @@ export interface ProgressProps {
   percentage?: number
   status?: ProgressStatus
   variant?: ProgressVariant
-  size?: XSize
+  fontSize?: number
   strokeWidth?: number
   showText?: boolean
   textInside?: boolean

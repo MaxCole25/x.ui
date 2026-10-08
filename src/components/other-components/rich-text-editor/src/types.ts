@@ -1,5 +1,4 @@
 import type { JSONContent } from '@tiptap/core'
-import type { XSize } from '../../../_utils/size'
 import type { RichEditorExpose, UploadResult } from './core/rich-editor/custom/types'
 
 export const RICH_TEXT_EDITOR_TOOLBAR_BUTTONS = [
@@ -56,7 +55,7 @@ export interface RichTextEditorTheme {
 }
 
 export interface RichTextEditorProps {
-  size?: XSize
+  fontSize?: number
   modelValue?: string
   fallbackHtml?: string
   readonly?: boolean

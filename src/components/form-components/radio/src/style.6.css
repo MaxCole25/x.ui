@@ -1,0 +1,4 @@
+.x-radio.is-checked .x-radio__dot {
+  border-color: var(--x-radio-color);
+  box-shadow: var(--x-radio-active-glow);
+}

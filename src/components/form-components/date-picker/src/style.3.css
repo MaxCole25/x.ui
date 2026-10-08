@@ -1,0 +1,19 @@
+.x-date-picker__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.x-date-picker__today {
+  background: var(--x-picker-primary-button-bg, var(--x-color-primary));
+  border: 0;
+  border-radius: 6px;
+  color: var(--x-picker-primary-button-text, #fff);
+  cursor: pointer;
+  font: 600 13px/1 var(--x-font-family);
+  min-height: 32px;
+  padding: 0 14px;
+}
+
+.x-date-picker__today:hover {
+  background: var(--x-picker-primary-button-hover-bg, #0f56d9);
+}

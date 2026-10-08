@@ -1,0 +1,6 @@
+.x-select__empty {
+  color: var(--x-color-info);
+  font-size: 14px;
+  padding: 12px;
+  text-align: center;
+}

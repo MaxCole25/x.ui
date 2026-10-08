@@ -1,0 +1,4 @@
+.x-cascader__control {
+  color: var(--x-cascader-text-color, var(--x-element-text, var(--x-color-muted)));
+  cursor: pointer;
+}

@@ -2487,7 +2487,7 @@ defineExpose({
               <g transform="translate(68 38)">
                 <rect width="34" height="34" rx="8" fill="currentColor" />
                 <path d="M10 10l14 14M24 10L10 24" :stroke="bodyBackgroundColor" stroke-width="3.2" stroke-linecap="round" />
-                <text x="42" y="23" font-size="18" fill="currentColor" font-family="Arial, sans-serif">x.ui</text>
+                <text x="42" y="23" font-size="18" fill="currentColor" font-family="Arial, sans-serif">@x-soft88/x-ui</text>
               </g>
             </svg>
             <span class="x-table__empty-text">{{ emptyText }}</span>

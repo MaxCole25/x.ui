@@ -179,7 +179,7 @@ const parentStyle = computed(() => ({
 
 .element-style-playground__area-title {
   color: #0f172a;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
@@ -220,7 +220,7 @@ const parentStyle = computed(() => ({
 
 .element-style-playground__empty {
   color: #64748b;
-  font-size: 13px;
+  font-size: 14px;
   margin: 0;
 }
 

@@ -1,0 +1,6 @@
+.x-autocomplete__empty {
+  color: var(--x-color-muted);
+  font-size: 14px;
+  padding: 10px;
+  text-align: center;
+}

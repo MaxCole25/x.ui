@@ -1,6 +1,6 @@
 ﻿export type LoginLogoPosition = 'top' | 'left' | 'right'
 export type LoginLabelPosition = 'top' | 'left'
-export type LoginSize = 'sm' | 'md' | 'lg'
+export type LoginFontSize = number
 
 export interface LoginSubmitPayload {
   username: string
@@ -26,7 +26,7 @@ export interface LoginProps {
   logoAlt?: string
   logoPosition?: LoginLogoPosition
   labelPosition?: LoginLabelPosition
-  size?: LoginSize
+  fontSize?: number
   loading?: boolean
   disabled?: boolean
   usernameLabel?: string
@@ -53,7 +53,7 @@ export interface LoginProps {
   backgroundColor?: string
   borderColor?: string
   borderWidth?: string
-  radius?: string
+  radius?: number | string
   width?: string
   textColor?: string
   mutedTextColor?: string

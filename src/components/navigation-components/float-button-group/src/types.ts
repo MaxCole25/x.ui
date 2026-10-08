@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 import type { TooltipPlacement } from '../../../feedback-components/tooltip'
 
 export type FloatButtonGroupMode = 'menu' | 'direct'
@@ -30,7 +29,7 @@ export interface FloatButtonGroupProps {
   right?: number | string
   bottom?: number | string
   left?: number | string
-  size?: XSize
+  fontSize?: number
   zIndex?: number
   triggerIcon?: string
   closeIcon?: string

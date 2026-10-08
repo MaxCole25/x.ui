@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { computed, reactive } from 'vue'
-import type { InputSize, InputStatus, InputTextAlign } from '../input'
+import type { InputStatus, InputTextAlign } from '../input'
 import { XTimeSelect } from './index'
 import '../../../styles/index.css'
-
 const sample = reactive({
   modelValue: '09:30',
   start: '09:00',
@@ -14,7 +14,6 @@ const sample = reactive({
   readonly: false,
   clearable: true,
   hideClearButton: false,
-  size: 'md' as InputSize,
   status: 'default' as InputStatus,
   prefix: '预约时间',
   suffix: '',
@@ -25,8 +24,8 @@ const sample = reactive({
   disabledBackgroundColor: '#f5f7fa',
   disabledTextColor: '#94a3b8',
   fontFamily: 'Inter, Arial, sans-serif',
-  fontSize: 12,
-  height: 30,
+  fontSize: 14,
+  height: 32,
   autoHeight: false,
   padding: '0 8px',
   radius: '6px',
@@ -45,53 +44,6 @@ const sample = reactive({
   parentFullWidth: false,
   parentFullHeight: false
 })
-
-const darkTimeSelectTheme = {
-  modelValue: '21:30',
-  start: '18:00',
-  end: '23:30',
-  stepMinutes: 30,
-  placeholder: '暗色时间段',
-  prefix: '夜间',
-  clearable: true,
-  backgroundColor: '#111827',
-  textColor: '#e5e7eb',
-  borderColor: '#374151',
-  activeBorderColor: '#60a5fa',
-  panelBackgroundColor: '#0f172a',
-  panelTextColor: '#e5e7eb',
-  panelMutedTextColor: '#94a3b8',
-  panelBorderColor: '#334155',
-  panelHeaderTextColor: '#f8fafc',
-  panelCloseIconColor: '#94a3b8',
-  panelCloseIconHoverColor: '#ffffff',
-  timePanelBackgroundColor: '#0f172a',
-  timePanelBorderColor: '#334155',
-  timeColumnLabelColor: '#93c5fd',
-  timeOptionTextColor: '#cbd5e1',
-  timeOptionHoverTextColor: '#ffffff',
-  timeOptionActiveTextColor: '#ffffff',
-  timeOptionActiveBackgroundColor: '#1d4ed8',
-  timeOptionSelectionBackgroundColor: '#172554',
-  timeOptionSelectionBorderColor: '#2563eb',
-  timeColumnMaskTopColor: '#0f172a',
-  timeColumnMaskMiddleColor: 'rgba(15, 23, 42, 0.82)',
-  timeColumnMaskBottomColor: 'rgba(15, 23, 42, 0)',
-  panelPrimaryButtonBackgroundColor: '#2563eb',
-  panelPrimaryButtonTextColor: '#ffffff',
-  panelPrimaryButtonHoverBackgroundColor: '#1d4ed8',
-  panelSecondaryButtonBackgroundColor: '#111827',
-  panelSecondaryButtonTextColor: '#cbd5e1',
-  panelSecondaryButtonBorderColor: '#334155',
-  panelSecondaryButtonHoverBackgroundColor: '#172554',
-  panelSecondaryButtonHoverTextColor: '#ffffff',
-  panelSecondaryButtonHoverBorderColor: '#60a5fa'
-}
-
-const sizeOptions: InputSize[] = ['sm', 'md', 'lg']
-const statusOptions: InputStatus[] = ['default', 'success', 'warning', 'error']
-const alignOptions: InputTextAlign[] = ['left', 'center', 'right']
-
 const componentSample = computed(() => {
   const props = { ...sample } as Record<string, unknown>
   delete props.parentWidth
@@ -101,216 +53,16 @@ const componentSample = computed(() => {
 
   return props
 })
-
-const updateRadius = (event: Event) => {
-  sample.radius = `${(event.target as HTMLInputElement).value}px`
-}
 </script>
 
 <template>
   <Story title="Form 组件/TimeSelect 时间选择" group="components">
-    
-
-    
-
     <Variant title="外观接口">
-      <div class="time-select-appearance">
-        <div class="time-select-appearance__preview">
-          <div
-            class="time-select-appearance__preview-parent"
-            :style="{
-              width: sample.parentFullWidth ? '100%' : `${sample.parentWidth}px`,
-              height: sample.parentFullHeight ? '100%' : `${sample.parentHeight}px`
-            }"
-          >
-            <XTimeSelect v-bind="componentSample" v-model="sample.modelValue" />
-          </div>
-          <div class="time-select-appearance__preview-parent is-dark">
-            <XTimeSelect v-bind="darkTimeSelectTheme" />
-          </div>
-        </div>
-
-        <div class="time-select-appearance__controls">
-          <div class="time-select-appearance__column">
-            <label>
-              <span>绑定值</span>
-              <input v-model="sample.modelValue" />
-            </label>
-            <label>
-              <span>占位文本</span>
-              <input v-model="sample.placeholder" />
-            </label>
-            <label>
-              <span>前缀</span>
-              <input v-model="sample.prefix" />
-            </label>
-            <label>
-              <span>后缀</span>
-              <input v-model="sample.suffix" />
-            </label>
-            <label>
-              <span>ID</span>
-              <input v-model="sample.id" />
-            </label>
-            <label>
-              <span>name</span>
-              <input v-model="sample.name" />
-            </label>
-            <label>
-              <span>内边距</span>
-              <input v-model="sample.padding" />
-            </label>
-            <label>
-              <span>开始时间</span>
-              <input v-model="sample.start" />
-            </label>
-            <label>
-              <span>结束时间</span>
-              <input v-model="sample.end" />
-            </label>
-            <label>
-              <span>字体</span>
-              <select v-model="sample.fontFamily">
-                <option value="Inter, Arial, sans-serif">Inter</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="Georgia, serif">Georgia</option>
-                <option value="'Microsoft YaHei', sans-serif">微软雅黑</option>
-              </select>
-            </label>
-            <label>
-              <span>对齐</span>
-              <select v-model="sample.textAlign">
-                <option v-for="align in alignOptions" :key="align" :value="align">{{ align }}</option>
-              </select>
-            </label>
-            <label>
-              <span>尺寸</span>
-              <select v-model="sample.size">
-                <option v-for="size in sizeOptions" :key="size" :value="size">{{ size }}</option>
-              </select>
-            </label>
-            <label>
-              <span>状态</span>
-              <select v-model="sample.status">
-                <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="time-select-appearance__column">
-            <label>
-              <span>步进分钟</span>
-              <input v-model.number="sample.stepMinutes" type="number" min="1" />
-            </label>
-            <label>
-              <span>最大长度</span>
-              <input v-model.number="sample.maxlength" type="number" min="1" />
-            </label>
-            <label>
-              <span>父元素宽度</span>
-              <input v-model.number="sample.parentWidth" type="number" min="0" />
-            </label>
-            <label>
-              <span>父元素高度</span>
-              <input v-model.number="sample.parentHeight" type="number" min="0" />
-            </label>
-            <label>
-              <span>高度</span>
-              <input v-model.number="sample.height" type="number" min="20" />
-            </label>
-            <label>
-              <span>字号</span>
-              <input v-model.number="sample.fontSize" type="number" min="10" />
-            </label>
-            <label>
-              <span>圆角</span>
-              <input :value="Number.parseFloat(String(sample.radius))" type="number" min="0" @input="updateRadius" />
-            </label>
-            <label>
-              <span>清除尺寸</span>
-              <input v-model.number="sample.clearIconSize" type="number" min="10" />
-            </label>
-            <label>
-              <span>边框粗细</span>
-              <input v-model.number="sample.borderWidth" type="number" min="0" max="12" />
-            </label>
-          </div>
-
-          <div class="time-select-appearance__column">
-            <label>
-              <span>主题色</span>
-              <input v-model="sample.accentColor" type="color" />
-            </label>
-            <label>
-              <span>激活边框色</span>
-              <input v-model="sample.activeBorderColor" type="color" />
-            </label>
-            <label>
-              <span>边框色</span>
-              <input v-model="sample.borderColor" type="color" />
-            </label>
-            <label>
-              <span>背景色</span>
-              <input v-model="sample.backgroundColor" type="color" />
-            </label>
-            <label>
-              <span>输入背景色</span>
-              <input v-model="sample.inputBackgroundColor" type="color" />
-            </label>
-            <label>
-              <span>文字色</span>
-              <input v-model="sample.textColor" type="color" />
-            </label>
-            <label>
-              <span>清除色</span>
-              <input v-model="sample.clearIconColor" type="color" />
-            </label>
-            <label>
-              <span>禁用背景色</span>
-              <input v-model="sample.disabledBackgroundColor" type="color" />
-            </label>
-            <label>
-              <span>禁用文字色</span>
-              <input v-model="sample.disabledTextColor" type="color" />
-            </label>
-          </div>
-
-          <div class="time-select-appearance__column">
-            <label>
-              <input v-model="sample.parentFullWidth" type="checkbox" />
-              <span>父元素撑满宽度</span>
-            </label>
-            <label>
-              <input v-model="sample.parentFullHeight" type="checkbox" />
-              <span>父元素撑满高度</span>
-            </label>
-            <label>
-              <input v-model="sample.autoHeight" type="checkbox" />
-              <span>自动高度</span>
-            </label>
-            <label>
-              <input v-model="sample.showActiveBorder" type="checkbox" />
-              <span>显示激活边框</span>
-            </label>
-            <label>
-              <input v-model="sample.disabled" type="checkbox" />
-              <span>禁用</span>
-            </label>
-            <label>
-              <input v-model="sample.readonly" type="checkbox" />
-              <span>只读</span>
-            </label>
-            <label>
-              <input v-model="sample.clearable" type="checkbox" />
-              <span>可清空</span>
-            </label>
-            <label>
-              <input v-model="sample.hideClearButton" type="checkbox" />
-              <span>隐藏清除按钮</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <ApiPlayground component="XTimeSelect">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XTimeSelect v-bind="{ ...(componentSample), ...(apiProps) }" v-model="sample.modelValue"   v-on="apiEvents" @vue:mounted="captureInstance" />
+        </template>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

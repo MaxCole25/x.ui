@@ -1,0 +1,50 @@
+.x-option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: #606266;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 34px;
+  min-width: 0;
+  padding: 0 10px;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.x-option:hover:not(:disabled) {
+  background: #f5f7fa;
+  color: var(--x-select-color);
+}
+
+.x-option.is-active:not(:disabled) {
+  background: #f5f7fa;
+  color: var(--x-select-color);
+}
+
+.x-option.is-selected {
+  background: #ecf5ff;
+  color: var(--x-select-color);
+  font-weight: var(--x-font-weight-semibold, 600);
+}
+
+.x-option.is-disabled,
+.x-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.x-option__check {
+  flex: 0 0 auto;
+}
+
+.x-option__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

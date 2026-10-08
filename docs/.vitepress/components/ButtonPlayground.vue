@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { XButton } from '../../../src/components/basic-components/button'
-import type { XSize } from '../../../src/components/_utils/size'
+import type { FontSize } from '../../../src/components/_utils/size'
 import type { ButtonVariant } from '../../../src/components/basic-components/button'
 
 const variant = ref<ButtonVariant>('solid')
-const size = ref<XSize>('md')
+const size = ref<FontSize>(14)
 const loading = ref(false)
 const disabled = ref(false)
 const clickCount = ref(0)
@@ -14,7 +14,7 @@ const showCode = ref(false)
 const previewCode = computed(() => {
   const attrs = [
     variant.value !== 'solid' ? `variant="${variant.value}"` : '',
-    size.value !== 'md' ? `size="${size.value}"` : '',
+    size.value !== 14 ? `:font-size="${size.value}"` : '',
     loading.value ? 'loading' : '',
     disabled.value ? 'disabled' : ''
   ].filter(Boolean)
@@ -32,7 +32,7 @@ function handleClick() {
     <div class="x-playground__preview">
       <XButton
         :variant="variant"
-        :size="size"
+        :font-size="size"
         :loading="loading"
         :disabled="disabled"
         @click="handleClick"
@@ -53,12 +53,8 @@ function handleClick() {
       </label>
 
       <label class="x-control">
-        <span>尺寸</span>
-        <select v-model="size">
-          <option value="sm">小</option>
-          <option value="md">默认</option>
-          <option value="lg">大</option>
-        </select>
+        <span>字号</span>
+        <input v-model.number="size" type="number" min="1" aria-label="字号" />
       </label>
 
       <label class="x-check">

@@ -95,18 +95,18 @@ describe('XDialog', () => {
     wrapper.unmount()
   })
 
-  it('keeps dialog shell spacing and radius independent from size preset', () => {
+  it('keeps dialog shell spacing and radius independent from font size', () => {
     const wrapper = mount(XDialog, {
       props: {
         modelValue: true,
-        size: 'sm'
+        fontSize: 10
       },
       attachTo: document.body
     })
 
     const dialog = document.body.querySelector('.x-dialog') as HTMLElement
     expect(dialog.getAttribute('style')).toContain('--x-dialog-font-size: 10px')
-    expect(dialog.getAttribute('style')).toContain('--x-dialog-control-height: 22px')
+    expect(dialog.getAttribute('style')).toContain('--x-dialog-control-height: 32px')
     expect(dialog.getAttribute('style')).not.toContain('--x-dialog-padding')
     expect(dialog.getAttribute('style')).not.toContain('--x-dialog-radius')
     wrapper.unmount()

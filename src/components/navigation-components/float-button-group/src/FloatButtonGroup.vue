@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { XIcon } from '../../../basic-components/icon'
 import { XTooltip } from '../../../feedback-components/tooltip'
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<FloatButtonGroupProps>(), {
   right: undefined,
   bottom: undefined,
   left: undefined,
-  size: 'md',
+  fontSize: 14,
   zIndex: overlayZIndex.popper,
   triggerIcon: 'customer-service-2',
   closeIcon: 'close',
@@ -45,7 +45,7 @@ const uncontrolledExpanded = ref(props.defaultModelValue)
 const isExpanded = computed(() => props.modelValue ?? uncontrolledExpanded.value)
 const isMenuMode = computed(() => props.mode === 'menu')
 const shouldShowItems = computed(() => props.mode === 'direct' || isExpanded.value)
-const sizePreset = computed(() => componentSizePreset[props.size])
+const sizePreset = computed(() => getComponentMetrics(props.fontSize))
 
 const autoTooltipPlacement = computed<TooltipPlacement>(() => {
   if (props.tooltipPlacement) return props.tooltipPlacement
@@ -59,7 +59,7 @@ const rootStyle = computed(() => {
     position: props.position,
     '--x-float-button-group-size': `${sizePreset.value.height + 16}px`,
     '--x-float-button-group-icon-size': `${sizePreset.value.fontSize + 8}px`,
-    '--x-float-button-group-gap': props.size === 'sm' ? '8px' : props.size === 'lg' ? '14px' : '10px',
+    '--x-float-button-group-gap': '10px',
     '--x-float-button-group-radius': '999px',
     '--x-float-button-group-z-index': props.zIndex
   }
@@ -124,7 +124,7 @@ watch(
   <div
     class="x-float-button-group"
     :class="[`x-float-button-group--${props.placement}`, `x-float-button-group--${props.direction}`, `x-float-button-group--${props.mode}`]"
-    :style="rootStyle"
+    :style="[rootStyle, createFontStyle(props.fontSize ?? 14)]"
   >
     <Transition name="x-float-button-group-list">
       <div v-if="shouldShowItems" class="x-float-button-group__list" :class="listClasses" role="group">

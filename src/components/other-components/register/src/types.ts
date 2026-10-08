@@ -1,6 +1,6 @@
 export type RegisterLogoPosition = 'top' | 'left' | 'right'
 export type RegisterLabelPosition = 'top' | 'left'
-export type RegisterSize = 'sm' | 'md' | 'lg'
+export type RegisterFontSize = number
 
 export interface RegisterSubmitPayload {
   username: string
@@ -30,7 +30,7 @@ export interface RegisterProps {
   logoAlt?: string
   logoPosition?: RegisterLogoPosition
   labelPosition?: RegisterLabelPosition
-  size?: RegisterSize
+  fontSize?: number
   loading?: boolean
   disabled?: boolean
   usernameLabel?: string
@@ -63,7 +63,7 @@ export interface RegisterProps {
   backgroundColor?: string
   borderColor?: string
   borderWidth?: string
-  radius?: string
+  radius?: number | string
   width?: string
   textColor?: string
   mutedTextColor?: string

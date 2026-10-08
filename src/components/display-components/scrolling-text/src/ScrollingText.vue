@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
 import type { ScrollingTextFlowDirection, ScrollingTextProps } from './types'
@@ -90,7 +91,7 @@ watch(
       `x-scrolling-text--${props.displayDirection}`,
       `x-scrolling-text--to-${effectiveFlowDirection}`
     ]"
-    :style="rootStyle"
+    :style="[rootStyle, createFontStyle(props.fontSize)]"
   >
     <div class="x-scrolling-text__track">
       <span ref="contentRef" class="x-scrolling-text__content"><slot /></span>

@@ -1,5 +1,5 @@
+import { readCssSource } from './_utils/readCssSource'
 import { mount } from '@vue/test-utils'
-import { readFileSync } from 'node:fs'
 import { describe, expect, it, vi } from 'vitest'
 import { XTabs } from '../src'
 
@@ -35,7 +35,7 @@ describe('XTabs', () => {
     expect(wrapper.attributes('style')).toContain('--x-tabs-context-menu-text: var(--x-color-text)')
     expect(wrapper.attributes('style')).toContain('--x-tabs-item-height: 30px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-item-frame-height: 30px')
-    expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 12px')
+    expect(wrapper.attributes('style')).toContain('--x-tabs-label-font-size: 14px')
     expect(wrapper.attributes('style')).toContain('--x-tabs-vertical-width: 48px')
   })
 
@@ -54,29 +54,29 @@ describe('XTabs', () => {
     expect(wrapper.find('.x-tabs__item').classes()).toContain('is-stretch')
   })
 
-  it('supports lg and sm tab sizes', () => {
+  it('supports independent font sizes with fixed tab layout', () => {
     const large = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        size: 'lg'
+        fontSize: 18
       }
     })
     const small = mount(XTabs, {
       props: {
         modelValue: 'a',
         items,
-        size: 'sm'
+        fontSize: 10
       }
     })
 
-    expect(large.classes()).toContain('x-tabs--lg')
-    expect(large.attributes('style')).toContain('--x-tabs-item-height: 38px')
+    expect(large.attributes('style')).toContain('--x-tabs-label-font-size: 18px')
+    expect(large.attributes('style')).toContain('--x-tabs-item-height: 30px')
     expect(large.attributes('style')).toContain('--x-tabs-item-frame-height: 30px')
     expect(large.attributes('style')).toContain('--x-tabs-item-min-width: 140px')
     expect(large.attributes('style')).toContain('--x-tabs-item-padding-x: 8px')
-    expect(small.classes()).toContain('x-tabs--sm')
-    expect(small.attributes('style')).toContain('--x-tabs-item-height: 22px')
+    expect(small.attributes('style')).toContain('--x-tabs-label-font-size: 10px')
+    expect(small.attributes('style')).toContain('--x-tabs-item-height: 30px')
     expect(small.attributes('style')).toContain('--x-tabs-item-frame-height: 30px')
     expect(small.attributes('style')).toContain('--x-tabs-item-min-width: 140px')
     expect(small.attributes('style')).toContain('--x-tabs-item-padding-x: 8px')
@@ -131,7 +131,7 @@ describe('XTabs', () => {
   })
 
   it('keeps visual styles for every tab type', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+    const css = readCssSource().replace(/\r\n/g, '\n')
 
     expect(css).toContain('.x-tabs--line .x-tabs__item-frame {\n  background: transparent;\n  border: 0;')
     expect(css).toContain('.x-tabs--line .x-tabs__item-frame.is-active {\n  background: transparent;\n  border-bottom: 2px solid var(--x-tabs-tab-active-text);')
@@ -140,7 +140,7 @@ describe('XTabs', () => {
   })
 
   it('keeps horizontal tab item frames at the md height for every size', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8')
+    const css = readCssSource()
 
     expect(css).toContain('--x-tabs-item-frame-height: 30px')
     expect(css).toContain('height: var(--x-tabs-item-frame-height, 30px)')
@@ -149,14 +149,14 @@ describe('XTabs', () => {
   })
 
   it('keeps horizontal scroll buttons from changing the tab row height', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+    const css = readCssSource().replace(/\r\n/g, '\n')
 
     expect(css).toContain('.x-tabs__scroll {\n  background: transparent;\n  border: 0;\n  color: var(--x-color-muted);\n  height: var(--x-tabs-item-frame-height, 30px);')
     expect(css).toContain('margin-bottom: 0;')
   })
 
   it('keeps the tab head background transparent while tab items use tab background variable', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+    const css = readCssSource().replace(/\r\n/g, '\n')
 
     expect(css).toContain('.x-tabs__head {\n  align-items: flex-end;\n  background: transparent;')
     expect(css).toContain('.x-tabs__item-frame {\n  align-items: center;\n  background: var(--x-tabs-tab-bg);')

@@ -1,0 +1,20 @@
+.x-flow {
+  align-items: var(--x-flow-align-items, center);
+  background: var(--x-flow-bg, transparent);
+  border: var(--x-flow-border-width, 0) var(--x-flow-border-style, solid) var(--x-flow-border-color, transparent);
+  border-radius: var(--x-flow-radius, 0);
+  box-sizing: border-box;
+  color: var(--x-flow-text-color, var(--x-color-text));
+  column-gap: var(--x-flow-column-gap, var(--x-flow-gap, 0));
+  display: grid;
+  font-family: var(--x-font-family);
+  grid-template-columns: repeat(auto-fill, minmax(var(--x-flow-item-track-width, 72px), 1fr));
+  height: var(--x-flow-height, auto);
+  justify-items: var(--x-flow-justify-items, center);
+  min-height: var(--x-flow-min-height, 0);
+  min-width: var(--x-flow-min-width, 0);
+  overflow: auto;
+  padding: var(--x-flow-padding, 0);
+  row-gap: var(--x-flow-row-gap, var(--x-flow-gap, 0));
+  width: var(--x-flow-width, 100%);
+}

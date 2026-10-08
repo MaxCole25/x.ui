@@ -1,23 +1,23 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { OverlayProps } from '../../../_utils/overlay'
-import type { XSize } from '../../../_utils/size'
 
 export type DialogFooterDividerStyle = 'solid' | 'dashed' | 'dotted'
 
 export interface DialogProps extends ElementStyleProps, OverlayProps {
   modelValue?: boolean
   title?: string
-  size?: XSize
-  width?: number | string
-  height?: number | string
-  minWidth?: number | string
-  minHeight?: number | string
-  maxWidth?: number | string
-  maxHeight?: number | string
+  fontSize?: number
+  width?: number
+  height?: number
+  minWidth?: number
+  minHeight?: number
+  maxWidth?: number
+  maxHeight?: number
   draggable?: boolean
   resizable?: boolean
   showFullscreen?: boolean
   closeOnMaskClick?: boolean
+  closeOnEsc?: boolean
   maskColor?: string
   titleColor?: string
   headerBackgroundColor?: string

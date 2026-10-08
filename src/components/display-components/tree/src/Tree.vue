@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import TreeNode from './TreeNode.vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { TreeContextAction, TreeContextMenuItem, TreeNodeData, TreeNodeIcon, TreeProps, TreeSlots } from './types'
 
 defineOptions({ name: 'XTree' })
@@ -278,7 +278,7 @@ function resolveNodeIcon(node: TreeNodeData): TreeNodeIcon {
 }
 
 function resolveTreeStyle() {
-  const sizePreset = componentSizePreset[props.size ?? 'md']
+  const sizePreset = getComponentMetrics(props.fontSize ?? 14)
   const paddingParts = sizePreset.padding.split(' ')
 
   return {
@@ -307,8 +307,8 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
 <template>
   <div
     class="x-tree"
-    :class="`x-tree--${props.size ?? 'md'}`"
-    :style="resolveTreeStyle()"
+    :class="'x-tree'"
+    :style="[resolveTreeStyle(), createFontStyle(props.fontSize ?? 14)]"
     role="tree"
     tabindex="0"
     @contextmenu.prevent.stop="handleRootContextMenu"

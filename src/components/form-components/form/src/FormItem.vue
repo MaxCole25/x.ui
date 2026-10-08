@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey, formItemContextKey } from './context'
-import type { FormControlSize, FormItemAlign, FormItemHorizontalAlign, FormItemProps, FormItemRule, FormItemStyle, FormLabelPosition, FormPublicSize, FormSize } from './types'
+import type { FormControlFontSize, FormItemAlign, FormItemHorizontalAlign, FormItemProps, FormItemRule, FormItemStyle, FormLabelPosition, FormPublicFontSize, FormFontSize } from './types'
 
 defineOptions({
   name: 'XFormItem'
@@ -26,14 +27,9 @@ const itemRef = ref<HTMLElement>()
 const validateMessage = ref('')
 const initialValue = ref<unknown>()
 
-const controlSizeMap: Record<FormSize, FormControlSize> = {
-  sm: 'sm',
-  md: 'md',
-  lg: 'lg'
-}
 
-const mergedPublicSize = computed<FormPublicSize>(() => props.size ?? form?.publicSize.value ?? 'md')
-const mergedControlSize = computed<FormControlSize>(() => controlSizeMap[props.size ?? mergedPublicSize.value])
+const mergedPublicSize = computed<FormPublicFontSize>(() => props.fontSize ?? form?.publicSize.value ?? 14)
+const mergedControlSize = computed<FormControlFontSize>(() => props.fontSize ?? mergedPublicSize.value)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
 const mergedLabelPosition = computed<FormLabelPosition>(() => props.labelPosition ?? form?.labelPosition.value ?? 'right')
 const mergedAlign = computed<FormItemAlign>(() => props.align)
@@ -65,7 +61,7 @@ if (form) {
   provide(formContextKey, {
     ...form,
     disabled: computed(() => mergedDisabled.value),
-    size: mergedControlSize,
+    fontSize: mergedControlSize,
     publicSize: computed(() => mergedPublicSize.value),
     labelPosition: computed(() => mergedLabelPosition.value)
   })
@@ -73,7 +69,7 @@ if (form) {
 
 const labelBaseStyle = computed<Record<string, string> | undefined>(() => {
   const width = props.labelWidth ?? form?.labelWidth.value
-  const style: Record<string, string> = {}
+  const style: Record<string, string> = { '--x-form-item-label-font-size': `${mergedPublicSize.value}px` }
 
   if (width != null && mergedLabelPosition.value !== 'top') {
     style.width = typeof width === 'number' ? `${width}px` : width
@@ -245,9 +241,9 @@ onBeforeUnmount(() => {
   <div
     ref="itemRef"
     class="x-form-item"
-    :style="itemThemeStyle"
+    :style="[itemThemeStyle, createFontStyle(mergedPublicSize)]"
     :class="[
-      `x-form-item--${mergedPublicSize}`,
+      'x-form-item',
       `x-form-item--label-${mergedLabelPosition}`,
       {
         'x-form-item--align-center': mergedAlign === 'center',

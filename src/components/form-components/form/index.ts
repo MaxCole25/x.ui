@@ -1,12 +1,13 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Form from './src/Form.vue'
 import FormItem from './src/FormItem.vue'
 
-export const XForm = Form
-export const XFormItem = FormItem
+export const XForm = Form as ComponentWithInstall<typeof Form>
+export const XFormItem = FormItem as ComponentWithInstall<typeof FormItem>
 
 export type {
-  FormControlSize,
+  FormControlFontSize,
   FormExpose,
   FormItemAlign,
   FormItemClass,
@@ -17,9 +18,9 @@ export type {
   FormItemStyle,
   FormLabelPosition,
   FormProps,
-  FormPublicSize,
+  FormPublicFontSize,
   FormRules,
-  FormSize,
+  FormFontSize,
   FormValidateCallback,
   FormValidateFieldMethod,
   FormValidateMethod,

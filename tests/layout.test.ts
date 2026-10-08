@@ -1,5 +1,5 @@
+import { readCssSource } from './_utils/readCssSource'
 import { mount } from '@vue/test-utils'
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { XLayout } from '../src'
 
@@ -77,7 +77,7 @@ describe('XLayout', () => {
   })
 
   it('provides viewport min-height fallback for fill height layout', () => {
-    const style = readFileSync('src/styles/index.css', 'utf-8')
+    const style = readCssSource()
 
     expect(style).toContain('.x-layout.is-fill-height')
     expect(style).toContain('min-height: 100vh')
@@ -85,7 +85,7 @@ describe('XLayout', () => {
   })
 
   it('sets documented region padding for shell slot regions', () => {
-    const style = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
+    const style = readCssSource().replace(/\r\n/g, '\n')
 
     for (const selector of ['topbar', 'footer']) {
       const rule = style.match(new RegExp(`\\.x-layout__${selector} \\{[\\s\\S]*?grid-area: ${selector};[\\s\\S]*?\\}`))?.[0] ?? ''
@@ -99,7 +99,7 @@ describe('XLayout', () => {
   })
 
   it('renders footerBorder on the footer top edge', () => {
-    const style = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
+    const style = readCssSource().replace(/\r\n/g, '\n')
     const footerRule = [...style.matchAll(/\.x-layout__footer \{[\s\S]*?\}/g)]
       .map((match) => match[0])
       .find((rule) => rule.includes('grid-area: footer')) ?? ''

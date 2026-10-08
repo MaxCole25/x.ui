@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { InputNumberProps } from './types'
 
 defineOptions({
@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<InputNumberProps>(), {
   step: 1,
   disabled: false,
   readonly: false,
-  size: 'md',
+  fontSize: 14,
   placeholder: '请输入数字',
   fullWidth: false,
   fullHeight: false,
@@ -27,17 +27,17 @@ const emit = defineEmits<{
 
 const instance = getCurrentInstance()
 const value = computed(() => props.modelValue ?? '')
-const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'size' in instance.vnode.props))
-const sizePreset = computed(() => componentSizePreset[props.size])
+const hasExplicitSize = computed(() => Boolean(instance?.vnode.props && 'fontSize' in instance.vnode.props))
+const sizePreset = computed(() => getComponentMetrics(props.fontSize))
 const inputNumberStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-input-number-color': props.accentColor,
   '--x-input-number-active-border-color': props.activeBorderColor ?? props.accentColor,
   '--x-input-number-border-color': props.borderColor,
   '--x-input-number-border-width': toCssSize(props.borderWidth),
-  '--x-input-number-height': hasExplicitSize.value ? toCssSize(sizePreset.value.height) : undefined,
-  '--x-input-number-padding': hasExplicitSize.value ? sizePreset.value.padding : undefined,
-  '--x-input-number-radius': hasExplicitSize.value ? sizePreset.value.radius : toCssSize(props.radius),
+  '--x-input-number-height': toCssSize(props.height ?? 32),
+  '--x-input-number-padding': toCssSize(props.padding ?? '0 8px'),
+  '--x-input-number-radius': toCssSize(props.radius),
   '--x-input-number-font-family': props.fontFamily,
   '--x-input-number-font-size': hasExplicitSize.value ? toCssSize(sizePreset.value.fontSize) : toCssSize(props.fontSize),
   '--x-input-number-decrease-bg': props.decreaseButtonBackgroundColor,
@@ -79,7 +79,7 @@ const stepBy = (direction: 1 | -1) => {
 </script>
 
 <template>
-  <div class="x-input-number" :class="[`x-input-number--${props.size}`, { 'is-disabled': props.disabled, 'is-full-width': props.fullWidth, 'is-full-height': props.fullHeight, 'is-active-border-hidden': !props.showActiveBorder }]" :style="inputNumberStyle">
+  <div class="x-input-number" :class="['x-input-number', { 'is-disabled': props.disabled, 'is-full-width': props.fullWidth, 'is-full-height': props.fullHeight, 'is-active-border-hidden': !props.showActiveBorder }]" :style="[inputNumberStyle, createFontStyle(props.fontSize ?? 14)]">
     <button type="button" :disabled="props.disabled || props.readonly" aria-label="减少" @click="stepBy(-1)">-</button>
     <input
       :value="value"

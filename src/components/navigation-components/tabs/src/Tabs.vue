@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Component, CSSProperties } from 'vue'
 import type { TabItem, TabName, TabsCloseAllPayload, TabsCloseOthersPayload, TabsExpose, TabsPaneContext, TabsProps, TabsReorderPosition } from './types'
@@ -8,7 +9,7 @@ defineOptions({ name: 'XTabs' })
 const props = withDefaults(defineProps<TabsProps>(), {
   items: () => [],
   variant: 'card',
-  size: 'md',
+  fontSize: 14,
   tabPosition: 'top',
   labelDirection: 'horizontal',
   tabStretch: false,
@@ -99,7 +100,7 @@ const isContextTargetInternalLocked = computed(() => {
 
 const rootClasses = computed(() => ({
   [`x-tabs--${mergedVariant.value}`]: true,
-  [`x-tabs--${props.size}`]: true,
+  ['x-tabs']: true,
   [`x-tabs--${props.tabPosition}`]: true,
   [`x-tabs--label-${props.labelDirection}`]: true,
   'is-fill-height': props.fullHeight,
@@ -121,7 +122,7 @@ const tabsStyleVars = computed<Record<string, string>>(() => ({
   '--x-tabs-content-bg': props.contentBackgroundColor,
   '--x-tabs-context-menu-bg': props.contextMenuBackgroundColor,
   '--x-tabs-context-menu-text': props.contextMenuTextColor,
-  ...getTabsSizeVars(props.size),
+  ...getTabsSizeVars(props.fontSize),
   ...(props.tabFontSize === undefined ? {} : { '--x-tabs-label-font-size': toCssLength(props.tabFontSize) }),
   ...(props.tabMinWidth === undefined ? {} : { '--x-tabs-item-min-width': toCssLength(props.tabMinWidth) }),
   ...(props.padding === undefined ? {} : { '--x-tabs-content-padding': toCssLength(props.padding) }),
@@ -138,56 +139,22 @@ const contextMenuStyle = computed<CSSProperties>(() => ({
   '--x-tabs-context-menu-text': props.contextMenuTextColor
 }))
 
-function getTabsSizeVars(size: NonNullable<TabsProps['size']>) {
-  const vars = {
-    lg: {
-      '--x-tabs-item-height': '38px',
-      '--x-tabs-item-frame-height': '30px',
-      '--x-tabs-item-min-height': '38px',
-      '--x-tabs-item-min-width': '140px',
-      '--x-tabs-item-padding-x': '8px',
-      '--x-tabs-item-padding-y': '0',
-      '--x-tabs-label-font-size': '14px',
-      '--x-tabs-icon-size': '22px',
-      '--x-tabs-icon-svg-size': '17px',
-      '--x-tabs-close-size': '20px',
-      '--x-tabs-action-size': '38px',
-      '--x-tabs-scroll-size': '38px',
-      '--x-tabs-vertical-width': '52px'
-    },
-    md: {
-      '--x-tabs-item-height': '30px',
-      '--x-tabs-item-frame-height': '30px',
-      '--x-tabs-item-min-height': '30px',
-      '--x-tabs-item-min-width': '140px',
-      '--x-tabs-item-padding-x': '8px',
-      '--x-tabs-item-padding-y': '0',
-      '--x-tabs-label-font-size': '12px',
-      '--x-tabs-icon-size': '20px',
-      '--x-tabs-icon-svg-size': '16px',
-      '--x-tabs-close-size': '18px',
-      '--x-tabs-action-size': '30px',
-      '--x-tabs-scroll-size': '30px',
-      '--x-tabs-vertical-width': '48px'
-    },
-    sm: {
-      '--x-tabs-item-height': '22px',
-      '--x-tabs-item-frame-height': '30px',
-      '--x-tabs-item-min-height': '22px',
-      '--x-tabs-item-min-width': '140px',
-      '--x-tabs-item-padding-x': '8px',
-      '--x-tabs-item-padding-y': '0',
-      '--x-tabs-label-font-size': '10px',
-      '--x-tabs-icon-size': '18px',
-      '--x-tabs-icon-svg-size': '14px',
-      '--x-tabs-close-size': '16px',
-      '--x-tabs-action-size': '22px',
-      '--x-tabs-scroll-size': '22px',
-      '--x-tabs-vertical-width': '44px'
-    }
-  } satisfies Record<NonNullable<TabsProps['size']>, Record<string, string>>
-
-  return vars[size]
+function getTabsSizeVars(fontSize: number) {
+  return {
+    '--x-tabs-item-height': '30px',
+    '--x-tabs-item-frame-height': '30px',
+    '--x-tabs-item-min-height': '30px',
+    '--x-tabs-item-min-width': '140px',
+    '--x-tabs-item-padding-x': '8px',
+    '--x-tabs-item-padding-y': '0',
+    '--x-tabs-label-font-size': fontSize + 'px',
+    '--x-tabs-icon-size': '20px',
+    '--x-tabs-icon-svg-size': '16px',
+    '--x-tabs-close-size': '18px',
+    '--x-tabs-action-size': '30px',
+    '--x-tabs-scroll-size': '30px',
+    '--x-tabs-vertical-width': '48px'
+  }
 }
 
 watch(
@@ -580,7 +547,7 @@ defineExpose<TabsExpose>({
 </script>
 
 <template>
-  <section class="x-tabs" :class="rootClasses" :style="tabsStyleVars">
+  <section class="x-tabs" :class="rootClasses" :style="[tabsStyleVars, createFontStyle(props.fontSize ?? 14)]">
     <header class="x-tabs__head">
       <button
         v-if="showScrollButtons"

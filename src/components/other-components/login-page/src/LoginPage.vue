@@ -355,7 +355,7 @@ function handleLogin(payload: LoginSubmitPayload) {
         <div class="x-login-page__brand">
           <slot name="brand">
             <span class="x-login-page__brand-mark">X</span>
-            <span class="x-login-page__brand-text">x.ui 登录页</span>
+            <span class="x-login-page__brand-text">@x-soft88/x-ui 登录页</span>
           </slot>
         </div>
         <div class="x-login-page__header-extra">安全登录 · 快速访问</div>
@@ -524,7 +524,7 @@ function handleLogin(payload: LoginSubmitPayload) {
 }
 
 .x-login-page__eyebrow {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.16em;
   margin: 0;

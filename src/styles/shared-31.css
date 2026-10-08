@@ -1,0 +1,7 @@
+.x-autocomplete__option:hover,
+.x-autocomplete__option.is-active,
+.x-cascader__option:hover,
+.x-cascader__option.is-active {
+  background: var(--x-color-primary-soft);
+  color: var(--x-cascader-color, var(--x-color-primary));
+}

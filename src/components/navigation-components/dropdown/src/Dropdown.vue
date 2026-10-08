@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -12,7 +13,7 @@ defineOptions({
 const props = withDefaults(defineProps<DropdownProps>(), {
   trigger: 'hover',
   placement: 'bottom-start',
-  size: 'md',
+  fontSize: 14,
   disabled: false,
   hideOnClick: true,
   showArrow: true,
@@ -42,6 +43,7 @@ let timer: number | undefined
 const resolvedZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 const dropdownStyle = computed(() => ({
   ...createElementStyleVars(props),
+  ...createFontStyle(props.fontSize ?? 14),
   '--x-dropdown-offset': typeof props.offset === 'number' ? `${props.offset}px` : props.offset,
   '--x-dropdown-popper-width': typeof props.popperWidth === 'number' ? `${props.popperWidth}px` : props.popperWidth,
   '--x-dropdown-z-index': resolvedZIndex.value,
@@ -174,8 +176,8 @@ onBeforeUnmount(() => {
   <div
     ref="dropdownRef"
     class="x-dropdown"
-    :class="[`x-dropdown--${props.size}`, { 'is-open': visible, 'is-disabled': props.disabled }]"
-    :style="dropdownStyle"
+    :class="['x-dropdown', { 'is-open': visible, 'is-disabled': props.disabled }]"
+    :style="[dropdownStyle, createFontStyle(props.fontSize ?? 14)]"
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
   >

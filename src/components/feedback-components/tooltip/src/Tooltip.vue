@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useFloatingPosition } from '../../../_utils/useFloatingPosition'
+
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { TooltipProps } from './types'
 
@@ -31,13 +33,14 @@ const emit = defineEmits<{
 const uncontrolledVisible = ref(false)
 const tooltipRef = ref<HTMLElement | null>(null)
 const popperRef = ref<HTMLElement | null>(null)
-const teleportedPopperStyle = ref<Record<string, string>>({})
-const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
-let timer: number | undefined
-let isListeningForPositionChanges = false
 
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
+const { position: teleportedPopperStyle, effectivePlacement, updatePosition: updatePopperPosition } = useFloatingPosition({ trigger: tooltipRef, popper: popperRef, visible, placement: () => props.placement, teleported: () => props.teleported })
+let timer: number | undefined
+
+
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const tooltipStyle = computed(() => ({
   ...createElementStyleVars(props),
   '--x-tooltip-font-size': `${sizePreset.value.fontSize}px`,
@@ -47,67 +50,6 @@ const popperStyle = computed(() => ({
   ...tooltipStyle.value,
   ...(props.teleported ? teleportedPopperStyle.value : {})
 }))
-
-function getViewportSize() {
-  return {
-    width: window.innerWidth || document.documentElement.clientWidth,
-    height: window.innerHeight || document.documentElement.clientHeight
-  }
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
-}
-
-function updatePopperPosition() {
-  if (!props.teleported || !visible.value || !tooltipRef.value || !popperRef.value) return
-
-  const gap = 8
-  const viewport = getViewportSize()
-  const triggerRect = tooltipRef.value.getBoundingClientRect()
-  const popperRect = popperRef.value.getBoundingClientRect()
-  const popperWidth = popperRect.width
-  const popperHeight = popperRect.height
-  const centerX = triggerRect.left + triggerRect.width / 2
-  const centerY = triggerRect.top + triggerRect.height / 2
-  let left = centerX - popperWidth / 2
-  let top = triggerRect.top - gap - popperHeight
-
-  if (props.placement === 'bottom') {
-    top = triggerRect.bottom + gap
-  }
-
-  if (props.placement === 'left') {
-    left = triggerRect.left - gap - popperWidth
-    top = centerY - popperHeight / 2
-  }
-
-  if (props.placement === 'right') {
-    left = triggerRect.right + gap
-    top = centerY - popperHeight / 2
-  }
-
-  teleportedPopperStyle.value = {
-    left: `${Math.round(clamp(left, gap, Math.max(gap, viewport.width - popperWidth - gap)))}px`,
-    top: `${Math.round(clamp(top, gap, Math.max(gap, viewport.height - popperHeight - gap)))}px`
-  }
-}
-
-function addPositionListeners() {
-  if (!props.teleported || isListeningForPositionChanges) return
-
-  window.addEventListener('resize', updatePopperPosition)
-  window.addEventListener('scroll', updatePopperPosition, true)
-  isListeningForPositionChanges = true
-}
-
-function removePositionListeners() {
-  if (!isListeningForPositionChanges) return
-
-  window.removeEventListener('resize', updatePopperPosition)
-  window.removeEventListener('scroll', updatePopperPosition, true)
-  isListeningForPositionChanges = false
-}
 
 function setVisible(value: boolean) {
   if (props.disabled) value = false
@@ -157,13 +99,11 @@ watch(
   visible,
   async (value) => {
     if (!value) {
-      removePositionListeners()
       return
     }
 
     await nextTick()
     updatePopperPosition()
-    addPositionListeners()
   },
   { flush: 'post' }
 )
@@ -172,21 +112,18 @@ watch(
   () => [props.teleported, props.teleportTo, props.placement, props.showArrow, props.content],
   async () => {
     if (!visible.value) return
-    removePositionListeners()
     await nextTick()
     updatePopperPosition()
-    addPositionListeners()
   }
 )
 
 onBeforeUnmount(() => {
   window.clearTimeout(timer)
-  removePositionListeners()
 })
 </script>
 
 <template>
-  <span
+  <span :style="createFontStyle(mergedSize)"
     ref="tooltipRef"
     class="x-tooltip"
     :class="{ 'is-visible': visible }"
@@ -202,7 +139,7 @@ onBeforeUnmount(() => {
         v-if="visible"
         ref="popperRef"
         class="x-tooltip__popper is-teleported"
-        :class="[`x-tooltip__popper--${props.placement}`, { 'has-arrow': props.showArrow }]"
+        :class="[`x-tooltip__popper--${props.teleported ? effectivePlacement : props.placement}`, { 'has-arrow': props.showArrow }]"
         :style="popperStyle"
         role="tooltip"
       >
@@ -214,7 +151,7 @@ onBeforeUnmount(() => {
       v-else-if="visible"
       ref="popperRef"
       class="x-tooltip__popper"
-      :class="[`x-tooltip__popper--${props.placement}`, { 'has-arrow': props.showArrow }]"
+      :class="[`x-tooltip__popper--${props.teleported ? effectivePlacement : props.placement}`, { 'has-arrow': props.showArrow }]"
       :style="popperStyle"
       role="tooltip"
     >

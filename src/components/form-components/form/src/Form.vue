@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, provide, ref, toRef } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey, type FormItemValidateContext } from './context'
-import type { FormControlSize, FormProps, FormPublicSize, FormValidateCallback } from './types'
+import type { FormControlFontSize, FormProps, FormPublicFontSize, FormValidateCallback } from './types'
 
 defineOptions({
   name: 'XForm'
@@ -10,7 +11,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<FormProps>(), {
   disabled: false,
-  size: 'md',
+  fontSize: 14,
   inline: false,
   height: 'auto',
   labelWidth: '96px',
@@ -25,8 +26,8 @@ const emit = defineEmits<{
 
 const itemMap = ref(new Map<string, FormItemValidateContext>())
 
-const controlSize = computed<FormControlSize>(() => props.size)
-const publicSize = computed<FormPublicSize>(() => props.size)
+const controlSize = computed<FormControlFontSize>(() => props.fontSize)
+const publicSize = computed<FormPublicFontSize>(() => props.fontSize)
 
 const registerItem = (item: FormItemValidateContext) => {
   itemMap.value.set(item.id, item)
@@ -79,7 +80,7 @@ const scrollToField = (prop: string) => {
 
 provide(formContextKey, {
   disabled: toRef(props, 'disabled'),
-  size: controlSize,
+  fontSize: controlSize,
   publicSize,
   labelWidth: toRef(props, 'labelWidth'),
   labelPosition: toRef(props, 'labelPosition'),
@@ -97,7 +98,7 @@ const formStyle = computed(() => ({
   '--x-form-border-width': toCssSize(props.borderWidth),
   '--x-form-bg': props.backgroundColor,
   '--x-form-text-color': props.textColor,
-  '--x-form-radius': props.radius
+  '--x-form-radius': toCssSize(props.radius)
 }))
 
 const handleSubmit = (event: SubmitEvent) => {
@@ -117,7 +118,6 @@ defineExpose({
   <form
     class="x-form"
     :class="[
-      `x-form--${publicSize}`,
       `x-form--label-${props.labelPosition}`,
       {
         'x-form--inline': props.inline,
@@ -125,7 +125,7 @@ defineExpose({
         'is-loading': props.loading
       }
     ]"
-    :style="formStyle"
+    :style="[formStyle, createFontStyle(props.fontSize ?? 14)]"
     @submit.prevent="handleSubmit"
   >
     <slot />

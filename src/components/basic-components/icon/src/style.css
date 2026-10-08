@@ -1,0 +1,23 @@
+.x-icon {
+  align-items: center;
+  color: inherit;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: var(--x-icon-size, 16px);
+  height: 1em;
+  justify-content: center;
+  line-height: 1;
+  position: relative;
+  top: var(--x-icon-offset-y, 0);
+  vertical-align: -0.125em;
+  width: 1em;
+}
+
+.x-icon::before {
+  display: block;
+  line-height: 1;
+}
+
+.x-icon.is-spin {
+  animation: x-icon-spin 900ms linear infinite;
+}

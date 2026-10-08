@@ -1,175 +1,62 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { XTabs } from './index'
-import type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsReorderPayload, TabsSize, TabsType } from './src/types'
+import type { TabItem, TabName, TabsProps, TabsReorderPayload } from './src/types'
 import '../../../styles/index.css'
 
-const active = ref<TabName>('dashboard')
-const variant = ref<TabsType>('card')
-const position = ref<TabPosition>('top')
-const labelDirection = ref<TabsLabelDirection>('horizontal')
-const size = ref<TabsSize>('md')
-const events = ref<string[]>([])
-const tabs = ref<TabItem[]>([
-  { name: 'dashboard', label: '工作台', icon: 'ri-dashboard-3-line', avatarText: '工', locked: true, refreshable: true },
-  { name: 'members', label: '成员管理', icon: 'ri-team-line', closable: true, refreshable: true },
-  { name: 'logs', label: '操作日志', icon: 'ri-file-list-3-line', closable: true, lazy: true },
-  { name: 'disabled', label: '禁用页签', icon: 'ri-forbid-2-line', disabled: true }
-])
-
-const config = reactive({
+const initialProps = {
+  modelValue: 'dashboard',
+  tabPosition: 'top',
+  items: [
+    { name: 'dashboard', label: '工作台', icon: 'ri-dashboard-3-line', avatarText: '工', locked: true, refreshable: true },
+    { name: 'members', label: '成员管理', icon: 'ri-team-line', closable: true, refreshable: true },
+    { name: 'logs', label: '操作日志', icon: 'ri-file-list-3-line', closable: true, lazy: true },
+    { name: 'disabled', label: '禁用页签', icon: 'ri-forbid-2-line', disabled: true }
+  ],
   closable: true,
   addable: true,
   draggable: true,
   lazy: false,
-  tabStretch: false,
-  showAvatar: true,
-  showRefreshIcon: true,
-  showContextMenu: true,
-  radius: 4,
-  tabFontSize: 14,
-  tabMinWidth: 140,
-  tabBackgroundColor: 'transparent',
-  border: '1px solid #C7D7E8',
-  contentBackgroundColor: '#ffffff',
-  contextMenuBackgroundColor: '#ffffff',
-  contextMenuTextColor: '#102a43'
-})
+  tabStretch: false
+} satisfies TabsProps
 
-function pushEvent(message: string) {
-  events.value = [message, ...events.value].slice(0, 5)
+function handleAdd(state: Record<string, unknown>) {
+  const items = (state.items as TabItem[] | undefined) ?? []
+  let index = items.length + 1
+  while (items.some(item => item.name === `new-${index}`)) index++
+  const name = `new-${index}`
+  state.items = [...items, { name, label: `新增页签 ${index}`, avatarText: String(index), closable: true, refreshable: true }]
+  state.modelValue = name
 }
-
-function handleAdd() {
-  const idx = tabs.value.length + 1
-  const name = `new-${idx}`
-  tabs.value.push({ name, label: `新增页签 ${idx}`, avatarText: String(idx), closable: true, refreshable: true })
-  active.value = name
-  pushEvent(`新增 ${name}`)
+function handleRemove(state: Record<string, unknown>, name: TabName) {
+  const items = ((state.items as TabItem[] | undefined) ?? []).filter(item => item.name !== name)
+  state.items = items
+  if (state.modelValue === name) state.modelValue = items[0]?.name
 }
-
-function handleRemove(name: TabName) {
-  tabs.value = tabs.value.filter((item) => item.name !== name)
-  if (active.value === name) {
-    active.value = tabs.value[0]?.name
-  }
-  pushEvent(`关闭 ${name}`)
-}
-
-function handleReorder(payload: TabsReorderPayload) {
-  const sourceIndex = tabs.value.findIndex((item) => item.name === payload.source)
-  const targetIndex = tabs.value.findIndex((item) => item.name === payload.target)
-  if (sourceIndex < 0 || targetIndex < 0) {
-    return
-  }
-
-  const next = [...tabs.value]
-  const [source] = next.splice(sourceIndex, 1)
-  const insertIndex = next.findIndex((item) => item.name === payload.target)
-  next.splice(payload.position === 'after' ? insertIndex + 1 : insertIndex, 0, source)
-  tabs.value = next
-  pushEvent(`排序 ${payload.source} -> ${payload.position} ${payload.target}`)
+function handleReorder(state: Record<string, unknown>, payload: TabsReorderPayload) {
+  const items = [...((state.items as TabItem[] | undefined) ?? [])]
+  const sourceIndex = items.findIndex(item => item.name === payload.source)
+  const targetIndex = items.findIndex(item => item.name === payload.target)
+  if (sourceIndex < 0 || targetIndex < 0) return
+  const [source] = items.splice(sourceIndex, 1)
+  const insertIndex = items.findIndex(item => item.name === payload.target)
+  items.splice(payload.position === 'after' ? insertIndex + 1 : insertIndex, 0, source)
+  state.items = items
 }
 </script>
 
 <template>
   <Story title="导航组件/标签页 Tabs" group="components">
     <Variant title="外观接口">
-      <div style="display: grid; gap: 12px">
-        <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px">
-          <label><input v-model="config.closable" type="checkbox" />可关闭</label>
-          <label><input v-model="config.addable" type="checkbox" />可新增</label>
-          <label><input v-model="config.draggable" type="checkbox" />可拖拽</label>
-          <label><input v-model="config.lazy" type="checkbox" />懒渲染</label>
-          <label><input v-model="config.tabStretch" type="checkbox" />拉伸</label>
-          <label><input v-model="config.showAvatar" type="checkbox" />头像</label>
-          <label><input v-model="config.showContextMenu" type="checkbox" />右键菜单</label>
-          <select v-model="variant">
-            <option value="">线条默认</option>
-            <option value="line">线条</option>
-            <option value="card">卡片</option>
-            <option value="border-card">边框卡片</option>
-          </select>
-          <label>
-            圆角
-            <input v-model.number="config.radius" type="number" min="0" max="24" style="width: 64px" />
-            px
-          </label>
-          <label>
-            字号
-            <input v-model.number="config.tabFontSize" type="number" min="10" max="24" style="width: 64px" />
-            px
-          </label>
-          <label>
-            最小宽度
-            <input v-model.number="config.tabMinWidth" type="number" min="72" max="240" style="width: 64px" />
-            px
-          </label>
-          <label>
-            页签背景
-            <input v-model="config.tabBackgroundColor" type="text" style="width: 120px" />
-          </label>
-          <label>
-            边框
-            <input v-model="config.border" type="text" style="width: 120px" />
-          </label>
-          <label>
-            内容/激活背景
-            <input v-model="config.contentBackgroundColor" type="text" style="width: 120px" />
-          </label>
-          <label>
-            右键背景
-            <input v-model="config.contextMenuBackgroundColor" type="color" />
-          </label>
-          <label>
-            右键文字
-            <input v-model="config.contextMenuTextColor" type="color" />
-          </label>
-          <select v-model="position">
-            <option value="top">顶部</option>
-            <option value="bottom">底部</option>
-            <option value="left">左侧</option>
-            <option value="right">右侧</option>
-          </select>
-          <select v-model="labelDirection">
-            <option value="horizontal">文字横排</option>
-            <option value="vertical">文字竖排</option>
-          </select>
-          <select v-model="size">
-            <option value="lg">大尺寸</option>
-            <option value="md">中尺寸</option>
-            <option value="sm">小尺寸</option>
-          </select>
-        </div>
-
-        <div style="height: 260px; min-width: 0">
+      <ApiPlayground component="XTabs" :initial-props="initialProps">
+        <template #default="{ apiProps, apiEvents, captureInstance }">
           <XTabs
-            v-model="active"
-            :items="tabs"
-            :variant="variant"
-            :size="size"
-            :tab-position="position"
-            :label-direction="labelDirection"
-            :closable="config.closable"
-            :addable="config.addable"
-            :draggable="config.draggable"
-            :lazy="config.lazy"
-            :tab-stretch="config.tabStretch"
-            :show-avatar="config.showAvatar"
-            :show-refresh-icon="config.showRefreshIcon"
-            :show-context-menu="config.showContextMenu"
-            :radius="config.radius"
-            :tab-font-size="config.tabFontSize"
-            :tab-min-width="config.tabMinWidth"
-            :tab-background-color="config.tabBackgroundColor"
-            :border="config.border"
-            :content-background-color="config.contentBackgroundColor"
-            :context-menu-background-color="config.contextMenuBackgroundColor"
-            :context-menu-text-color="config.contextMenuTextColor"
-            @tab-add="handleAdd"
-            @tab-remove="handleRemove"
-            @reorder="handleReorder"
-            @tab-refresh="pushEvent(`刷新 ${$event}`)"
+            v-bind="apiProps"
+            v-on="apiEvents"
+            @tab-add="handleAdd(apiProps)"
+            @tab-remove="handleRemove(apiProps, $event)"
+            @reorder="handleReorder(apiProps, $event)"
+            @vue:mounted="captureInstance"
           >
             <template #pane="{ item }">
               <div style="display: grid; gap: 8px; padding: 8px">
@@ -178,16 +65,8 @@ function handleReorder(payload: TabsReorderPayload) {
               </div>
             </template>
           </XTabs>
-        </div>
-
-        <div style="font-size: 12px; color: #6b7c93">
-          <div v-for="event in events" :key="event">{{ event }}</div>
-        </div>
-      </div>
+        </template>
+      </ApiPlayground>
     </Variant>
-
-    
-
-    
   </Story>
 </template>

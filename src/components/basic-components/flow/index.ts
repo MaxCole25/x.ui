@@ -1,9 +1,10 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Flow from './src/Flow.vue'
 import FlowItem from './src/FlowItem.vue'
 
-export const XFlow = Flow
-export const XFlowItem = FlowItem
+export const XFlow = Flow as ComponentWithInstall<typeof Flow>
+export const XFlowItem = FlowItem as ComponentWithInstall<typeof FlowItem>
 
 export type { FlowAlign, FlowItemKey, FlowItemOverflow, FlowItemProps, FlowProps, FlowSize } from './src/types'
 

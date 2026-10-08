@@ -414,7 +414,7 @@ defineExpose({
         :background-color="resolvedControlBackgroundColor"
         :text-color="resolvedControlTextColor"
         :border-color="resolvedControlBorderColor"
-        :dropdown-background-color="resolvedDropdownBackgroundColor"
+        :popper-background-color="resolvedDropdownBackgroundColor"
         @update:model-value="setSelectedTableKey(String($event ?? ''))"
       >
         <XOption
@@ -500,7 +500,7 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :dropdown-background-color="resolvedDropdownBackgroundColor"
+            :popper-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'displayType', normalizeTextValue($event))"
           />
         </span>
@@ -518,7 +518,7 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :dropdown-background-color="resolvedDropdownBackgroundColor"
+            :popper-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'editType', normalizeTextValue($event))"
           />
         </span>
@@ -541,7 +541,7 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :dropdown-background-color="resolvedDropdownBackgroundColor"
+            :popper-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'dataSourceKey', normalizeTextValue($event))"
           />
         </span>
@@ -560,7 +560,7 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :dropdown-background-color="resolvedDropdownBackgroundColor"
+            :popper-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateKeyType(asSettingsRow(row), normalizeOptionValue($event, keyTypeOptions, ''))"
           />
         </span>
@@ -598,7 +598,7 @@ defineExpose({
             :text-color="resolvedControlTextColor"
             border-color="transparent"
             :show-active-border="false"
-            :dropdown-background-color="resolvedDropdownBackgroundColor"
+            :popper-background-color="resolvedDropdownBackgroundColor"
             @update:model-value="updateSettingValue(asSettingsRow(row), 'align', normalizeAlign($event))"
           />
         </span>

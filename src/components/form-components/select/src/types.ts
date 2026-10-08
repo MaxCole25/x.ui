@@ -1,7 +1,6 @@
-import type { XSize } from '../../../_utils/size'
 import type { InputProps, InputStatus, InputTextAlign } from '../../input'
 
-export type SelectSize = 'sm' | 'md' | 'lg'
+export type SelectFontSize = number
 export type SelectOptionValue = string | number | boolean
 export type SelectStatus = InputStatus
 export type SelectTextAlign = InputTextAlign
@@ -43,7 +42,7 @@ export interface SelectProps
   clearable?: boolean
   hideClearButton?: boolean
   multiple?: boolean
-  size?: SelectSize
+  fontSize?: number
   status?: SelectStatus
   prefix?: string
   suffix?: string

@@ -9,7 +9,7 @@ export interface ScrollingTextProps {
   gap?: number | string
   speed?: number
   fontFamily?: string
-  fontSize?: number | string
+  fontSize?: number
   textColor?: string
   backgroundColor?: string
 }

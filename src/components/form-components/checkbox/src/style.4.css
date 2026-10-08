@@ -1,0 +1,3 @@
+.x-checkbox:hover:not(.is-disabled) .x-checkbox__box {
+  border-color: var(--x-checkbox-hover-border-color);
+}

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
+import { useModal } from '../../../_utils/useModal'
 import type { DrawerProps } from './types'
 
 defineOptions({
@@ -13,11 +14,12 @@ defineOptions({
 const props = withDefaults(defineProps<DrawerProps>(), {
   title: '',
   direction: 'rtl',
-  size: undefined,
+  fontSize: undefined,
   panelSize: '30%',
   withHeader: true,
   showClose: true,
   closeOnMaskClick: true,
+  closeOnEsc: true,
   destroyOnClose: false,
   teleported: true,
   teleportTo: 'body',
@@ -31,16 +33,18 @@ const emit = defineEmits<{
 }>()
 
 const uncontrolledVisible = ref(false)
+const titleId = useId()
 const visible = computed(() => props.modelValue ?? uncontrolledVisible.value)
 const isHorizontal = computed(() => props.direction === 'rtl' || props.direction === 'ltr')
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const maskStyle = computed(() => ({
   '--x-drawer-mask': props.maskColor,
   '--x-drawer-z-index': props.zIndex
 }))
 const drawerStyle = computed(() => ({
   ...createElementStyleVars(props),
+  '--x-drawer-radius': toCssSize(props.radius),
   '--x-drawer-bg': props.backgroundColor,
   '--x-drawer-text': props.textColor,
   '--x-drawer-border-color': props.borderColor,
@@ -69,17 +73,19 @@ function close() {
 function onMaskClick() {
   if (props.closeOnMaskClick) close()
 }
+const modalRef = ref<HTMLElement | null>(null)
+useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
 </script>
 
 <template>
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <Transition name="x-drawer-fade" @after-enter="emit('open')">
       <div v-if="visible || !props.destroyOnClose" v-show="visible" class="x-drawer__mask" :style="maskStyle" @click.self="onMaskClick">
-        <aside v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, `x-drawer--${mergedSize}`]" :style="drawerStyle" role="dialog" aria-modal="true">
+        <aside ref="modalRef" tabindex="-1" :aria-labelledby="props.withHeader && (props.title || $slots.header) ? titleId : undefined" :aria-label="props.title || '抽屉'" v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, 'x-drawer']" :style="[drawerStyle, createFontStyle(mergedSize)]" role="dialog" aria-modal="true">
           <header v-if="props.withHeader" class="x-drawer__header">
-            <slot name="header">
+            <div :id="titleId"><slot name="header">
               <h2 class="x-drawer__title">{{ props.title }}</h2>
-            </slot>
+            </slot></div>
             <button v-if="props.showClose" type="button" class="x-drawer__close" aria-label="关闭抽屉" @click="close">×</button>
           </header>
           <section class="x-drawer__body x-scrollbar--native">

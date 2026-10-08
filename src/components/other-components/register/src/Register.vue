@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { toCssSize } from '../../../_utils/elementStyle'
+import { useImageCaptcha } from '../../_shared/useImageCaptcha'
+
+import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { RegisterProps, RegisterSubmitPayload } from './types'
 
@@ -22,7 +26,7 @@ const props = withDefaults(defineProps<RegisterProps>(), {
   logoAlt: 'Logo',
   logoPosition: 'top',
   labelPosition: 'top',
-  size: 'md',
+  fontSize: 14,
   loading: false,
   disabled: false,
   usernameLabel: '用户名',
@@ -89,18 +93,15 @@ const emit = defineEmits<{
   'image-captcha-success': []
 }>()
 
-const sliderTrack = ref<HTMLElement>()
+const { sliderTrack, sliderPercent, isImageCaptchaVerified, startSlider, resetImageCaptcha } = useImageCaptcha(props, emit)
 const puzzleStage = ref<HTMLElement>()
-const sliderPercent = ref(0)
 const puzzleStageWidth = ref(0)
-const isDragging = ref(false)
 const isPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
-const isImageCaptchaVerified = ref(false)
 let puzzleResizeObserver: ResizeObserver | undefined
 
 const rootClasses = computed(() => [
-  `x-register--${props.size}`,
+  'x-register',
   `x-register--logo-${props.logoPosition}`,
   `x-register--label-${props.labelPosition}`,
   {
@@ -115,7 +116,7 @@ const themeStyle = computed<Record<string, string>>(() => ({
   '--x-register-surface': props.backgroundColor,
   '--x-register-border': props.borderColor,
   '--x-register-border-width': props.borderWidth,
-  '--x-register-radius': props.radius,
+  '--x-register-radius': toCssSize(props.radius) ?? '18px',
   '--x-register-width': props.width,
   '--x-register-text': props.textColor,
   '--x-register-muted': props.mutedTextColor,
@@ -157,67 +158,6 @@ function handleRegister() {
   emit('register', buildPayload())
 }
 
-function updateSlider(clientX: number) {
-  const track = sliderTrack.value
-  if (!track) {
-    return
-  }
-
-  const rect = track.getBoundingClientRect()
-  const nextPercent = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100))
-  sliderPercent.value = nextPercent
-  emit('update:imageCode', String(Math.round(nextPercent)))
-  emit('image-captcha-change', nextPercent)
-}
-
-function finishSlider() {
-  if (!isDragging.value) {
-    return
-  }
-
-  isDragging.value = false
-  window.removeEventListener('pointermove', handlePointerMove)
-  window.removeEventListener('pointerup', finishSlider)
-
-  if (sliderPercent.value >= 92) {
-    sliderPercent.value = 100
-    isImageCaptchaVerified.value = true
-    emit('update:imageCode', 'verified')
-    emit('image-captcha-success')
-    return
-  }
-
-  sliderPercent.value = 0
-  emit('update:imageCode', '')
-  emit('image-captcha-change', 0)
-}
-
-function handlePointerMove(event: PointerEvent) {
-  if (!isDragging.value) {
-    return
-  }
-
-  updateSlider(event.clientX)
-}
-
-function startSlider(event: PointerEvent) {
-  if (props.disabled || props.loading || isImageCaptchaVerified.value) {
-    return
-  }
-
-  isDragging.value = true
-  updateSlider(event.clientX)
-  window.addEventListener('pointermove', handlePointerMove)
-  window.addEventListener('pointerup', finishSlider)
-}
-
-function resetImageCaptcha() {
-  sliderPercent.value = 0
-  isImageCaptchaVerified.value = false
-  emit('update:imageCode', '')
-  emit('refresh-image-captcha')
-}
-
 function updatePuzzleStageWidth() {
   puzzleStageWidth.value = puzzleStage.value?.clientWidth ?? 0
 }
@@ -232,13 +172,11 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   puzzleResizeObserver?.disconnect()
-  window.removeEventListener('pointermove', handlePointerMove)
-  window.removeEventListener('pointerup', finishSlider)
 })
 </script>
 
 <template>
-  <section class="x-register" :class="rootClasses" :style="themeStyle" @keydown.enter.prevent="handleRegister">
+  <section class="x-register" :class="rootClasses" :style="[themeStyle, createFontStyle(props.fontSize ?? 14)]" @keydown.enter.prevent="handleRegister">
     <header class="x-register__brand">
       <div v-if="props.logoSrc || $slots.logo" class="x-register__logo-wrap">
         <slot name="logo">
@@ -479,6 +417,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+@import '../../_shared/auth-layout.css';
 .x-register {
   --x-register-accent: #0b4a52;
   --x-register-accent-soft: #e1f5f7;
@@ -505,14 +444,6 @@ onBeforeUnmount(() => {
   width: var(--x-register-width);
 }
 
-.x-register--sm {
-  padding: 24px;
-}
-
-.x-register--lg {
-  padding: 40px;
-}
-
 .x-register__brand {
   align-items: center;
   display: flex;
@@ -525,9 +456,7 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.x-register--logo-right .x-register__brand {
-  flex-direction: row-reverse;
-}
+
 
 .x-register__logo-wrap {
   align-items: center;
@@ -609,7 +538,7 @@ onBeforeUnmount(() => {
 
 .x-register__label {
   color: #264d57;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -665,13 +594,9 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 
-.x-register__control--prefix .x-register__input {
-  padding-left: 42px;
-}
 
-.x-register__control--suffix .x-register__input {
-  padding-right: 42px;
-}
+
+
 
 .x-register__input:focus {
   background: var(--x-register-input-bg);
@@ -810,7 +735,7 @@ onBeforeUnmount(() => {
 
 .x-register__slider-tip {
   color: #7c8794;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   left: 0;
   pointer-events: none;
@@ -843,9 +768,7 @@ onBeforeUnmount(() => {
   z-index: 2;
 }
 
-.x-register__slider-captcha.is-verified .x-register__slider-track {
-  background: #dff8ea;
-}
+
 
 .x-register__slider-bars {
   display: inline-flex;
@@ -865,7 +788,7 @@ onBeforeUnmount(() => {
   color: var(--x-register-muted);
   cursor: pointer;
   display: inline-flex;
-  font-size: 13px;
+  font-size: 14px;
   gap: 8px;
   line-height: 1.4;
   user-select: none;
@@ -939,7 +862,7 @@ onBeforeUnmount(() => {
   align-items: center;
   color: var(--x-register-muted);
   display: inline-flex;
-  font-size: 13px;
+  font-size: 14px;
   gap: 4px;
   margin: 0;
 }
@@ -978,9 +901,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 520px) {
-  .x-register {
-    padding: 22px;
-  }
+  
 
   .x-register__brand,
   .x-register--logo-right .x-register__brand {
@@ -988,9 +909,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
   }
 
-  .x-register__field--inline {
-    grid-template-columns: 1fr;
-  }
+  
 
   .x-register--label-left .x-register__field:not(.x-register__field--inline):not(.x-register__field--captcha),
   .x-register--label-left .x-register__inline-control {

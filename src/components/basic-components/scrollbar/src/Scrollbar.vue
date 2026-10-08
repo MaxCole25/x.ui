@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import type { ScrollbarProps } from './types'
@@ -11,6 +12,7 @@ const props = defineProps<ScrollbarProps>()
 
 const toCssSize = (value?: string | number) => (typeof value === 'number' ? `${value}px` : value)
 const scrollbarStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   height: toCssSize(props.height),
   maxHeight: toCssSize(props.maxHeight)

@@ -1,0 +1,11 @@
+.x-select__indicator .x-base-input__clear,
+.x-autocomplete__indicator .x-base-input__clear {
+  inset: 0;
+  margin: 0;
+  position: absolute;
+}
+
+.x-select:hover:not(.is-disabled):not(.is-readonly) .x-select__clear.is-visible + .x-select__arrow,
+.x-autocomplete:hover:not(.is-disabled) .x-autocomplete__clear.is-visible + .x-autocomplete__arrow {
+  opacity: 0;
+}

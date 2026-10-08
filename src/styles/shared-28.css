@@ -1,0 +1,8 @@
+.x-autocomplete,
+.x-cascader,
+.x-color-picker {
+  display: inline-block;
+  font-family: var(--x-font-family);
+  position: relative;
+  width: 240px;
+}

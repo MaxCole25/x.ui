@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: xl.ui
+  name: '@x-soft88/x-ui'
   text: Vue 3 UI 组件库
   tagline: 基于 TypeScript、Vite 和 VitePress，搭建属于自己的组件体系。
   actions:

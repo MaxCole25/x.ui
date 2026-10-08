@@ -16,7 +16,7 @@ const imageEntries: FileDiskItem[] = [
 ]
 
 describe('XFileDisk', () => {
-  it('renders entries and fills with list view by default', () => {
+  it('renders entries and fills with grid view by default', () => {
     const wrapper = mount(XFileDisk, {
       props: {
         entries
@@ -26,12 +26,13 @@ describe('XFileDisk', () => {
     expect(wrapper.classes()).toContain('x-file-disk')
     expect(wrapper.text()).toContain('合同')
     expect(wrapper.text()).toContain('报价.pdf')
-    expect(wrapper.find('.x-file-disk__table thead').exists()).toBe(true)
+    expect(wrapper.find('.x-file-disk__grid').exists()).toBe(true)
   })
 
   it('opens a folder on double click and emits path changes', async () => {
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         modelValue: '/',
         entries
       }
@@ -47,6 +48,7 @@ describe('XFileDisk', () => {
     const download = vi.fn()
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         entries,
         adapter: { download }
       }
@@ -63,6 +65,7 @@ describe('XFileDisk', () => {
     const download = vi.fn()
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         entries,
         adapter: { download }
       }
@@ -196,6 +199,7 @@ describe('XFileDisk', () => {
     }
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         adapter
       }
     })
@@ -302,6 +306,7 @@ describe('XFileDisk', () => {
   it('shows disabled and enabled context menu actions based on selection', async () => {
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         entries
       }
     })
@@ -347,6 +352,7 @@ describe('XFileDisk', () => {
     const rename = vi.fn()
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         entries,
         adapter: { rename }
       }
@@ -391,6 +397,7 @@ describe('XFileDisk', () => {
   it('opens fullscreen image preview and supports wheel zoom and image dragging', async () => {
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         entries: imageEntries
       }
     })
@@ -416,6 +423,7 @@ describe('XFileDisk', () => {
   it('selects entries by dragging a selection box in the file area', async () => {
     const wrapper = mount(XFileDisk, {
       props: {
+        viewMode: 'list',
         entries
       }
     })

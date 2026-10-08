@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, markRaw, ref, toRaw, watch } from 'vue'
 import type { NavMenuItem as NavMenuItemType, NavMenuProps } from './types'
 import NavMenuItem from './NavMenuItem.vue'
@@ -283,7 +284,7 @@ const navMenuStyleVars = computed<Record<string, string>>(() => {
         'is-scrollable': props.scrollable
       }
     ]"
-    :style="navMenuStyleVars"
+    :style="[navMenuStyleVars, createFontStyle(props.fontSize ?? 14)]"
   >
     <slot name="header" />
     <ul class="x-nav-menu__list">

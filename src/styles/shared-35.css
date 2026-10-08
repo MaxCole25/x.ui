@@ -1,0 +1,40 @@
+.x-date-picker .x-base-input,
+.x-date-time-picker .x-base-input {
+  width: 100%;
+}
+
+.x-dialog.x-date-picker__dialog {
+  background: var(--x-picker-panel-bg, #fff);
+  border-color: var(--x-picker-panel-border, var(--x-color-border));
+  border-radius: 8px;
+  box-shadow: var(--x-picker-panel-shadow, 0 24px 80px rgba(15, 23, 42, 0.22));
+  color: var(--x-picker-panel-text, var(--x-color-text));
+}
+
+.x-date-picker__dialog .x-dialog__body {
+  background: var(--x-picker-panel-bg, #fff);
+  padding: 0 18px;
+}
+
+.x-date-picker__dialog .x-dialog__header {
+  background: var(--x-picker-panel-bg, #fff);
+  color: var(--x-picker-panel-header-text, var(--x-picker-panel-text, var(--x-color-text)));
+  cursor: move;
+}
+
+.x-date-picker__dialog .x-dialog__title {
+  color: var(--x-picker-panel-header-text, var(--x-picker-panel-text, var(--x-color-text)));
+}
+
+.x-date-picker__dialog .x-dialog__close {
+  color: var(--x-picker-panel-close-icon, var(--x-picker-panel-muted-text, #8c93a6));
+}
+
+.x-date-picker__dialog .x-dialog__close:hover {
+  background: var(--x-picker-tool-hover-bg, #f7f8fb);
+  color: var(--x-picker-panel-close-icon-hover, var(--x-picker-panel-text, #2f3445));
+}
+
+.x-date-picker__dialog .x-dialog__footer {
+  background: var(--x-picker-panel-bg, #fff);
+}

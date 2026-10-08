@@ -2,16 +2,17 @@ import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { ButtonVariant } from '../../../basic-components/button/src/types'
 import type { ButtonGroupDirection } from '../../../basic-components/button-group/src/types'
 
-export type RadioSize = 'sm' | 'md' | 'lg'
+export type RadioFontSize = number
 
 export interface RadioProps extends ElementStyleProps {
+  height?: number | string
+
   modelValue?: string | number | boolean
   label?: string
   value: string | number | boolean
   disabled?: boolean
-  size?: RadioSize
   fontFamily?: string
-  fontSize?: number | string
+  fontSize?: number
   labelColor?: string
   buttonColor?: string
   buttonSize?: number | string

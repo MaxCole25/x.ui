@@ -1,0 +1,46 @@
+.x-color-picker__trigger {
+  cursor: pointer;
+  min-height: var(--x-control-height, 32px);
+  font-size: var(--x-component-font-size, var(--x-font-size-control, 14px));
+  gap: 10px;
+  padding: var(--x-color-picker-padding, 0 12px);
+  width: var(--x-color-picker-width, auto);
+}
+
+.x-color-picker.is-value-hidden .x-color-picker__trigger {
+  padding: 0;
+}
+
+.x-color-picker__chip {
+  border: 0;
+  cursor: pointer;
+  display: block;
+  flex: 0 0 auto;
+  padding: 0;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12) inset;
+  height: 28px;
+  width: 28px;
+}
+
+.x-color-picker__value {
+  font-weight: 600;
+}
+
+.x-color-picker__value-input {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  flex: 1 1 auto;
+  font: 600 14px/1.4 var(--x-font-family);
+  min-width: 0;
+  outline: none;
+  padding: 0;
+  width: 0;
+}
+
+.x-color-picker__value-input:disabled {
+  cursor: not-allowed;
+}
+
+.x-color-picker__chip:disabled { cursor: not-allowed; }

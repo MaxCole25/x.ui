@@ -1,13 +1,14 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Cascader from './src/Cascader.vue'
 
-export const XCascader = Cascader
+export const XCascader = Cascader as ComponentWithInstall<typeof Cascader>
 
 export type {
   CascaderDisplayField,
   CascaderOption,
   CascaderProps,
-  CascaderSize,
+  CascaderFontSize,
   CascaderStatus,
   CascaderTextAlign
 } from './src/types'

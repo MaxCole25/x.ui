@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onMounted, ref, useAttrs, watch } from 'vue'
-import { inputSizePreset } from '../../../_utils/inputSize'
+import { getInputMetrics } from '../../../_utils/inputSize'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey, formItemContextKey } from '../../form/src/context'
 import type { TextareaProps } from './types'
@@ -42,12 +43,12 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const contentHeight = ref<string>()
 
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const nativeId = computed(() => props.id ?? formItem?.id)
 const inputValue = computed(() => props.modelValue ?? '')
 const hasValue = computed(() => inputValue.value !== '')
 const canClear = computed(() => hasValue.value && !mergedDisabled.value && !props.readonly)
-const preset = computed(() => inputSizePreset[mergedSize.value])
+const preset = computed(() => getInputMetrics(mergedSize.value))
 const safeRows = computed(() => Math.max(1, Math.floor(props.rows)))
 const safeMaxRows = computed(() => (typeof props.maxRows === 'number' && props.maxRows > 0 ? Math.max(1, Math.floor(props.maxRows)) : undefined))
 
@@ -126,7 +127,7 @@ const clear = () => {
   <div
     class="x-textarea"
     :class="[
-      `x-textarea--${mergedSize}`,
+      'x-textarea',
       `x-textarea--${props.status}`,
       {
         'is-disabled': mergedDisabled,
@@ -139,7 +140,7 @@ const clear = () => {
         'has-clear': props.clearable && !props.hideClearButton
       }
     ]"
-    :style="textareaStyle"
+    :style="[textareaStyle, createFontStyle(mergedSize)]"
   >
     <textarea
       v-bind="attrs"

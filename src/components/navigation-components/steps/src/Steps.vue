@@ -31,7 +31,7 @@ function selectStep(index: number, item: StepItem) {
 .x-steps--vertical .x-steps__item:not(:last-child)::after { background: var(--x-color-border); bottom: 6px; content: ''; left: 12px; position: absolute; top: 28px; width: 1px; }
 .x-steps__icon { align-items: center; background: var(--x-color-surface-soft); border: 1px solid var(--x-color-border); border-radius: 50%; box-sizing: border-box; color: var(--x-color-muted); display: inline-flex; flex: 0 0 24px; font-size: 12px; font-weight: 800; height: 24px; justify-content: center; position: relative; width: 24px; z-index: 1; }
 .x-steps__content { display: grid; gap: 4px; min-width: 0; padding-right: 12px; }
-.x-steps__title { color: var(--x-color-text); font-size: 13px; font-weight: 800; line-height: 1.35; }
+.x-steps__title { color: var(--x-color-text); font-size: 14px; font-weight: 800; line-height: 1.35; }
 .x-steps__description { color: var(--x-color-muted); font-size: 12px; line-height: 1.4; }
 .x-steps__item--success .x-steps__icon { background: var(--x-color-success); border-color: var(--x-color-success); color: #fff; }
 .x-steps__item--process .x-steps__icon { background: var(--x-color-primary); border-color: var(--x-color-primary); color: #fff; }

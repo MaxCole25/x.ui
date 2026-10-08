@@ -1,0 +1,8 @@
+* text=auto
+*.vue text eol=lf
+*.ts text eol=lf
+*.mjs text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf

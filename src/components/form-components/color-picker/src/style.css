@@ -1,0 +1,8 @@
+.x-color-picker {
+  display: inline-grid;
+  gap: 8px;
+}
+
+.x-color-picker.is-value-hidden {
+  width: max-content;
+}

@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Upload from './src/Upload.vue'
 
-export const XUpload = Upload
+export const XUpload = Upload as ComponentWithInstall<typeof Upload>
 
 export type { UploadProps } from './src/types'
 

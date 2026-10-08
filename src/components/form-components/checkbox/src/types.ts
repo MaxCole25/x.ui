@@ -1,15 +1,16 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
-export type CheckboxSize = 'sm' | 'md' | 'lg'
+export type CheckboxFontSize = number
 
 export interface CheckboxProps extends ElementStyleProps {
+  height?: number | string
   modelValue?: boolean | Array<string | number | boolean>
   label?: string
   value?: string | number | boolean
   disabled?: boolean
   indeterminate?: boolean
-  size?: CheckboxSize
+  fontSize?: number
   checkedColor?: string
-  radius?: string
+  radius?: number | string
   name?: string
 }

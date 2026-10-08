@@ -1,0 +1,26 @@
+.x-checkbox,
+.x-radio,
+.x-radio-button,
+.x-switch {
+  align-items: center;
+  color: var(--x-checkbox-text-color, var(--x-radio-text-color, var(--x-radio-button-text-color, var(--x-switch-text-color, #606266))));
+  display: inline-flex;
+  font-family: var(--x-font-family);
+  gap: 8px;
+  min-width: 0;
+  vertical-align: middle;
+}
+
+.x-checkbox,
+.x-radio,
+.x-radio-button {
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.x-checkbox,
+.x-radio,
+.x-radio-button,
+.x-switch {
+  font-size: 14px;
+}

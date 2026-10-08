@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import DatePickerPanel from './src/DatePickerPanel.vue'
 
-export const XDatePickerPanel = DatePickerPanel
+export const XDatePickerPanel = DatePickerPanel as ComponentWithInstall<typeof DatePickerPanel>
 
 export type { DatePickerFestivalItem, DatePickerFestivalType, DatePickerPanelProps } from './src/types'
 

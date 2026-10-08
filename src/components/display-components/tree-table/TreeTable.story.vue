@@ -1,14 +1,13 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { computed, reactive, ref } from 'vue'
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XTreeTable } from './index'
 import '../../../styles/index.css'
-
 const expandedRowKeys = ref<string[]>(['sales', 'task-center', 'system', 'dev-settings'])
 const selectedRowKeys = ref<string[]>([])
 const eventLog = ref('等待交互')
 const appearance = reactive({
-  size: 'md' as 'sm' | 'md' | 'lg',
+  fontSize: 14 as number,
   showHeader: false,
   showSelection: true,
   defaultExpandAll: false,
@@ -18,12 +17,10 @@ const appearance = reactive({
   rowKey: 'id',
   childrenKey: 'children'
 })
-
 const columns = computed(() => [
   { key: 'label', label: '名称', minWidth: 180 },
   { key: 'path', label: '路径', minWidth: 220 }
 ])
-
 const rows = [
   {
     id: 'sales',
@@ -65,33 +62,22 @@ const rows = [
     ]
   }
 ]
-
 function handleExpandChange(payload: { rowKey: string; expanded: boolean }) {
   eventLog.value = `${payload.rowKey} ${payload.expanded ? '展开' : '收起'}`
 }
-
 function handleSelectionChange(payload: { keys: string[] }) {
   eventLog.value = `选择 ${payload.keys.length} 行`
 }
-
 function handleRowClick(payload: { rowKey: string }) {
   eventLog.value = `点击 ${payload.rowKey}`
-}
-
-function expandAll() {
-  expandedRowKeys.value = ['sales', 'task-center', 'system', 'dev-settings']
-}
-
-function collapseAll() {
-  expandedRowKeys.value = []
 }
 </script>
 
 <template>
   <Story title="展示组件/TreeTable 树表" group="components">
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default>
+      <ApiPlayground component="XTreeTable">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XTreeTable
             v-model:expanded-row-keys="expandedRowKeys"
             v-model:selected-row-keys="selectedRowKeys"
@@ -101,48 +87,15 @@ function collapseAll() {
             :children-key="appearance.childrenKey"
             :tree-column-key="appearance.treeColumnKey"
             :label-key="appearance.labelKey"
-            :size="appearance.size"
-            :show-header="appearance.showHeader"
-            :show-selection="appearance.showSelection"
+
             :default-expand-all="appearance.defaultExpandAll"
             :empty-text="appearance.emptyText"
             @expand-change="handleExpandChange"
             @selection-change="handleSelectionChange"
             @row-click="handleRowClick"
-          />
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>
-
-        <template #column-1>
-          <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
-          <label><span>空态文本</span><input v-model="appearance.emptyText" /></label>
-          <label><span>树形列</span><input v-model="appearance.treeColumnKey" /></label>
-        </template>
-
-        <template #column-2>
-          <label><span>行键字段</span><input v-model="appearance.rowKey" /></label>
-          <label><span>子级字段</span><input v-model="appearance.childrenKey" /></label>
-          <label><span>文本字段</span><input v-model="appearance.labelKey" /></label>
-        </template>
-
-        <template #column-4>
-          <label class="story-check"><input v-model="appearance.showHeader" type="checkbox" /><span>显示表头</span></label>
-          <label class="story-check"><input v-model="appearance.showSelection" type="checkbox" /><span>显示选择列</span></label>
-          <label class="story-check"><input v-model="appearance.defaultExpandAll" type="checkbox" /><span>默认全部展开</span></label>
-        </template>
-
-        <template #interfaces>
-          <button type="button" class="story-button" @click="expandAll">展开全部</button>
-          <button type="button" class="story-button" @click="collapseAll">收起全部</button>
-        </template>
-
-        <template #types>
-          <p class="story-note">导出 TreeTableColumn、TreeTableRowData、TreeTableProps、TreeTableExpose 等类型。</p>
-        </template>
-
-        <template #events>
-          <p class="story-note">{{ eventLog }}</p>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

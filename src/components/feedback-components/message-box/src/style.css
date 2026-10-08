@@ -1,0 +1,104 @@
+.x-message-box__mask {
+  align-items: center;
+  background: var(--x-message-box-mask, rgba(18, 28, 45, 0.42));
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 16px;
+  position: fixed;
+  z-index: var(--x-message-box-z-index, var(--x-z-index-message-box, 2300));
+}
+
+.x-message-box {
+  background: var(--x-message-box-bg, #fff);
+  border: 1px solid var(--x-message-box-border, #e4e7ed);
+  border-radius: var(--x-message-box-radius, 8px);
+  box-shadow: var(--x-message-box-shadow, 0 18px 50px rgba(15, 23, 42, 0.22));
+  box-sizing: border-box;
+  color: var(--x-message-box-text, #606266);
+  font: var(--x-message-box-font-size, 14px)/1.45 var(--x-font-family);
+  max-width: var(--x-message-box-max-width, calc(100vw - 32px));
+  min-width: var(--x-message-box-min-width, 280px);
+  padding: var(--x-message-box-padding, 16px);
+  width: var(--x-message-box-width, 420px);
+}
+
+.x-message-box__header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.x-message-box__title {
+  align-items: center;
+  color: var(--x-message-box-title, #303133);
+  display: flex;
+  font-size: var(--x-font-size-dialog-title, 16px);
+  font-weight: var(--x-font-weight-semibold, 600);
+  gap: 8px;
+  min-width: 0;
+}
+
+.x-message-box__icon {
+  color: var(--x-message-box-icon, currentColor);
+  flex: 0 0 auto;
+}
+
+.x-message-box__icon--success { color: var(--x-message-box-icon, var(--x-color-success)); }
+
+.x-message-box__icon--warning { color: var(--x-message-box-icon, var(--x-color-warning)); }
+
+.x-message-box__icon--info { color: var(--x-message-box-icon, var(--x-color-info)); }
+
+.x-message-box__icon--error { color: var(--x-message-box-icon, var(--x-color-danger)); }
+
+.x-message-box__close {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--x-color-info);
+  cursor: pointer;
+  font: 20px/1 var(--x-font-family);
+  height: 26px;
+  padding: 0;
+  width: 26px;
+}
+
+.x-message-box__close:hover {
+  background: var(--x-color-info-soft);
+  color: var(--x-color-text);
+}
+
+.x-message-box__body {
+  font-size: calc(var(--x-message-box-font-size, 14px) + 2px);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  padding: 14px 0 18px;
+}
+
+.x-message-box__footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.x-message-box__button {
+  border-radius: 6px;
+  cursor: pointer;
+  font: 600 13px/1 var(--x-font-family);
+  min-height: var(--x-message-box-control-height, 30px);
+  padding: 0 14px;
+}
+
+.x-message-box__button--confirm {
+  background: var(--x-message-box-confirm-bg, var(--x-color-primary));
+  border: 1px solid var(--x-message-box-confirm-border, var(--x-color-primary));
+  color: var(--x-message-box-confirm-text, #fff);
+}
+
+.x-message-box__button--cancel {
+  background: var(--x-message-box-cancel-bg, #fff);
+  border: 1px solid var(--x-message-box-cancel-border, #dcdfe6);
+  color: var(--x-message-box-cancel-text, #606266);
+}

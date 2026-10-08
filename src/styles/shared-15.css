@@ -1,0 +1,13 @@
+.x-checkbox__box,
+.x-radio__dot {
+  background: var(--x-checkbox-bg, #fff);
+  border: var(--x-checkbox-border-width, var(--x-radio-border-width, 1px)) solid var(--x-checkbox-border-color, var(--x-radio-border-color));
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 14px;
+  justify-content: center;
+  position: relative;
+  transition: border-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1), background-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: 14px;
+}

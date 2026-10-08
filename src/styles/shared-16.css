@@ -1,0 +1,5 @@
+.x-radio-button.is-checked {
+  background: var(--x-radio-button-active-bg, var(--x-radio-button-color));
+  border-color: var(--x-radio-button-active-border-color, var(--x-radio-button-active-bg, var(--x-radio-button-color)));
+  color: var(--x-radio-button-active-text, #fff);
+}

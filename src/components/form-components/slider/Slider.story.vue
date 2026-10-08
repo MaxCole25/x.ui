@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { reactive } from 'vue'
 import { XSlider } from './index'
 import '../../../styles/index.css'
-
 const appearance = reactive({
   min: 0,
   max: 100,
@@ -12,7 +11,6 @@ const appearance = reactive({
   showValue: true,
   vertical: false
 })
-
 const sample = reactive({
   input: '外观接口预览',
   autocomplete: '上海',
@@ -30,53 +28,20 @@ const sample = reactive({
 
 <template>
   <Story title="Form 组件/Slider 滑块" group="components">
-    
-
-    
-
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
-          <XSlider
-            v-bind="styleProps"
+      <ApiPlayground component="XSlider">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XSlider 
+
             v-model="sample.number"
             :min="appearance.min"
             :max="appearance.max"
             :step="appearance.step"
-            :disabled="appearance.disabled"
-            :show-value="appearance.showValue"
+
             :vertical="appearance.vertical"
-          />
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>
-        <template #column-2>
-          <label>
-            <span>最小值</span>
-            <input v-model.number="appearance.min" type="number" />
-          </label>
-          <label>
-            <span>最大值</span>
-            <input v-model.number="appearance.max" type="number" />
-          </label>
-          <label>
-            <span>步进</span>
-            <input v-model.number="appearance.step" type="number" min="1" />
-          </label>
-        </template>
-        <template #column-4>
-          <label>
-            <input v-model="appearance.disabled" type="checkbox" />
-            <span>禁用</span>
-          </label>
-          <label>
-            <input v-model="appearance.showValue" type="checkbox" />
-            <span>显示值</span>
-          </label>
-          <label>
-            <input v-model="appearance.vertical" type="checkbox" />
-            <span>竖向显示</span>
-          </label>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

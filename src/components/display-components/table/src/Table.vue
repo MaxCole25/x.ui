@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
+import { getFixedWeight, normalizeNumber, formatCssSize, setCssVariable, alignToJustify, createResolvedColumn, resolveColumnTracks, applyFixedOffsets, getColumnMinWidth, getResolvedColumnWidth, parseCssPixelSize } from './columnLayout'
+import type { ResolvedColumn } from './columnLayout'
+
+import { getNumericSummaryValues, normalizeSummaryNumber } from './summary'
+
+import { getCellValue, isReadonlyColumn, normalizeInputValue, normalizeEditedCellValue, formatCellValue } from './cellEditing'
+
+import { downloadExcelWorkbook, readExcelFile, normalizeExcelHeader, normalizeExcelCellValue } from './excel'
+
+import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, watch } from 'vue'
 import type { CSSProperties, StyleValue } from 'vue'
 import { XBaseInput } from '../../../basic-components/base-input'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type {
   TableAlign,
   TableAppendRowPayload,
@@ -52,7 +61,7 @@ const props = withDefaults(defineProps<TableProps>(), {
   deleteSelectedRowsButtonLabel: '删除选择行',
   rowDraggable: false,
   columnResizable: true,
-  size: undefined,
+  fontSize: undefined,
   rowHeight: undefined,
   selectionMode: 'row',
   actionsWidth: 160,
@@ -88,16 +97,6 @@ const emit = defineEmits<{
   (e: 'excel-import', value: TableExcelImportPayload): void
 }>()
 
-interface ResolvedColumn {
-  column: TableColumn
-  setting: TableColumnSetting
-  track: string
-  baseTrack: string
-  align: TableAlign
-  fixed: TableFixed
-  left: string
-  right: string
-}
 
 interface TableContextMenuState {
   x: number
@@ -105,16 +104,22 @@ interface TableContextMenuState {
   rowIndex: number
 }
 
-const defaultColumnMinWidth = 40
 const autoFitColumnWidthBuffer = 12
 const fallbackRowKeyPrefix = '__x_table_row_index__'
 const internalColumnSettings = ref<TableColumnSetting[]>([])
 const internalSorter = ref<TableSorter | null>(null)
 const tableWidth = ref(0)
+const measuredCssSizes = ref<Record<string, number>>({})
+const autoColumnWidths = ref<Record<string, number>>({})
+function resolveCssSize(value: string) {
+  return measuredCssSizes.value[value]
+}
 const attrs = useAttrs()
+const instance = getCurrentInstance()
 
 function hasUpdateDataListener() {
-  return attrs['onUpdate:data'] !== undefined || attrs.onUpdateData !== undefined
+  const listeners = instance?.vnode.props
+  return listeners?.['onUpdate:data'] !== undefined || listeners?.onUpdateData !== undefined
 }
 
 function mutateTableData(rows: Record<string, unknown>[]) {
@@ -157,8 +162,8 @@ const visibleRows = computed(() =>
     rowIndex
   }))
 )
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
+const mergedSize = computed(() => props.fontSize ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const tableStyle = computed<CSSProperties>(() => {
   const style: Record<string, string> = {}
   const controlHeight = `${sizePreset.value.height}px`
@@ -210,8 +215,17 @@ const resolvedColumns = computed<ResolvedColumn[]>(() => {
     })
     .filter((item): item is ResolvedColumn => item !== null)
 
-  resolveColumnTracks(columns)
-  applyFixedOffsets(columns)
+  const layout = {
+    viewportWidth: tableWidth.value,
+    autoColumnWidths: autoColumnWidths.value,
+    rowDraggable: props.rowDraggable,
+    rowSelectionVisible: isRowSelectionColumnVisible.value,
+    showActions: props.showActions,
+    actionsWidth: props.actionsWidth,
+    resolveCssSize
+  }
+  resolveColumnTracks(columns, layout)
+  applyFixedOffsets(columns, layout)
   return columns
 })
 
@@ -243,7 +257,9 @@ const gridTemplateColumns = computed(() => {
   }
 
   if (props.showActions) {
-    tracks.push(formatCssSize(props.actionsWidth))
+    const size = formatCssSize(props.actionsWidth)
+    const width = resolveCssSize(size)
+    tracks.push(width === undefined ? size : `${width}px`)
   }
 
   return tracks.join(' ')
@@ -431,6 +447,56 @@ function handleBodyScroll(event: Event) {
   }
   closeContextMenu()
   syncScrollState()
+}
+
+function syncColumnLayout() {
+  syncScrollState()
+  const root = tableRootRef.value
+  const viewport = bodyViewportRef.value
+  if (!root || !viewport || viewport.clientWidth <= 0) return
+
+  const sizes = new Set<string>()
+  for (const column of props.columns) {
+    for (const value of [column.width, column.minWidth]) {
+      if (value !== undefined) sizes.add(formatCssSize(value))
+    }
+  }
+  if (props.showActions) sizes.add(formatCssSize(props.actionsWidth))
+  const host = document.createElement('div')
+  Object.assign(host.style, {
+    position: 'fixed', visibility: 'hidden', pointerEvents: 'none',
+    width: `${viewport.clientWidth}px`, height: '0', overflow: 'hidden',
+    font: window.getComputedStyle(viewport).font
+  })
+  const probe = document.createElement('div')
+  Object.assign(probe.style, { boxSizing: 'content-box', padding: '0', border: '0', margin: '0', minWidth: '0', maxWidth: 'none' })
+  host.appendChild(probe)
+  root.appendChild(host)
+  const measured: Record<string, number> = {}
+  try {
+    for (const size of sizes) {
+      if (parseCssPixelSize(size) !== undefined) continue
+      probe.style.width = ''
+      probe.style.width = size
+      if (!probe.style.width) continue
+      const width = probe.getBoundingClientRect().width
+      if (Number.isFinite(width)) measured[size] = width
+    }
+  } finally {
+    host.remove()
+  }
+  if (JSON.stringify(measured) !== JSON.stringify(measuredCssSizes.value)) {
+    measuredCssSizes.value = measured
+    nextTick(syncScrollState)
+  }
+
+  const widths = Object.fromEntries(resolvedColumns.value
+    .filter((column) => column.setting.width === undefined && column.setting.widthRatio === undefined && column.column.width === undefined)
+    .map((column) => [column.column.key, getAutoFitColumnWidth(column)]))
+  if (JSON.stringify(widths) !== JSON.stringify(autoColumnWidths.value)) {
+    autoColumnWidths.value = widths
+    nextTick(syncScrollState)
+  }
 }
 
 function syncScrollState() {
@@ -1677,13 +1743,12 @@ function handleRowDragStart(row: Record<string, unknown>, rowIndex: number, even
   }
 }
 
-function handleRowDragOver(row: Record<string, unknown>, rowIndex: number, event: DragEvent) {
+function handleRowDragOver(row: Record<string, unknown>, rowIndex: number, event: DragEvent, target = event.currentTarget as HTMLElement) {
   if (!props.rowDraggable || draggingRowKey.value === null) {
     return
   }
 
   event.preventDefault()
-  const target = event.currentTarget as HTMLElement
   const rect = target.getBoundingClientRect()
   const midpoint = rect.top + rect.height / 2
   dragOverRowKey.value = getRowKey(row, rowIndex)
@@ -1691,6 +1756,47 @@ function handleRowDragOver(row: Record<string, unknown>, rowIndex: number, event
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = 'move'
   }
+}
+
+function getBodyRowDropTarget(event: DragEvent) {
+  if (!props.rowDraggable || draggingRowKey.value === null) return
+  const elements = bodyViewportRef.value?.querySelectorAll<HTMLElement>('.x-table__row--body')
+  if (!elements?.length) return
+
+  const hitRow = (event.target as HTMLElement | null)?.closest<HTMLElement>('.x-table__row--body')
+  let target = hitRow && bodyViewportRef.value?.contains(hitRow) ? hitRow : elements[0]
+  let nearestDistance = Infinity
+  for (const element of hitRow ? [] : elements) {
+    const rect = element.getBoundingClientRect()
+    const distance = Math.max(rect.top - event.clientY, event.clientY - rect.bottom, 0)
+    if (distance < nearestDistance) {
+      target = element
+      nearestDistance = distance
+    }
+  }
+  const rowIndex = Number(target.dataset.xTableRowIndex)
+  const row = props.data[rowIndex]
+  return row ? { row, rowIndex, element: target } : undefined
+}
+
+function handleBodyRowDragOver(event: DragEvent) {
+  const target = getBodyRowDropTarget(event)
+  if (!target) return
+
+  event.stopPropagation()
+  handleRowDragOver(target.row, target.rowIndex, event, target.element)
+}
+
+function handleBodyRowDrop(event: DragEvent) {
+  const target = getBodyRowDropTarget(event)
+  if (!target) return
+
+  event.stopPropagation()
+  // Resolve the final pointer position when row geometry is available.
+  if (target.element.getBoundingClientRect().height > 0) {
+    handleRowDragOver(target.row, target.rowIndex, event, target.element)
+  }
+  handleRowDrop(target.row, target.rowIndex, event)
 }
 
 function handleRowDrop(row: Record<string, unknown>, rowIndex: number, event: DragEvent) {
@@ -1718,6 +1824,7 @@ function handleRowDrop(row: Record<string, unknown>, rowIndex: number, event: Dr
   const rows = [...props.data]
   const [movedRow] = rows.splice(fromIndex, 1)
   rows.splice(toIndex, 0, movedRow)
+  commitTableData(rows)
   emit('row-reorder', {
     row: movedRow,
     rows,
@@ -1766,8 +1873,8 @@ function startColumnResize(column: ResolvedColumn, event: PointerEvent) {
   activeColumnResize = {
     key: column.column.key,
     startClientX: event.clientX,
-    startWidth: getResolvedColumnWidth(column),
-    oldWidth: getResolvedColumnWidth(column)
+    startWidth: getResolvedColumnWidth(column, resolveCssSize),
+    oldWidth: getResolvedColumnWidth(column, resolveCssSize)
   }
 }
 
@@ -1781,7 +1888,7 @@ function handleColumnResize(event: PointerEvent) {
     return
   }
 
-  const nextWidth = Math.max(getColumnMinWidth(column.column), activeColumnResize.startWidth + event.clientX - activeColumnResize.startClientX)
+  const nextWidth = Math.max(getColumnMinWidth(column.column, resolveCssSize), activeColumnResize.startWidth + event.clientX - activeColumnResize.startClientX)
   updateColumnSetting(column.column.key, { width: nextWidth })
   emit('column-resize', {
     column: column.column,
@@ -1809,7 +1916,7 @@ function autoFitColumnWidth(column: ResolvedColumn, event: MouseEvent) {
 function applyAutoFitColumnWidth(column: ResolvedColumn) {
   stopColumnResize()
 
-  const oldWidth = getResolvedColumnWidth(column)
+  const oldWidth = getResolvedColumnWidth(column, resolveCssSize)
   const nextWidth = getAutoFitColumnWidth(column)
   updateColumnSetting(column.column.key, { width: nextWidth, widthRatio: undefined })
   emit('column-resize', {
@@ -2006,6 +2113,19 @@ function handleContextMenuAutoFit() {
   closeContextMenu()
 }
 
+function handleContextMenuProportionalWidth() {
+  stopColumnResize()
+  const widths = new Map(resolvedColumns.value.map((column) => [column.column.key, getAutoFitColumnWidth(column)]))
+  const total = Array.from(widths.values()).reduce((sum, width) => sum + width, 0)
+  if (total > 0) {
+    setColumnSettings(normalizeColumnSettings(internalColumnSettings.value).map((setting) => {
+      const width = widths.get(setting.key)
+      return width === undefined ? setting : { ...setting, width: undefined, widthRatio: width / total * 100 }
+    }))
+  }
+  closeContextMenu()
+}
+
 function handleContextMenuAutoFitWithHeader() {
   applyAutoFitAllVisibleColumns({ includeHeader: true })
   closeContextMenu()
@@ -2088,34 +2208,6 @@ async function importExcelFile(file: File) {
   })
 }
 
-function downloadExcelWorkbook(xlsx: typeof import('xlsx'), workbook: import('xlsx').WorkBook, fileName: string) {
-  if (typeof document === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
-    return
-  }
-
-  const output = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer
-  const blob = new Blob([output], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = fileName
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
-function readExcelFile(file: File) {
-  if (typeof file.arrayBuffer === 'function') {
-    return file.arrayBuffer()
-  }
-
-  return new Promise<ArrayBuffer>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as ArrayBuffer)
-    reader.onerror = () => reject(reader.error)
-    reader.readAsArrayBuffer(file)
-  })
-}
-
 function getExcelColumns() {
   return resolvedColumns.value.map((item) => item.column)
 }
@@ -2148,22 +2240,6 @@ function createRowsFromExcelMatrix(matrix: unknown[][]) {
   })
 }
 
-function normalizeExcelHeader(value: unknown) {
-  return String(value ?? '').trim().toLowerCase()
-}
-
-function normalizeExcelCellValue(value: unknown) {
-  if (value === null || value === undefined) {
-    return ''
-  }
-
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value instanceof Date) {
-    return value
-  }
-
-  return JSON.stringify(value)
-}
-
 function applyAutoFitAllVisibleColumns(options: { includeHeader?: boolean } = {}) {
   stopColumnResize()
   const widthByKey = new Map(resolvedColumns.value.map((column) => [column.column.key, getAutoFitColumnWidth(column, options)]))
@@ -2193,7 +2269,7 @@ function handleWindowPointerDown(event: PointerEvent) {
 function getAutoFitColumnWidth(column: ResolvedColumn, options: { includeHeader?: boolean } = {}) {
   const columnIndex = resolvedColumns.value.findIndex((item) => item.column.key === column.column.key)
   if (columnIndex < 0 || !tableRootRef.value) {
-    return getResolvedColumnWidth(column)
+    return getResolvedColumnWidth(column, resolveCssSize)
   }
 
   const utilityColumnCount = (props.rowDraggable ? 1 : 0) + (isRowSelectionColumnVisible.value ? 1 : 0)
@@ -2207,7 +2283,7 @@ function getAutoFitColumnWidth(column: ResolvedColumn, options: { includeHeader?
   const measuredCells = headerCell ? [headerCell, ...bodyCells] : bodyCells
   const measuredWidth = measuredCells.reduce((maxWidth, cell) => Math.max(maxWidth, getAutoFitCellWidth(cell)), 0)
 
-  return Math.max(getColumnMinWidth(column.column), Math.ceil(measuredWidth))
+  return Math.max(getColumnMinWidth(column.column, resolveCssSize), Math.ceil(measuredWidth))
 }
 
 function getAutoFitCellWidth(cell: HTMLElement) {
@@ -2398,215 +2474,6 @@ function getOrderedSettings() {
   })
 }
 
-function createResolvedColumn(column: TableColumn, setting: TableColumnSetting): ResolvedColumn {
-  return {
-    column,
-    setting,
-    track: '',
-    baseTrack: '',
-    align: setting.align ?? column.align ?? 'left',
-    fixed: setting.fixed ?? 'none',
-    left: 'auto',
-    right: 'auto'
-  }
-}
-
-function resolveColumnTracks(columns: ResolvedColumn[]) {
-  const columnTrackSizes = columns.map((column) => getColumnTrackSize(column.column, column.setting))
-  const baseColumnWidths = columnTrackSizes.map((track) => getColumnTrackPixelWidth(track))
-  const shouldUseBaseTracks = tableWidth.value > 0 && baseColumnWidths.every((width) => width !== undefined)
-  const utilityColumnsWidth = getUtilityColumnsWidth()
-  const baseDataColumnsWidth = baseColumnWidths.reduce<number>((sum, width) => sum + (width ?? 0), 0)
-  const remaining = shouldUseBaseTracks ? tableWidth.value - utilityColumnsWidth - baseDataColumnsWidth : 0
-  const fillColumnIndex = remaining > 0 ? getLastFillableColumnIndex(columns) : -1
-
-  if (shouldUseBaseTracks) {
-    columns.forEach((column, index) => {
-      const baseWidth = baseColumnWidths[index] ?? getColumnMinWidth(column.column)
-      const resolvedWidth = index === fillColumnIndex ? baseWidth + remaining : baseWidth
-      column.baseTrack = formatResolvedPixelSize(baseWidth)
-      column.track = formatResolvedPixelSize(resolvedWidth)
-    })
-    return
-  }
-
-  const fixedTotal = columnTrackSizes.reduce(
-    (sum, track) => (track.kind === 'flexible' ? sum : sum + (track.pixelSize ?? 0)),
-    0
-  )
-  const flexibleColumns = columnTrackSizes.filter((track) => track.kind === 'flexible')
-  const flexibleMinTotal = flexibleColumns.reduce((sum, track) => sum + track.minWidth, 0)
-  const legacyRemaining = Math.max(tableWidth.value - utilityColumnsWidth - fixedTotal - flexibleMinTotal, 0)
-  const extraPerFlexibleColumn = flexibleColumns.length > 0 ? legacyRemaining / flexibleColumns.length : 0
-
-  columns.forEach((column, index) => {
-    const track = columnTrackSizes[index]
-    column.track = track.kind === 'flexible' ? formatResolvedPixelSize(track.minWidth + extraPerFlexibleColumn) : track.track
-    column.baseTrack = column.track
-  })
-}
-
-function getColumnTrackPixelWidth(track: ReturnType<typeof getColumnTrackSize>) {
-  return track.kind === 'flexible' ? track.minWidth : track.pixelSize
-}
-
-function getLastFillableColumnIndex(columns: ResolvedColumn[]) {
-  const unfixedColumnIndex = findLastColumnIndex(columns, (column) => column.fixed === 'none')
-  return unfixedColumnIndex >= 0 ? unfixedColumnIndex : columns.length - 1
-}
-
-function findLastColumnIndex<T>(items: T[], predicate: (item: T) => boolean) {
-  for (let index = items.length - 1; index >= 0; index -= 1) {
-    if (predicate(items[index])) {
-      return index
-    }
-  }
-
-  return -1
-}
-
-function applyFixedOffsets(columns: ResolvedColumn[]) {
-  let leftTracks: string[] = []
-  if (props.rowDraggable) {
-    leftTracks.push('44px')
-  }
-  if (isRowSelectionColumnVisible.value) {
-    leftTracks.push('44px')
-  }
-
-  for (const column of columns) {
-    if (column.fixed !== 'left') {
-      continue
-    }
-
-    column.left = sumCssSizes(leftTracks)
-    leftTracks = [...leftTracks, column.track]
-  }
-
-  let rightTracks: string[] = []
-  if (props.showActions) {
-    rightTracks.push(formatCssSize(props.actionsWidth))
-  }
-
-  for (const column of [...columns].reverse()) {
-    if (column.fixed !== 'right') {
-      continue
-    }
-
-    column.right = sumCssSizes(rightTracks)
-    rightTracks = [column.track, ...rightTracks]
-  }
-}
-
-function getColumnTrackSize(column: TableColumn, setting: TableColumnSetting) {
-  if (setting.width !== undefined) {
-    const pixelSize = Math.max(getColumnMinWidth(column), setting.width)
-
-    return {
-      kind: 'fixed' as const,
-      pixelSize,
-      track: formatResolvedPixelSize(pixelSize)
-    }
-  }
-
-  if (setting.widthRatio !== undefined) {
-    const minWidth = getColumnMinWidth(column)
-    const ratioWidth = tableWidth.value > 0 ? (tableWidth.value * setting.widthRatio) / 100 : 0
-    const pixelSize = Math.max(minWidth, ratioWidth)
-
-    return {
-      kind: 'ratio' as const,
-      pixelSize,
-      track: formatResolvedPixelSize(pixelSize)
-    }
-  }
-
-  if (column.width !== undefined) {
-    const rawTrack = formatCssSize(column.width)
-    const pixelSize = parseCssPixelSize(rawTrack)
-    const track = pixelSize === undefined ? rawTrack : formatResolvedPixelSize(Math.max(getColumnMinWidth(column), pixelSize))
-
-    return {
-      kind: 'fixed' as const,
-      pixelSize: parseCssPixelSize(track),
-      track
-    }
-  }
-
-  return {
-    kind: 'flexible' as const,
-    minWidth: getColumnMinWidth(column)
-  }
-}
-
-function getUtilityColumnsWidth() {
-  let width = 0
-  if (props.rowDraggable) {
-    width += 44
-  }
-  if (isRowSelectionColumnVisible.value) {
-    width += 44
-  }
-  if (props.showActions) {
-    width += parseCssPixelSize(formatCssSize(props.actionsWidth)) ?? 0
-  }
-
-  return width
-}
-
-function getColumnMinWidth(column: TableColumn) {
-  if (column.minWidth === undefined) {
-    return defaultColumnMinWidth
-  }
-
-  return parseCssPixelSize(formatCssSize(column.minWidth)) ?? defaultColumnMinWidth
-}
-
-function getResolvedColumnWidth(column: ResolvedColumn) {
-  return parseCssPixelSize(column.baseTrack) ?? parseCssPixelSize(column.track) ?? getColumnMinWidth(column.column)
-}
-
-function parseCssPixelSize(value: string) {
-  const trimmed = value.trim()
-  if (!trimmed.endsWith('px')) {
-    return undefined
-  }
-
-  const size = Number(trimmed.slice(0, -2))
-  return Number.isFinite(size) ? size : undefined
-}
-
-function formatResolvedPixelSize(value: number) {
-  return `${Number(value.toFixed(3))}px`
-}
-
-function sumCssSizes(values: string[]) {
-  if (values.length === 0) {
-    return '0px'
-  }
-
-  return values.length === 1 ? values[0] : `calc(${values.join(' + ')})`
-}
-
-function getFixedWeight(fixed: TableColumnSetting['fixed']) {
-  if (fixed === 'left') {
-    return 0
-  }
-
-  if (fixed === 'right') {
-    return 2
-  }
-
-  return 1
-}
-
-function normalizeNumber(value: number | undefined) {
-  if (value === undefined || Number.isNaN(Number(value))) {
-    return undefined
-  }
-
-  return Math.max(0, Number(value))
-}
 
 function updateColumnSetting(key: string, setting: Partial<TableColumnSetting>) {
   const next = normalizeColumnSettings(internalColumnSettings.value).map((item) => {
@@ -2637,42 +2504,12 @@ function setColumnSettings(settings: TableColumnSetting[]) {
   internalColumnSettings.value = next
   emit('update:columnSettings', next.map((setting) => ({ ...setting })))
   emit('column-settings-change', next.map((setting) => ({ ...setting })))
-  nextTick(syncScrollState)
+  nextTick(syncColumnLayout)
 }
 
 function getRowKey(row: Record<string, unknown>, rowIndex: number) {
   const value = row[props.rowKey]
   return value === undefined || value === null ? `${fallbackRowKeyPrefix}${rowIndex}` : String(value)
-}
-
-function getCellValue(row: Record<string, unknown>, column: TableColumn) {
-  if (column.valueGetter) {
-    return column.valueGetter(row, column)
-  }
-
-  return row[column.key]
-}
-
-function isReadonlyColumn(column: TableColumn) {
-  return Boolean(column.valueGetter || column.readonly || column.editable === false)
-}
-
-function normalizeInputValue(value: unknown) {
-  return typeof value === 'number' ? value : String(value ?? '')
-}
-
-function normalizeEditedCellValue(value: string | number | undefined, oldValue: unknown) {
-  if (typeof oldValue === 'number') {
-    const next = Number(value)
-    return Number.isNaN(next) ? value : next
-  }
-
-  return value
-}
-
-function formatCellValue(row: Record<string, unknown>, column: TableColumn) {
-  const value = getCellValue(row, column)
-  return column.formatter ? column.formatter(value, row) : String(value ?? '')
 }
 
 function getSummaryCellValue(column: TableColumn) {
@@ -2723,40 +2560,6 @@ function getSummaryExcelCellValue(column: TableColumn, mode: TableExcelExportMod
 function isSummaryLabelCell(column: TableColumn) {
   const row = props.summaryRow
   return Boolean(row && !row.cells?.[column.key] && column.key === summaryLabelColumnKey.value)
-}
-
-function getNumericSummaryValues(rows: Record<string, unknown>[], column: TableColumn) {
-  return rows
-    .map((row) => normalizeSummaryNumber(getCellValue(row, column)))
-    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
-}
-
-function normalizeSummaryNumber(value: unknown) {
-  if (typeof value === 'number') {
-    return value
-  }
-
-  if (typeof value === 'string' && value.trim() !== '') {
-    const next = Number(value)
-    return Number.isFinite(next) ? next : null
-  }
-
-  return null
-}
-
-function formatCssSize(value: number | string) {
-  if (typeof value === 'number') {
-    return `${value}px`
-  }
-
-  const trimmed = value.trim()
-  return /^-?\d+(?:\.\d+)?$/.test(trimmed) ? `${trimmed}px` : value
-}
-
-function setCssVariable(style: Record<string, string>, key: string, value: string | undefined) {
-  if (value) {
-    style[key] = value
-  }
 }
 
 function getCellStyle(column: ResolvedColumn, type: 'header' | 'body' = 'body', rowIndex = 0): CSSProperties {
@@ -2856,27 +2659,15 @@ function getBodyRowLayeredBackground(rowIndex: number) {
   return `linear-gradient(var(--x-table-row-hover-overlay-current, transparent), var(--x-table-row-hover-overlay-current, transparent)), ${getBodyRowBackground(rowIndex)}`
 }
 
-function alignToJustify(align: TableColumn['align']) {
-  if (align === 'center') {
-    return 'center'
-  }
-
-  if (align === 'right') {
-    return 'flex-end'
-  }
-
-  return 'flex-start'
-}
-
 onMounted(() => {
-  nextTick(syncScrollState)
+  nextTick(syncColumnLayout)
 
   if (bodyViewportRef.value && typeof ResizeObserver !== 'undefined') {
-    bodyResizeObserver = new ResizeObserver(syncScrollState)
+    bodyResizeObserver = new ResizeObserver(syncColumnLayout)
     bodyResizeObserver.observe(bodyViewportRef.value)
   }
 
-  window.addEventListener('resize', syncScrollState, { passive: true })
+  window.addEventListener('resize', syncColumnLayout, { passive: true })
   window.addEventListener('pointermove', handleScrollbarDrag)
   window.addEventListener('pointermove', handleColumnResize)
   window.addEventListener('pointerup', stopScrollbarDrag)
@@ -2923,7 +2714,7 @@ watch(
   () => [props.columns, props.columnSettings],
   () => {
     internalColumnSettings.value = normalizeColumnSettings(props.columnSettings ?? internalColumnSettings.value)
-    nextTick(syncScrollState)
+    nextTick(syncColumnLayout)
   },
   { deep: true, immediate: true }
 )
@@ -3001,10 +2792,10 @@ function pruneDirtyChanges() {
 }
 
 watch(
-  () => [props.data, props.columns, props.showActions, props.actionsWidth, internalColumnSettings.value, activeSorter.value],
+  () => [props.data, props.columns, props.showActions, props.actionsWidth, props.rowDraggable, props.showSelection, props.showSelectionColumn, props.fontSize, attrs.style, internalColumnSettings.value, activeSorter.value],
   () => {
     pruneDirtyChanges()
-    nextTick(syncScrollState)
+    nextTick(syncColumnLayout)
   },
   { deep: true }
 )
@@ -3029,8 +2820,8 @@ defineExpose({
     v-bind="rootAttrs"
     ref="tableRootRef"
     class="x-table"
-    :class="[`x-table--${mergedSize}`, { 'is-fill-height': props.fullHeight }]"
-    :style="mergedTableStyle"
+    :class="['x-table', { 'is-fill-height': props.fullHeight }]"
+    :style="[mergedTableStyle, createFontStyle(mergedSize)]"
     tabindex="0"
     @keydown.capture="handleTableKeydown"
   >
@@ -3176,13 +2967,24 @@ defineExpose({
       </div>
 
       <div class="x-table__body-shell">
-        <div ref="bodyViewportRef" class="x-table__body-viewport" @scroll="handleBodyScroll">
-          <div v-if="visibleRows.length > 0 || isSummaryRowVisible" class="x-table__body" role="rowgroup">
+        <div
+          ref="bodyViewportRef"
+          class="x-table__body-viewport"
+          @scroll="handleBodyScroll"
+          @dragover.capture="handleBodyRowDragOver"
+          @drop.capture="handleBodyRowDrop"
+        >
+          <div
+            v-if="visibleRows.length > 0 || isSummaryRowVisible"
+            class="x-table__body"
+            role="rowgroup"
+          >
             <div
               v-for="{ row, rowIndex } in visibleRows"
               :key="getRowKey(row, rowIndex)"
               class="x-table__row x-table__row--body"
               :class="getRowClasses(row, rowIndex)"
+              :data-x-table-row-index="rowIndex"
               role="row"
               :style="{ gridTemplateColumns }"
               @dragover="handleRowDragOver(row, rowIndex, $event)"
@@ -3257,7 +3059,7 @@ defineExpose({
                       auto-height
                       padding="0 12px"
                       radius="0"
-                      :size="mergedSize"
+                      :font-size="mergedSize"
                       @update:model-value="updateEditingCellValue"
                       @change="commitCellEdit"
                       @blur="commitCellEdit"
@@ -3457,6 +3259,12 @@ defineExpose({
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+W</kbd>
         </button>
+        <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuProportionalWidth">
+          <span class="x-table__context-menu-label">
+            <i class="x-table__context-menu-icon ri-layout-column-line" aria-hidden="true"></i>
+            <span>比例宽度</span>
+          </span>
+        </button>
         <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFitWithHeader">
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-layout-column-line" aria-hidden="true"></i>
@@ -3514,7 +3322,7 @@ defineExpose({
   box-sizing: border-box;
   color: var(--x-table-text-color, var(--x-color-text, #1f2937));
   display: grid;
-  font-size: var(--x-table-font-size, 12px);
+  font-size: var(--x-table-font-size, 14px);
   min-width: 0;
   overflow: hidden;
   width: 100%;
@@ -3576,7 +3384,7 @@ defineExpose({
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: calc(var(--x-table-font-size, 12px) + 6px);
+  font-size: calc(var(--x-table-font-size, 14px) + 6px);
   height: var(--x-table-control-height, 30px);
   justify-content: center;
   line-height: 1;
@@ -3747,7 +3555,6 @@ defineExpose({
   transition:
     background-color 140ms ease,
     box-shadow 140ms ease,
-    margin 140ms ease,
     opacity 140ms ease,
     transform 140ms ease;
 }
@@ -3798,21 +3605,12 @@ defineExpose({
 
 .x-table__row--body.is-dragging {
   opacity: 0.46;
-  transform: scale(0.998);
 }
 
 .x-table__row--body.is-drag-over-before,
 .x-table__row--body.is-drag-over-after {
   background: var(--x-table-row-drag-background, var(--x-color-primary-soft, #f0f9ff));
   box-shadow: 0 4px 14px rgb(15 23 42 / 10%);
-}
-
-.x-table__row--body.is-drag-over-before {
-  margin-top: 10px;
-}
-
-.x-table__row--body.is-drag-over-after {
-  margin-bottom: 10px;
 }
 
 .x-table__row--body.is-drag-over-before::before,
@@ -3829,11 +3627,11 @@ defineExpose({
 }
 
 .x-table__row--body.is-drag-over-before::before {
-  top: -6px;
+  top: 0;
 }
 
 .x-table__row--body.is-drag-over-after::after {
-  bottom: -6px;
+  bottom: 0;
 }
 
 .x-table__cell {
@@ -3909,7 +3707,7 @@ defineExpose({
 .x-table__context-menu-icon {
   color: currentcolor;
   flex: 0 0 auto;
-  font-size: calc(var(--x-table-font-size, 12px) + 3px);
+  font-size: calc(var(--x-table-font-size, 14px) + 3px);
   line-height: 1;
 }
 
@@ -3919,7 +3717,7 @@ defineExpose({
   color: var(--x-table-control-disabled-text-color, var(--x-color-disabled-text));
   flex: 0 0 auto;
   font: inherit;
-  font-size: calc(var(--x-table-font-size, 12px) - 1px);
+  font-size: calc(var(--x-table-font-size, 14px) - 1px);
   letter-spacing: 0;
   padding: 0;
 }

@@ -29,6 +29,6 @@ function close() { visible.value = false; emit('close') }
 .x-alert__icon { align-items: center; border: 1px solid currentColor; border-radius: 50%; display: inline-flex; flex: 0 0 18px; font-size: 12px; font-weight: 800; height: 18px; justify-content: center; margin-top: 1px; width: 18px; }
 .x-alert__content { flex: 1 1 auto; min-width: 0; }
 .x-alert__title { color: inherit; display: block; font-size: 14px; font-weight: 800; }
-.x-alert__description { color: inherit; font-size: 13px; margin: 2px 0 0; }
+.x-alert__description { color: inherit; font-size: 14px; margin: 2px 0 0; }
 .x-alert__close { background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; line-height: 1; padding: 0; }
 </style>

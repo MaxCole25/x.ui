@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 export type FileDiskItemType = 'file' | 'folder'
 export type FileDiskViewMode = 'list' | 'grid'
 export type FileDiskPermission = 'read' | 'write' | 'delete' | 'view'
@@ -131,7 +130,7 @@ export interface FileDiskClipboardPayload {
 }
 
 export interface FileDiskProps {
-  size?: XSize
+  fontSize?: number
   modelValue?: string
   entries?: FileDiskItem[]
   adapter?: FileDiskAdapter
@@ -162,5 +161,7 @@ export interface FileDiskProps {
   showTitle?: boolean
   showToolbar?: boolean
   showPath?: boolean
+  /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */
+  enableMinimize?: boolean
   promptFolderName?: (path: string) => string | null | Promise<string | null>
 }

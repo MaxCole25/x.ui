@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, fontSizeKey, getComponentMetrics } from '../../../_utils/size'
 import type { ButtonProps } from './types'
 
 defineOptions({
@@ -10,7 +10,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'solid',
-  size: undefined,
+  fontSize: undefined,
   width: 120,
   liftOnHover: false,
   disabled: false,
@@ -21,11 +21,11 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
-const mergedSize = computed(() => props.size ?? 'md')
-const sizePreset = computed(() => componentSizePreset[mergedSize.value])
-const usesExplicitSize = computed(() => props.size != null)
+const inheritedFontSize = inject(fontSizeKey, undefined)
+const mergedSize = computed(() => props.fontSize ?? inheritedFontSize?.value ?? 14)
+const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const resolveSizeStyle = (customValue: number | string | undefined, presetValue: number | string) =>
-  toCssSize(usesExplicitSize.value ? presetValue : customValue ?? presetValue)
+  toCssSize(customValue ?? presetValue)
 
 const buttonStyle = computed(() => ({
   '--x-element-border-width': toCssSize(props.borderWidth),
@@ -53,12 +53,12 @@ function handleClick(event: MouseEvent) {
     class="x-button"
     :class="[
       `x-button--${props.variant}`,
-      `x-button--${mergedSize}`,
+      'x-button',
       { 'is-loading': props.loading, 'is-hover-lift-disabled': !props.liftOnHover }
     ]"
     :disabled="props.disabled || props.loading"
     type="button"
-    :style="buttonStyle"
+    :style="[buttonStyle, createFontStyle(mergedSize)]"
     @click="handleClick"
   >
     <span v-if="props.loading" class="x-button__spinner" aria-hidden="true" />

@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Badge from './src/Badge.vue'
 
-export const XBadge = Badge
+export const XBadge = Badge as ComponentWithInstall<typeof Badge>
 
 export type { BadgeProps } from './src/types'
 

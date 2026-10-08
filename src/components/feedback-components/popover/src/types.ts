@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type PopoverPlacement = 'top' | 'bottom' | 'left' | 'right'
 export type PopoverTrigger = 'hover' | 'click' | 'focus'
@@ -15,5 +14,5 @@ export interface PopoverProps {
   teleported?: boolean
   teleportTo?: string
   zIndex?: number
-  size?: XSize
+  fontSize?: number
 }

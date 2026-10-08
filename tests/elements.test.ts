@@ -40,13 +40,13 @@ const mountAutocomplete = (options: any = {}) =>
 describe('元素组件', () => {
   it('renders text style classes', () => {
     const wrapper = mount(XText, {
-      props: { variant: 'title', size: 'md' },
+      props: { variant: 'title', fontSize: 14 },
       slots: { default: '标题' }
     })
 
     expect(wrapper.text()).toBe('标题')
     expect(wrapper.classes()).toContain('x-text--title')
-    expect(wrapper.classes()).toContain('x-text--md')
+    expect(wrapper.classes()).not.toContain('x-text--md')
   })
 
   it('exposes text appearance props', () => {
@@ -156,7 +156,7 @@ describe('元素组件', () => {
 
     expect(wrapper.find('.x-icon').exists()).toBe(true)
     expect(wrapper.find('.ri-user-fill').exists()).toBe(true)
-    expect(wrapper.attributes('style')).toContain('--x-icon-size: 17px')
+    expect(wrapper.attributes('style')).toContain('--x-icon-size: 18px')
     expect(wrapper.find('.x-icon').attributes('style')).toContain('color: rgb(255, 255, 255)')
   })
 
@@ -164,7 +164,7 @@ describe('元素组件', () => {
     const wrapper = mount(XAvatar, {
       props: {
         icon: 'user',
-        size: 'lg',
+        avatarSize: 38,
         iconFull: true
       }
     })
@@ -409,7 +409,7 @@ describe('元素组件', () => {
         readonly: true,
         clearable: true,
         hideClearButton: true,
-        size: 'sm',
+        fontSize: 10,
         status: 'success',
         name: 'tech',
         id: 'select-tech',
@@ -419,7 +419,7 @@ describe('元素组件', () => {
       }
     })
 
-    expect(wrapper.classes()).toContain('x-select--sm')
+    expect(wrapper.classes()).not.toContain('x-select--sm')
     expect(wrapper.classes()).toContain('x-select--success')
     expect(wrapper.classes()).toContain('is-readonly')
     expect(wrapper.find('.x-select__control').attributes('name')).toBe('tech')
@@ -427,7 +427,7 @@ describe('元素组件', () => {
     expect(wrapper.text()).toContain('技术')
     expect(wrapper.text()).toContain('必选')
     expect(wrapper.find('.x-select__clear').exists()).toBe(false)
-    expect(wrapper.attributes('style')).toContain('--x-select-height: 22px')
+    expect(wrapper.attributes('style')).toContain('--x-select-height: 32px')
     expect(wrapper.attributes('style')).toContain('--x-select-font-size: 10px')
     expect(wrapper.attributes('style')).toContain('--x-select-active-border-color: #1d4ed8')
     expect(wrapper.attributes('style')).toContain('--x-select-clear-icon-color: #64748b')
@@ -575,8 +575,8 @@ describe('元素组件', () => {
       props: {
         modelValue: '',
         options,
-        dropdownMaxHeight: 180,
-        dropdownMaxWidth: 420
+        popperMaxHeight: 180,
+        popperMaxWidth: 420
       }
     })
 
@@ -592,9 +592,9 @@ describe('元素组件', () => {
     const wrapper = mount(XAutocomplete, {
       props: {
         modelValue: '南',
-        dropdownMaxHeight: 180,
-        dropdownMaxWidth: 420,
-        dropdownBackgroundColor: '#fef3c7',
+        popperMaxHeight: 180,
+        popperMaxWidth: 420,
+        popperBackgroundColor: '#fef3c7',
         options: [
           { label: '南京', value: 'nanjing' },
           { label: '南通', value: 'nantong' }
@@ -986,6 +986,7 @@ describe('元素组件', () => {
 
     const cascader = mount(XCascader, {
       props: {
+        teleported: false,
         modelValue: ['zhejiang', 'hangzhou'],
         displayField: 'value',
         options: [
@@ -1028,22 +1029,21 @@ describe('元素组件', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['done'])
   })
 
-  it('uses autocomplete size before explicit height and font size', () => {
+  it('keeps autocomplete explicit height and fontSize independent', () => {
     const wrapper = mountAutocomplete({
       props: {
         modelValue: '上海',
-        size: 'sm',
         height: 99,
         fontSize: 30
       }
     })
 
     const style = wrapper.find('.x-base-input').attributes('style')
-    expect(style).toContain('--x-base-input-font-size: 10px')
-    expect(style).toContain('--x-base-input-height: 22px')
-    expect(wrapper.attributes('style')).toContain('--x-autocomplete-height: 22px')
-    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-font-size: 10px')
-    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-padding: 0 4px')
+    expect(style).toContain('--x-base-input-font-size: 30px')
+    expect(style).toContain('--x-base-input-height: 99px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-height: 99px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-font-size: 30px')
+    expect(wrapper.attributes('style')).toContain('--x-autocomplete-option-padding: 0 8px')
   })
 
   it('enables autocomplete active border by default and exposes its own active color variable', () => {
@@ -1110,7 +1110,7 @@ describe('元素组件', () => {
         modelValue: '2026-05-12',
         prefix: '日期',
         clearable: true,
-        size: 'lg',
+        fontSize: 18,
         status: 'success',
         name: 'deliveryDate',
         id: 'delivery-date'
@@ -1118,7 +1118,7 @@ describe('元素组件', () => {
     })
 
     expect(wrapper.find('.x-base-input').exists()).toBe(true)
-    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--lg')
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-font-size: 18px')
     expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--success')
     expect(wrapper.find('input').attributes('type')).toBe('text')
     expect(wrapper.find('input').attributes('name')).toBe('deliveryDate')
@@ -1197,7 +1197,7 @@ describe('元素组件', () => {
         modelValue: '2026-05-12T09:30',
         prefix: '时间',
         clearable: true,
-        size: 'lg',
+        fontSize: 18,
         status: 'success',
         name: 'meetingTime',
         id: 'meeting-time'
@@ -1205,7 +1205,7 @@ describe('元素组件', () => {
     })
 
     expect(wrapper.find('.x-base-input').exists()).toBe(true)
-    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--lg')
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-font-size: 18px')
     expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--success')
     expect(wrapper.find('input').attributes('type')).toBe('text')
     expect(wrapper.find('input').attributes('name')).toBe('meetingTime')
@@ -1294,6 +1294,7 @@ describe('元素组件', () => {
   it('selects cascader leaf path', async () => {
     const wrapper = mount(XCascader, {
       props: {
+        teleported: false,
         modelValue: [],
         options: [
           {
@@ -1324,6 +1325,7 @@ describe('元素组件', () => {
     })
     const wrapper = mount(XCascader, {
       props: {
+        teleported: false,
         modelValue: [],
         remote: true,
         fieldNames: { label: 'name', value: 'id' },
@@ -1363,7 +1365,7 @@ describe('元素组件', () => {
         readonly: true,
         clearable: true,
         hideClearButton: true,
-        size: 'sm',
+        fontSize: 10,
         status: 'success',
         separator: ' > ',
         name: 'area',
@@ -1374,7 +1376,7 @@ describe('元素组件', () => {
       }
     })
 
-    expect(wrapper.classes()).toContain('x-cascader--sm')
+    expect(wrapper.classes()).not.toContain('x-cascader--sm')
     expect(wrapper.classes()).toContain('x-cascader--success')
     expect(wrapper.classes()).toContain('is-readonly')
     expect(wrapper.find('.x-cascader__control').attributes('name')).toBe('area')
@@ -1383,7 +1385,7 @@ describe('元素组件', () => {
     expect(wrapper.text()).toContain('浙江 > 杭州')
     expect(wrapper.text()).toContain('必选')
     expect(wrapper.find('.x-cascader__clear').exists()).toBe(false)
-    expect(wrapper.attributes('style')).toContain('--x-cascader-height: 22px')
+    expect(wrapper.attributes('style')).toContain('--x-cascader-height: 32px')
     expect(wrapper.attributes('style')).toContain('--x-cascader-font-size: 10px')
     expect(wrapper.attributes('style')).toContain('--x-cascader-active-border-color: #1d4ed8')
     expect(wrapper.attributes('style')).toContain('--x-cascader-clear-icon-color: #64748b')
@@ -1396,6 +1398,7 @@ describe('元素组件', () => {
   it('clears cascader value and supports selecting parent nodes', async () => {
     const wrapper = mount(XCascader, {
       props: {
+        teleported: false,
         modelValue: ['zhejiang', 'hangzhou'],
         clearable: true,
         changeOnSelect: true,
@@ -1635,7 +1638,8 @@ describe('元素组件', () => {
 
   it('shows cascader empty state', async () => {
     const wrapper = mount(XCascader, {
-      props: { modelValue: [], options: [] }
+      props: {
+        teleported: false, modelValue: [], options: [] }
     })
 
     await wrapper.find('.x-cascader__control').trigger('click')
@@ -1644,7 +1648,8 @@ describe('元素组件', () => {
 
   it('opens cascader panel without changing empty state behavior', async () => {
     const wrapper = mount(XCascader, {
-      props: { modelValue: [], options: [] },
+      props: {
+        teleported: false, modelValue: [], options: [] },
       attachTo: document.body
     })
 

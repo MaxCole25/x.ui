@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { PaginationProps } from './types'
 
 defineOptions({ name: 'XPagination' })
 
-const props = withDefaults(defineProps<PaginationProps>(), { modelValue: 1, total: 0, pageSize: 10, pagerCount: 7, disabled: false, showTotal: true, showPageSize: false, pageSizes: () => [10, 20, 50, 100], size: 'md' })
+const props = withDefaults(defineProps<PaginationProps>(), { modelValue: 1, total: 0, pageSize: 10, pagerCount: 7, disabled: false, showTotal: true, showPageSize: false, pageSizes: () => [10, 20, 50, 100], fontSize: 14 })
 const emit = defineEmits<{ 'update:modelValue': [value: number]; 'update:pageSize': [value: number]; change: [page: number, pageSize: number] }>()
 const pageCount = computed(() => Math.max(1, Math.ceil(props.total / props.pageSize)))
 const current = computed(() => Math.min(pageCount.value, Math.max(1, props.modelValue)))
-const preset = computed(() => componentSizePreset[props.size])
+const preset = computed(() => getComponentMetrics(props.fontSize))
 const pages = computed(() => {
   const count = pageCount.value
   const pagerCount = Math.max(5, props.pagerCount)
@@ -20,7 +20,7 @@ const pages = computed(() => {
   start = Math.max(1, end - pagerCount + 1)
   return Array.from({ length: end - start + 1 }, (_, index) => start + index)
 })
-const styleVars = computed(() => ({ '--x-pagination-height': preset.value.height + 'px', '--x-pagination-font-size': preset.value.fontSize + 'px', '--x-pagination-radius': preset.value.radius }))
+const styleVars = computed(() => ({ '--x-pagination-height': typeof props.height === 'number' ? props.height + 'px' : props.height ?? '32px', '--x-pagination-font-size': preset.value.fontSize + 'px', '--x-pagination-radius': preset.value.radius }))
 function setPage(page: number) {
   if (props.disabled) return
   const next = Math.min(pageCount.value, Math.max(1, page))
@@ -36,7 +36,7 @@ function setPageSize(event: Event) {
 </script>
 
 <template>
-  <nav class="x-pagination" :class="{ 'is-disabled': props.disabled }" :style="styleVars" aria-label="分页">
+  <nav class="x-pagination" :class="{ 'is-disabled': props.disabled }" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]" aria-label="分页">
     <span v-if="props.showTotal" class="x-pagination__total">共 {{ props.total }} 条</span>
     <select v-if="props.showPageSize" class="x-pagination__size" :value="props.pageSize" :disabled="props.disabled" @change="setPageSize"><option v-for="item in props.pageSizes" :key="item" :value="item">{{ item }} 条/页</option></select>
     <button class="x-pagination__button" type="button" :disabled="props.disabled || current <= 1" @click="setPage(current - 1)">上一页</button>

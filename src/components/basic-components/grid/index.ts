@@ -1,9 +1,10 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Grid from './src/Grid.vue'
 import GridItem from './src/GridItem.vue'
 
-export const XGrid = Grid
-export const XGridItem = GridItem
+export const XGrid = Grid as ComponentWithInstall<typeof Grid>
+export const XGridItem = GridItem as ComponentWithInstall<typeof GridItem>
 
 export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridResponsiveColumns, GridSize } from './src/types'
 

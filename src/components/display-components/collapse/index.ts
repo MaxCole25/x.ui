@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Collapse from './src/Collapse.vue'
 
-export const XCollapse = Collapse
+export const XCollapse = Collapse as ComponentWithInstall<typeof Collapse>
 
 export type { CollapseProps } from './src/types'
 

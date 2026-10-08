@@ -1,0 +1,31 @@
+.x-loading {
+  align-items: center;
+  background: var(--x-loading-bg, rgba(255, 255, 255, 0.76));
+  color: var(--x-loading-text, var(--x-color-primary));
+  display: flex;
+  flex-direction: column;
+  font-family: var(--x-font-family);
+  gap: 10px;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  z-index: var(--x-loading-z-index, var(--x-z-index-loading, 2100));
+}
+
+.x-loading.is-fullscreen {
+  position: fixed;
+}
+
+.x-loading__spinner {
+  animation: x-loading-spin 780ms linear infinite;
+  border: 3px solid color-mix(in srgb, var(--x-loading-spinner, var(--x-color-primary)) 22%, transparent);
+  border-radius: 999px;
+  border-top-color: var(--x-loading-spinner, var(--x-color-primary));
+  height: var(--x-loading-spinner-size, 32px);
+  width: var(--x-loading-spinner-size, 32px);
+}
+
+.x-loading__text {
+  font-size: var(--x-component-font-size, var(--x-font-size-control, 14px));
+  font-weight: 600;
+}

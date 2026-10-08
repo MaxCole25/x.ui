@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import { iconAliases } from './aliases'
 import { plainRemixIconNames } from './plainIconNames'
 import { toCssSize } from '../../../_utils/elementStyle'
-import { componentSizePreset } from '../../../_utils/size'
 import type { IconProps } from './types'
 
 defineOptions({
@@ -13,7 +12,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<IconProps>(), {
   variant: 'line',
-  size: undefined,
+  fontSize: undefined,
   iconSize: undefined,
   offsetY: undefined,
   decorative: undefined,
@@ -46,11 +45,9 @@ const normalizedName = computed(() => {
 })
 
 const iconClass = computed(() => [`ri-${normalizedName.value}`, { 'is-spin': props.spin }])
-const mergedSize = computed(() => props.size ?? 'md')
-const usesExplicitSize = computed(() => props.size != null)
 
 const iconStyle = computed(() => {
-  const size = usesExplicitSize.value ? `${componentSizePreset[mergedSize.value].fontSize}px` : toCssSize(props.iconSize)
+  const size = toCssSize(props.iconSize ?? props.fontSize)
 
   return {
     '--x-icon-size': size,

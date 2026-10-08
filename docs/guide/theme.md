@@ -1,6 +1,6 @@
 # 内置主题
 
-x.ui 内置三套主题，全部通过 CSS 变量实现，不需要额外插件，也不改变 `app.use(XUi)` 的方式。
+@x-soft88/x-ui 内置三套主题，全部通过 CSS 变量实现，不需要额外插件，也不改变 `app.use(XUi)` 的方式。
 
 - `regular`：常规蓝白主题，也是未设置主题时的默认值。
 - `dark`：深蓝灰主题，适合暗色工作台。
@@ -14,8 +14,8 @@ x.ui 内置三套主题，全部通过 CSS 变量实现，不需要额外插件�
 
 ```ts
 import { createApp } from 'vue'
-import XUi from 'xl.ui'
-import 'xl.ui/style.css'
+import XUi from '@x-soft88/x-ui'
+import '@x-soft88/x-ui/style.css'
 import App from './App.vue'
 
 document.documentElement.dataset.theme = 'dark'
@@ -33,7 +33,7 @@ function setTheme(theme: XUiTheme) {
 }
 ```
 
-主题切换会立即生效；x.ui 不会自动读取系统主题，也不会保存用户选择。
+主题切换会立即生效；@x-soft88/x-ui 不会自动读取系统主题，也不会保存用户选择。
 
 ## 主题基础色
 
@@ -79,7 +79,7 @@ function setTheme(theme: XUiTheme) {
 
 ## 自定义主题
 
-内置主题是预设，不限制业务自定义。请在引入 `xl.ui/style.css` **之后**加载业务样式，并覆盖需要改变的 token；没有覆盖的 token 会继承常规主题的默认值。
+内置主题是预设，不限制业务自定义。请在引入 `@x-soft88/x-ui/style.css` **之后**加载业务样式，并覆盖需要改变的 token；没有覆盖的 token 会继承常规主题的默认值。
 
 ```css
 :root[data-theme='brand'] {

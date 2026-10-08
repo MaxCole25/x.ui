@@ -1,0 +1,8 @@
+.x-radio {
+  --x-radio-color: var(--x-form-color, var(--x-color-primary));
+  --x-radio-border-color: var(--x-form-border-color, #dcdfe6);
+  --x-radio-hover-border-color: var(--x-form-hover-border-color, #c0c4cc);
+  --x-radio-active-glow-color: color-mix(in srgb, var(--x-radio-color) 24%, transparent);
+  --x-radio-active-glow: 0 0 0 4px var(--x-radio-active-glow-color);
+  font-family: var(--x-radio-font-family, var(--x-font-family));
+}

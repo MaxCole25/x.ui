@@ -1,0 +1,9 @@
+.x-drawer-fade-enter-active,
+.x-drawer-fade-leave-active {
+  transition: opacity 160ms ease;
+}
+
+.x-drawer-fade-enter-from,
+.x-drawer-fade-leave-to {
+  opacity: 0;
+}

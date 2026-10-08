@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { createPickerThemeVars } from '../../_utils/pickerTheme'
@@ -28,6 +29,7 @@ const month = computed(() => props.month ?? baseDate.value.getMonth() + 1)
 const days = computed(() => new Date(year.value, month.value, 0).getDate())
 const cells = computed(() => Array.from({ length: days.value }, (_, index) => index + 1))
 const datePanelStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   ...createPickerThemeVars(props)
 }))

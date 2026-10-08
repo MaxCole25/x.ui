@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 
 export type BadgeStatus = 'primary' | 'success' | 'warning' | 'danger' | 'info'
 
@@ -9,7 +8,7 @@ export interface BadgeProps {
   dot?: boolean
   hidden?: boolean
   status?: BadgeStatus
-  size?: XSize
+  fontSize?: number
   accentColor?: string
   backgroundColor?: string
   textColor?: string

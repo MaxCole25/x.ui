@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { reactive } from 'vue'
-import { XColorPicker } from '../color-picker'
 import { XColorPickerPanel } from './index'
 import '../../../styles/index.css'
-
-const appearance = reactive({
-  colorsText: '#1264f4,#10b981,#f59e0b,#ef4444,#7c3aed,#0891b2,transparent'
-})
-
 const sample = reactive({
   input: '外观接口预览',
   autocomplete: '上海',
@@ -26,34 +20,12 @@ const sample = reactive({
 
 <template>
   <Story title="Form 组件/ColorPickerPanel 颜色选择器面板" group="components">
-    
-
-    
-
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
-          <XColorPickerPanel v-bind="styleProps" v-model="sample.color" :colors="appearance.colorsText.split(',').map((item) => item.trim()).filter(Boolean)" />
+      <ApiPlayground component="XColorPickerPanel">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XColorPickerPanel   v-model="sample.color"   v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>
-        <template #column-1>
-          <label>
-            <span>颜色列表</span>
-            <input v-model="appearance.colorsText" />
-          </label>
-        </template>
-        <template #column-2>
-          <label>
-            <span>绑定值</span>
-            <input v-model="sample.color" />
-          </label>
-        </template>
-        <template #column-3>
-          <label>
-            <span>颜色输入</span>
-            <XColorPicker v-model="sample.color" hide-inline-panel panel-mode="popover" :show-value="false" width="48px" padding="0" />
-          </label>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

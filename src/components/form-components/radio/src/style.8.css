@@ -1,0 +1,3 @@
+.x-radio.is-checked:focus-within .x-radio__dot {
+  box-shadow: var(--x-radio-active-glow);
+}

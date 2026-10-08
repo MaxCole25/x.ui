@@ -1,8 +1,6 @@
 export type ListItemValue = string | number
-export type ListSize = 'sm' | 'md' | 'lg'
+export type ListFontSize = number
 export type ListSizeValue = string | number
-export type ListItemAlign = 'start' | 'end' | 'stretch'
-export type ListItemContentWidthMode = 'auto' | 'equal'
 export type ListReorderPosition = 'before' | 'after'
 
 export interface ListItem {
@@ -14,7 +12,6 @@ export interface ListItem {
   extra?: string | number
   disabled?: boolean
   draggable?: boolean
-  align?: ListItemAlign
 }
 
 export interface ListItemSlotProps {
@@ -44,16 +41,12 @@ export interface ListProps {
   items?: ListItem[]
   disabled?: boolean
   draggable?: boolean
-  size?: ListSize
+  fontSize?: number
   height?: ListSizeValue
   maxHeight?: ListSizeValue
   bordered?: boolean
   hoverable?: boolean
   enableEqualItemHeight?: boolean
-  itemAlign?: ListItemAlign
-  itemContentWidthMode?: ListItemContentWidthMode
-  itemContentWidth?: ListSizeValue
-  itemContentMaxWidth?: ListSizeValue
   itemGap?: ListSizeValue
   itemRadius?: ListSizeValue
   padding?: ListSizeValue

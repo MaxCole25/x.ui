@@ -1,0 +1,103 @@
+.x-drawer__mask {
+  background: var(--x-drawer-mask, rgba(18, 28, 45, 0.42));
+  inset: 0;
+  position: fixed;
+  z-index: var(--x-drawer-z-index, var(--x-z-index-drawer, 1800));
+}
+
+.x-drawer {
+  border-radius: var(--x-drawer-radius, 0);
+  background: var(--x-element-bg, var(--x-drawer-bg, var(--x-color-surface, #fff)));
+  border: var(--x-element-border-width, var(--x-drawer-border-width, 0)) solid var(--x-element-border-color, var(--x-drawer-border-color, transparent));
+  box-shadow: var(--x-drawer-shadow, 0 18px 50px rgba(15, 23, 42, 0.22));
+  box-sizing: border-box;
+  color: var(--x-element-text, var(--x-drawer-text, var(--x-color-text)));
+  display: flex;
+  flex-direction: column;
+  font-family: var(--x-font-family);
+  font-size: var(--x-drawer-font-size, 14px);
+  max-height: 100%;
+  max-width: 100%;
+  position: fixed;
+}
+
+.x-drawer--rtl {
+  bottom: 0;
+  right: 0;
+  top: 0;
+}
+
+.x-drawer--ltr {
+  bottom: 0;
+  left: 0;
+  top: 0;
+}
+
+.x-drawer--ttb {
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.x-drawer--btt {
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.x-drawer__header {
+  align-items: center;
+  background: var(--x-drawer-header-bg, var(--x-element-bg, var(--x-drawer-bg, var(--x-color-surface, #fff))));
+  border-bottom: 1px solid var(--x-drawer-header-border, var(--x-color-border));
+  color: var(--x-drawer-title, var(--x-element-text, var(--x-drawer-text, var(--x-color-text))));
+  display: flex;
+  flex: 0 0 auto;
+  gap: 12px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: var(--x-drawer-header-padding, 14px 16px);
+}
+
+.x-drawer__title {
+  color: inherit;
+  font-size: var(--x-font-size-dialog-title, 16px);
+  line-height: 1.4;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.x-drawer__close {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--x-drawer-close-icon, var(--x-color-muted, var(--x-color-text-muted, #606b7d)));
+  cursor: pointer;
+  font-size: 20px;
+  height: var(--x-drawer-control-height, 28px);
+  line-height: 1;
+  padding: 0;
+  width: var(--x-drawer-control-height, 28px);
+}
+
+.x-drawer__close:hover {
+  background: var(--x-drawer-close-hover-bg, var(--x-color-primary-soft, #f1f5f9));
+  color: var(--x-drawer-close-icon-hover, var(--x-color-text));
+}
+
+.x-drawer__body {
+  background: var(--x-drawer-body-bg, var(--x-element-bg, var(--x-drawer-bg, var(--x-color-surface, #fff))));
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--x-drawer-body-padding, 16px);
+}
+
+.x-drawer__footer {
+  background: var(--x-drawer-footer-bg, var(--x-element-bg, var(--x-drawer-bg, var(--x-color-surface, #fff))));
+  border-top: 1px solid var(--x-drawer-footer-border, var(--x-color-border));
+  flex: 0 0 auto;
+  padding: var(--x-drawer-footer-padding, 12px 16px);
+}

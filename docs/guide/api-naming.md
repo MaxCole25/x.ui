@@ -1,6 +1,6 @@
 # 公开接口命名规范
 
-本规范用于约束 xl.ui 后续新增或修改组件时的公开接口命名，包括 Props、事件、插槽、公开类型和 `expose` 方法。xl.ui 尚未进入生产依赖，当前按 pre-1.0 策略治理公开接口：旧命名 Props 不保留兼容别名，不添加 `@deprecated` fallback；新增或修改公开接口时直接按本规范命名。
+本规范用于约束 @x-soft88/x-ui 后续新增或修改组件时的公开接口命名，包括 Props、事件、插槽、公开类型和 `expose` 方法。@x-soft88/x-ui 尚未进入生产依赖，当前按 pre-1.0 策略治理公开接口：旧命名 Props 不保留兼容别名，不添加 `@deprecated` fallback；新增或修改公开接口时直接按本规范命名。
 
 ## 基础属性
 
@@ -9,7 +9,7 @@
 | 场景 | 推荐命名 | 说明 |
 | --- | --- | --- |
 | 双向绑定值 | `modelValue` | 对应事件固定为 `update:modelValue`。 |
-| 组件规格 | `size` | 只表达 `sm`、`md`、`lg` 视觉规格。 |
+| 字号 | `fontSize` | 数字，单位 px，默认 14；不影响高度、内边距和圆角。 |
 | 禁用 | `disabled` | 禁止用户操作。 |
 | 只读 | `readonly` | 可查看但不可编辑，统一使用全小写。 |
 | 加载 | `loading` | 表示组件或局部内容正在加载。 |
@@ -21,12 +21,11 @@
 
 ## 尺寸属性
 
-- `size` 只用于预设规格，默认选项为 `sm`、`md`、`lg`。
+`fontSize` 使用数字，单位 px，只控制文字大小；常规控件默认高度为 32px，可通过 `height` 独立调整。字号不会改变内边距或圆角，容器和表格保留各自的布局规则。
 - 数值尺寸使用 `width`、`height`、`minWidth`、`minHeight`、`maxWidth`、`maxHeight`。
 - 撑满父容器使用 `fullWidth`、`fullHeight`；局部内容撑满使用 `contentFullHeight`、`panelFullHeight` 这类对象前缀。
 - 内容自适应使用 `autoWidth`、`autoHeight`。
 - 不再新增 `fillHeight`、`contentFillHeight`、`stretch` 这类并行尺寸开关。
-- 当组件同时提供 `size` 与高度、字号、圆角、padding 等外观属性时，必须遵守仓库已有尺寸优先级规则。
 
 ## 样式属性
 

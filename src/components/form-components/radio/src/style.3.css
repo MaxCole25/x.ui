@@ -1,0 +1,7 @@
+.x-radio__native {
+  accent-color: var(--x-radio-color);
+  flex: 0 0 auto;
+  height: 14px;
+  margin: 0;
+  width: 14px;
+}

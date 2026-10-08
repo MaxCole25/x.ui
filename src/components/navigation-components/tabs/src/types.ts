@@ -1,10 +1,10 @@
 import type { Component } from 'vue'
-import type { XSize } from '../../../_utils/size'
+import type { FontSize } from '../../../_utils/size'
 
 export type TabName = string | number
 export type TabPosition = 'top' | 'right' | 'bottom' | 'left'
 export type TabsLabelDirection = 'horizontal' | 'vertical'
-export type TabsSize = XSize
+export type TabsFontSize = FontSize
 export type TabsType = '' | 'line' | 'card' | 'border-card'
 export type TabsEditAction = 'remove' | 'add'
 export type TabsReorderPosition = 'before' | 'after'
@@ -51,7 +51,7 @@ export interface TabsProps {
   modelValue?: TabName
   items?: TabItem[]
   variant?: TabsType
-  size?: TabsSize
+  fontSize?: number
   tabPosition?: TabPosition
   labelDirection?: TabsLabelDirection
   tabStretch?: boolean

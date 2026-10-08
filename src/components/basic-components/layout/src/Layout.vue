@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import type { LayoutProps } from './types'
 
@@ -40,6 +41,7 @@ function toCssLength(value: number | string) {
 
 const shellStyle = computed(() => {
   return {
+    ...createFontStyle(props.fontSize ?? 14),
     '--x-layout-sidebar-width': props.sidebarCollapsed ? toCssLength(props.sidebarCollapsedWidth) : toCssLength(props.sidebarWidth),
     '--x-layout-gap': toCssLength(props.gap),
     '--x-layout-topbar-height': toCssLength(props.topbarHeight),

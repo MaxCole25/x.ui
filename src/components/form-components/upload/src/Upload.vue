@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { componentSizePreset } from '../../../_utils/size'
+import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { UploadFile, UploadProps } from './types'
 
 defineOptions({ name: 'XUpload' })
 
-const props = withDefaults(defineProps<UploadProps>(), { modelValue: () => [], multiple: false, disabled: false, drag: false, autoUpload: true, limit: 0, maxSize: 0, buttonText: '选择文件', tip: '', listType: 'text', size: 'md' })
+const props = withDefaults(defineProps<UploadProps>(), { modelValue: () => [], multiple: false, disabled: false, drag: false, autoUpload: true, limit: 0, maxSize: 0, buttonText: '选择文件', tip: '', listType: 'text', fontSize: 14 })
 const emit = defineEmits<{ 'update:modelValue': [files: UploadFile[]]; change: [files: UploadFile[]]; exceed: [files: File[]]; remove: [file: UploadFile, files: UploadFile[]]; progress: [file: UploadFile]; success: [file: UploadFile]; error: [file: UploadFile] }>()
 const inputRef = ref<HTMLInputElement | null>(null)
 const files = ref<UploadFile[]>([...props.modelValue])
 watch(() => props.modelValue, (value) => { files.value = [...(value ?? [])] })
-const preset = computed(() => componentSizePreset[props.size])
-const styleVars = computed(() => ({ '--x-upload-height': preset.value.height + 'px', '--x-upload-font-size': preset.value.fontSize + 'px', '--x-upload-radius': preset.value.radius }))
+const preset = computed(() => getComponentMetrics(props.fontSize))
+const styleVars = computed(() => ({ '--x-upload-height': typeof props.height === 'number' ? props.height + 'px' : props.height ?? '32px', '--x-upload-font-size': preset.value.fontSize + 'px', '--x-upload-radius': preset.value.radius }))
 function sync(next: UploadFile[]) { files.value = next; emit('update:modelValue', next); emit('change', next) }
 function openPicker() { if (!props.disabled) inputRef.value?.click() }
 function toUploadFile(file: File): UploadFile { return { uid: Date.now() + '-' + Math.random().toString(36).slice(2), name: file.name, size: file.size, status: 'ready', percentage: 0, raw: file } }
@@ -46,7 +46,7 @@ defineExpose({ submit, clearFiles, openPicker })
 </script>
 
 <template>
-  <div class="x-upload" :class="['x-upload--' + props.listType, { 'is-disabled': props.disabled, 'is-drag': props.drag }]" :style="styleVars">
+  <div class="x-upload" :class="['x-upload--' + props.listType, { 'is-disabled': props.disabled, 'is-drag': props.drag }]" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]">
     <div class="x-upload__trigger" @drop="onDrop" @dragover.prevent>
       <slot>
         <button class="x-upload__button" type="button" :disabled="props.disabled" @click="openPicker">{{ props.buttonText }}</button>

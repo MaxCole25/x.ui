@@ -1,4 +1,3 @@
-import type { XSize } from '../../../_utils/size'
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { PickerCalendarThemeProps, PickerPanelThemeProps } from '../../_utils/pickerTheme'
 
@@ -10,7 +9,7 @@ export interface DatePickerFestivalItem {
 }
 
 export interface DatePickerPanelProps extends ElementStyleProps, PickerPanelThemeProps, PickerCalendarThemeProps {
-  size?: XSize
+  fontSize?: number
   modelValue?: string
   year?: number
   month?: number

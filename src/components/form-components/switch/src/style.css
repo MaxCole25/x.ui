@@ -1,0 +1,106 @@
+.x-switch {
+  --x-switch-default-size: 20px;
+  --x-switch-default-font-size: 14px;
+  --x-switch-default-radius: 999px;
+  --x-switch-color: var(--x-color-primary, #1264f4);
+  --x-switch-inactive-color: #dcdfe6;
+  --x-switch-border-color: transparent;
+  --x-switch-border-width: 0px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: var(--x-switch-font-size, var(--x-switch-default-font-size));
+  padding: 0;
+}
+
+.x-switch__track {
+  align-items: center;
+  background: var(--x-switch-bg, var(--x-switch-inactive-color));
+  border: var(--x-switch-border-width, 1px) solid var(--x-switch-border-color);
+  border-radius: var(--x-switch-radius, var(--x-switch-default-radius));
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 2px;
+  position: relative;
+  transition: background-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1), border-color 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.x-switch,
+.x-switch .x-switch__track {
+  --x-switch-default-size: 24px;
+  --x-switch-default-font-size: 14px;
+  --x-switch-default-radius: 999px;
+}
+
+.x-switch__track {
+  height: var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size)));
+  width: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) * 2);
+}
+
+.x-switch__thumb {
+  align-items: center;
+  background: var(--x-switch-thumb-color, #fff);
+  border-radius: 999px;
+  box-shadow: none;
+  display: inline-flex;
+  justify-content: center;
+  height: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) - 4px);
+  overflow: hidden;
+  position: relative;
+  transition: transform 160ms cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) - 4px);
+  z-index: 1;
+}
+
+.x-switch.is-checked .x-switch__track {
+  background: var(--x-switch-color);
+  border-color: var(--x-switch-color);
+}
+
+.x-switch.is-checked .x-switch__thumb {
+  transform: translateX(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))));
+}
+
+.x-switch:focus-visible .x-switch__track {
+  box-shadow: var(--x-shadow-focus);
+}
+
+.x-switch__text {
+  color: var(--x-switch-text-color, #606266);
+  font-family: var(--x-switch-font-family, var(--x-font-family));
+  font-size: var(--x-switch-font-size, inherit);
+  white-space: nowrap;
+}
+
+.x-switch__track-text {
+  color: var(--x-switch-text-color, #606266);
+  font-family: var(--x-switch-font-family, var(--x-font-family));
+  font-size: calc(var(--x-switch-font-size, var(--x-switch-default-font-size)) * 0.85);
+  left: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) + 2px);
+  line-height: 1;
+  max-width: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) - 6px);
+  overflow: hidden;
+  position: absolute;
+  right: 4px;
+  text-align: center;
+  text-overflow: ellipsis;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.x-switch.is-checked .x-switch__track-text {
+  color: var(--x-switch-thumb-text-color, #fff);
+  left: 4px;
+  right: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) + 2px);
+}
+
+.x-switch.is-disabled .x-switch__track {
+  opacity: 0.6;
+}
+
+.x-switch.is-checked .x-switch__text--active,
+.x-switch:not(.is-checked) .x-switch__text--inactive {
+  color: #303133;
+}

@@ -1,0 +1,14 @@
+.x-autocomplete__dropdown {
+  background: var(--x-cascader-bg, var(--x-element-bg, #fff));
+  border: var(--x-cascader-border-width, var(--x-element-border-width, 1px)) solid var(--x-cascader-border-color, var(--x-element-border-color, #e4e9f2));
+  border-radius: var(--x-cascader-radius, 8px);
+  box-sizing: border-box;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  left: 0;
+  margin-top: 8px;
+  min-width: 100%;
+  padding: 6px;
+  position: absolute;
+  top: 100%;
+  z-index: 50;
+}

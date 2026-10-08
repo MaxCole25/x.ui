@@ -321,7 +321,7 @@ defineExpose({
               class="x-table-column-settings__visible"
               :model-value="!setting.hidden"
               aria-label="显示列"
-              size="sm"
+              :font-size="10"
               @update:model-value="updateVisible(setting.key, $event)"
             />
             <span class="x-table-column-settings__name" :title="getColumnLabel(setting.key)">
@@ -336,17 +336,17 @@ defineExpose({
               </button>
             </div>
             <div class="x-table-column-settings__radio-group x-table-column-settings__radio-group--button">
-              <XRadioButton :model-value="setting.fixed" value="left" :name="`x-table-column-settings-fixed-${setting.key}`" label="左" size="sm" @update:model-value="updateFixed(setting.key, $event)" />
-              <XRadioButton :model-value="setting.fixed" value="none" :name="`x-table-column-settings-fixed-${setting.key}`" label="无" size="sm" @update:model-value="updateFixed(setting.key, $event)" />
-              <XRadioButton :model-value="setting.fixed" value="right" :name="`x-table-column-settings-fixed-${setting.key}`" label="右" size="sm" @update:model-value="updateFixed(setting.key, $event)" />
+              <XRadioButton :model-value="setting.fixed" value="left" :name="`x-table-column-settings-fixed-${setting.key}`" label="左" :font-size="10" @update:model-value="updateFixed(setting.key, $event)" />
+              <XRadioButton :model-value="setting.fixed" value="none" :name="`x-table-column-settings-fixed-${setting.key}`" label="无" :font-size="10" @update:model-value="updateFixed(setting.key, $event)" />
+              <XRadioButton :model-value="setting.fixed" value="right" :name="`x-table-column-settings-fixed-${setting.key}`" label="右" :font-size="10" @update:model-value="updateFixed(setting.key, $event)" />
             </div>
             <div class="x-table-column-settings__radio-group x-table-column-settings__radio-group--button">
-              <XRadioButton :model-value="setting.align" value="left" :name="`x-table-column-settings-align-${setting.key}`" label="左" size="sm" @update:model-value="updateAlign(setting.key, $event)" />
-              <XRadioButton :model-value="setting.align" value="center" :name="`x-table-column-settings-align-${setting.key}`" label="中" size="sm" @update:model-value="updateAlign(setting.key, $event)" />
-              <XRadioButton :model-value="setting.align" value="right" :name="`x-table-column-settings-align-${setting.key}`" label="右" size="sm" @update:model-value="updateAlign(setting.key, $event)" />
+              <XRadioButton :model-value="setting.align" value="left" :name="`x-table-column-settings-align-${setting.key}`" label="左" :font-size="10" @update:model-value="updateAlign(setting.key, $event)" />
+              <XRadioButton :model-value="setting.align" value="center" :name="`x-table-column-settings-align-${setting.key}`" label="中" :font-size="10" @update:model-value="updateAlign(setting.key, $event)" />
+              <XRadioButton :model-value="setting.align" value="right" :name="`x-table-column-settings-align-${setting.key}`" label="右" :font-size="10" @update:model-value="updateAlign(setting.key, $event)" />
             </div>
-            <XInputNumber class="x-table-column-settings__number" :model-value="setting.widthRatio" :min="0" :max="100" :step="5" size="sm" full-width placeholder="-" @update:model-value="updateSetting(setting.key, { widthRatio: $event })" />
-            <XInputNumber class="x-table-column-settings__number" :model-value="setting.width" :min="0" :step="10" size="sm" full-width :placeholder="String(getColumnWidth(setting.key) ?? '-')" @update:model-value="updateSetting(setting.key, { width: $event })" />
+            <XInputNumber class="x-table-column-settings__number" :model-value="setting.widthRatio" :min="0" :max="100" :step="5" :font-size="10" full-width placeholder="-" @update:model-value="updateSetting(setting.key, { widthRatio: $event })" />
+            <XInputNumber class="x-table-column-settings__number" :model-value="setting.width" :min="0" :step="10" :font-size="10" full-width :placeholder="String(getColumnWidth(setting.key) ?? '-')" @update:model-value="updateSetting(setting.key, { width: $event })" />
           </div>
         </div>
       </div>
@@ -400,7 +400,7 @@ defineExpose({
   background: var(--x-color-surface-soft, #f8fafc);
   border-bottom: 1px solid var(--x-color-border, #d1d9e6);
   color: var(--x-color-text-muted, var(--x-color-muted, #64748b));
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   min-height: 34px;
   padding: 0 10px;
@@ -517,7 +517,7 @@ defineExpose({
 
 .x-table-column-settings__name {
   color: var(--x-color-text, #121826);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   min-width: 0;
   overflow: hidden;
@@ -540,7 +540,7 @@ defineExpose({
   border-radius: 4px;
   color: var(--x-table-control-text-color, var(--x-color-text, #334155));
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   height: 24px;
   line-height: 1;
   min-width: 34px;

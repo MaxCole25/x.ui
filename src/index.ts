@@ -43,6 +43,7 @@ import { XFloatButtonGroup } from './components/navigation-components/float-butt
 import { XTools } from './components/navigation-components/tools'
 import { XUserStatus } from './components/navigation-components/user-status'
 import { XEmpty } from './components/display-components/empty'
+import { XChat } from './components/display-components/chat'
 import { XFileDisk } from './components/other-components/file-disk'
 import { XFlow, XFlowItem } from './components/basic-components/flow'
 import { XForm, XFormItem } from './components/form-components/form'
@@ -79,8 +80,8 @@ import { XTree } from './components/display-components/tree'
 import { XTreeTable } from './components/display-components/tree-table'
 import './styles/index.css'
 
-export { componentSizeOptions, componentSizePreset } from './components/_utils/size'
-export type { ComponentSizePreset, XSize } from './components/_utils/size'
+export { defaultControlMetrics } from './components/_utils/size'
+export type { FontSize } from './components/_utils/size'
 export { overlayZIndex } from './components/_utils/zIndex'
 export type { OverlayZIndexName } from './components/_utils/zIndex'
 
@@ -130,6 +131,7 @@ export { XFloatButtonGroup }
 export { XTools }
 export { XUserStatus }
 export { XEmpty }
+export { XChat }
 export { XFileDisk }
 export { XFlow }
 export { XFlowItem }
@@ -184,8 +186,8 @@ export type {
   AutocompleteProps,
   AutocompleteRemoteMethod
 } from './components/form-components/autocomplete'
-export type { AvatarProps, AvatarShape, AvatarSize } from './components/display-components/avatar'
-export type { BaseInputProps, BaseInputSize, BaseInputStatus, BaseInputTextAlign, BaseInputType } from './components/basic-components/base-input'
+export type { AvatarProps, AvatarShape, AvatarFontSize } from './components/display-components/avatar'
+export type { BaseInputProps, BaseInputFontSize, BaseInputStatus, BaseInputTextAlign, BaseInputType } from './components/basic-components/base-input'
 export type { BrickDirection, BrickItemOverflow, BrickItemProps, BrickProps, BrickSize } from './components/basic-components/brick'
 export type { SplitPaneOverflow, SplitPaneProps, SplitterDirection, SplitterProps, SplitterResizePayload, SplitterSize } from './components/basic-components/splitter'
 export type { ButtonProps, ButtonVariant } from './components/basic-components/button'
@@ -206,11 +208,11 @@ export type {
 export type {
   CascaderOption,
   CascaderProps,
-  CascaderSize,
+  CascaderFontSize,
   CascaderStatus,
   CascaderTextAlign
 } from './components/form-components/cascader'
-export type { CheckboxProps, CheckboxSize } from './components/form-components/checkbox'
+export type { CheckboxProps, CheckboxFontSize } from './components/form-components/checkbox'
 export type { ColorPickerPanelProps } from './components/form-components/color-picker-panel'
 export type { ColorPickerProps } from './components/form-components/color-picker'
 export type {
@@ -258,7 +260,7 @@ export type { EmptyProps } from './components/display-components/empty'
 export type { FileDiskAdapter, FileDiskClipboardAction, FileDiskClipboardPayload, FileDiskColors, FileDiskCreateFolderPayload, FileDiskDownloadOptions, FileDiskDownloadPayload, FileDiskItem, FileDiskItemType, FileDiskPermission, FileDiskProps, FileDiskRenamePayload, FileDiskTransferPayload, FileDiskUploadPayload, FileDiskViewMode } from './components/other-components/file-disk'
 export type { FlowAlign, FlowItemKey, FlowItemOverflow, FlowItemProps, FlowProps, FlowSize } from './components/basic-components/flow'
 export type {
-  FormControlSize,
+  FormControlFontSize,
   FormExpose,
   FormItemClass,
   FormItemContentJustify,
@@ -268,23 +270,23 @@ export type {
   FormItemStyle,
   FormLabelPosition,
   FormProps,
-  FormPublicSize,
+  FormPublicFontSize,
   FormRules,
-  FormSize,
+  FormFontSize,
   FormValidateCallback,
   FormValidateFieldMethod,
   FormValidateMethod,
   FormValidateResult
 } from './components/form-components/form'
 export type { GridAlign, GridItemOverflow, GridItemProps, GridProps, GridResponsiveColumns, GridSize } from './components/basic-components/grid'
-export type { IconProps, IconSize, IconVariant } from './components/basic-components/icon'
+export type { IconProps, IconFontSize, IconVariant } from './components/basic-components/icon'
 export type { IconSelectCategoryName, IconSelectIconInfo, IconSelectProps } from './components/form-components/icon-select'
 export type { InputNumberProps } from './components/form-components/input-number'
-export type { InputProps, InputSize, InputTextAlign, InputType } from './components/form-components/input'
-export type { TextareaProps, TextareaSize, TextareaStatus, TextareaTextAlign } from './components/form-components/textarea'
+export type { InputProps, InputFontSize, InputTextAlign, InputType } from './components/form-components/input'
+export type { TextareaProps, TextareaFontSize, TextareaStatus, TextareaTextAlign } from './components/form-components/textarea'
 export type { JsonEditorProps } from './components/other-components/json-editor'
 export type { LayoutMode, LayoutProps } from './components/basic-components/layout'
-export type { LoginLabelPosition, LoginLogoPosition, LoginProps, LoginSize, LoginSubmitPayload } from './components/other-components/login'
+export type { LoginLabelPosition, LoginLogoPosition, LoginProps, LoginFontSize, LoginSubmitPayload } from './components/other-components/login'
 export type {
   LoginPageAlign,
   LoginPageBackgroundRepeat,
@@ -296,7 +298,7 @@ export type {
   LoginPageSectionConfig,
   LoginPageSectionOverflow
 } from './components/other-components/login-page'
-export type { RegisterLabelPosition, RegisterLogoPosition, RegisterProps, RegisterSize, RegisterSubmitPayload } from './components/other-components/register'
+export type { RegisterLabelPosition, RegisterLogoPosition, RegisterProps, RegisterFontSize, RegisterSubmitPayload } from './components/other-components/register'
 export type { LoadingInstance, LoadingOptions, LoadingProps } from './components/feedback-components/loading'
 export type {
   ListItem,
@@ -306,7 +308,7 @@ export type {
   ListItemValue,
   ListProps,
   ListReorderPosition,
-  ListSize
+  ListFontSize
 } from './components/display-components/list'
 export type { MessageHandler, MessageOptions, MessagePlacement, MessageProps, MessageType } from './components/feedback-components/message'
 export type { MessageBoxAction, MessageBoxOptions, MessageBoxProps, MessageBoxType } from './components/feedback-components/message-box'
@@ -317,7 +319,7 @@ export type {
   NavMenuProps,
   VerticalMenuProps,
 } from './components/navigation-components/nav-menu'
-export type { RadioButtonProps, RadioProps, RadioSize } from './components/form-components/radio'
+export type { RadioButtonProps, RadioProps, RadioFontSize } from './components/form-components/radio'
 export type { RichTextEditorExpose, RichTextEditorProps, RichTextEditorTheme, RichTextEditorToolbarButton, RichTextEditorValue, UploadResult } from './components/other-components/rich-text-editor'
 export type { ScrollbarProps } from './components/basic-components/scrollbar'
 export type { ScrollingTextDisplayDirection, ScrollingTextFlowDirection, ScrollingTextProps } from './components/display-components/scrolling-text'
@@ -326,13 +328,13 @@ export type {
   SelectOption,
   SelectOptionValue,
   SelectProps,
-  SelectSize,
+  SelectFontSize,
   SelectStatus,
   SelectTextAlign
 } from './components/form-components/select'
 export type { SliderProps } from './components/form-components/slider'
-export type { SwitchLabelPosition, SwitchProps, SwitchSize } from './components/form-components/switch'
-export type { TagEffect, TagProps, TagSize, TagType } from './components/display-components/tag'
+export type { SwitchLabelPosition, SwitchProps, SwitchFontSize } from './components/form-components/switch'
+export type { TagEffect, TagProps, TagFontSize, TagType } from './components/display-components/tag'
 export type { TabItem, TabName, TabPosition, TabsLabelDirection, TabsCloseAllPayload, TabsCloseOthersPayload, TabsEditAction, TabsExpose, TabsPaneContext, TabsProps, TabsReorderPayload, TabsReorderPosition, TabsType } from './components/navigation-components/tabs'
 export type {
   TableAlign,
@@ -384,7 +386,7 @@ export type {
   XlTableSummaryRow,
   XlTableSummaryScope
 } from './components/display-components/table'
-export type { TextProps, TextSize, TextType } from './components/basic-components/text'
+export type { TextProps, TextFontSize, TextType } from './components/basic-components/text'
 export type { TooltipPlacement, TooltipProps, TooltipTrigger } from './components/feedback-components/tooltip'
 export type { TimePickerProps } from './components/form-components/time-picker'
 export type { TimeSelectProps } from './components/form-components/time-select'
@@ -413,7 +415,24 @@ export type {
   TreeTableSlots
 } from './components/display-components/tree-table'
 
+// 复用组件入口公开类型，避免根入口与单组件入口的类型清单漂移。
+export type * from './components'
+
 const components = [
+  XBadge,
+  XCollapse,
+  XDescriptions,
+  XProgress,
+  XSkeleton,
+  XStatistic,
+  XAlert,
+  XNotificationComponent,
+  XPopconfirm,
+  XPopover,
+  XUpload,
+  XBreadcrumb,
+  XPagination,
+  XSteps,
   XButton,
   XButtonGroup,
   XBrick,
@@ -461,6 +480,7 @@ const components = [
   XTools,
   XUserStatus,
   XEmpty,
+  XChat,
   XDrawer,
   XDivider,
   XForm,

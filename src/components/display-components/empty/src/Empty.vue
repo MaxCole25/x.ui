@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import type { EmptyProps } from './types'
@@ -16,6 +17,7 @@ const emit = defineEmits<{
 }>()
 
 const emptyStyle = computed(() => ({
+  ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
   '--x-empty-image-size': toCssSize(props.imageSize)
 }))

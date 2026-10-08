@@ -24,7 +24,7 @@ function handleClick(item: BreadcrumbItem, index: number, event: MouseEvent) {
 </template>
 
 <style scoped>
-.x-breadcrumb { color: var(--x-color-muted); font-family: var(--x-font-family); font-size: 13px; line-height: 1.4; }
+.x-breadcrumb { color: var(--x-color-muted); font-family: var(--x-font-family); font-size: 14px; line-height: 1.4; }
 .x-breadcrumb__list { align-items: center; display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
 .x-breadcrumb__item { align-items: center; display: inline-flex; gap: 6px; min-width: 0; }
 .x-breadcrumb__link { background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; max-width: 180px; overflow: hidden; padding: 0; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }

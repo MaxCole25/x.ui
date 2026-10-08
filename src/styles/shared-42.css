@@ -1,0 +1,32 @@
+.x-grid-item {
+  align-self: var(--x-grid-item-align-self, auto);
+  background: var(--x-grid-item-bg, transparent);
+  border: var(--x-grid-item-border-width, 0) var(--x-grid-item-border-style, solid) var(--x-grid-item-border-color, transparent);
+  border-radius: var(--x-grid-item-radius, 0);
+  box-sizing: border-box;
+  color: var(--x-grid-item-text-color, inherit);
+  grid-column: var(--x-grid-item-column, auto);
+  grid-row: var(--x-grid-item-row, auto);
+  height: var(--x-grid-item-height, auto);
+  justify-self: var(--x-grid-item-justify-self, auto);
+  min-height: var(--x-grid-item-min-height, 0);
+  min-width: var(--x-grid-item-min-width, 0);
+  overflow: var(--x-grid-item-overflow, auto);
+  padding: var(--x-grid-item-padding, 0);
+  width: var(--x-grid-item-width, auto);
+}
+
+.x-grid-item.is-horizontal-center {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.x-grid-item--placeholder {
+  background:
+    linear-gradient(135deg, rgba(18, 100, 244, 0.08) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(18, 100, 244, 0.08) 25%, transparent 25%),
+    var(--x-color-surface, #fff);
+  border: 1px dashed rgba(18, 100, 244, 0.26);
+  min-height: 48px;
+}

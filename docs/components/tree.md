@@ -1,125 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const treeData = [
-  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
-  { key: 'components', label: '组件' }
-]
-
-const currentKey = ref('docs')
-
-const authorDisplayName = '林一'
-
-const authorUserName = 'linyi'
-
-const treeBasicCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const treeData = [
-  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
-  { key: 'components', label: '组件' }
-]
-
-const currentKey = ref('docs')
-<\/script>
-
-<div style="width: 320px">
-      <XTree
-        :tree-data="treeData"
-        :current-tree-key="currentKey"
-        @nodeClick="(node) => { currentKey = String(node.id) }"
-      />
-    </div>`
-
-const treeExtraCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const treeData = [
-  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
-  { key: 'components', label: '组件' }
-]
-
-const currentKey = ref('docs')
-
-const authorDisplayName = '林一'
-
-const authorUserName = 'linyi'
-<\/script>
-
-<div style="width: 320px">
-      <XTree
-        :tree-data="treeData"
-        :current-tree-key="currentKey"
-        @nodeExtraClick="(node) => { currentKey = String(node.id) }"
-      >
-        <template #nodeExtra="{ node }">
-          <button type="button" style="border: 0; background: transparent; color: #2563eb; cursor: pointer; font: inherit; padding: 0">
-            {{ node.authorDisplayName || node.authorUserName || '操作' }}
-          </button>
-        </template>
-      </XTree>
-    </div>`
-
-const treeContextCode = `\x3Cscript setup lang="ts">
-const treeData = [
-  { key: 'docs', label: '文档', children: [{ key: 'guide', label: '指南' }] },
-  { key: 'components', label: '组件' }
-]
-<\/script>
-
-<div style="width: 320px">
-      <XTree
-        :tree-data="treeData"
-        :context-menu-items="({ node }) => [
-          { action: 'new-root', label: '增加根节点' },
-          { action: 'new-child', label: '新建节点', disabled: !node },
-          { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
-        ]"
-      />
-    </div>`
+import Example1 from '../examples/tree/Example1.vue'
+import Example1Source from '../examples/tree/Example1.vue?raw'
+import Example2 from '../examples/tree/Example2.vue'
+import Example2Source from '../examples/tree/Example2.vue?raw'
+import Example3 from '../examples/tree/Example3.vue'
+import Example3Source from '../examples/tree/Example3.vue?raw'
 </script>
-
 # 树目录 Tree
 
 `XTree` 提供树形目录展示、展开收起、键盘上下选择、右键菜单、节点新增删除和拖拽落点事件能力。
 
-## 基础用法
+## 使用示例
 
-<XDocDemo title="基础用法" :code="treeBasicCode">
-  <ClientOnly>
-    <div style="width: 320px">
-      <XTree
-        :tree-data="treeData"
-        :current-tree-key="currentKey"
-        @nodeClick="(node) => { currentKey = String(node.id) }"
-      />
-    </div>
-  </ClientOnly>
+### 基础用法
+
+<XDocDemo title="基础用法" :code="Example1Source">
+  <Example1 />
 </XDocDemo>
 
-## 右侧内容
+### 右侧内容
 
 节点右侧默认显示 `authorDisplayName || authorUserName`，用于展示作者或成员名称。需要替换为业务操作区时，可以使用 `nodeExtra` 插槽；点击右侧区域会触发 `nodeExtraClick`，并且不会同时触发 `nodeClick`。
 
-<XDocDemo title="右侧内容" :code="treeExtraCode">
-  <ClientOnly>
-    <div style="width: 320px">
-      <XTree
-        :tree-data="treeData"
-        :current-tree-key="currentKey"
-        @nodeExtraClick="(node) => { currentKey = String(node.id) }"
-      >
-        <template #nodeExtra="{ node }">
-          <button type="button" style="border: 0; background: transparent; color: #2563eb; cursor: pointer; font: inherit; padding: 0">
-            {{ node.authorDisplayName || node.authorUserName || '操作' }}
-          </button>
-        </template>
-      </XTree>
-    </div>
-  </ClientOnly>
+<XDocDemo title="右侧内容" :code="Example2Source">
+  <Example2 />
 </XDocDemo>
 
-## 右键菜单
+### 右键菜单
 
 默认右键菜单只包含三项：
 
@@ -129,51 +36,15 @@ const treeData = [
 
 可以通过 `createRootNode`、`createNode`、`deleteNode` 接管这三项的具体方法。传入自定义方法后，组件不会再执行内置新增或删除逻辑。
 
-<XDocDemo title="右键菜单" :code="treeContextCode">
-  <ClientOnly>
-    <div style="width: 320px">
-      <XTree
-        :tree-data="treeData"
-        :context-menu-items="({ node }) => [
-          { action: 'new-root', label: '增加根节点' },
-          { action: 'new-child', label: '新建节点', disabled: !node },
-          { action: 'delete-node', label: '删除节点', disabled: !node, tone: 'danger' }
-        ]"
-      />
-    </div>
-  </ClientOnly>
+<XDocDemo title="右键菜单" :code="Example3Source">
+  <Example3 />
 </XDocDemo>
 
 如果需要替换菜单文案、隐藏菜单项或增加业务动作，可以传入 `contextMenuItems`。默认动作建议继续使用 `new-root`、`new-child`、`delete-node`，其中 `new-node` 也会按新建当前节点子节点处理。
 
 源码示例展示了如何替换菜单文案、禁用菜单项和标记危险操作。
 
-## Props
-
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| treeData | 树数据 | `TreeNodeData[]` | 必填 |
-| currentTreeKey | 当前选中节点 key | `string` | `''` |
-| currentUserId | 当前用户 id | `number \| null` | `null` |
-| size | 树节点尺寸 | `'sm' \| 'md' \| 'lg'` | `'md'` |
-| activeAccentColor | 当前用户节点高亮色 | `string` | `'#2f66cf'` |
-| textColor | 节点文字色 | `string` | 主题文字色 |
-| mutedTextColor | 次要文字和图标色 | `string` | 主题次要色 |
-| hoverBackgroundColor | 节点悬浮背景色 | `string` | 主题主色浅底 |
-| activeBackgroundColor | 当前节点背景色 | `string` | `'rgba(14, 116, 144, 0.12)'` |
-| activeTextColor | 当前节点文字色 | `string` | 主题文字色 |
-| activeIconColor | 当前节点图标色 | `string` | `activeAccentColor` |
-| nodeIcon | 自定义节点图标 | `(node) => TreeNodeIcon` | `undefined` |
-| allowDrag | 是否允许拖拽节点 | `(node) => boolean` | `() => true` |
-| allowDrop | 是否允许落点 | `(dragging, drop, type) => boolean` | `() => true` |
-| contextMenuItems | 自定义右键菜单项 | `TreeContextMenuItem[] \| (context) => TreeContextMenuItem[]` | 默认三项 |
-| createRootNode | 自定义“增加根节点”方法 | `(treeData) => TreeNodeData \| void` | 内置追加根节点 |
-| createNode | 自定义“新建节点”方法 | `(node) => TreeNodeData \| void` | 内置追加子节点 |
-| deleteNode | 自定义“删除节点”方法 | `(node, treeData) => void` | 内置删除节点 |
-| canCreateChildByNode | 默认菜单中是否显示“新建节点” | `(node) => boolean` | `() => true` |
-| canDeleteNodeById | 默认菜单中是否显示“删除节点” | `(rawId) => boolean` | `() => true` |
-
-## 类型
+### 类型
 
 `TreeNodeData` 关键字段：
 
@@ -202,39 +73,236 @@ const treeData = [
 - 传入 `currentUserId` 时，按 `authorId === currentUserId` 判定高亮。
 - 未传 `currentUserId` 时，回退到 `isCurrentUserRootMember` 字段。
 
+## 属性
+
+默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
+
+### 内容与展示
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `nodeIcon` | 自定义节点图标 | `(node: TreeNodeData) => TreeNodeIcon` | `—` | — |
+| `contextMenuItems` | 自定义右键菜单项 | `TreeContextMenuItems` | `—` | — |
+
+### 外观与排版
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `fontSize` | 字号，数字单位 px，不影响高度、内边距和圆角 | `number` | `—` | px |
+| `activeAccentColor` | 当前用户节点高亮色 | `string` | `'#2f66cf'` | — |
+| `textColor` | 节点文字色 | `string` | `'var(--x-color-text, #121826)'` | — |
+| `mutedTextColor` | 次要文字和图标色 | `string` | `'var(--x-color-muted, #606b7d)'` | — |
+| `hoverBackgroundColor` | 节点悬浮背景色 | `string` | `'var(--x-color-primary-soft, #f5f8fb)'` | — |
+| `activeBackgroundColor` | 当前节点背景色 | `string` | `'rgba(14, 116, 144, 0.12)'` | — |
+| `activeTextColor` | 当前节点文字色 | `string` | `'var(--x-color-text, #121826)'` | — |
+| `activeIconColor` | 当前节点图标色 | `string` | `—` | — |
+
+### 组件专有功能
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `treeData` | 树数据 | `TreeNodeData[]` | `—` | — |
+| `currentTreeKey` | 当前选中节点 key | `string` | `''` | — |
+| `currentUserId` | 当前用户 id | `number \| null` | `null` | — |
+| `allowDrag` | 是否允许拖拽节点 | `(node: TreeNodeData) => boolean` | `() => true` | — |
+| `allowDrop` | 是否允许落点 | `(draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' \| 'after' \| 'inner') => boolean` | `() => true` | — |
+| `createRootNode` | 自定义“增加根节点”方法 | `TreeCreateRootNode` | `—` | — |
+| `createNode` | 自定义“新建节点”方法 | `TreeCreateNode` | `—` | — |
+| `deleteNode` | 自定义“删除节点”方法 | `TreeDeleteNode` | `—` | — |
+| `canCreateChildByNode` | 默认菜单中是否显示“新建节点” | `(node: TreeNodeData) => boolean` | `() => true` | — |
+| `canDeleteNodeById` | 默认菜单中是否显示“删除节点” | `(nodeId?: number \| null) => boolean` | `() => true` | — |
+| `canManageMembersByNode` | canManageMembersByNode 判断回调 | `(node: TreeNodeData) => boolean` | `() => true` | — |
+| `canMigrateNode` | canMigrateNode 判断回调 | `(node: TreeNodeData) => boolean` | `() => true` | — |
+
 ## 事件
 
-| 事件 | 说明 |
-| --- | --- |
-| `nodeClick` | 鼠标点击节点或键盘上下键选择节点时触发，返回当前节点 |
-| `nodeExtraClick` | 点击节点右侧内容时触发，返回当前节点和原生点击事件 |
-| `nodeDrop` | 拖拽放置时触发，返回拖拽节点、落点节点和落点类型 |
-| `contextAction` | 右键菜单动作执行后触发，返回动作和目标节点 |
+### 内容与展示
+
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `contextAction` | 右键菜单动作执行后触发，返回动作和目标节点 | `[action: TreeContextAction, node: TreeNodeData]` |
+
+### 状态与交互
+
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `nodeClick` | 鼠标点击节点或键盘上下键选择节点时触发，返回当前节点 | `[node: TreeNodeData]` |
+| `nodeExtraClick` | 点击节点右侧内容时触发，返回当前节点和原生点击事件 | `[node: TreeNodeData, event: MouseEvent]` |
+
+### 组件专有功能
+
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `nodeDrop` | 拖拽放置时触发，返回拖拽节点、落点节点和落点类型 | `[draggingNode: TreeNodeData, dropNode: TreeNodeData, dropType: 'before' \| 'after' \| 'inner']` |
+| `nodeToggle` | nodeToggle 事件 | `[payload: { node: TreeNodeData; expanded: boolean }]` |
 
 ## 插槽
 
-| 插槽 | 说明 | 参数 |
-| --- | --- | --- |
-| `nodeExtra` | 自定义节点右侧内容；不传时显示 `authorDisplayName || authorUserName` | `{ node }` |
+### 组件专有功能
 
-## 手动验收建议
+| 插槽名 | 说明 | 作用域参数 |
+| --- | --- | --- |
+| `nodeExtra` | 自定义节点右侧内容；不传时显示 `authorDisplayName | `node: TreeNodeData` |
+
+## 实例方法
+
+### 组件专有功能
+
+| 方法名 | 说明 | 签名 |
+| --- | --- | --- |
+| `setCurrentKey` | setCurrentKey 方法 | `(key: string \| null) => void` |
+| `expandAll` | expandAll 方法 | `() => void` |
+| `collapseAll` | collapseAll 方法 | `() => void` |
+
+## 公开类型
+
+以下类型可从 `@x-soft88/x-ui` 导入。
+
+### TreeContextAction
+
+```ts
+export type TreeContextAction =
+  | 'new-root'
+  | 'new-node'
+  | 'new-child'
+  | 'delete-node'
+  | 'manage-members'
+  | 'migrate-node'
+  | (string & {})
+```
+
+### TreeContextMenuItem
+
+```ts
+export interface TreeContextMenuItem {
+  action: TreeContextAction
+  label: string
+  disabled?: boolean
+  visible?: boolean
+  tone?: TreeContextMenuItemTone
+}
+```
+
+### TreeContextMenuContext
+
+```ts
+export interface TreeContextMenuContext {
+  node: TreeNodeData | null
+  treeData: TreeNodeData[]
+}
+```
+
+### TreeContextMenuItems
+
+```ts
+export type TreeContextMenuItems =
+  | TreeContextMenuItem[]
+  | ((context: TreeContextMenuContext) => TreeContextMenuItem[])
+```
+
+### TreeCreateRootNode
+
+```ts
+export type TreeCreateRootNode = (treeData: TreeNodeData[]) => TreeNodeData | void
+```
+
+### TreeCreateNode
+
+```ts
+export type TreeCreateNode = (node: TreeNodeData) => TreeNodeData | void
+```
+
+### TreeDeleteNode
+
+```ts
+export type TreeDeleteNode = (node: TreeNodeData, treeData: TreeNodeData[]) => void
+```
+
+### TreeNodeData
+
+```ts
+export interface TreeNodeData {
+  id: string | number
+  rawId?: number
+  label: string
+  icon?: TreeNodeIcon
+  isEditing?: boolean
+  type?: TreeNodeType
+  authorId?: number | null
+  authorUserName?: string
+  authorDisplayName?: string
+  hasMembers?: boolean
+  isCurrentUserRootMember?: boolean
+  permissionCode?: string
+  hasChildren?: boolean
+  children?: TreeNodeData[]
+  [key: string]: unknown
+}
+```
+
+### TreeProps
+
+```ts
+export interface TreeProps {
+  fontSize?: number
+  treeData: TreeNodeData[]
+  currentTreeKey?: string
+  currentUserId?: number | null
+  activeAccentColor?: string
+  textColor?: string
+  mutedTextColor?: string
+  hoverBackgroundColor?: string
+  activeBackgroundColor?: string
+  activeTextColor?: string
+  activeIconColor?: string
+  nodeIcon?: (node: TreeNodeData) => TreeNodeIcon
+  allowDrag?: (node: TreeNodeData) => boolean
+  allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean
+  contextMenuItems?: TreeContextMenuItems
+  createRootNode?: TreeCreateRootNode
+  createNode?: TreeCreateNode
+  deleteNode?: TreeDeleteNode
+  canCreateChildByNode?: (node: TreeNodeData) => boolean
+  canDeleteNodeById?: (nodeId?: number | null) => boolean
+  canManageMembersByNode?: (node: TreeNodeData) => boolean
+  canMigrateNode?: (node: TreeNodeData) => boolean
+}
+```
+
+### TreeSlots
+
+```ts
+export interface TreeSlots {
+  nodeExtra?: (props: { node: TreeNodeData }) => unknown
+}
+```
+
+## 关联类型
+
+以下定义用于理解接口关联，未从包主入口直接导出；不要按这些名称从包名导入。
+
+### TreeNodeType
+
+```ts
+export type TreeNodeType = 'group' | 'user' | 'document'
+```
+
+### TreeNodeIcon
+
+```ts
+export type TreeNodeIcon = string | false | null | undefined
+```
+
+### TreeContextMenuItemTone
+
+```ts
+export type TreeContextMenuItemTone = 'default' | 'danger'
+```
+
+## 验收说明
 
 - 右键节点，确认默认菜单只显示 `增加根节点`、`新建节点`、`删除节点`。
 - 聚焦树目录后按上下方向键，确认当前节点会按可见顺序切换，并触发 `nodeClick`。
 - 右键空白树区域，确认可以通过 `增加根节点` 创建根级节点。
 - 传入 `createRootNode`、`createNode`、`deleteNode` 后，确认新增和删除逻辑由业务方法接管。
 - 传入 `contextMenuItems` 后，确认菜单文案、禁用态、危险色和自定义动作符合预期。
-
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
-## 公开属性补充
-
-以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
-
-### XTree / `TreeProps`
-
-| 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| `canManageMembersByNode` | canManageMembersByNode 判断回调 | `(node: TreeNodeData) => boolean` | — |
-| `canMigrateNode` | canMigrateNode 判断回调 | `(node: TreeNodeData) => boolean` | — |
-
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->

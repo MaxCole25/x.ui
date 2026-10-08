@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey } from '../../form/src/context'
@@ -11,7 +12,7 @@ defineOptions({
 const props = withDefaults(defineProps<CheckboxProps>(), {
   disabled: false,
   indeterminate: false,
-  size: undefined,
+  fontSize: undefined,
   value: true
 })
 
@@ -22,16 +23,17 @@ const emit = defineEmits<{
 
 const form = inject(formContextKey, null)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const checked = computed(() => (Array.isArray(props.modelValue) ? props.modelValue.includes(props.value) : Boolean(props.modelValue)))
 const checkboxStyle = computed(() => ({
   ...createElementStyleVars(props),
+  height: toCssSize(props.height ?? 32),
   '--x-checkbox-color': props.checkedColor,
   '--x-checkbox-border-color': props.borderColor,
   '--x-checkbox-border-width': toCssSize(props.borderWidth),
   '--x-checkbox-bg': props.backgroundColor,
   '--x-checkbox-text-color': props.textColor,
-  '--x-checkbox-radius': props.radius
+  '--x-checkbox-radius': toCssSize(props.radius)
 }))
 
 const toggle = () => {
@@ -51,8 +53,8 @@ const toggle = () => {
 <template>
   <label
     class="x-checkbox"
-    :class="[`x-checkbox--${mergedSize}`, { 'is-checked': checked, 'is-disabled': mergedDisabled, 'is-indeterminate': props.indeterminate }]"
-    :style="checkboxStyle"
+    :class="['x-checkbox', { 'is-checked': checked, 'is-disabled': mergedDisabled, 'is-indeterminate': props.indeterminate }]"
+    :style="[checkboxStyle, createFontStyle(mergedSize)]"
   >
     <input
       class="x-checkbox__native"

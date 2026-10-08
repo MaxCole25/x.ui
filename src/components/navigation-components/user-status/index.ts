@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import UserStatus from './src/UserStatus.vue'
 
-export const XUserStatus = UserStatus
+export const XUserStatus = UserStatus as ComponentWithInstall<typeof UserStatus>
 
 export type { UserStatusMenuItem, UserStatusProps } from './src/types'
 

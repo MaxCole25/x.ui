@@ -1,5 +1,4 @@
 import type { Component } from 'vue'
-import type { XSize } from '../../../_utils/size'
 export type NavMenuMode = 'vertical' | 'horizontal'
 
 export interface NavMenuItem {
@@ -12,7 +11,6 @@ export interface NavMenuItem {
 }
 
 export interface NavMenuProps {
-  size?: XSize
   items: NavMenuItem[]
   activeKey?: string
   mode?: NavMenuMode
@@ -32,7 +30,7 @@ export interface NavMenuProps {
   activeBackgroundColor?: string
   activeAncestorTextColor?: string
   activeAncestorBackgroundColor?: string
-  fontSize?: number | string
+  fontSize?: number
   fontWeight?: number | string
   activeFontWeight?: number | string
   fontFamily?: string

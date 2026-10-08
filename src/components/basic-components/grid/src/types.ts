@@ -46,6 +46,7 @@ export interface GridItemProps {
   padding?: GridSize
   justifySelf?: GridAlign
   alignSelf?: GridAlign
+  horizontalCenter?: boolean
   backgroundColor?: string
   textColor?: string
   borderColor?: string

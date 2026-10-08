@@ -1,0 +1,15 @@
+.x-checkbox.is-disabled,
+.x-radio.is-disabled,
+.x-radio-button.is-disabled,
+.x-switch.is-disabled {
+  color: #a8abb2;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.x-checkbox.is-disabled .x-checkbox__box,
+.x-radio.is-disabled .x-radio__dot {
+  background: #f5f7fa;
+  border-color: #dcdfe6;
+  box-shadow: none;
+}

@@ -1,183 +1,184 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
-const enabled = ref(true)
-
-const notice = ref(false)
-
-const switchBasicCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const enabled = ref(true)
-<\/script>
-
-<div class="x-demo-row">
-    <XSwitch v-model="enabled" />
-    <span class="x-demo-label">当前值：{{ enabled }}</span>
-  </div>`
-
-const switchTextCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const notice = ref(false)
-<\/script>
-
-<div class="x-demo-row">
-    <XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />
-  </div>`
-
-const switchLabelPositionCode = `\x3Cscript setup lang="ts">
-import { ref } from 'vue'
-
-const notice = ref(false)
-<\/script>
-
-<div class="x-demo-row">
-    <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
-    <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />
-  </div>`
-
-const switchSizeCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<div class="x-demo-row">
-    <XSwitch size="sm" model-value />
-    <XSwitch model-value />
-    <XSwitch size="lg" model-value />
-  </div>`
-
-const switchDisabledCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<div class="x-demo-row">
-    <XSwitch disabled />
-    <XSwitch model-value disabled />
-  </div>`
-
-const switchThemeCode = `\x3Cscript setup lang="ts">
-<\/script>
-
-<div class="x-demo-row">
-    <XSwitch
-      model-value
-      checked-color="#1264f4"
-      inactive-color="#dcdfe6"
-      thumb-color="#ffffff"
-      button-size="20"
-      font-size="15"
-      font-family="Arial, sans-serif"
-    />
-  </div>`
+import Example1 from '../examples/switch/Example1.vue'
+import Example1Source from '../examples/switch/Example1.vue?raw'
+import Example2 from '../examples/switch/Example2.vue'
+import Example2Source from '../examples/switch/Example2.vue?raw'
+import Example3 from '../examples/switch/Example3.vue'
+import Example3Source from '../examples/switch/Example3.vue?raw'
+import Example4 from '../examples/switch/Example4.vue'
+import Example4Source from '../examples/switch/Example4.vue?raw'
+import Example5 from '../examples/switch/Example5.vue'
+import Example5Source from '../examples/switch/Example5.vue?raw'
+import Example6 from '../examples/switch/Example6.vue'
+import Example6Source from '../examples/switch/Example6.vue?raw'
 </script>
-
 # Switch 开关
 
 用于在开和关两种状态之间切换。
 
-## 基础用法
+## 使用示例
 
-<XDocDemo title="基础用法" :code="switchBasicCode">
-  <div class="x-demo-row">
-    <XSwitch v-model="enabled" />
-    <span class="x-demo-label">当前值：{{ enabled }}</span>
-  </div>
+### 基础用法
+
+<XDocDemo title="基础用法" :code="Example1Source">
+  <Example1 />
 </XDocDemo>
 
-## 带文字
+### 带文字
 
-<XDocDemo title="带文字" :code="switchTextCode">
-  <div class="x-demo-row">
-    <XSwitch v-model="notice" active-text="开启通知" inactive-text="关闭通知" />
-  </div>
+<XDocDemo title="带文字" :code="Example2Source">
+  <Example2 />
 </XDocDemo>
 
-## 文字位置
+### 文字位置
 
-<XDocDemo title="文字位置" :code="switchLabelPositionCode">
-  <div class="x-demo-row">
-    <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="outside" />
-    <XSwitch v-model="notice" active-text="开" inactive-text="关" label-position="inside" />
-  </div>
+<XDocDemo title="文字位置" :code="Example3Source">
+  <Example3 />
 </XDocDemo>
 
-## 尺寸
+### 尺寸
 
-显式传入 `size` 时，开关字号由统一尺寸预设接管：`sm` 为 `10px`，`md` 为 `12px`，`lg` 为 `14px`。`XSwitch` 是尺寸特例：为保持视觉比例，轨道宽高按统一尺寸高度的 `80%` 渲染，`sm` 高度为 `17.6px`、`md` 高度为 `24px`、`lg` 高度为 `30.4px`，宽度保持高度的 2 倍。`size` 不接管圆角，轨道默认始终保持左右半圆的胶囊边线。未显式传入 `size` 时，可继续用 `buttonSize`、`fontSize`、`radius` 做局部微调。
+`fontSize` 使用数字，单位 px，只控制文字大小，未设置时继承 Form 字号，独立使用时为 14px。轨道默认高度为 24px，宽高比为 2:1；`height` 优先于 `buttonSize`，两者都未设置时使用 24px。字号不会改变轨道尺寸或圆角。
 
-<XDocDemo title="尺寸" :code="switchSizeCode">
-  <div class="x-demo-row">
-    <XSwitch size="sm" model-value />
-    <XSwitch model-value />
-    <XSwitch size="lg" model-value />
-  </div>
+<XDocDemo title="尺寸" :code="Example4Source">
+  <Example4 />
 </XDocDemo>
 
-## 禁用状态
+### 禁用状态
 
-<XDocDemo title="禁用状态" :code="switchDisabledCode">
-  <div class="x-demo-row">
-    <XSwitch disabled />
-    <XSwitch model-value disabled />
-  </div>
+<XDocDemo title="禁用状态" :code="Example5Source">
+  <Example5 />
 </XDocDemo>
 
-## 业务主题
+### 业务主题
 
-<XDocDemo title="业务主题" :code="switchThemeCode">
-  <div class="x-demo-row">
-    <XSwitch
-      model-value
-      checked-color="#1264f4"
-      inactive-color="#dcdfe6"
-      thumb-color="#ffffff"
-      button-size="20"
-      font-size="15"
-      font-family="Arial, sans-serif"
-    />
-  </div>
+<XDocDemo title="业务主题" :code="Example6Source">
+  <Example6 />
 </XDocDemo>
 
-## Props
+## 属性
 
-| 名称 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| modelValue | 绑定值 | `boolean` | `false` |
-| disabled | 是否禁用 | `boolean` | `false` |
-| size | 尺寸 | `sm \| md \| lg` | `md` |
-| activeText | 开启文案 | `string` | `开` |
-| inactiveText | 关闭文案 | `string` | `关` |
-| labelPosition | 文案位置，`outside` 为开关左右两侧，`inside` 为轨道内部 | `outside \| inside` | `outside` |
-| activeValue | 开启值 | `boolean` | `true` |
-| inactiveValue | 关闭值 | `boolean` | `false` |
-| checkedColor | 开启时背景色 | `string` | - |
-| inactiveColor | 关闭时背景色 | `string` | - |
-| thumbColor | 圆形按钮色 | `string` | - |
-| buttonSize | 开关按钮高度，未显式传入 `size` 时生效，宽度按 2:1 等比调整 | `number \| string` | - |
-| fontSize | 开/关文字大小，未显式传入 `size` 时生效 | `number \| string` | - |
-| fontFamily | 开/关文字字体 | `string` | - |
-| borderColor | 边框色 | `string` | - |
-| radius | 圆角，未显式传入 `size` 时生效 | `string` | - |
+默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
 
-## Events
+### 数据与绑定
 
-| 名称 | 说明 | 参数 |
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `modelValue` | 绑定值 | `boolean` | `false` | — |
+
+### 内容与展示
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `activeText` | 开启文案 | `string` | `'开'` | — |
+| `inactiveText` | 关闭文案 | `string` | `'关'` | — |
+| `labelPosition` | 文案位置，`outside` 为开关左右两侧，`inside` 为轨道内部 | `SwitchLabelPosition` | `'outside'` | — |
+| `name` | 原生 name 属性 | `string` | `—` | — |
+
+### 布局与尺寸
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `height` | 轨道高度，独立于字号 | `number \| string` | `—`<br>height 优先于 buttonSize；两者未设置时轨道高度为 24px | 数字为 px；字符串使用 CSS 单位 |
+| `buttonSize` | 未设置 height 时的轨道高度，宽度按 2:1 等比调整 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+
+### 外观与排版
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `checkedColor` | 开启时背景色 | `string` | `—` | — |
+| `inactiveColor` | 关闭时背景色 | `string` | `—` | — |
+| `thumbColor` | 圆形按钮色 | `string` | `—` | — |
+| `fontSize` | 字号，数字单位 px，不影响高度、内边距和圆角 | `number` | `undefined`<br>未设置时继承 Form 字号，独立使用时为 14px | px |
+| `fontFamily` | 开/关文字字体 | `string` | `—` | — |
+| `radius` | 轨道圆角，未设置时使用 999px 胶囊圆角 | `number \| string` | `—`<br>未设置时使用 999px 胶囊圆角 | 数字为 px；字符串使用 CSS 单位 |
+| `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `borderColor` | 边框色 | `string` | `—` | — |
+| `backgroundColor` | 背景色 | `string` | `—` | — |
+| `textColor` | 文字颜色 | `string` | `—` | — |
+
+### 状态与交互
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `disabled` | 是否禁用 | `boolean` | `false` | — |
+
+### 组件专有功能
+
+| 属性名 | 说明 | 类型 | 默认值 | 单位 |
+| --- | --- | --- | --- | --- |
+| `activeValue` | 开启值 | `SwitchValue` | `true` | — |
+| `inactiveValue` | 关闭值 | `SwitchValue` | `false` | — |
+
+## 事件
+
+### 数据与绑定
+
+| 事件名 | 触发说明 | 参数 |
 | --- | --- | --- |
-| update:modelValue | 绑定值更新时触发 | `(value: boolean)` |
-| change | 用户切换状态时触发 | `(value: boolean)` |
+| `update:modelValue` | 非禁用状态下切换时首先触发，参数为下一个开启值或关闭值 | `[value: SwitchValue]` |
 
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:START -->
-## 公开属性补充
+### 状态与交互
 
-以下属性来自组件公开 `Props` 类型，用于补齐现有文档中未展开的接口字段。
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `change` | update:modelValue 之后触发，参数与其一致；禁用时不触发 | `[value: SwitchValue]` |
 
-### XSwitch / `SwitchProps`
+## 公开类型
 
-| 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| `name` | 原生 name 属性 | `string` | — |
-| `borderWidth` | 边框粗细，数字按 px 处理 | `string \| number` | — |
-| `backgroundColor` | 背景色 | `string` | — |
-| `textColor` | 文字颜色 | `string` | — |
-| `showActiveBorder` | 是否显示激活边框 | `boolean` | — |
+以下类型可从 `@x-soft88/x-ui` 导入。
 
-<!-- AUTO-GENERATED-PROPS-SUPPLEMENT:END -->
+### SwitchFontSize
+
+```ts
+export type SwitchFontSize = number
+```
+
+### SwitchValue
+
+```ts
+export type SwitchValue = boolean
+```
+
+### SwitchLabelPosition
+
+```ts
+export type SwitchLabelPosition = 'outside' | 'inside'
+```
+
+### SwitchProps
+
+```ts
+export interface SwitchProps extends ElementStyleProps {
+  height?: number | string
+  modelValue?: boolean
+  disabled?: boolean
+  activeText?: string
+  inactiveText?: string
+  labelPosition?: SwitchLabelPosition
+  activeValue?: SwitchValue
+  inactiveValue?: SwitchValue
+  checkedColor?: string
+  inactiveColor?: string
+  thumbColor?: string
+  buttonSize?: number | string
+  fontSize?: number
+  fontFamily?: string
+  radius?: number | string
+  name?: string
+}
+```
+
+### SwitchEmits
+
+```ts
+export interface SwitchEmits {
+  'update:modelValue': [value: SwitchValue]
+  change: [value: SwitchValue]
+}
+```
+
+## 验收说明
+
+- 调整各功能分组中的属性，核对实际显示与默认值。
+- 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。

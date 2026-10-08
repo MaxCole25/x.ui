@@ -1,0 +1,33 @@
+.x-avatar {
+  align-items: center;
+  background: var(--x-element-bg, var(--x-avatar-bg, var(--x-color-primary)));
+  border: var(--x-avatar-border-width, var(--x-element-border-width, 0)) solid var(--x-avatar-border-color, var(--x-element-border-color, #fff));
+  box-sizing: border-box;
+  color: var(--x-avatar-text-color, var(--x-element-text, #fff));
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: var(--x-font-family);
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+.x-avatar img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.x-avatar {
+  font-size: var(--x-font-size-body, 14px);
+  height: var(--x-avatar-custom-size, 32px);
+  width: var(--x-avatar-custom-size, 32px);
+}
+
+.x-avatar--circle {
+  border-radius: 999px;
+}
+
+.x-avatar--square {
+  border-radius: 8px;
+}

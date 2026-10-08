@@ -1,0 +1,3 @@
+.x-autocomplete:not(.is-active-border-hidden) .x-base-input:not(.is-active-border-hidden):focus-within {
+  border-color: var(--x-autocomplete-active-border-color, var(--x-base-input-active-border-color));
+}

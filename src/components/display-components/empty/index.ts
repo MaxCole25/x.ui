@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Empty from './src/Empty.vue'
 
-export const XEmpty = Empty
+export const XEmpty = Empty as ComponentWithInstall<typeof Empty>
 
 export type { EmptyProps } from './src/types'
 

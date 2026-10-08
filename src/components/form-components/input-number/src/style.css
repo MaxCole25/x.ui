@@ -1,0 +1,26 @@
+.x-input-number {
+  --x-input-number-color: var(--x-color-primary);
+  border-color: var(--x-input-number-border-color, var(--x-element-border-color, var(--x-color-border)));
+  border-width: var(--x-input-number-border-width, var(--x-element-border-width, 1px));
+  border-radius: var(--x-input-number-radius, 8px);
+  font-family: var(--x-input-number-font-family, var(--x-font-family));
+  font-size: var(--x-input-number-font-size, 14px);
+  height: var(--x-input-number-height, 32px);
+  min-height: 0;
+  overflow: hidden;
+  width: 180px;
+}
+
+.x-input-number:not(.is-active-border-hidden):focus-within {
+  border-color: var(--x-input-number-active-border-color, var(--x-input-number-color));
+  box-shadow: none;
+  outline: none;
+}
+
+.x-input-number.is-full-width {
+  width: 100%;
+}
+
+.x-input-number.is-full-height {
+  height: 100%;
+}

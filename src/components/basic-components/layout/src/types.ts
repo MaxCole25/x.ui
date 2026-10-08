@@ -1,8 +1,7 @@
-import type { XSize } from '../../../_utils/size'
 export type LayoutMode = 'top-sidebar' | 'sidebar-top' | 'top-only'
 
 export interface LayoutProps {
-  size?: XSize
+  fontSize?: number
   mode?: LayoutMode
   fullHeight?: boolean
   sidebarWidth?: number | string

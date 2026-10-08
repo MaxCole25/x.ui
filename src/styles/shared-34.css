@@ -1,0 +1,161 @@
+.x-date-panel {
+  background: var(--x-picker-panel-bg, var(--x-element-bg, #fff));
+  border: var(--x-element-border-width, 1px) solid var(--x-picker-panel-border, var(--x-element-border-color, var(--x-color-border)));
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: var(--x-picker-panel-text, var(--x-element-text, var(--x-color-text)));
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  width: 248px;
+}
+
+.x-date-panel__header {
+  color: var(--x-picker-panel-header-text, var(--x-picker-panel-text, var(--x-element-text, var(--x-color-text))));
+  font: 700 14px/1.4 var(--x-font-family);
+  text-align: center;
+}
+
+.x-date-panel__week,
+.x-date-panel__grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.x-date-panel__week {
+  color: var(--x-picker-week-text, var(--x-picker-panel-muted-text, var(--x-element-text, var(--x-color-muted))));
+  font: 600 12px/1.4 var(--x-font-family);
+  text-align: center;
+}
+
+.x-date-panel__day {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--x-picker-day-radius, 6px);
+  color: var(--x-picker-day-text, var(--x-picker-panel-text, var(--x-element-text, var(--x-color-text))));
+  cursor: pointer;
+  display: grid;
+  font: 13px/1 var(--x-font-family);
+  height: 28px;
+  justify-items: center;
+  min-width: 0;
+  padding: 2px;
+  position: relative;
+}
+
+.x-date-panel__day:hover,
+.x-date-panel__day.is-active {
+  background: var(--x-picker-day-active-bg, var(--x-color-primary));
+  color: var(--x-picker-day-active-text, #fff);
+}
+
+.x-date-panel__day:disabled,
+.x-date-panel__day.is-disabled {
+  color: var(--x-picker-day-disabled-text, #a8abb2);
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.x-date-panel__day.is-festival {
+  background: var(--x-picker-festival-bg, #fff7ed);
+  color: var(--x-picker-festival-text, #c2410c);
+}
+
+.x-date-panel__day.is-solar-term {
+  background: var(--x-picker-solar-term-bg, #ecfdf5);
+  color: var(--x-picker-solar-term-text, #047857);
+}
+
+.x-date-panel__day.is-custom {
+  background: var(--x-picker-custom-festival-bg, #eff6ff);
+  color: var(--x-picker-custom-festival-text, #1d4ed8);
+}
+
+.x-date-panel__day.is-festival:hover,
+.x-date-panel__day.is-solar-term:hover,
+.x-date-panel__day.is-custom:hover {
+  background: var(--x-picker-day-marked-hover-bg, var(--x-picker-day-hover-bg, var(--x-color-primary)));
+  color: var(--x-picker-day-marked-hover-text, var(--x-picker-day-hover-text, #fff));
+}
+
+.x-date-panel__day:hover {
+  background: var(--x-picker-day-hover-bg, var(--x-color-primary));
+  color: var(--x-picker-day-hover-text, #fff);
+}
+
+.x-date-panel__day.is-active {
+  background: var(--x-picker-day-active-bg, var(--x-color-primary));
+  color: var(--x-picker-day-active-text, #fff);
+}
+
+.x-date-panel__day.is-festival.is-active,
+.x-date-panel__day.is-solar-term.is-active,
+.x-date-panel__day.is-custom.is-active {
+  background: var(--x-picker-day-marked-active-bg, var(--x-picker-day-active-bg, var(--x-color-primary)));
+  color: var(--x-picker-day-marked-active-text, var(--x-picker-day-active-text, #fff));
+}
+
+.x-date-panel__day-number {
+  font-weight: 600;
+  line-height: 1;
+}
+
+.x-date-panel__festival-name {
+  font-size: 9px;
+  line-height: 1;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.x-date-panel__festival-badge {
+  align-items: center;
+  border-radius: 999px;
+  color: inherit;
+  display: inline-flex;
+  font-size: 9px;
+  height: 13px;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  width: 13px;
+}
+
+.x-date-panel__day.is-festival .x-date-panel__festival-badge {
+  background: var(--x-picker-festival-badge-bg, #f97316);
+  color: var(--x-picker-festival-badge-text, #fff);
+}
+
+.x-date-panel__day.is-solar-term .x-date-panel__festival-badge {
+  background: var(--x-picker-solar-term-badge-bg, var(--x-color-success));
+  color: var(--x-picker-solar-term-badge-text, #fff);
+}
+
+.x-date-panel__day.is-custom .x-date-panel__festival-badge {
+  background: var(--x-picker-custom-festival-badge-bg, #2563eb);
+  color: var(--x-picker-custom-festival-badge-text, #fff);
+}
+
+.x-date-panel__day.is-active .x-date-panel__festival-badge,
+.x-date-panel__day:hover .x-date-panel__festival-badge {
+  background: var(--x-picker-day-marked-badge-hover-bg, #fff);
+  color: var(--x-picker-day-marked-badge-hover-text, var(--x-color-primary));
+}
+
+.x-time-picker,
+.x-time-select {
+  display: inline-block;
+  min-width: 0;
+  width: 100%;
+}
+
+.x-time-picker .x-base-input,
+.x-time-select .x-base-input {
+  width: 100%;
+}

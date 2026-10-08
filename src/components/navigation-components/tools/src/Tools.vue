@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, useSlots } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -15,7 +16,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<ToolsProps>(), {
   items: () => [],
-  size: 'md',
+  fontSize: 14,
   itemLayout: 'vertical',
   disabled: false,
   teleported: false,
@@ -108,8 +109,8 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
 <template>
   <div
     class="x-tools"
-    :class="[`x-tools--${props.size}`, `x-tools--${props.itemLayout}`, { 'is-disabled': props.disabled }]"
-    :style="toolsStyle"
+    :class="['x-tools', `x-tools--${props.itemLayout}`, { 'is-disabled': props.disabled }]"
+    :style="[toolsStyle, createFontStyle(props.fontSize ?? 14)]"
     role="toolbar"
   >
     <template v-for="(item, index) in props.items" :key="item.key ?? `separator-${index}`">
@@ -140,18 +141,18 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
               :hidden="item.badgeHidden"
               :status="item.badgeStatus"
               :show-zero="item.badgeShowZero"
-              :size="props.size"
+              :font-size="props.fontSize"
               :accent-color="item.badgeAccentColor"
               :background-color="item.badgeBackgroundColor"
               :text-color="item.badgeTextColor"
               :border-color="item.badgeBorderColor"
             >
               <slot name="icon" :item="item">
-                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :font-size="props.fontSize" />
               </slot>
             </XBadge>
             <slot v-else name="icon" :item="item">
-              <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+              <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :font-size="props.fontSize" />
             </slot>
           </span>
           <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
@@ -162,7 +163,7 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
           class="x-tools__dropdown"
           trigger="click"
           :placement="props.placement"
-          :size="props.size"
+          :font-size="props.fontSize"
           :disabled="isItemDisabled(item)"
           :show-arrow="false"
           :teleported="props.teleported"
@@ -190,18 +191,18 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
                   :hidden="item.badgeHidden"
                   :status="item.badgeStatus"
                   :show-zero="item.badgeShowZero"
-                  :size="props.size"
+                  :font-size="props.fontSize"
                   :accent-color="item.badgeAccentColor"
                   :background-color="item.badgeBackgroundColor"
                   :text-color="item.badgeTextColor"
                   :border-color="item.badgeBorderColor"
                 >
                   <slot name="icon" :item="item">
-                    <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                    <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :font-size="props.fontSize" />
                   </slot>
                 </XBadge>
                 <slot v-else name="icon" :item="item">
-                  <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                  <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :font-size="props.fontSize" />
                 </slot>
               </span>
               <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
@@ -224,18 +225,18 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
                   :hidden="item.badgeHidden"
                   :status="item.badgeStatus"
                   :show-zero="item.badgeShowZero"
-                  :size="props.size"
+                  :font-size="props.fontSize"
                   :accent-color="item.badgeAccentColor"
                   :background-color="item.badgeBackgroundColor"
                   :text-color="item.badgeTextColor"
                   :border-color="item.badgeBorderColor"
                 >
                   <slot name="icon" :item="item">
-                    <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                    <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :font-size="props.fontSize" />
                   </slot>
                 </XBadge>
                 <slot v-else name="icon" :item="item">
-                  <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :size="props.size" />
+                  <XIcon v-if="item.icon" class="x-tools__icon" :name="item.icon" :font-size="props.fontSize" />
                 </slot>
               </span>
               <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
@@ -247,7 +248,7 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
               :aria-label="getDropdownAriaLabel(item)"
               :title="getDropdownAriaLabel(item)"
             >
-              <XIcon name="arrow-down-s" :size="props.size" />
+              <XIcon name="arrow-down-s" :font-size="props.fontSize" />
             </button>
           </div>
 
@@ -261,7 +262,7 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
                 :disabled="menuItem.disabled"
                 :divided="menuItem.divided"
                 :active="menuItem.active"
-                :size="props.size"
+                :font-size="props.fontSize"
               >
                 <slot name="dropdown-item" :item="item" :menu-item="menuItem">
                   {{ menuItem.name }}

@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Dropdown from './src/Dropdown.vue'
 
-export const XDropdown = Dropdown
+export const XDropdown = Dropdown as ComponentWithInstall<typeof Dropdown>
 
 export type { DropdownPlacement, DropdownProps, DropdownTrigger } from './src/types'
 

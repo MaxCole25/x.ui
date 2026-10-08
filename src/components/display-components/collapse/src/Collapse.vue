@@ -38,5 +38,5 @@ function toggle(item: CollapseItem) {
 .x-collapse__header:disabled { color: var(--x-color-disabled-text); cursor: not-allowed; }
 .x-collapse__arrow { transition: transform 160ms ease; }
 .x-collapse__item.is-active .x-collapse__arrow { transform: rotate(90deg); }
-.x-collapse__body { background: var(--x-color-surface-soft); color: var(--x-color-muted); font-size: 13px; line-height: 1.7; padding: 12px; }
+.x-collapse__body { background: var(--x-color-surface-soft); color: var(--x-color-muted); font-size: 14px; line-height: 1.7; padding: 12px; }
 </style>

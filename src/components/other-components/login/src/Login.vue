@@ -1,4 +1,8 @@
 ﻿<script setup lang="ts">
+import { toCssSize } from '../../../_utils/elementStyle'
+import { useImageCaptcha } from '../../_shared/useImageCaptcha'
+
+import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { LoginProps, LoginSubmitPayload } from './types'
 
@@ -20,7 +24,7 @@ const props = withDefaults(defineProps<LoginProps>(), {
   logoAlt: 'Logo',
   logoPosition: 'top',
   labelPosition: 'top',
-  size: 'md',
+  fontSize: 14,
   loading: false,
   disabled: false,
   usernameLabel: '用户名',
@@ -82,17 +86,14 @@ const emit = defineEmits<{
   'image-captcha-close': []
 }>()
 
-const sliderTrack = ref<HTMLElement>()
+const { sliderTrack, sliderPercent, isImageCaptchaVerified, startSlider, resetImageCaptcha } = useImageCaptcha(props, emit)
 const puzzleStage = ref<HTMLElement>()
-const sliderPercent = ref(0)
 const puzzleStageWidth = ref(0)
-const isDragging = ref(false)
 const isPasswordVisible = ref(false)
-const isImageCaptchaVerified = ref(false)
 let puzzleResizeObserver: ResizeObserver | undefined
 
 const rootClasses = computed(() => [
-  `x-login--${props.size}`,
+  'x-login',
   `x-login--logo-${props.logoPosition}`,
   `x-login--label-${props.labelPosition}`,
   {
@@ -107,7 +108,7 @@ const themeStyle = computed<Record<string, string>>(() => ({
   '--x-login-surface': props.backgroundColor,
   '--x-login-border': props.borderColor,
   '--x-login-border-width': props.borderWidth,
-  '--x-login-radius': props.radius,
+  '--x-login-radius': toCssSize(props.radius) ?? '18px',
   '--x-login-width': props.width,
   '--x-login-text': props.textColor,
   '--x-login-muted': props.mutedTextColor,
@@ -151,67 +152,6 @@ function handleEnter() {
   handleLogin()
 }
 
-function updateSlider(clientX: number) {
-  const track = sliderTrack.value
-  if (!track) {
-    return
-  }
-
-  const rect = track.getBoundingClientRect()
-  const nextPercent = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100))
-  sliderPercent.value = nextPercent
-  emit('update:imageCode', String(Math.round(nextPercent)))
-  emit('image-captcha-change', nextPercent)
-}
-
-function finishSlider() {
-  if (!isDragging.value) {
-    return
-  }
-
-  isDragging.value = false
-  window.removeEventListener('pointermove', handlePointerMove)
-  window.removeEventListener('pointerup', finishSlider)
-
-  if (sliderPercent.value >= 92) {
-    sliderPercent.value = 100
-    isImageCaptchaVerified.value = true
-    emit('update:imageCode', 'verified')
-    emit('image-captcha-success')
-    return
-  }
-
-  sliderPercent.value = 0
-  emit('update:imageCode', '')
-  emit('image-captcha-change', 0)
-}
-
-function handlePointerMove(event: PointerEvent) {
-  if (!isDragging.value) {
-    return
-  }
-
-  updateSlider(event.clientX)
-}
-
-function startSlider(event: PointerEvent) {
-  if (props.disabled || props.loading || isImageCaptchaVerified.value) {
-    return
-  }
-
-  isDragging.value = true
-  updateSlider(event.clientX)
-  window.addEventListener('pointermove', handlePointerMove)
-  window.addEventListener('pointerup', finishSlider)
-}
-
-function resetImageCaptcha() {
-  sliderPercent.value = 0
-  isImageCaptchaVerified.value = false
-  emit('update:imageCode', '')
-  emit('refresh-image-captcha')
-}
-
 function closeImageCaptcha() {
   resetImageCaptcha()
   emit('image-captcha-close')
@@ -243,13 +183,11 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   puzzleResizeObserver?.disconnect()
-  window.removeEventListener('pointermove', handlePointerMove)
-  window.removeEventListener('pointerup', finishSlider)
 })
 </script>
 
 <template>
-  <section class="x-login" :class="rootClasses" :style="themeStyle" @keydown.enter.prevent="handleEnter">
+  <section class="x-login" :class="rootClasses" :style="[themeStyle, createFontStyle(props.fontSize ?? 14)]" @keydown.enter.prevent="handleEnter">
     <header class="x-login__brand">
       <div v-if="props.logoSrc || $slots.logo" class="x-login__logo-wrap">
         <slot name="logo">
@@ -464,6 +402,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+@import '../../_shared/auth-layout.css';
 .x-login {
   --x-login-accent: #0b4a52;
   --x-login-accent-soft: #e1f5f7;
@@ -492,14 +431,6 @@ onBeforeUnmount(() => {
   width: var(--x-login-width);
 }
 
-.x-login--sm {
-  padding: 24px;
-}
-
-.x-login--lg {
-  padding: 40px;
-}
-
 .x-login__brand {
   align-items: center;
   display: flex;
@@ -517,9 +448,7 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.x-login--logo-right .x-login__brand {
-  flex-direction: row-reverse;
-}
+
 
 .x-login__logo-wrap {
   align-items: center;
@@ -608,7 +537,7 @@ onBeforeUnmount(() => {
 
 .x-login__label {
   color: #264d57;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -632,7 +561,7 @@ onBeforeUnmount(() => {
 }
 
 .x-login__input-icon {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   left: 0;
 }
@@ -642,7 +571,7 @@ onBeforeUnmount(() => {
   border: 0;
   cursor: pointer;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   right: 0;
 }
 
@@ -667,13 +596,9 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 
-.x-login__control--prefix .x-login__input {
-  padding-left: 42px;
-}
 
-.x-login__control--suffix .x-login__input {
-  padding-right: 42px;
-}
+
+
 
 .x-login__input:focus {
   background: var(--x-login-input-bg);
@@ -686,7 +611,7 @@ onBeforeUnmount(() => {
   color: var(--x-login-muted);
   cursor: pointer;
   display: inline-flex;
-  font-size: 13px;
+  font-size: 14px;
   gap: 8px;
   line-height: 1.4;
   user-select: none;
@@ -877,7 +802,7 @@ onBeforeUnmount(() => {
 
 .x-login__slider-tip {
   color: #7c8794;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   left: 0;
   pointer-events: none;
@@ -910,9 +835,7 @@ onBeforeUnmount(() => {
   z-index: 2;
 }
 
-.x-login__slider-captcha.is-verified .x-login__slider-track {
-  background: #dff8ea;
-}
+
 
 .x-login__slider-captcha.is-verified .x-login__slider-tip,
 .x-login__slider-captcha.is-verified .x-login__slider-thumb {
@@ -1021,7 +944,7 @@ onBeforeUnmount(() => {
   align-items: center;
   color: var(--x-login-muted);
   display: inline-flex;
-  font-size: 13px;
+  font-size: 14px;
   gap: 4px;
   margin: 0;
 }
@@ -1069,9 +992,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 520px) {
-  .x-login {
-    padding: 22px;
-  }
+  
 
   .x-login__brand,
   .x-login--logo-right .x-login__brand {
@@ -1079,9 +1000,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
   }
 
-  .x-login__field--inline {
-    grid-template-columns: 1fr;
-  }
+  
 
   .x-login--label-left .x-login__field:not(.x-login__field--inline):not(.x-login__field--captcha),
   .x-login--label-left .x-login__inline-control {

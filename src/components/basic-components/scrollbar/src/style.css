@@ -1,0 +1,31 @@
+.x-scrollbar,
+.x-scrollbar--native {
+  scrollbar-color: var(--x-scrollbar-thumb-color, #cbd5e1) var(--x-scrollbar-track-color, #f1f5f9);
+  scrollbar-width: thin;
+}
+
+.x-scrollbar {
+  background: var(--x-element-bg, transparent);
+  border: var(--x-element-border-width, 0) solid var(--x-element-border-color, transparent);
+  color: var(--x-element-text, inherit);
+  min-height: 0;
+  overflow: auto;
+}
+
+.x-scrollbar::-webkit-scrollbar,
+.x-scrollbar--native::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.x-scrollbar::-webkit-scrollbar-thumb,
+.x-scrollbar--native::-webkit-scrollbar-thumb {
+  background: var(--x-scrollbar-thumb-color, #cbd5e1);
+  border-radius: 999px;
+}
+
+.x-scrollbar::-webkit-scrollbar-track,
+.x-scrollbar--native::-webkit-scrollbar-track {
+  background: var(--x-scrollbar-track-color, #f1f5f9);
+  border-radius: 999px;
+}

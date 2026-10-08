@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Autocomplete from './src/Autocomplete.vue'
 
-export const XAutocomplete = Autocomplete
+export const XAutocomplete = Autocomplete as ComponentWithInstall<typeof Autocomplete>
 
 export type {
   AutocompleteDisplayField,

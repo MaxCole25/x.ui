@@ -1,0 +1,18 @@
+.x-autocomplete__option,
+.x-cascader__option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--x-element-text, var(--x-color-text));
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: var(--x-autocomplete-option-font-size, inherit);
+  justify-content: space-between;
+  min-height: 30px;
+  padding: var(--x-autocomplete-option-padding, 0 10px);
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+}

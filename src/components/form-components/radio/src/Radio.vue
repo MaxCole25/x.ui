@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { formContextKey } from '../../form/src/context'
@@ -10,7 +11,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<RadioProps>(), {
   disabled: false,
-  size: undefined
+  fontSize: undefined
 })
 
 const emit = defineEmits<{
@@ -20,16 +21,17 @@ const emit = defineEmits<{
 
 const form = inject(formContextKey, null)
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const checked = computed(() => props.modelValue === props.value)
 const buttonColor = computed(() => props.buttonColor)
 const labelColor = computed(() => props.labelColor)
 const radioStyle = computed(() => ({
   ...createElementStyleVars(props),
+  height: toCssSize(props.height ?? 32),
   '--x-radio-color': buttonColor.value,
   '--x-radio-text-color': labelColor.value,
   '--x-radio-font-family': props.fontFamily,
-  '--x-radio-font-size': toCssSize(props.fontSize)
+  '--x-radio-font-size': toCssSize(mergedSize.value)
 }))
 const nativeStyle = computed(() => ({
   accentColor: buttonColor.value,
@@ -38,7 +40,7 @@ const nativeStyle = computed(() => ({
 }))
 const labelStyle = computed(() => ({
   color: labelColor.value,
-  fontSize: toCssSize(props.fontSize),
+  fontSize: toCssSize(mergedSize.value),
   fontFamily: props.fontFamily
 }))
 
@@ -50,7 +52,7 @@ const select = () => {
 </script>
 
 <template>
-  <label class="x-radio" :class="[`x-radio--${mergedSize}`, { 'is-checked': checked, 'is-disabled': mergedDisabled }]" :style="radioStyle">
+  <label class="x-radio" :class="['x-radio', { 'is-checked': checked, 'is-disabled': mergedDisabled }]" :style="[radioStyle, createFontStyle(mergedSize)]">
     <input
       class="x-radio__native"
       type="radio"

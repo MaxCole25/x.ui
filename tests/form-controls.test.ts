@@ -1,5 +1,5 @@
+import { readCssSource } from './_utils/readCssSource'
 import { mount } from '@vue/test-utils'
-import { readFileSync } from 'node:fs'
 import { nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { overlayZIndex, XBaseInput, XCascader, XCheckbox, XForm, XFormItem, XInput, XInputNumber, XRadio, XRadioButton, XSelect, XSwitch, XText, XTimePicker, XTimeSelect } from '../src'
@@ -102,7 +102,7 @@ describe('form controls', () => {
     input.element.focus()
     await input.trigger('focus')
 
-    const styles = readFileSync('src/styles/index.css', 'utf-8').replace(/\r\n/g, '\n')
+    const styles = readCssSource().replace(/\r\n/g, '\n')
     expect(input.element).toBe(document.activeElement)
     expect(styles).toContain('.x-base-input__inner:focus,\n.x-base-input__inner:focus-visible')
     expect(styles).toContain('outline: none !important')
@@ -194,7 +194,7 @@ describe('form controls', () => {
         modelValue: '',
         radius: '10px',
         backgroundColor: '#ffffff',
-        dropdownBackgroundColor: '#fef3c7',
+        popperBackgroundColor: '#fef3c7',
         options: [
           { label: '待处理', value: 'todo' },
           { label: '完成', value: 'done' }
@@ -304,7 +304,7 @@ describe('form controls', () => {
       props: {
         modelValue: '',
         backgroundColor: '#fee2e2',
-        dropdownMaxWidth: 260,
+        popperMaxWidth: 260,
         options: [{ label: '这是一段很长很长的选项文本，用于测试弹层宽度上限', value: 'long' }]
       }
     })
@@ -467,11 +467,10 @@ describe('form controls', () => {
     expect(style).toContain('--x-switch-font-family: Arial, sans-serif')
   })
 
-  it('lets explicit size own visual dimensions for text, number input and switch', () => {
+  it('keeps fontSize independent from explicit text, number input and switch dimensions', () => {
     const text = mount(XText, {
       props: {
         modelValue: '尺寸文本',
-        size: 'lg',
         fontSize: 30,
         height: 60,
         padding: 20,
@@ -481,14 +480,12 @@ describe('form controls', () => {
     const inputNumber = mount(XInputNumber, {
       props: {
         modelValue: 6,
-        size: 'sm',
         fontSize: 24,
         radius: 12
       }
     })
     const switcher = mount(XSwitch, {
       props: {
-        size: 'lg',
         buttonSize: 12,
         fontSize: 30,
         radius: '999px'
@@ -499,16 +496,16 @@ describe('form controls', () => {
     const inputNumberStyle = inputNumber.find('.x-input-number').attributes('style')
     const switchStyle = switcher.find('.x-switch').attributes('style')
 
-    expect(textStyle).toContain('--x-text-font-size: 14px')
-    expect(textStyle).toContain('--x-text-height: 38px')
-    expect(textStyle).toContain('--x-text-padding: 0 10px')
-    expect(textStyle).toContain('--x-text-radius: 8px')
-    expect(inputNumberStyle).toContain('--x-input-number-height: 22px')
-    expect(inputNumberStyle).toContain('--x-input-number-font-size: 10px')
-    expect(inputNumberStyle).toContain('--x-input-number-radius: 4px')
-    expect(switchStyle).toContain('--x-switch-size: 30.4px')
-    expect(switchStyle).not.toContain('--x-switch-button-size')
-    expect(switchStyle).toContain('--x-switch-font-size: 14px')
+    expect(textStyle).toContain('--x-text-font-size: 30px')
+    expect(textStyle).toContain('--x-text-height: 60px')
+    expect(textStyle).toContain('--x-text-padding: 20px')
+    expect(textStyle).toContain('--x-text-radius: 20px')
+    expect(inputNumberStyle).toContain('--x-input-number-height: 32px')
+    expect(inputNumberStyle).toContain('--x-input-number-font-size: 24px')
+    expect(inputNumberStyle).toContain('--x-input-number-radius: 12px')
+    expect(switchStyle).toContain('--x-switch-size: 12px')
+    expect(switchStyle).toContain('--x-switch-button-size: 12px')
+    expect(switchStyle).toContain('--x-switch-font-size: 30px')
     expect(switchStyle).toContain('--x-switch-radius: 999px')
   })
 
@@ -523,12 +520,12 @@ describe('form controls', () => {
     expect(wrapper.find('.x-input-number').attributes('style')).toContain('--x-input-number-radius: 10px')
   })
 
-  it('keeps switch size visual dimensions at 80 percent of the standard height', () => {
-    const css = readFileSync('src/styles/index.css', 'utf8')
+  it('keeps the default switch track at 24px with a 2 to 1 aspect ratio', () => {
+    const css = readCssSource()
 
-    expect(css).toContain('--x-switch-default-size: 17.6px')
+    expect(css).toContain('height: var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size)))')
     expect(css).toContain('--x-switch-default-size: 24px')
-    expect(css).toContain('--x-switch-default-size: 30.4px')
+    expect(css).toContain('height: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) - 4px)')
     expect(css).toContain('--x-switch-color: var(--x-color-primary, #1264f4)')
     expect(css).toContain('width: calc(var(--x-switch-size, var(--x-switch-button-size, var(--x-switch-default-size))) * 2)')
   })
@@ -670,12 +667,11 @@ describe('form controls', () => {
     expect(checked.emitted('change')).toBeUndefined()
   })
 
-  it('lets explicit radio button size own visual dimensions', () => {
+  it('keeps radio button fontSize independent from explicit height and radius', () => {
     const wrapper = mount(XRadioButton, {
       props: {
         modelValue: 'lg',
         value: 'lg',
-        size: 'lg',
         height: 60,
         buttonSize: 52,
         fontSize: 30,
@@ -684,10 +680,10 @@ describe('form controls', () => {
     })
 
     const style = wrapper.find('.x-radio-button').attributes('style')
-    expect(style).toContain('--x-radio-button-font-size: 14px')
-    expect(style).toContain('--x-radio-button-height: 38px')
-    expect(style).toContain('--x-radio-button-padding: 0 10px')
-    expect(style).toContain('--x-radio-button-radius: 8px')
+    expect(style).toContain('--x-radio-button-font-size: 30px')
+    expect(style).toContain('--x-radio-button-height: 60px')
+    expect(style).not.toContain('--x-radio-button-padding')
+    expect(style).toContain('--x-radio-button-radius: 20px')
   })
 
   it('controls radio button selection inside a segmented v-model group', async () => {
@@ -717,11 +713,11 @@ describe('form controls', () => {
     expect(wrapper.findAll('.x-radio-button').filter((button) => button.classes().includes('is-checked'))).toHaveLength(1)
   })
 
-  it('provides form size and disabled state to children', () => {
+  it('provides form fontSize and disabled state to children', () => {
     const wrapper = mount({
       components: { XForm, XFormItem, XInput },
       template: `
-        <XForm size="lg" disabled>
+        <XForm :font-size="18" disabled>
           <XFormItem label="名称">
             <XInput />
           </XFormItem>
@@ -729,7 +725,7 @@ describe('form controls', () => {
       `
     })
 
-    expect(wrapper.find('.x-base-input').classes()).toContain('x-base-input--lg')
+    expect(wrapper.find('.x-base-input').attributes('style')).toContain('--x-base-input-font-size: 18px')
     expect(wrapper.find('input').attributes('disabled')).toBeDefined()
     expect(wrapper.find('label').attributes('for')).toBe(wrapper.find('input').attributes('id'))
   })

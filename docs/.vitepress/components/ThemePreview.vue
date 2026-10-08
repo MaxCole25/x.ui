@@ -11,19 +11,19 @@ const themes = [
 </script>
 
 <template>
-  <div class="x-theme-preview" aria-label="x.ui 内置主题预览">
+  <div class="x-theme-preview" aria-label="@x-soft88/x-ui 内置主题预览">
     <section v-for="theme in themes" :key="theme.id" class="x-theme-preview__card" :data-theme="theme.id">
       <div class="x-theme-preview__header">
         <div>
           <strong>{{ theme.name }}</strong>
           <span>{{ theme.description }}</span>
         </div>
-        <XTag size="sm">{{ theme.id }}</XTag>
+        <XTag :font-size="10">{{ theme.id }}</XTag>
       </div>
       <XInput model-value="主题输入框" readonly />
       <div class="x-theme-preview__actions">
-        <XButton size="sm">主要操作</XButton>
-        <XButton size="sm" variant="outline">次要操作</XButton>
+        <XButton :font-size="10">主要操作</XButton>
+        <XButton :font-size="10" variant="outline">次要操作</XButton>
       </div>
       <div class="x-theme-preview__soft-panel">次级面板 / 表格表头</div>
       <div class="x-theme-preview__tooltip">Tooltip / 浮层视觉</div>

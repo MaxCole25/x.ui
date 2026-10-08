@@ -1,11 +1,11 @@
 ---
 name: x-ui-component-library
-description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自动化测试、构建和本地 link 联调组件。适用于新增或修改 Vue 3 UI 组件、创建 Histoire 组件运行效果页面、编写中文 VitePress 文档、添加 Vitest 组件测试、验证组件库发布构建，或指导第三方 Vue 3 项目通过 npm link / pnpm link 调用并联调 x.ui。
+description: 在 @x-soft88/x-ui Vue 3 组件库中开发、文档化、手动验收、自动化测试、构建和本地 link 联调组件。适用于新增或修改 Vue 3 UI 组件、创建 Histoire 组件运行效果页面、编写中文 VitePress 文档、添加 Vitest 组件测试、验证组件库发布构建，或指导第三方 Vue 3 项目通过 npm link / pnpm link 调用并联调 @x-soft88/x-ui。
 ---
 
-# x.ui 组件库开发技能
+# @x-soft88/x-ui 组件库开发技能
 
-在 `x.ui` 仓库中开发组件时使用本技能。
+在 `@x-soft88/x-ui` 仓库中开发组件时使用本技能。
 
 ## 必读顺序
 
@@ -28,6 +28,10 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 - 如果看到 `鎸夐挳`、`涓昏`、`鐢ㄤ簬` 等文本，按乱码处理并修复。
 
 ## 默认开发方式
+
+- 当前仅发布 ES 模块，产物入口为 dist/x-ui.js、dist/index.d.ts、dist/style.css，不构建 UMD。
+- 本轮面向 PC；文档 API 与 Story 控制区按功能分组，组件分类支持折叠。
+- 文档交互示例放在 docs/examples/，预览与 ?raw 源码使用同一个 Vue 文件。
 
 - 使用 Vue 3 SFC 和 `<script setup lang="ts">`。
 - 对外组件使用 `X` 前缀，例如 `XButton`。
@@ -56,7 +60,7 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 
 新增或修改公开 Props、事件、插槽、类型和 `expose` 方法时，必须优先遵守 `docs/guide/api-naming.md`。
 
-- 基础属性统一使用 `modelValue`、`size`、`disabled`、`readonly`、`loading`、`clearable`。
+- 基础属性统一使用 `modelValue`、`fontSize`、`disabled`、`readonly`、`loading`、`clearable`。
 - 颜色属性统一使用 `xxxColor`、`xxxTextColor`、`xxxBackgroundColor`、`xxxBorderColor`，主题色用 `accentColor`，选中色用 `checkedColor`，头像背景用 `avatarBackgroundColor`，不要新增 `BgColor` 缩写或裸 `background` / `color`。
 - 整体圆角使用 `radius`，局部圆角使用 `partRadius`，不要为整体圆角新增 `borderRadius`。
 - 布尔属性按语义使用 `showXxx`、`hideXxx`、`enableXxx`、`allowXxx`、`canXxx`。
@@ -64,7 +68,7 @@ description: 在 x.ui Vue 3 组件库中开发、文档化、手动验收、自�
 - 视觉形态属性优先使用 `variant`，反馈状态属性优先使用 `status`；原生输入 `type` 可保留，其它场景不要新增裸 `type`。
 - `color`、`background`、`value`、`label` 这类裸语义属性必须谨慎新增，语义不够明确时加业务前缀。
 
-x.ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props 时直接使用规范新名称，不新增旧命名别名、兼容 fallback 或 `@deprecated` Props；除非用户明确要求兼容迁移。
+@x-soft88/x-ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props 时直接使用规范新名称，不新增旧命名别名、兼容 fallback 或 `@deprecated` Props；除非用户明确要求兼容迁移。
 
 ## 组件分类目录约束
 
@@ -102,26 +106,17 @@ x.ui 当前按 pre-1.0 策略治理公开接口：新增或修改公开 Props �
 - `字体`、`对齐`、`尺寸` 使用下拉选择框。
 - `自动高度`、`自动宽度`、`显示激活边框`、`禁用`、`只读`、`可清空`、`隐藏清除按钮` 使用复选框。
 
-## 尺寸选项强制约定
+## 字体与控件高度规范
 
-组件提供 `size` 属性时，必须优先使用 `sm`、`md`、`lg` 三档，并按下表统一尺寸。除非用户明确要求特例，不要为单个组件另行定义同名尺寸含义。
-
-组件属性中同时提供 `size` 与高度、字体大小、圆角、padding 等外观属性时，一旦设置了 `size`，这些属性必须自动失效，由 `size` 统一接管对应样式；`size` 不影响宽度和字体族，避免同一组件出现多套尺寸来源互相覆盖。
-
-| 尺寸 | 高度 | 字体 | padding | 圆角 |
-| --- | --- | --- | --- | --- |
-| sm | `22px` | `10px` | `0 4px` | `4px` |
-| md | `30px` | `12px` | `0 8px` | `6px` |
-| lg | `38px` | `14px` | `0 10px` | `8px` |
-
-### 尺寸特例
-
-以下组件已被业务确认需要保留特殊尺寸规则，修改相关组件时必须优先遵守：
-
-- `XTabs`：`size` 只接管内部高度变量、字号、图标尺寸等，不接管标签外层框高度、标签内边距和默认最小宽度；`sm`、`md`、`lg` 三档 `.x-tabs__item-frame` 高度都固定为 `30px`，标签内边距都固定使用 md 规格 `0 8px`，默认最小宽度都固定使用 md 规格 `140px`。业务若需要特殊宽度，应通过 `tabMinWidth` 显式覆盖。
-- `XSwitch`：`size` 接管字号，但轨道视觉宽高按统一尺寸高度的 `80%` 渲染，即 `sm` 为 `17.6px` 高、`md` 为 `24px` 高、`lg` 为 `30.4px` 高；轨道宽度保持高度的 2 倍，因此宽度也同步缩小 20%。`size` 不接管圆角，开关轨道必须始终保持左右半圆的胶囊边线，默认使用 `999px` 圆角，不随 `sm`、`md`、`lg` 变化为 `4px`、`6px`、`8px`。
-- `XDialog`：`size` 只接管弹窗字号和关闭按钮尺寸，不接管弹窗圆角，也不接管头部、正文、底部 padding；弹窗空间节奏必须使用稳定默认值或 `--x-dialog-header-padding`、`--x-dialog-body-padding`、`--x-dialog-footer-padding` 覆盖，圆角使用稳定默认值或 `--x-dialog-radius` 覆盖，避免表单弹窗因 `sm/md/lg` 变得拥挤。
-- `XDrawer`、`XMessage`、`XMessageBox`、`XTooltip`、`XCard`：`size` 不接管容器 padding 和 radius。`XDrawer` 的 `size` 只接管字号和关闭按钮尺寸；`XMessage` 的 `size` 只接管字号和最小高度；`XMessageBox` 的 `size` 只接管字号和按钮高度；`XTooltip`、`XCard` 的 `size` 只接管字号。容器留白与圆角必须使用稳定默认值、显式 props 或对应 CSS 变量覆盖。
+- 字号属性统一为 fontSize，类型为 number，单位固定 px；模板写作 :font-size="14"。
+- 移除字号用途的 size 属性和 sm/md/lg 档位，不保留兼容别名。布局响应式断点、文件大小等其他尺寸语义不受影响。
+- 常规按钮、单行输入框、选择器等默认字号 14px、高度 32px，height 独立调整高度；fontSize 不改变高度、padding 或 radius。
+- 其它组件正文和文本区域默认字号同样为 14px；标题与辅助说明使用语义字号。
+- 卡片、容器、表格、弹窗、抽屉和多行文本保留独立布局与行高规则，不强制容器高 32px。
+- XTabs 标签外框默认高 30px、内边距 0 8px、最小宽度 140px；字体变化不联动这些尺寸。
+- XSwitch 默认轨道视觉高度保持 24px、宽高比 2:1、胶囊圆角，可通过 height 调整，fontSize 只影响文字。
+- 字体、字重、行高、标题层级优先使用 src/styles/index.css 中的全局排版变量，具体约定见 docs/guide/typography.md。
+- Histoire 的字号使用数字输入框，新增或调整属性时同步更新文档和外观接口。
 
 ## 浮层层级强制约定
 
@@ -184,7 +179,7 @@ pnpm build:watch
 第三方 Vue 3 项目：
 
 ```bash
-pnpm link --global x.ui
+pnpm link --global @x-soft88/x-ui
 pnpm dev
 ```
 

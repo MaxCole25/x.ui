@@ -1,5 +1,4 @@
-import { componentSizePreset, type ComponentSizePreset, type XSize } from './size'
+import { getComponentMetrics, type FontSize } from './size'
 
-export type InputControlSize = XSize
-export type InputSizePreset = ComponentSizePreset
-export const inputSizePreset = componentSizePreset
+export type InputControlSize = FontSize
+export const getInputMetrics = getComponentMetrics

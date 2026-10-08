@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Statistic from './src/Statistic.vue'
 
-export const XStatistic = Statistic
+export const XStatistic = Statistic as ComponentWithInstall<typeof Statistic>
 
 export type { StatisticProps } from './src/types'
 

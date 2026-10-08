@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { computed, reactive } from 'vue'
 import { XLoginPage } from './index'
 import type { LoginPagePreset, LoginPageSectionConfig } from './src/types'
 import '../../../styles/index.css'
-
 const state = reactive({
   parentWidth: 1200,
   parentHeight: 720,
@@ -29,22 +29,14 @@ const state = reactive({
   footerBackgroundColor: '',
   eventLog: '等待操作'
 })
-
-const parentStyle = computed(() => ({
-  width: state.parentFullWidth ? '100%' : `${state.parentWidth}px`,
-  height: state.parentFullHeight ? '100%' : `${state.parentHeight}px`
-}))
-
 const header = computed<LoginPageSectionConfig>(() => ({
   visible: state.headerVisible,
   backgroundColor: state.headerBackgroundColor
 }))
-
 const footer = computed<LoginPageSectionConfig>(() => ({
   visible: state.footerVisible,
   backgroundColor: state.footerBackgroundColor || undefined
 }))
-
 const content = computed<LoginPageSectionConfig>(() => ({
   padding: state.contentPadding,
   gap: state.contentGap,
@@ -52,28 +44,23 @@ const content = computed<LoginPageSectionConfig>(() => ({
   justify: state.contentJustify,
   backgroundColor: state.contentBackgroundColor
 }))
-
 const contentLeft = computed<LoginPageSectionConfig>(() => ({
   visible: state.contentLeftVisible
 }))
-
 const contentRight = computed<LoginPageSectionConfig>(() => ({
   visible: state.contentRightVisible,
   width: 320
 }))
-
 const contentTop = computed<LoginPageSectionConfig>(() => ({
   visible: state.contentTopVisible,
   height: 52,
   textColor: '#ffffff'
 }))
-
 const contentBottom = computed<LoginPageSectionConfig>(() => ({
   visible: state.contentBottomVisible,
   height: 52,
   textColor: '#ffffff'
 }))
-
 const loginProps = computed(() => ({
   username: state.username,
   password: state.password,
@@ -81,7 +68,6 @@ const loginProps = computed(() => ({
   title: '通用登录',
   description: '内部嵌套 XLogin，业务逻辑通过事件接入'
 }))
-
 function writeLog(message: string) {
   state.eventLog = `${new Date().toLocaleTimeString()} ${message}`
 }
@@ -90,11 +76,10 @@ function writeLog(message: string) {
 <template>
   <Story title="其它组件/LoginPage 登录页" group="components">
     <Variant title="外观接口">
-      <div class="login-page-story">
-        <div class="login-page-story__preview" :style="parentStyle">
+      <ApiPlayground component="XLoginPage">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XLoginPage
             :preset="state.preset"
-            :login-width="state.loginWidth"
             :header="header"
             :footer="footer"
             :content="content"
@@ -106,7 +91,7 @@ function writeLog(message: string) {
             @login="writeLog(`触发登录：${$event.username || '未填写账号'}`)"
             @register="writeLog('点击注册')"
             @send-sms-code="writeLog(`发送短信验证码：${$event || '未填写手机号'}`)"
-          >
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
             <template #content-top>
               <div class="login-page-story__region">内容顶部区域</div>
             </template>
@@ -117,132 +102,8 @@ function writeLog(message: string) {
               <div class="login-page-story__region">内容底部区域</div>
             </template>
           </XLoginPage>
-        </div>
-
-        <div class="login-page-story__controls">
-          <section>
-            <h3>属性</h3>
-            <div class="login-page-story__grid">
-              <label>
-                <span>父元素宽度</span>
-                <input v-model.number="state.parentWidth" type="number" />
-              </label>
-              <label>
-                <span>父元素高度</span>
-                <input v-model.number="state.parentHeight" type="number" />
-              </label>
-              <label>
-                <span>父元素撑满宽度</span>
-                <input v-model="state.parentFullWidth" type="checkbox" />
-              </label>
-              <label>
-                <span>父元素撑满高度</span>
-                <input v-model="state.parentFullHeight" type="checkbox" />
-              </label>
-              <label>
-                <span>预设</span>
-                <select v-model="state.preset">
-                  <option value="finance">finance</option>
-                  <option value="recruit">recruit</option>
-                  <option value="retail">retail</option>
-                  <option value="centered">centered</option>
-                  <option value="split">split</option>
-                </select>
-              </label>
-              <label>
-                <span>登录宽度</span>
-                <input v-model.number="state.loginWidth" type="number" />
-              </label>
-              <label>
-                <span>内容内边距</span>
-                <input v-model="state.contentPadding" />
-              </label>
-              <label>
-                <span>内容间距</span>
-                <input v-model="state.contentGap" />
-              </label>
-              <label>
-                <span>内容对齐</span>
-                <select v-model="state.contentAlign">
-                  <option value="start">start</option>
-                  <option value="center">center</option>
-                  <option value="end">end</option>
-                  <option value="stretch">stretch</option>
-                </select>
-              </label>
-              <label>
-                <span>内容主轴</span>
-                <select v-model="state.contentJustify">
-                  <option value="start">start</option>
-                  <option value="center">center</option>
-                  <option value="end">end</option>
-                  <option value="between">between</option>
-                  <option value="around">around</option>
-                  <option value="evenly">evenly</option>
-                </select>
-              </label>
-              <label>
-                <span>顶栏背景色</span>
-                <input v-model="state.headerBackgroundColor" type="color" />
-              </label>
-              <label>
-                <span>内容背景色</span>
-                <input v-model="state.contentBackgroundColor" type="color" />
-              </label>
-              <label>
-                <span>顶栏显示</span>
-                <input v-model="state.headerVisible" type="checkbox" />
-              </label>
-              <label>
-                <span>底栏显示</span>
-                <input v-model="state.footerVisible" type="checkbox" />
-              </label>
-              <label>
-                <span>内容左显示</span>
-                <input v-model="state.contentLeftVisible" type="checkbox" />
-              </label>
-              <label>
-                <span>内容右显示</span>
-                <input v-model="state.contentRightVisible" type="checkbox" />
-              </label>
-            </div>
-          </section>
-
-          <section>
-            <h3>接口</h3>
-            <div class="login-page-story__grid">
-              <label>
-                <span>顶区显示</span>
-                <input v-model="state.contentTopVisible" type="checkbox" />
-              </label>
-              <label>
-                <span>底区显示</span>
-                <input v-model="state.contentBottomVisible" type="checkbox" />
-              </label>
-              <label>
-                <span>登录中</span>
-                <input v-model="state.loading" type="checkbox" />
-              </label>
-              <label>
-                <span>账号绑定值</span>
-                <input v-model="state.username" />
-              </label>
-            </div>
-          </section>
-
-          <section>
-            <h3>类型</h3>
-            <div class="login-page-story__types">
-              LoginPagePreset、LoginPageSectionConfig、LoginPageAlign、LoginPageJustify、LoginPageDirection、LoginPageBackgroundSize、LoginPageBackgroundRepeat、LoginPageSectionOverflow
-            </div>
-          </section>
-
-          <section>
-            <h3>事件</h3>
-            <div class="login-page-story__log">{{ state.eventLog }}</div>
-          </section>
-        </div>
-      </div>
+        </template>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { reactive, ref } from 'vue'
 import { overlayZIndex } from '../../_utils/zIndex'
 import { XButton } from '../../basic-components/button'
 import { XDialog, type DialogFooterDividerStyle } from './index'
 import '../../../styles/index.css'
-
 const visible = ref(false)
 const state = reactive({
   title: '新建任务',
@@ -23,11 +23,6 @@ const state = reactive({
   footerDividerStyle: 'solid' as DialogFooterDividerStyle
 })
 const logs = ref<string[]>([])
-
-function openDialog() {
-  visible.value = true
-}
-
 function onClose() {
   logs.value = [`${new Date().toLocaleTimeString()} 已关闭`, ...logs.value].slice(0, 6)
 }
@@ -36,45 +31,18 @@ function onClose() {
 <template>
   <Story title="反馈组件/弹窗 Dialog" group="components">
     <Variant title="外观接口">
-      <div style="display: grid; gap: 12px">
-        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
-          <XButton @click="openDialog">打开弹窗</XButton>
-          <label>宽度 <input v-model.number="state.width" type="number" min="420" max="1200" style="width: 90px" /></label>
-          <label>高度 <input v-model.number="state.height" type="number" min="260" max="900" style="width: 90px" /></label>
-          <label>层级 <input v-model.number="state.zIndex" type="number" min="1" step="10" style="width: 90px" /></label>
-          <label><input v-model="state.draggable" type="checkbox" />可拖拽</label>
-          <label><input v-model="state.resizable" type="checkbox" />可缩放</label>
-          <label><input v-model="state.showFullscreen" type="checkbox" />全屏按钮</label>
-          <label><input v-model="state.closeOnMaskClick" type="checkbox" />遮罩关闭</label>
-          <label><input v-model="state.showFooterDivider" type="checkbox" />显示底部分割线</label>
-          <label>分割线色 <input v-model="state.footerDividerColor" type="color" /></label>
-          <label>分割线宽 <input v-model.number="state.footerDividerWidth" type="number" min="1" max="8" style="width: 64px" /></label>
-          <label>分割线型 <select v-model="state.footerDividerStyle"><option value="solid">实线</option><option value="dashed">虚线</option><option value="dotted">点线</option></select></label>
-        </div>
-
-        <div style="font-size: 12px; color: #6b7c93">
-          <div v-for="item in logs" :key="item">{{ item }}</div>
-        </div>
-      </div>
-
-      <XDialog
+      <ApiPlayground component="XDialog">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
+          <XDialog 
         v-model="visible"
         :title="state.title"
-        :width="state.width"
-        :height="state.height"
-        :min-width="state.minWidth"
-        :min-height="state.minHeight"
-        :z-index="state.zIndex"
+
         :draggable="state.draggable"
         :resizable="state.resizable"
-        :show-fullscreen="state.showFullscreen"
-        :close-on-mask-click="state.closeOnMaskClick"
-        :show-footer-divider="state.showFooterDivider"
-        :footer-divider-color="state.footerDividerColor"
-        :footer-divider-width="state.footerDividerWidth"
+
         :footer-divider-style="state.footerDividerStyle"
         @close="onClose"
-      >
+       v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
         <template #header>
           <div style="display: flex; align-items: center; gap: 10px">
             <strong>{{ state.title }}</strong>
@@ -101,6 +69,8 @@ function onClose() {
           </div>
         </template>
       </XDialog>
+        </template>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

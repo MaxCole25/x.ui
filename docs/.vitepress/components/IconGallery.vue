@@ -30,7 +30,7 @@ const filteredIcons = computed(() => {
 
     <div class="x-icon-gallery__grid">
       <div v-for="iconName in filteredIcons" :key="iconName" class="x-icon-gallery__item">
-        <XIcon :name="iconName" size="lg" />
+        <XIcon :name="iconName" :font-size="14" />
         <code>{{ iconName }}</code>
       </div>
     </div>

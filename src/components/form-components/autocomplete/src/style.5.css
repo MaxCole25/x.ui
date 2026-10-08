@@ -1,0 +1,21 @@
+.x-autocomplete__control {
+  padding: 0 10px;
+  width: 100%;
+}
+
+.x-autocomplete__control input {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  outline: none;
+}
+
+.x-autocomplete__control button {
+  background: transparent;
+  border: 0;
+  color: var(--x-color-muted);
+  cursor: pointer;
+}

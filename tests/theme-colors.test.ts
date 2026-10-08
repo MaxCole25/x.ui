@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs'
+import { readCssSource } from './_utils/readCssSource'
 import { describe, expect, it } from 'vitest'
 
-const css = () => readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+const css = () => readCssSource().replace(/\r\n/g, '\n')
 
 describe('主题基础色', () => {
   it('defines public base color tokens for business overrides', () => {

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { formContextKey, formItemContextKey } from '../../form/src/context'
 import type { SelectOptionValue } from '../../select'
-import type { CascaderOption, CascaderOptionSource, CascaderProps, CascaderSize } from './types'
+import type { CascaderOption, CascaderOptionSource, CascaderProps, CascaderFontSize } from './types'
 
 defineOptions({
   name: 'XCascader',
@@ -26,7 +27,7 @@ const props = withDefaults(defineProps<CascaderProps>(), {
   clearable: false,
   hideClearButton: false,
   status: 'default',
-  size: undefined,
+  fontSize: undefined,
   textAlign: 'left',
   separator: ' / ',
   changeOnSelect: false,
@@ -59,31 +60,12 @@ const teleportedPanelStyle = ref<Record<string, string>>({})
 let remoteRequestId = 0
 let isListeningForPositionChanges = false
 const mergedDisabled = computed(() => props.disabled || Boolean(form?.disabled.value))
-const mergedSize = computed(() => props.size ?? form?.size.value ?? 'md')
+const mergedSize = computed(() => props.fontSize ?? form?.fontSize.value ?? 14)
 const canInteract = computed(() => !mergedDisabled.value && !props.readonly)
 const shouldTeleportPanel = computed(() => props.teleported)
 const teleportTarget = computed(() => props.teleportTo)
 
-const sizePreset: Record<CascaderSize, Pick<CascaderProps, 'fontSize' | 'height' | 'padding' | 'radius'>> = {
-  sm: {
-    fontSize: 10,
-    height: 22,
-    padding: '0 4px',
-    radius: '4px'
-  },
-  md: {
-    fontSize: 12,
-    height: 30,
-    padding: '0 8px',
-    radius: '6px'
-  },
-  lg: {
-    fontSize: 14,
-    height: 38,
-    padding: '0 10px',
-    radius: '8px'
-  }
-}
+const sizePreset = computed(() => ({ fontSize: mergedSize.value, height: 32, padding: '0 8px', radius: '6px' }))
 
 const findPath = (
   options: CascaderOption[],
@@ -174,15 +156,15 @@ const cascaderStyle = computed(() => ({
   '--x-cascader-border-color': props.borderColor,
   '--x-cascader-hover-border-color': props.borderColor,
   '--x-cascader-border-width': toCssSize(props.borderWidth),
-  '--x-cascader-radius': props.radius ?? sizePreset[mergedSize.value].radius,
+  '--x-cascader-radius': props.radius ?? sizePreset.value.radius,
   '--x-cascader-bg': props.inputBackgroundColor ?? props.backgroundColor,
   '--x-cascader-text-color': props.textColor,
   '--x-cascader-disabled-bg': props.disabledBackgroundColor,
   '--x-cascader-disabled-text-color': props.disabledTextColor,
   '--x-cascader-font-family': props.fontFamily,
-  '--x-cascader-font-size': toCssSize(props.fontSize ?? sizePreset[mergedSize.value].fontSize),
-  '--x-cascader-height': props.autoHeight ? 'auto' : toCssSize(props.height ?? sizePreset[mergedSize.value].height),
-  '--x-cascader-padding': toCssSize(props.padding ?? sizePreset[mergedSize.value].padding),
+  '--x-cascader-font-size': toCssSize(props.fontSize ?? sizePreset.value.fontSize),
+  '--x-cascader-height': props.autoHeight ? 'auto' : toCssSize(props.height ?? sizePreset.value.height),
+  '--x-cascader-padding': toCssSize(props.padding ?? sizePreset.value.padding),
   '--x-cascader-text-align': props.textAlign,
   '--x-cascader-dropdown-max-height': toCssSize(props.popperMaxHeight),
   '--x-cascader-clear-icon-color': props.clearIconColor,
@@ -343,26 +325,23 @@ watch(open, (value) => {
   }
 })
 
-watch(open, async (value) => {
-  if (!value) {
-    removePositionListeners()
-    return
-  }
-
-  await nextTick()
-  updatePanelPosition()
-  addPositionListeners()
-})
-
 watch(
-  () => props.teleportTo,
-  async () => {
-    removePositionListeners()
-    await nextTick()
-    if (open.value) {
-      updatePanelPosition()
-      addPositionListeners()
+  [open, () => props.teleported, () => props.teleportTo],
+  async ([opened], _previous, onCleanup) => {
+    let active = true
+    onCleanup(() => {
+      active = false
+      removePositionListeners()
+    })
+    teleportedPanelStyle.value = {}
+    if (!opened) {
+      return
     }
+
+    await nextTick()
+    if (!active || !open.value || !props.teleported || !cascaderRef.value || !panelRef.value) return
+    updatePanelPosition()
+    addPositionListeners()
   }
 )
 
@@ -392,7 +371,7 @@ onBeforeUnmount(() => {
     v-bind="$attrs"
     class="x-cascader"
     :class="[
-      `x-cascader--${mergedSize}`,
+      'x-cascader',
       `x-cascader--${props.status}`,
       {
         'is-open': open,
@@ -403,7 +382,7 @@ onBeforeUnmount(() => {
         'is-active-border-hidden': !props.showActiveBorder
       }
     ]"
-    :style="cascaderStyle"
+    :style="[cascaderStyle, createFontStyle(mergedSize)]"
     @keydown="handleKeydown"
   >
     <button

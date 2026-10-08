@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import Tabs from './src/Tabs.vue'
 
-export const XTabs = Tabs
+export const XTabs = Tabs as ComponentWithInstall<typeof Tabs>
 export type {
   TabItem,
   TabName,

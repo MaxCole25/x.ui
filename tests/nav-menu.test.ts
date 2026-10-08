@@ -1,5 +1,5 @@
+import { readCssSource } from './_utils/readCssSource'
 import { mount } from '@vue/test-utils'
-import { readFileSync } from 'node:fs'
 import { defineComponent, h, nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { XNavMenu } from '../src'
@@ -120,7 +120,7 @@ function dispatchMouseEvent(element: HTMLElement, type: string, relatedTarget?: 
 }
 
 function navMenuCss() {
-  return readFileSync('src/styles/index.css', 'utf8').replace(/\r\n/g, '\n')
+  return readCssSource().replace(/\r\n/g, '\n')
 }
 
 describe('XNavMenu', () => {

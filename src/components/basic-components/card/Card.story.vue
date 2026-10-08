@@ -1,15 +1,14 @@
 <script setup lang="ts">
+import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { reactive } from 'vue'
-import ElementStylePlayground from '../../_story/ElementStylePlayground.vue'
 import { XCard } from './index'
 import type { CardShadow } from './src/types'
-import type { XSize } from '../../_utils/size'
+import type { FontSize } from '../../_utils/size'
 import '../../../styles/index.css'
-
 const appearance = reactive({
   header: '卡片标题',
   footer: '底部内容',
-  size: 'md' as XSize,
+  fontSize: 14 as FontSize,
   shadow: 'always' as CardShadow,
   width: 220,
   height: 150,
@@ -19,42 +18,19 @@ const appearance = reactive({
 
 <template>
   <Story title="基础组件/Card 卡片" group="components">
-    
-
     <Variant title="外观接口">
-      <ElementStylePlayground>
-        <template #default="styleProps">
+      <ApiPlayground component="XCard">
+        <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XCard
-            v-bind="styleProps"
+
             :header="appearance.header"
             :footer="appearance.footer"
-            :size="appearance.size"
-            :shadow="appearance.shadow"
-            :width="appearance.width"
-            :height="appearance.height"
-          >
+
+           v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
             {{ appearance.content }}
           </XCard>
         </template>
-        <template #column-1>
-          <label><span>标题</span><input v-model="appearance.header" /></label>
-          <label><span>底部</span><input v-model="appearance.footer" /></label>
-          <label><span>内容</span><input v-model="appearance.content" /></label>
-          <label><span>尺寸</span><select v-model="appearance.size"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></label>
-          <label>
-            <span>阴影</span>
-            <select v-model="appearance.shadow">
-              <option value="always">always</option>
-              <option value="hover">hover</option>
-              <option value="never">never</option>
-            </select>
-          </label>
-        </template>
-        <template #column-2>
-          <label><span>宽度</span><input v-model.number="appearance.width" type="number" min="0" /></label>
-          <label><span>高度</span><input v-model.number="appearance.height" type="number" min="0" /></label>
-        </template>
-      </ElementStylePlayground>
+      </ApiPlayground>
     </Variant>
   </Story>
 </template>

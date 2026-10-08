@@ -1,7 +1,8 @@
+import type { ComponentWithInstall } from '../../_utils/install'
 import type { App } from 'vue'
 import GroupContainer from './src/GroupContainer.vue'
 
-export const XGroupContainer = GroupContainer
+export const XGroupContainer = GroupContainer as ComponentWithInstall<typeof GroupContainer>
 
 export type {
   GroupContainerBorderStyle,

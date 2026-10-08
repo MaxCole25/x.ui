@@ -1,0 +1,12 @@
+.x-dropdown-menu {
+  background: var(--x-element-bg, #fff);
+  border: var(--x-element-border-width, 1px) solid var(--x-element-border-color, #e4e7ed);
+  border-radius: var(--x-dropdown-menu-radius, var(--x-dropdown-radius, var(--x-radius-md)));
+  box-shadow: var(--x-dropdown-menu-shadow, var(--x-dropdown-shadow, 0 8px 24px rgba(15, 23, 42, 0.14)));
+  box-sizing: border-box;
+  max-height: var(--x-dropdown-menu-max-height, 260px);
+  min-width: var(--x-dropdown-menu-min-width, 136px);
+  overflow: auto;
+  padding: var(--x-dropdown-menu-padding, 6px);
+  width: var(--x-dropdown-menu-width, max-content);
+}

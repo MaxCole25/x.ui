@@ -1,0 +1,19 @@
+.x-button-group {
+  --x-button-group-radius-value: var(--x-button-group-radius, var(--x-radius-md));
+  align-items: stretch;
+  display: inline-flex;
+  font-family: var(--x-font-family);
+  height: var(--x-button-group-height, auto);
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+  width: var(--x-button-group-width, auto);
+}
+
+.x-button-group--horizontal {
+  flex-direction: row;
+}
+
+.x-button-group--vertical {
+  flex-direction: column;
+}

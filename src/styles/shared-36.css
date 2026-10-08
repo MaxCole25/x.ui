@@ -1,0 +1,13 @@
+.x-date-picker__panel-shell .x-date-panel {
+  border: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.x-date-picker__panel-shell .x-date-panel__header {
+  display: none;
+}
+
+.x-date-picker__panel-shell .x-date-panel__day {
+  height: 38px;
+}

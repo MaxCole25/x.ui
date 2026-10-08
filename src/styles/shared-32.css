@@ -1,0 +1,128 @@
+.x-color-panel {
+  background: var(--x-element-bg, #fff);
+  border: var(--x-element-border-width, 1px) solid var(--x-element-border-color, var(--x-color-border));
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  width: 248px;
+}
+
+.x-color-panel__value-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.x-color-panel__preview {
+  background: var(--x-color-picker-value);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08) inset;
+  flex: 0 0 42px;
+  height: 34px;
+  width: 42px;
+}
+
+.x-color-panel__preview.is-transparent,
+.x-color-panel__swatch.is-transparent,
+.x-color-picker__chip.is-transparent {
+  background-color: transparent;
+  background-image:
+    linear-gradient(45deg, #cbd5e1 25%, transparent 25%),
+    linear-gradient(-45deg, #cbd5e1 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #cbd5e1 75%),
+    linear-gradient(-45deg, transparent 75%, #cbd5e1 75%);
+  background-position:
+    0 0,
+    0 6px,
+    6px -6px,
+    -6px 0;
+  background-size: 12px 12px;
+}
+
+.x-color-panel__field {
+  background:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, transparent),
+    var(--x-color-picker-hue);
+  border-radius: 8px;
+  cursor: crosshair;
+  height: 128px;
+  position: relative;
+  touch-action: none;
+}
+
+.x-color-panel__field-thumb {
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.45), 0 2px 6px rgba(15, 23, 42, 0.24);
+  box-sizing: border-box;
+  height: 14px;
+  left: var(--x-color-picker-field-x);
+  pointer-events: none;
+  position: absolute;
+  top: var(--x-color-picker-field-y);
+  transform: translate(-50%, -50%);
+  width: 14px;
+}
+
+.x-color-panel__hue {
+  background: linear-gradient(to right, #f00 0%, #ff0 16.66%, #0f0 33.33%, #0ff 50%, #00f 66.66%, #f0f 83.33%, #f00 100%);
+  border-radius: 999px;
+  cursor: pointer;
+  height: 14px;
+  position: relative;
+  touch-action: none;
+}
+
+.x-color-panel__hue-thumb {
+  background: #fff;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35), 0 2px 6px rgba(15, 23, 42, 0.2);
+  box-sizing: border-box;
+  height: 18px;
+  left: var(--x-color-picker-hue-x);
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+}
+
+.x-color-panel__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.x-color-panel__swatch {
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 24px;
+  width: 24px;
+}
+
+.x-color-panel__swatch.is-transparent {
+  background-color: #ffffff;
+}
+
+.x-color-panel__swatch.is-active {
+  border-color: var(--x-color-primary);
+  box-shadow: 0 0 0 2px #fff inset;
+}
+
+.x-color-panel__input {
+  background: var(--x-element-bg, #fff);
+  border: var(--x-element-border-width, 1px) solid var(--x-element-border-color, var(--x-color-border));
+  border-radius: 6px;
+  color: var(--x-element-text, var(--x-color-text));
+  flex: 1 1 auto;
+  font: 14px/1.4 var(--x-font-family);
+  min-height: 34px;
+  min-width: 0;
+  padding: 0 10px;
+}
