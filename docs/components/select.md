@@ -362,3 +362,8 @@ export type SelectRemoteMethod = () => SelectOptionSource[] | Promise<SelectOpti
 
 - 打开浮层后切换 `teleported`，滚动父容器并调整窗口大小，检查定位；快速关闭、重开及在 Story 中恢复默认，检查旧实例不会重新注册定位监听。
 - 在开发者工具中卸载组件后滚动或缩放，检查该实例不再响应定位；重新打开时应按当前触发元素定位。
+
+
+## 交互验收补充
+
+选项渲染、键盘激活与滚动定位统一按 options（远程模式使用当前远程选项）在前、XOption 插槽在后的顺序处理。纯插槽和混合用法均支持方向键及 Enter，禁用项会跳过；多选模式 Enter 切换当前项。每个实例使用独立 listbox 和选项标识，通过 aria-controls、aria-activedescendant 关联激活项。

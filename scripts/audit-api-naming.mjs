@@ -416,6 +416,7 @@ if (jsonOutput) {
 } else {
   console.log(
     [
+      `审计范围：组件 types.ts 中导出的 *Props；不覆盖事件、插槽、expose 和全部公开类型。`,
       `公开组件 Props 接口: ${stats.propInterfaceCount}`,
       `唯一 Props 名称: ${stats.uniquePropNameCount}`,
       `命中审计规则次数: ${stats.findingCount}`,

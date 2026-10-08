@@ -264,3 +264,8 @@ export type RichTextEditorExpose = RichEditorExpose
 - 检查引用段落是否有明显的左侧色条、背景色和引号装饰。
 - 检查 Markdown 导入、大纲开关、关键词定位和只读状态。
 - 检查 `Ctrl/Cmd + S` 是否触发 `save-doc`。
+
+
+## 交互验收补充
+
+Ctrl/Cmd+S 仅在当前编辑器实例内部获得焦点、canSave=true 且 readonly=false 时阻止浏览器默认保存，并触发一次 save-doc。多个实例共存时仅当前实例响应；焦点在其它控件时不触发编辑器保存。工具栏保存按钮和公开事件保持原语义。

@@ -1,5 +1,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 
+import { useModalFloatingElement } from './useModal'
+
 type Placement = 'top' | 'bottom' | 'left' | 'right'
 
 /** Teleport 浮层使用视口坐标，监听打开期间的滚动、窗口与内容尺寸变化。 */
@@ -10,6 +12,7 @@ export function useFloatingPosition(options: {
   placement: () => Placement
   teleported: () => boolean
 }) {
+  useModalFloatingElement(options.popper, options.visible)
   const position = ref<Record<string, string>>({})
   const effectivePlacement = ref<Placement>(options.placement())
   let observer: ResizeObserver | undefined

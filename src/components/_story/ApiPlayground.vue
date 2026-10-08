@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneVNode, computed, createTextVNode, defineComponent, reactive, ref, toRaw, type VNode } from 'vue'
+import { h, computed, createTextVNode, defineComponent, reactive, ref, toRaw, withDirectives, type Component, type VNode } from 'vue'
 import catalog from '../_meta/api.json'
 
 const props = withDefaults(defineProps<{ component: string; sampleCount?: number; initialProps?: Record<string, unknown>; createInitialProps?: () => Record<string, unknown> }>(), { sampleCount: 1 })
@@ -35,19 +35,23 @@ const generation = ref(0)
 const slotText = reactive<Record<string, string>>({})
 const slotEnabled = reactive<Record<string, boolean>>({})
 const slotNames = reactive<Record<string, string>>({})
+// 用公开渲染 API 重建插槽；将原作用域样式标识作为属性保留，并转交公开指令绑定。
+function previewVNode(vnode: VNode, children: unknown) {
+  const scopeIds = vnode.scopeId ? [vnode.scopeId] : []
+  const props = { ...vnode.props, ...Object.fromEntries(scopeIds.map(id => [id, ''])) }
+  const result = h(vnode.type as Component, props, children as Record<string, unknown>)
+  return vnode.dirs ? withDirectives(result, vnode.dirs.map(binding => [binding.dir, binding.value, binding.arg, binding.modifiers])) : result
+}
 const SlotPreview = defineComponent({
   setup(_props, { slots }) {
     const decorate = (vnode: VNode): VNode => {
       if (Array.isArray(vnode.children)) {
-        const fragment = cloneVNode(vnode)
-        fragment.children = vnode.children.map(child => typeof child === 'object' && child !== null && '__v_isVNode' in child ? decorate(child as VNode) : child)
-        ;(fragment as VNode & { dynamicChildren: VNode[] | null }).dynamicChildren = null
-        return fragment
+        return previewVNode(vnode, vnode.children.map(child => typeof child === 'object' && child !== null && '__v_isVNode' in child ? decorate(child as VNode) : child))
       }
       if (typeof vnode.type !== 'object') return vnode
       const isTarget = (vnode.type as { name?: string }).name === props.component
       if (isTarget && !entry.value.slots.length) return vnode
-      const children = { ...(vnode.children as Record<string, unknown>) }
+      const children = Object.fromEntries(Object.entries(vnode.children ?? {}).filter(([name]) => name !== '_' && name !== '$stable'))
       if (!isTarget) for (const [name, render] of Object.entries(children)) {
         if (typeof render === 'function') children[name] = (...args: unknown[]) => render(...args).map(decorate)
       }
@@ -57,12 +61,7 @@ const SlotPreview = defineComponent({
         if (slotEnabled[slot.name] === false) delete children[name]
         else if (slotText[slot.name]) children[name] = () => [createTextVNode(slotText[slot.name])]
       }
-      const result = cloneVNode(vnode)
-      children._ = 2
-      result.children = children
-      result.shapeFlag = (result.shapeFlag & ~(8 | 16)) | 32
-      result.patchFlag |= 1024
-      return result
+      return previewVNode(vnode, children)
     }
     return () => (slots.default?.() ?? []).map(decorate)
   }
@@ -149,7 +148,7 @@ function inputValue(item: ControlProp) {
 function update(name: string, value: string, kind: string) {
   rawValues[name] = value
   delete errors[name]
-  if (!value) {
+  if (!value && kind !== 'text') {
     if (entry.value.props.find(item => item.name === name)?.required) {
       errors[name] = '必填属性不能取消覆盖；数组或对象请使用有效 JSON 表示空值。'
       return
@@ -159,6 +158,16 @@ function update(name: string, value: string, kind: string) {
   }
   try { values[name] = kind === 'json' ? JSON.parse(value) : kind === 'number' ? Number(value) : value }
   catch { errors[name] = '请输入有效 JSON；当前预览保留上一次有效值。' }
+}
+function restoreProp(name: string) {
+  delete values[name]
+  delete rawValues[name]
+  delete errors[name]
+  delete numericModes[name]
+}
+function pickerColor(name: string) {
+  const value = values[name]
+  return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value : undefined
 }
 async function callMethod(name: string) {
   try {
@@ -198,10 +207,16 @@ async function callMethod(name: string) {
             <span>{{ item.description?.split('，')[0] || item.name }}</span>
             <small v-if="inputKind(item) === 'callback'">由场景提供，签名见类型。</small>
             <input v-else-if="inputKind(item) === 'checkbox'" :checked="booleanValue(item.name)" type="checkbox" @change="values[item.name] = ($event.target as HTMLInputElement).checked" />
-            <select v-else-if="inputKind(item) === 'select'" :value="values[item.name] ?? ''" @change="update(item.name, ($event.target as HTMLSelectElement).value, 'text')"><option value="">默认</option><option v-for="option in item.options" :key="option">{{ option }}</option></select>
-            <input v-else-if="inputKind(item) === 'color'" :value="values[item.name] ?? '#ffffff'" type="color" @input="update(item.name, ($event.target as HTMLInputElement).value, 'text')" />
+            <select v-else-if="inputKind(item) === 'select'" :value="values[item.name] ?? ''" @change="($event.target as HTMLSelectElement).value === '' ? restoreProp(item.name) : update(item.name, ($event.target as HTMLSelectElement).value, 'text')"><option value="">默认</option><option v-for="option in item.options" :key="option">{{ option }}</option></select>
+            <template v-else-if="inputKind(item) === 'color'">
+              <input type="text" :value="inputValue(item)" :placeholder="item.default" @change="update(item.name, ($event.target as HTMLInputElement).value, 'text')" />
+              <input v-if="pickerColor(item.name)" :value="pickerColor(item.name)" type="color" @input="update(item.name, ($event.target as HTMLInputElement).value, 'text')" />
+              <button v-else type="button" @click="update(item.name, '#000000', 'text')">启用拾色</button>
+            </template>
             <input v-else :type="inputKind(item) === 'number' ? 'number' : 'text'" :value="inputValue(item)" :placeholder="item.default" :aria-invalid="!!errors[item.name]" @change="update(item.name, ($event.target as HTMLInputElement).value, inputKind(item))" />
             <select v-if="item.controlType === 'number|string'" :value="numericMode(item)" :aria-label="`${item.name} 输入方式`" @change="changeNumericMode(item, ($event.target as HTMLSelectElement).value as 'number' | 'text')"><option value="number">数值</option><option value="text">字符串</option></select>
+            <small>{{ Object.prototype.hasOwnProperty.call(values, item.name) ? '已覆盖' : '使用组件默认' }}</small>
+            <button v-if="!item.required && inputKind(item) !== 'callback'" type="button" @click="restoreProp(item.name)">使用默认</button>
             <small v-if="item.defaultNote">{{ item.defaultNote }}</small>
             <small v-if="errors[item.name]">{{ errors[item.name] }}</small>
           </label>
@@ -243,4 +258,3 @@ small { color: #64748b; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f8fafc; padding: 8px; }
 details { margin: 8px 0; }
 </style>
-

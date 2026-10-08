@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { createFontStyle } from '../../../_utils/size'
-import { computed, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, useAttrs, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, onUpdated, provide, ref, useAttrs, useId, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { getInputMetrics } from '../../../_utils/inputSize'
+import { useModalFloatingElement } from '../../../_utils/useModal'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { XBaseInput } from '../../../basic-components/base-input'
 import { formContextKey, formItemContextKey } from '../../form/src/context'
@@ -48,12 +49,14 @@ const emit = defineEmits<{
   query: []
 }>()
 
+const listboxId = useId()
 const attrs = useAttrs()
 const form = inject(formContextKey, null)
 const formItem = inject(formItemContextKey, null)
 const selectRef = ref<HTMLElement | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)
 const isOpen = ref(false)
+useModalFloatingElement(dropdownRef, isOpen)
 const isFocused = ref(false)
 const activeOptionIndex = ref(-1)
 const slotOptions = ref<SelectOptionRecord[]>([])
@@ -82,6 +85,7 @@ const normalizeOption = (option: SelectOptionSource): SelectOptionRecord => {
   const label = rawLabel == null ? String(rawValue ?? '') : String(rawLabel)
   const value = rawValue == null ? label : rawValue
   const normalized: SelectOptionRecord = {
+    id: '',
     label,
     value: value as SelectOptionValue
   }
@@ -93,7 +97,7 @@ const normalizeOption = (option: SelectOptionSource): SelectOptionRecord => {
   return normalized
 }
 
-const propOptions = computed<SelectOptionRecord[]>(() => props.options.map(normalizeOption))
+const propOptions = computed<SelectOptionRecord[]>(() => props.options.map((option, index) => ({ ...normalizeOption(option), id: `${listboxId}-option-${index}` })))
 const displayOptions = computed<SelectOptionRecord[]>(() => {
   if (props.remote) {
     return remoteOptions.value.length ? remoteOptions.value : propOptions.value
@@ -102,17 +106,14 @@ const displayOptions = computed<SelectOptionRecord[]>(() => {
   return propOptions.value
 })
 const allOptions = computed<SelectOptionRecord[]>(() => {
-  const map = new Map<SelectOptionValue, SelectOptionRecord>()
-  displayOptions.value.forEach((option) => map.set(option.value, option))
-  slotOptions.value.forEach((option) => map.set(option.value, option))
-  return Array.from(map.values())
+  return [...(isLoading.value ? [] : displayOptions.value), ...slotOptions.value]
 })
 const getOptionDisplayText = (option: SelectOptionRecord) => String(option[props.displayField])
 
 const selectedLabels = computed(() =>
   selectedValues.value
     .map((value) => {
-      const option = allOptions.value.find((item) => item.value === value)
+      const option = [...displayOptions.value, ...slotOptions.value].find((item) => item.value === value)
       return option ? getOptionDisplayText(option) : undefined
     })
     .filter(Boolean)
@@ -208,15 +209,30 @@ const dropdownClasses = computed(() => [
     'is-teleported': props.teleported
   }
 ])
-const enabledDisplayOptions = computed(() => displayOptions.value.filter((option) => !option.disabled))
+const enabledDisplayOptions = computed(() => allOptions.value.filter((option) => !option.disabled))
 
 const registerOption = (option: SelectOptionRecord) => {
-  slotOptions.value = [...slotOptions.value.filter((item) => item.value !== option.value), option]
+  const index = slotOptions.value.findIndex(item => item.id === option.id)
+  const previous = slotOptions.value[index]
+  if (previous && previous.value === option.value && previous.label === option.label && previous.disabled === option.disabled && previous.element === option.element) return
+  if (index < 0) slotOptions.value.push(option)
+  else slotOptions.value[index] = option
 }
 
-const unregisterOption = (value: SelectOptionValue) => {
-  slotOptions.value = slotOptions.value.filter((option) => option.value !== value)
+const unregisterOption = (id: string) => {
+  slotOptions.value = slotOptions.value.filter((option) => option.id !== id)
 }
+
+onUpdated(() => {
+  const ordered = [...slotOptions.value].sort((a, b) => {
+    if (!a.element || !b.element) return 0
+    const position = a.element.compareDocumentPosition(b.element)
+    if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1
+    if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1
+    return 0
+  })
+  if (ordered.some((option, index) => option.id !== slotOptions.value[index]?.id)) slotOptions.value = ordered
+})
 
 const commit = (value: SelectOptionValue | SelectOptionValue[] | undefined) => {
   emit('update:modelValue', value)
@@ -239,9 +255,9 @@ const selectOption = (option: SelectOptionRecord) => {
   isOpen.value = false
 }
 
-const getFirstEnabledOptionIndex = () => displayOptions.value.findIndex((option) => !option.disabled)
+const getFirstEnabledOptionIndex = () => allOptions.value.findIndex((option) => !option.disabled)
 
-const getSelectedOptionIndex = () => displayOptions.value.findIndex((option) => selectedValues.value.includes(option.value) && !option.disabled)
+const getSelectedOptionIndex = () => allOptions.value.findIndex((option) => selectedValues.value.includes(option.value) && !option.disabled)
 
 const setInitialActiveOption = () => {
   activeOptionIndex.value = getSelectedOptionIndex()
@@ -272,12 +288,12 @@ const moveActiveOption = async (step: 1 | -1) => {
     return
   }
 
-  if (activeOptionIndex.value < 0 || displayOptions.value[activeOptionIndex.value]?.disabled) {
-    activeOptionIndex.value = step > 0 ? -1 : displayOptions.value.length
+  if (activeOptionIndex.value < 0 || allOptions.value[activeOptionIndex.value]?.disabled) {
+    activeOptionIndex.value = step > 0 ? -1 : allOptions.value.length
   }
 
-  for (let index = activeOptionIndex.value + step; index >= 0 && index < displayOptions.value.length; index += step) {
-    if (!displayOptions.value[index]?.disabled) {
+  for (let index = activeOptionIndex.value + step; index >= 0 && index < allOptions.value.length; index += step) {
+    if (!allOptions.value[index]?.disabled) {
       activeOptionIndex.value = index
       await nextTick()
       scrollActiveOptionIntoView()
@@ -285,19 +301,20 @@ const moveActiveOption = async (step: 1 | -1) => {
     }
   }
 
-  activeOptionIndex.value = step > 0 ? getFirstEnabledOptionIndex() : displayOptions.value.map((option) => !option.disabled).lastIndexOf(true)
+  activeOptionIndex.value = step > 0 ? getFirstEnabledOptionIndex() : allOptions.value.map((option) => !option.disabled).lastIndexOf(true)
   await nextTick()
   scrollActiveOptionIntoView()
 }
 
 const selectActiveOption = () => {
-  const option = displayOptions.value[activeOptionIndex.value]
+  const option = allOptions.value[activeOptionIndex.value]
   if (!option) return
   selectOption(option)
 }
 
 const scrollActiveOptionIntoView = () => {
-  const optionEl = dropdownRef.value?.querySelectorAll<HTMLElement>('.x-option')[activeOptionIndex.value]
+  const id = allOptions.value[activeOptionIndex.value]?.id
+  const optionEl = id ? document.getElementById(id) : null
   optionEl?.scrollIntoView({ block: 'nearest' })
 }
 
@@ -311,7 +328,7 @@ const runRemoteQuery = async () => {
   try {
     const result = await props.remoteMethod()
     if (requestId !== remoteRequestId || !Array.isArray(result)) return
-    remoteOptions.value = result.map(normalizeOption)
+    remoteOptions.value = result.map((option, index) => ({ ...normalizeOption(option), id: `${listboxId}-option-${index}` }))
   } finally {
     if (requestId === remoteRequestId) {
       remoteLoading.value = false
@@ -410,7 +427,7 @@ const handleFocus = (event: FocusEvent) => {
 const handleBlur = (event: FocusEvent) => {
   isFocused.value = false
   window.setTimeout(() => {
-    isOpen.value = false
+    if (!selectRef.value?.contains(document.activeElement) && !dropdownRef.value?.contains(document.activeElement)) close()
   }, 120)
   emit('blur', event)
 }
@@ -457,6 +474,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 
   if (event.key === 'Escape' && isOpen.value) {
     event.preventDefault()
+    event.stopPropagation()
     close()
   }
 }
@@ -503,7 +521,7 @@ watch(
 )
 
 watch(
-  () => allOptions.value.map((option) => getOptionDisplayText(option)).join('\u0000'),
+  () => allOptions.value.map((option) => `${option.id}:${option.value}:${option.disabled}:${getOptionDisplayText(option)}`).join('\u0000'),
   async () => {
     if (!isOpen.value) return
     setInitialActiveOption()
@@ -513,7 +531,7 @@ watch(
 )
 
 provide(selectContextKey, {
-  multiple: props.multiple,
+  isActive: id => allOptions.value[activeOptionIndex.value]?.id === id,
   selectedValues: () => selectedValues.value,
   getOptionDisplayText,
   registerOption,
@@ -569,6 +587,8 @@ onBeforeUnmount(() => {
           :disabled="mergedDisabled"
           :name="props.name"
           :aria-expanded="isOpen"
+          :aria-controls="listboxId"
+          :aria-activedescendant="isOpen ? allOptions[activeOptionIndex]?.id : undefined"
           :aria-readonly="props.readonly || undefined"
           aria-haspopup="listbox"
           @focus="handleFocus"
@@ -609,16 +629,20 @@ onBeforeUnmount(() => {
         ref="dropdownRef"
         :class="dropdownClasses"
         :style="dropdownStyle"
+        :id="listboxId"
+        @keydown="handleKeydown"
         role="listbox"
         :aria-multiselectable="props.multiple || undefined"
       >
         <div v-if="isLoading" class="x-select__empty">{{ props.loadingText }}</div>
         <template v-else>
           <button
-            v-for="(option, index) in displayOptions"
-            :key="String(option.value)"
+            v-for="option in displayOptions"
+            :key="option.id"
+            :id="option.id"
+            tabindex="-1"
             class="x-option"
-            :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled, 'is-active': index === activeOptionIndex }"
+            :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled, 'is-active': option.id === allOptions[activeOptionIndex]?.id }"
             type="button"
             role="option"
             :aria-selected="selectedValues.includes(option.value)"
@@ -640,16 +664,20 @@ onBeforeUnmount(() => {
       ref="dropdownRef"
       :class="dropdownClasses"
       :style="dropdownStyle"
+      :id="listboxId"
+      @keydown="handleKeydown"
       role="listbox"
       :aria-multiselectable="props.multiple || undefined"
     >
       <div v-if="isLoading" class="x-select__empty">{{ props.loadingText }}</div>
       <template v-else>
         <button
-          v-for="(option, index) in displayOptions"
-          :key="String(option.value)"
+          v-for="option in displayOptions"
+          :key="option.id"
+            :id="option.id"
+            tabindex="-1"
           class="x-option"
-          :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled, 'is-active': index === activeOptionIndex }"
+          :class="{ 'is-selected': selectedValues.includes(option.value), 'is-disabled': option.disabled, 'is-active': option.id === allOptions[activeOptionIndex]?.id }"
           type="button"
           role="option"
           :aria-selected="selectedValues.includes(option.value)"

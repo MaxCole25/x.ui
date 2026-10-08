@@ -175,3 +175,8 @@ export interface DrawerProps extends ElementStyleProps, OverlayProps {
 
 - 调整各功能分组中的属性，核对实际显示与默认值。
 - 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。
+
+
+## 交互验收补充
+
+抽屉与弹窗共享模态键盘和滚动锁。内部 Select 先处理 Esc；closeOnEsc=false 不阻止下拉关闭。多层模态框按 zIndex 处理最上层，关闭一层保留其它层的滚动锁和焦点范围。

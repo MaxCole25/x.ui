@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { overlayZIndex } from '../../_utils/zIndex'
-import XSelect from './src/Select.vue'
+import { computed, ref } from 'vue'
+import { XSelect, XOption } from './index'
 import type { SelectProps } from './src/types'
 import '../../../styles/index.css'
 const selectOptions = [
@@ -11,7 +12,8 @@ const selectOptions = [
   { label: 'Vitest（禁用）', value: 'vitest', disabled: true }
 ]
 const querySampleOptions = async () => selectOptions
-const initialProps = {
+const optionSource = ref('options')
+const initialProps = computed(() => ({
   modelValue: 'vue',
   fieldNames: {
     label: 'label',
@@ -59,18 +61,25 @@ const initialProps = {
   popperBackgroundColor: '#ffffff',
   textColor: '#0f172a',
   accentColor: '#1264f4',
-  options: selectOptions,
+  options: optionSource.value === 'slot' ? [] : selectOptions,
   remoteMethod: querySampleOptions
-} satisfies SelectProps
+} satisfies SelectProps))
 </script>
 
 <template>
   <Story title="Form 组件/Select 选择器" group="components">
     <Variant title="外观接口">
       <p>浮层验收：打开后切换 teleported、滚动或调整窗口；快速关闭、重开及恢复默认，检查浮层位置和事件日志。</p>
-      <ApiPlayground component="XSelect" :initial-props="initialProps">
+      <label>选项来源 <select v-model="optionSource"><option value="options">options</option><option value="slot">纯 XOption</option><option value="mixed">混合</option></select></label>
+      <ApiPlayground :key="optionSource" component="XSelect" :initial-props="initialProps">
         <template #default="{ apiProps, apiEvents, captureInstance }">
-          <XSelect v-bind="apiProps" class="story-select--wide" v-on="apiEvents" @vue:mounted="captureInstance" />
+          <XSelect v-bind="apiProps" class="story-select--wide" v-on="apiEvents" @vue:mounted="captureInstance">
+            <template v-if="optionSource !== 'options'">
+              <XOption label="插槽第一项" value="slot-first" />
+              <XOption label="插槽禁用项" value="slot-disabled" disabled />
+              <XOption label="插槽最后一项" value="slot-last" />
+            </template>
+          </XSelect>
         </template>
       </ApiPlayground>
     </Variant>

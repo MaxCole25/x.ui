@@ -1,4 +1,4 @@
-import { nextTick, onBeforeUnmount, onMounted, watch, type Ref } from 'vue'
+import { inject, nextTick, onBeforeUnmount, onMounted, provide, watch, type InjectionKey, type Ref } from 'vue'
 
 interface ModalEntry {
   element: Ref<HTMLElement | null>
@@ -6,6 +6,20 @@ interface ModalEntry {
   closeOnEsc: () => boolean
   close: () => void
   previousFocus: HTMLElement | null
+  floatingElements: Set<Ref<HTMLElement | null>>
+}
+
+const modalKey: InjectionKey<ModalEntry> = Symbol('x-modal')
+const containsFocus = (entry: ModalEntry, target: Node | null) => Boolean(target && (entry.element.value?.contains(target) || [...entry.floatingElements].some(item => item.value?.contains(target))))
+
+/** 将 Teleport 子浮层关联到所属模态框，供焦点循环和恢复使用。 */
+export function useModalFloatingElement(element: Ref<HTMLElement | null>, visible: Readonly<Ref<boolean>>) {
+  const modal = inject(modalKey, null)
+  const stop = watch(visible, opened => {
+    if (opened) modal?.floatingElements.add(element)
+    else modal?.floatingElements.delete(element)
+  }, { immediate: true, flush: 'sync' })
+  onBeforeUnmount(() => { stop(); modal?.floatingElements.delete(element) })
 }
 
 const modals: ModalEntry[] = []
@@ -22,16 +36,18 @@ function focusModal(entry: ModalEntry) {
 function onKeydown(event: KeyboardEvent) {
   const entry = topModal()
   const element = entry?.element.value
-  if (!entry || !element) return
+  if (!entry || !element || event.defaultPrevented) return
   if (event.key === 'Escape' && !event.isComposing) {
-    event.preventDefault()
-    event.stopPropagation()
-    if (entry.closeOnEsc()) entry.close()
+    if (entry.closeOnEsc()) {
+      event.preventDefault()
+      event.stopPropagation()
+      entry.close()
+    }
   } else if (event.key === 'Tab') {
-    const items = focusableElements(element)
+    const items = [element, ...[...entry.floatingElements].map(item => item.value).filter((item): item is HTMLElement => item !== null && !element.contains(item))].flatMap(focusableElements)
     const first = items[0]
     const last = items[items.length - 1]
-    if (!first || !element.contains(document.activeElement) || (event.shiftKey ? document.activeElement === first || document.activeElement === element : document.activeElement === last)) {
+    if (!first || !containsFocus(entry, document.activeElement) || (event.shiftKey ? document.activeElement === first || document.activeElement === element : document.activeElement === last)) {
       event.preventDefault()
       ;(event.shiftKey ? last ?? element : first ?? element).focus()
     }
@@ -46,7 +62,8 @@ export function useModal(options: {
   closeOnEsc: () => boolean
   close: () => void
 }) {
-  const entry: ModalEntry = { ...options, previousFocus: null }
+  const entry: ModalEntry = { ...options, previousFocus: null, floatingElements: new Set() }
+  provide(modalKey, entry)
   let stop: (() => void) | undefined
   function deactivate() {
     const index = modals.indexOf(entry)
@@ -55,11 +72,11 @@ export function useModal(options: {
     modals.splice(index, 1)
     if (!modals.length) {
       document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', onKeydown, true)
+      document.removeEventListener('keydown', onKeydown)
     }
     if (!wasTop) return
     const top = topModal()
-    if (entry.previousFocus?.isConnected && (!top || top.element.value?.contains(entry.previousFocus))) entry.previousFocus.focus({ preventScroll: true })
+    if (entry.previousFocus?.isConnected && (!top || containsFocus(top, entry.previousFocus))) entry.previousFocus.focus({ preventScroll: true })
     else if (top) focusModal(top)
   }
   onMounted(() => {
@@ -70,7 +87,7 @@ export function useModal(options: {
       if (!modals.length) {
         previousOverflow = document.body.style.overflow
         document.body.style.overflow = 'hidden'
-        document.addEventListener('keydown', onKeydown, true)
+        document.addEventListener('keydown', onKeydown)
       }
       modals.push(entry)
       await nextTick()

@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { createFontStyle } from '../../../_utils/size'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { JSONContent } from '@tiptap/core'
 import type { RichEditorExpose, UploadResult } from './core/rich-editor/custom/types'
 import RichEditor from './core/rich-editor/RichEditor.vue'
@@ -64,8 +64,8 @@ function stringifyValue(value: JSONContent | string | null | undefined): string 
 
 const editorValue = ref<JSONContent | string | null>(parseValue(props.modelValue, props.fallbackHtml))
 
-function handleGlobalKeydown(event: KeyboardEvent) {
-  if (!props.canSave || props.readonly) {
+function handleKeydown(event: KeyboardEvent) {
+  if (!props.canSave || props.readonly || event.defaultPrevented || event.isComposing) {
     return
   }
 
@@ -77,14 +77,6 @@ function handleGlobalKeydown(event: KeyboardEvent) {
   event.preventDefault()
   emit('save-doc')
 }
-
-onMounted(() => {
-  window.addEventListener('keydown', handleGlobalKeydown)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleGlobalKeydown)
-})
 
 watch(
   () => [props.modelValue, props.fallbackHtml],
@@ -147,6 +139,7 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
 <template>
   <div
     class="x-rich-text-editor"
+    @keydown="handleKeydown"
     :class="{ 'x-rich-text-editor--fill-height': props.fullHeight }"
     :style="[{ '--xl-editor-min-height': editorMinHeight }, createFontStyle(props.fontSize ?? 14)]"
   >

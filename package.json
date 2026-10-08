@@ -19,7 +19,19 @@
       "import": "./dist/x-ui.js"
     },
     "./style.css": "./dist/style.css",
-    "./remixicon.css": "./src/remixicon.css"
+    "./remixicon.css": "./src/remixicon.css",
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/button.js"
+    },
+    "./chart": {
+      "types": "./dist/chart.d.ts",
+      "import": "./dist/chart.js"
+    },
+    "./rich-text-editor": {
+      "types": "./dist/rich-text-editor.d.ts",
+      "import": "./dist/rich-text-editor.js"
+    }
   },
   "sideEffects": [
     "**/*.css"
@@ -36,7 +48,7 @@
     "api:naming:audit:check": "node scripts/audit-api-naming.mjs --check --max-legacy=0 --max-review=0",
     "build": "vue-tsc --noEmit -p tsconfig.build.json && vite build",
     "build:watch": "vite build --watch",
-    "prepublishOnly": "pnpm api:naming:audit:check && pnpm test && pnpm build",
+    "prepublishOnly": "pnpm check",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

@@ -22,7 +22,8 @@ export default defineConfig({
           { text: '字体与控件高度', link: '/guide/typography' },
           { text: '接口命名规范', link: '/guide/api-naming' },
           { text: '接口命名审计', link: '/guide/api-naming-audit' },
-          { text: '组件测试', link: '/guide/testing' }
+          { text: '组件测试', link: '/guide/testing' },
+          { text: '优化进度', link: '/guide/optimization-progress' }
         ]
       },
 

@@ -190,3 +190,8 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
 1. 分别检查 `draggable`、`resizable`、`showFullscreen` 开关，确认拖拽、缩放和全屏切换行为符合预期。
 2. 验证 `closeOnMaskClick` 在 `true/false` 两种状态下的关闭行为。
 3. 在默认、`header`、`footer` 三个插槽中放入长文本和复杂表单，确认内容不溢出且窄容器可滚动。
+
+
+## 交互验收补充
+
+弹窗内 Select 展开时，第一次 Esc 只关闭下拉，第二次 Esc 根据 closeOnEsc 处理弹窗。closeOnEsc=false 不阻止内部下拉关闭；嵌套模态框只处理层级最高的一层。所属 Teleport 子浮层参与焦点循环，关闭顶层后恢复原焦点；最后一层关闭后恢复页面滚动。
