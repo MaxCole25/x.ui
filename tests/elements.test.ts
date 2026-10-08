@@ -244,7 +244,7 @@ describe('元素组件', () => {
       [XDateTimePicker, { props: { modelValue: '2026-05-12 09:30' }, target: 'input' }],
       [XTimePicker, { props: { modelValue: '09:30' }, target: 'input' }],
       [XTimeSelect, { props: { modelValue: '09:30' }, target: 'input' }],
-      [XColorPicker, { props: { modelValue: '#1264f4' }, target: 'input[type="color"]' }]
+      [XColorPicker, { props: { modelValue: '#1264f4' }, target: '.x-color-picker__chip' }]
     ] as const
 
     for (const [component, options] of cases) {
@@ -1432,7 +1432,7 @@ describe('元素组件', () => {
 
   it('keeps disabled color picker from emitting panel updates', async () => {
     const wrapper = mount(XColorPicker, {
-      props: { modelValue: '#1264f4', disabled: true }
+      props: { modelValue: '#1264f4', disabled: true, panelMode: 'inline' }
     })
 
     await wrapper.findAll('.x-color-panel__swatch')[1].trigger('click')

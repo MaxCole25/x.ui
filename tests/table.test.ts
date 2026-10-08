@@ -337,12 +337,12 @@ describe('XTable', () => {
     expect(style).toContain('--x-table-vertical-border-width: 3px')
   })
 
-  it('lets rowHeight override size row height without resizing controls', () => {
+  it('lets rowHeight and fontSize change independently without resizing controls', () => {
     const wrapper = mount(XTable, {
       props: {
         columns,
         data,
-        size: 'sm',
+        fontSize: 10,
         rowHeight: 40,
         showActions: true
       }
@@ -350,9 +350,9 @@ describe('XTable', () => {
 
     const style = wrapper.find('.x-table').attributes('style')
     expect(style).toContain('--x-table-row-height: 40px')
-    expect(style).toContain('--x-table-control-height: 22px')
+    expect(style).toContain('--x-table-control-height: 32px')
     expect(style).toContain('--x-table-font-size: 10px')
-    expect(style).toContain('--x-table-cell-padding: 0 4px')
+    expect(style).toContain('--x-table-cell-padding: 0 8px')
   })
 
   it('keeps custom rowHeight css length strings intact', () => {
@@ -372,12 +372,12 @@ describe('XTable', () => {
       props: {
         columns,
         data,
-        size: 'lg',
+        fontSize: 18,
         rowHeight: ''
       }
     })
 
-    expect(wrapper.find('.x-table').attributes('style')).toContain('--x-table-row-height: 38px')
+    expect(wrapper.find('.x-table').attributes('style')).toContain('--x-table-row-height: 32px')
   })
 
   it('preserves transparent viewport and custom header divider colors on the root variables', () => {
@@ -457,8 +457,8 @@ describe('XTable', () => {
     expect(selectedCellRule).not.toContain('color: var(--x-table-cell-selected-text-color, #0f172a);')
     expect(selectedCellAfterRule).toContain('border: 2px solid var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4));')
     expect(selectedCellAdjacentTopRule).toContain('border-top-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4)));')
-    expect(globalStyles).toContain('--x-table-cell-selected-background: rgb(59 130 246 / 12%);')
-    expect(globalStyles).toContain('--x-table-cell-selected-text-color: var(--x-color-text, #1f2937);')
+    expect(globalStyles).toContain('--x-table-cell-selected-background: #dff7ee;')
+    expect(globalStyles).toContain('--x-table-cell-selected-text-color: #14221f;')
     expect(globalStyles).toContain('--x-table-cell-selected-background: rgba(59, 130, 246, 0.18);')
     expect(globalStyles).toContain('--x-table-cell-selected-text-color: var(--x-color-text, #eef4fb);')
   })
@@ -507,7 +507,7 @@ describe('XTable', () => {
     expect(controlRules).not.toMatch(/(?:background|border|border-color|color):\s*(#fff|#cbd5e1|#334155|#475569|#f1f5f9|#94a3b8)\b/)
 
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #ffffff);')
-    expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, #e0ecff);')
+    expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, #d6e6ff);')
     expect(globalStyles).toContain('--x-table-control-disabled-bg: var(--x-color-disabled-bg);')
     expect(globalStyles).toContain('--x-table-control-bg: var(--x-color-surface, #0b1726);')
     expect(globalStyles).toContain('--x-table-control-hover-bg: var(--x-color-primary-soft, rgba(59, 130, 246, 0.16));')
@@ -797,12 +797,12 @@ describe('XTable', () => {
       await nextTick()
       await nextTick()
 
-      expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('200px 272px 96px 232px')
+      expect(wrapper.find('.x-table__row--header').attributes('style')).toContain('200px 288px 96px 216px')
 
       const cells = wrapper.find('.x-table__row--body').findAll('.x-table__cell')
       expect(cells[0].attributes('style')).toContain('left: 0px')
       expect(cells[1].attributes('style')).toContain('left: 200px')
-      expect(cells[2].attributes('style')).toContain('right: 232px')
+      expect(cells[2].attributes('style')).toContain('right: 216px')
       expect(cells[3].attributes('style')).toContain('right: 0px')
     } finally {
       clientWidthSpy.mockRestore()
@@ -909,6 +909,7 @@ describe('XTable', () => {
         '向上插入行Ctrl+U',
         '向下插入行Ctrl+D',
         '适合宽度Ctrl+W',
+        '比例宽度',
         '适应宽度',
         '导出Excel（默认表格数据）',
         '导出Excel（格式化文字）',
@@ -1039,7 +1040,7 @@ describe('XTable', () => {
 
     try {
       await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
-      await wrapper.findAll('.x-table__context-menu-item')[6].trigger('click')
+      await wrapper.findAll('.x-table__context-menu-item').find((item) => item.text() === '适应宽度')!.trigger('click')
       await nextTick()
 
       const settings = wrapper.emitted('update:columnSettings')?.[0]?.[0] as Array<{ key: string; width?: number }>
@@ -1449,7 +1450,7 @@ describe('XTable', () => {
 
     try {
       await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
-      await wrapper.findAll('.x-table__context-menu-item')[7].trigger('click')
+      await wrapper.findAll('.x-table__context-menu-item').find((item) => item.text() === '导出Excel（默认表格数据）')!.trigger('click')
       await flushPromises()
 
       expect(aoaSpy).toHaveBeenLastCalledWith([
@@ -1460,7 +1461,7 @@ describe('XTable', () => {
       expect(wrapper.emitted('excel-export')?.[0]?.[0]).toMatchObject({ mode: 'raw', fileName: 'table-data.xlsx' })
 
       await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
-      await wrapper.findAll('.x-table__context-menu-item')[8].trigger('click')
+      await wrapper.findAll('.x-table__context-menu-item').find((item) => item.text() === '导出Excel（格式化文字）')!.trigger('click')
       await flushPromises()
 
       expect(aoaSpy).toHaveBeenLastCalledWith([
@@ -1583,10 +1584,10 @@ describe('XTable', () => {
     })
 
     await wrapper.findAll('.x-table__row--body')[0].findAll('.x-table__cell')[0].trigger('contextmenu', { clientX: 20, clientY: 20 })
-    expect(wrapper.findAll('.x-table__context-menu-item')[9].attributes('disabled')).toBeDefined()
+    expect(wrapper.findAll('.x-table__context-menu-item').find((item) => item.text() === '导入Excel')!.attributes('disabled')).toBeDefined()
 
     await wrapper.setProps({ editable: true })
-    expect(wrapper.findAll('.x-table__context-menu-item')[9].attributes('disabled')).toBeUndefined()
+    expect(wrapper.findAll('.x-table__context-menu-item').find((item) => item.text() === '导入Excel')!.attributes('disabled')).toBeUndefined()
 
     await (wrapper.vm as unknown as { importExcelFile: (file: File) => Promise<void> }).importExcelFile(file)
     await flushPromises()

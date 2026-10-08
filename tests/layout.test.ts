@@ -30,14 +30,14 @@ describe('XLayout', () => {
     expect(style).toContain('--x-layout-gap: 0px')
     expect(style).toContain('--x-layout-topbar-height: 55px')
     expect(style).toContain('--x-layout-footer-height: 30px')
-    expect(style).toContain('--x-layout-topbar-bg: #1E6B73')
-    expect(style).toContain('--x-layout-sidebar-bg: #185A61')
-    expect(style).toContain('--x-layout-content-bg: transparent')
-    expect(style).toContain('--x-layout-footer-bg: #124A50')
-    expect(style).toContain('--x-layout-topbar-color: #F9F9F9')
+    expect(style).toContain('--x-layout-topbar-bg: #ffffff')
+    expect(style).toContain('--x-layout-sidebar-bg: #263d6f')
+    expect(style).toContain('--x-layout-content-bg: #ffffff')
+    expect(style).toContain('--x-layout-footer-bg: #ffffff')
+    expect(style).toContain('--x-layout-topbar-color: #14221f')
     expect(style).toContain('--x-layout-topbar-radius: 0px')
-    expect(style).toContain('--x-layout-topbar-border: none')
-    expect(style).toContain('--x-layout-footer-border: none')
+    expect(style).toContain('--x-layout-topbar-border: 1px solid #cdded7')
+    expect(style).toContain('--x-layout-footer-border: 1px solid #cdded7')
     expect(style).toContain('--x-layout-sidebar-padding: 12px')
     expect(style).not.toContain('--x-layout-content-border')
   })
@@ -114,14 +114,14 @@ describe('XLayout', () => {
         topbarHeight: 64,
         footerHeight: '2.5rem',
         topbarBackgroundColor: '#123456',
-        topbarColor: '#ffffff',
+        topbarTextColor: '#ffffff',
         topbarRadius: 6,
-        topbarBorder: '1px solid #ffffff',
-        sidebarBorder: '1px solid #0f172a',
+        topbarBorderColor: '1px solid #ffffff',
+        sidebarBorderColor: '1px solid #0f172a',
         contentBackgroundColor: '#f8fafc',
-        contentColor: '#102a43',
+        contentTextColor: '#102a43',
         contentRadius: '12px',
-        footerBorder: '1px solid #94a3b8'
+        footerBorderColor: '1px solid #94a3b8'
       }
     })
     const style = wrapper.attributes('style')

@@ -4,7 +4,7 @@ import { nextTick } from 'vue'
 import { XScrollingText } from '../src'
 
 describe('XScrollingText', () => {
-  it('renders duplicated default slot content for continuous scrolling', () => {
+  it('renders a single default slot content for each scrolling cycle', () => {
     const wrapper = mount(XScrollingText, {
       slots: {
         default: '滚动公告'
@@ -12,9 +12,9 @@ describe('XScrollingText', () => {
     })
 
     const contents = wrapper.findAll('.x-scrolling-text__content')
-    expect(contents).toHaveLength(2)
+    expect(contents).toHaveLength(1)
     expect(contents[0].text()).toBe('滚动公告')
-    expect(contents[1].attributes('aria-hidden')).toBe('true')
+    expect(contents[0].attributes('aria-hidden')).toBeUndefined()
   })
 
   it('uses horizontal display and width by default', () => {
