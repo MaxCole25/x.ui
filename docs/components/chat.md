@@ -83,7 +83,7 @@ import Example1Source from '../examples/chat/Example1.vue?raw'
 | `senderId` | 发送者标识 | `ChatMessageId` |
 | `senderName` | 昵称 | `string` |
 | `avatar` | 头像地址 | `string` |
-| `kind` | 消息形态，默认 text | `'text' \| 'image' \| 'file' \| 'system'` |
+| `kind` | 消息形态，默认 text | `'text' \| 'image' \| 'file' \| 'system' \| 'business'` |
 | `content` | 必填，文本内容；图片消息用作替代文本 | `string` |
 | `time` | 格式化的时间文本 | `string` |
 | `imageUrl` | 图片消息的地址 | `string` |
@@ -152,3 +152,11 @@ import Example1Source from '../examples/chat/Example1.vue?raw'
 
 - 选择图片和文件、粘贴截图，检查待发送预览、移除和发送；选择常用表情，检查光标位置插入。
 - 验证 Enter 发送、Shift+Enter 换行与中文输入法；关闭输入区或禁用时核对操作状态。
+
+## 业务单据与历史定位
+
+业务消息使用 `kind: 'business'` 和 `business: ChatBusinessReference`，显示类型、编号、标题和摘要；点击触发 `business-click`（参数为 ChatMessageClickPayload），由 ERP 打开单据并校验权限。
+
+`ChatBusinessReference` 包含 businessType、businessId、businessNumber、title、可选 summary。消息可选 `sentAt: string` 保存原始时间，`time` 仍用于显示。
+
+新增实例方法 `scrollToMessage(id): Promise<boolean>`，加载目标消息后滚动并短暂高亮，未找到返回 false。在数组前部合并更早消息时保持当前阅读位置。完整会话、通讯录与查询交互见 [内部通讯 Messenger](./messenger)。

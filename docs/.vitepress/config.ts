@@ -80,6 +80,8 @@ export default defineConfig({
             items: [
               { text: '头像 Avatar', link: '/components/avatar' },
               { text: '聊天消息 Chat', link: '/components/chat' },
+              { text: '通讯录 ContactList', link: '/components/contact-list' },
+              { text: '会话列表 ConversationList', link: '/components/conversation-list' },
               { text: '图表 Chart', link: '/components/chart' },
               { text: '空状态 Empty', link: '/components/empty' },
               { text: '徽标 Badge', link: '/components/badge' },
@@ -133,6 +135,7 @@ export default defineConfig({
             text: '其它组件',
             collapsed: true,
             items: [
+              { text: '内部通讯 Messenger', link: '/components/messenger' },
               { text: '文件磁盘 FileDisk', link: '/components/file-disk' },
               { text: '数据表设置 DataTableSettings', link: '/components/data-table-settings' },
               { text: '表格列设置 TableColumnSettings', link: '/components/table-column-settings' },

@@ -21,6 +21,12 @@ export interface BaseInputProps extends ElementStyleProps {
   status?: BaseInputStatus
   prefix?: string
   suffix?: string
+  /** 输入内容垂直偏移，单位 px；正值向下，负值向上。 */
+  inputOffsetY?: number
+  /** 前缀垂直偏移，单位 px；正值向下，负值向上。 */
+  prefixOffsetY?: number
+  /** 后缀垂直偏移，单位 px；正值向下，负值向上。 */
+  suffixOffsetY?: number
   accentColor?: string
   activeBorderColor?: string
   clearIconColor?: string

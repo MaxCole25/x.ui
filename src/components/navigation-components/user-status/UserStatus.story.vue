@@ -20,7 +20,7 @@ const appearance = reactive({
   placement: 'bottom-end' as DropdownPlacement,
   disabled: false,
   hideOnClick: true,
-  teleported: false,
+  teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
   command: '',

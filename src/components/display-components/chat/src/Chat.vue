@@ -5,7 +5,7 @@ import { XIcon } from '../../../basic-components/icon'
 import { formatChatFileSize, useChatComposer } from './useChatComposer'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle } from '../../../_utils/size'
-import type { ChatEmits, ChatExpose, ChatMessage, ChatProps, ChatSlots } from './types'
+import type { ChatEmits, ChatExpose, ChatMessage, ChatMessageId, ChatProps, ChatSlots } from './types'
 
 defineOptions({ name: 'XChat' })
 const props = withDefaults(defineProps<ChatProps>(), {
@@ -24,6 +24,31 @@ const content = ref<HTMLDivElement>()
 const shouldFollow = ref(true)
 let lastScrollTop = 0
 let resizeObserver: ResizeObserver | undefined
+const highlightedId = ref<ChatMessageId>()
+let highlightTimer: ReturnType<typeof setTimeout> | undefined
+async function scrollToMessage(id: ChatMessageId) {
+  await nextTick()
+  const index = props.messages.findIndex(message => message.id === id)
+  const item = content.value?.querySelectorAll<HTMLElement>('.x-chat__item')[index]
+  if (!item || !viewport.value) return false
+  shouldFollow.value = false
+  highlightedId.value = id
+  viewport.value.scrollTo({ top: viewport.value.scrollTop + item.getBoundingClientRect().top - viewport.value.getBoundingClientRect().top - viewport.value.clientHeight / 3 })
+  clearTimeout(highlightTimer)
+  highlightTimer = setTimeout(() => { highlightedId.value = undefined }, 2400)
+  return true
+}
+watch(() => props.messages[0]?.id, async (firstId, previousId) => {
+  if (previousId === undefined || firstId === previousId || !props.messages.some(message => message.id === previousId)) return
+  const element = viewport.value
+  if (!element) return
+  const previousHeight = element.scrollHeight
+  const previousTop = element.scrollTop
+  shouldFollow.value = false
+  await nextTick()
+  element.scrollTop = previousTop + element.scrollHeight - previousHeight
+  lastScrollTop = element.scrollTop
+}, { flush: 'pre' })
 const isSelf = (message: ChatMessage) => props.currentUserId !== undefined && message.senderId === props.currentUserId
 const statusText = { sending: '发送中', sent: '已发送', read: '已读', failed: '发送失败' }
 const chatStyle = computed(() => ({
@@ -58,8 +83,8 @@ onMounted(() => {
   resizeObserver.observe(content.value!)
   resizeObserver.observe(viewport.value!)
 })
-onBeforeUnmount(() => resizeObserver?.disconnect())
-defineExpose<ChatExpose>({ scrollToBottom, focus, clearDraft, sendMessage })
+onBeforeUnmount(() => { resizeObserver?.disconnect(); clearTimeout(highlightTimer) })
+defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, sendMessage })
 </script>
 
 <template>
@@ -68,7 +93,7 @@ defineExpose<ChatExpose>({ scrollToBottom, focus, clearDraft, sendMessage })
     <div ref="viewport" class="x-chat__viewport" role="log" aria-label="消息列表" aria-live="polite" aria-relevant="additions text" tabindex="0" @scroll="handleScroll">
       <div ref="content" class="x-chat__messages">
         <div v-if="!messages.length" class="x-chat__empty"><slot name="empty">{{ emptyText }}</slot></div>
-        <div v-for="(message, index) in messages" :key="message.id" class="x-chat__item" :class="{ 'is-self': isSelf(message), 'is-system': message.kind === 'system' }">
+        <div v-for="(message, index) in messages" :key="message.id" class="x-chat__item" :class="{ 'is-self': isSelf(message), 'is-system': message.kind === 'system', 'is-highlighted': message.id === highlightedId }">
           <template v-if="message.kind === 'system'">
             <span class="x-chat__system"><slot name="message" :message="message" :index="index" :is-self="false">{{ message.content }}</slot></span>
           </template>
@@ -92,6 +117,12 @@ defineExpose<ChatExpose>({ scrollToBottom, focus, clearDraft, sendMessage })
                   <button v-else-if="message.kind === 'file'" type="button" class="x-chat__file" @click="emit('file-click', { message, index, isSelf: isSelf(message), event: $event })">
                     <XIcon name="file-2" :icon-size="28" />
                     <span><strong>{{ message.fileName || message.content }}</strong><small>{{ message.fileSize === undefined ? '文件' : formatChatFileSize(message.fileSize) }} · 点击查看</small></span>
+                  </button>
+                  <button v-else-if="message.kind === 'business' && message.business" type="button" class="x-chat__business" @click="emit('business-click', { message, index, isSelf: isSelf(message), event: $event })">
+                    <small>{{ message.business.businessType }} · {{ message.business.businessNumber }}</small>
+                    <strong>{{ message.business.title }}</strong>
+                    <span v-if="message.business.summary">{{ message.business.summary }}</span>
+                    <small>查看单据 →</small>
                   </button>
                   <span v-else class="x-chat__text">{{ message.content }}</span>
                 </slot>
@@ -133,3 +164,9 @@ defineExpose<ChatExpose>({ scrollToBottom, focus, clearDraft, sendMessage })
     </footer>
   </section>
 </template>
+
+<style scoped>
+.x-chat__business { display: grid; gap: 6px; width: min(280px, 100%); border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+.x-chat__business small { color: var(--x-color-text-muted, #737b8c); }
+.x-chat__item.is-highlighted .x-chat__bubble { outline: 2px solid var(--x-color-primary, #409eff); outline-offset: 3px; }
+</style>

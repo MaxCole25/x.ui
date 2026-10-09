@@ -197,7 +197,7 @@ import Example3Source from '../examples/date-picker/Example3.vue?raw'
 ### DatePickerProps
 
 ```ts
-export interface DatePickerProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerPopupThemeProps, OverlayProps {
+export interface DatePickerProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerPopupThemeProps, OverlayProps {
   modelValue?: string
   showChinaFestivals?: boolean
   festivals?: Record<string, DatePickerFestivalItem>

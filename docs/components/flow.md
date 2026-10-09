@@ -14,15 +14,19 @@ import Example3Source from '../examples/flow/Example3.vue?raw'
 
 ## 使用示例
 
-### 基础用法
+### 交互式流式布局
 
-<XDocDemo title="基础用法" :code="Example1Source">
+默认展示 48 个工具入口，可以手动调整容器宽度、高度、子项最小宽度、间距和元素数量。将容器宽度从 480px 改为 280px，再改为 560px，观察列数自动减少或增加；将高度改为 120px，在内容区滚动查看剩余元素。
+
+宽度决定可容纳的列数，高度决定可见区域和是否需要滚动，不会像固定列数布局一样锁定列数。窄屏下若设置的容器宽度超过预览区，可在外层横向滚动，或手动减小宽度。
+
+<XDocDemo title="调整宽高，观察自动换行" :code="Example1Source">
   <Example1 />
 </XDocDemo>
 
 ### 增量渲染
 
-开启 `lazy` 后，组件会先渲染 `initialCount` 条数据，滚动接近底部时再按 `loadCount` 追加。它不是完整虚拟滚动，但对大量图标这类轻量节点更简单稳定。
+开启 `lazy` 后，组件会先渲染 `initialCount` 条数据，滚动接近底部时再按 `loadCount` 追加。它不是完整虚拟滚动，但对大量图标这类轻量节点更简单稳定。下面提供 240 个元素，初始展示 24 个，每次滚动接近底部追加 24 个。示例通过原生 `style` 将网格行高固定为 84px，保持图标与文字完整显示，并形成可滚动区域。
 
 <XDocDemo title="大量图标增量渲染" :code="Example2Source">
   <Example2 />

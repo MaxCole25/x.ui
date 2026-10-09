@@ -176,6 +176,42 @@
         "required": false
       },
       {
+        "name": "inputOffsetY",
+        "type": "number",
+        "default": "0",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "输入内容垂直偏移，单位 px；正值向下，负值向上。",
+        "required": false
+      },
+      {
+        "name": "prefixOffsetY",
+        "type": "number",
+        "default": "0",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "前缀垂直偏移，单位 px；正值向下，负值向上。",
+        "required": false
+      },
+      {
+        "name": "suffixOffsetY",
+        "type": "number",
+        "default": "0",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "后缀垂直偏移，单位 px；正值向下，负值向上。",
+        "required": false
+      },
+      {
         "name": "accentColor",
         "type": "string",
         "default": "—",
@@ -555,7 +591,7 @@
       },
       {
         "name": "BaseInputProps",
-        "definition": "export interface BaseInputProps extends ElementStyleProps {\n  showActiveBorder?: boolean\r\n  modelValue?: string | number\r\n  type?: BaseInputType\r\n  formatter?: BaseInputFormatter\r\n  parser?: BaseInputParser\r\n  formatOnBlur?: boolean\r\n  placeholder?: string\r\n  disabled?: boolean\r\n  readonly?: boolean\r\n  clearable?: boolean\r\n  status?: BaseInputStatus\r\n  prefix?: string\r\n  suffix?: string\r\n  accentColor?: string\r\n  activeBorderColor?: string\r\n  clearIconColor?: string\r\n  clearIconSize?: number | string\r\n  disabledBackgroundColor?: string\r\n  disabledTextColor?: string\r\n  fontFamily?: string\r\n  fontSize?: number\r\n  width?: number | string\r\n  height?: number | string\r\n  autoHeight?: boolean\r\n  hideClearButton?: boolean\r\n  padding?: number | string\r\n  radius?: number | string\r\n  textAlign?: BaseInputTextAlign\r\n  inputBackgroundColor?: string\r\n  name?: string\r\n  id?: string\r\n  maxlength?: number\r\n}",
+        "definition": "export interface BaseInputProps extends ElementStyleProps {\n  showActiveBorder?: boolean\n  modelValue?: string | number\n  type?: BaseInputType\n  formatter?: BaseInputFormatter\n  parser?: BaseInputParser\n  formatOnBlur?: boolean\n  placeholder?: string\n  disabled?: boolean\n  readonly?: boolean\n  clearable?: boolean\n  status?: BaseInputStatus\n  prefix?: string\n  suffix?: string\n  /** 输入内容垂直偏移，单位 px；正值向下，负值向上。 */\n  inputOffsetY?: number\n  /** 前缀垂直偏移，单位 px；正值向下，负值向上。 */\n  prefixOffsetY?: number\n  /** 后缀垂直偏移，单位 px；正值向下，负值向上。 */\n  suffixOffsetY?: number\n  accentColor?: string\n  activeBorderColor?: string\n  clearIconColor?: string\n  clearIconSize?: number | string\n  disabledBackgroundColor?: string\n  disabledTextColor?: string\n  fontFamily?: string\n  fontSize?: number\n  width?: number | string\n  height?: number | string\n  autoHeight?: boolean\n  hideClearButton?: boolean\n  padding?: number | string\n  radius?: number | string\n  textAlign?: BaseInputTextAlign\n  inputBackgroundColor?: string\n  name?: string\n  id?: string\n  maxlength?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -794,13 +830,13 @@
       },
       {
         "name": "BrickProps",
-        "definition": "export interface BrickProps extends ElementStyleProps {\r\n  direction?: BrickDirection\r\n  count?: number\r\n  gap?: BrickSize\r\n  width?: BrickSize\r\n  height?: BrickSize\r\n  wrap?: boolean\r\n  backgroundColor?: string\r\n  verticalCenter?: boolean\r\n  horizontalCenter?: boolean\r\n  bottomAlign?: boolean\r\n  rightAlign?: boolean\r\n  padding?: BrickSize\r\n}",
+        "definition": "export interface BrickProps extends ElementStyleProps {\n  direction?: BrickDirection\n  count?: number\n  gap?: BrickSize\n  width?: BrickSize\n  height?: BrickSize\n  wrap?: boolean\n  backgroundColor?: string\n  verticalCenter?: boolean\n  horizontalCenter?: boolean\n  bottomAlign?: boolean\n  rightAlign?: boolean\n  padding?: BrickSize\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "BrickItemProps",
-        "definition": "export interface BrickItemProps extends ElementStyleProps {\n  itemSize?: BrickSize\n  width?: BrickSize\n  height?: BrickSize\n  minSize?: BrickSize\r\n  maxSize?: BrickSize\r\n  backgroundColor?: string\r\n  overflow?: BrickItemOverflow\r\n  verticalCenter?: boolean\r\n  horizontalCenter?: boolean\r\n  bottomAlign?: boolean\r\n  rightAlign?: boolean\r\n  padding?: BrickSize\r\n}",
+        "definition": "export interface BrickItemProps extends ElementStyleProps {\n  itemSize?: BrickSize\n  width?: BrickSize\n  height?: BrickSize\n  minSize?: BrickSize\n  maxSize?: BrickSize\n  backgroundColor?: string\n  overflow?: BrickItemOverflow\n  verticalCenter?: boolean\n  horizontalCenter?: boolean\n  bottomAlign?: boolean\n  rightAlign?: boolean\n  padding?: BrickSize\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -1042,13 +1078,13 @@
       },
       {
         "name": "BrickProps",
-        "definition": "export interface BrickProps extends ElementStyleProps {\r\n  direction?: BrickDirection\r\n  count?: number\r\n  gap?: BrickSize\r\n  width?: BrickSize\r\n  height?: BrickSize\r\n  wrap?: boolean\r\n  backgroundColor?: string\r\n  verticalCenter?: boolean\r\n  horizontalCenter?: boolean\r\n  bottomAlign?: boolean\r\n  rightAlign?: boolean\r\n  padding?: BrickSize\r\n}",
+        "definition": "export interface BrickProps extends ElementStyleProps {\n  direction?: BrickDirection\n  count?: number\n  gap?: BrickSize\n  width?: BrickSize\n  height?: BrickSize\n  wrap?: boolean\n  backgroundColor?: string\n  verticalCenter?: boolean\n  horizontalCenter?: boolean\n  bottomAlign?: boolean\n  rightAlign?: boolean\n  padding?: BrickSize\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "BrickItemProps",
-        "definition": "export interface BrickItemProps extends ElementStyleProps {\n  itemSize?: BrickSize\n  width?: BrickSize\n  height?: BrickSize\n  minSize?: BrickSize\r\n  maxSize?: BrickSize\r\n  backgroundColor?: string\r\n  overflow?: BrickItemOverflow\r\n  verticalCenter?: boolean\r\n  horizontalCenter?: boolean\r\n  bottomAlign?: boolean\r\n  rightAlign?: boolean\r\n  padding?: BrickSize\r\n}",
+        "definition": "export interface BrickItemProps extends ElementStyleProps {\n  itemSize?: BrickSize\n  width?: BrickSize\n  height?: BrickSize\n  minSize?: BrickSize\n  maxSize?: BrickSize\n  backgroundColor?: string\n  overflow?: BrickItemOverflow\n  verticalCenter?: boolean\n  horizontalCenter?: boolean\n  bottomAlign?: boolean\n  rightAlign?: boolean\n  padding?: BrickSize\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -1304,7 +1340,7 @@
       },
       {
         "name": "ButtonProps",
-        "definition": "export interface ButtonProps extends ElementStyleProps {\r\n  variant?: ButtonVariant\r\n  width?: number | string\r\n  height?: number | string\r\n  borderWidth?: number | string\r\n  borderColor?: string\r\n  fontSize?: number\r\n  padding?: number | string\r\n  radius?: number | string\n  hoverBackgroundColor?: string\n  activeBackgroundColor?: string\n  activeBorderColor?: string\n  activeTextColor?: string\n  liftOnHover?: boolean\r\n  disabled?: boolean\r\n  loading?: boolean\r\n}",
+        "definition": "export interface ButtonProps extends ElementStyleProps {\n  variant?: ButtonVariant\n  width?: number | string\n  height?: number | string\n  borderWidth?: number | string\n  borderColor?: string\n  fontSize?: number\n  padding?: number | string\n  radius?: number | string\n  hoverBackgroundColor?: string\n  activeBackgroundColor?: string\n  activeBorderColor?: string\n  activeTextColor?: string\n  liftOnHover?: boolean\n  disabled?: boolean\n  loading?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -1447,7 +1483,7 @@
       },
       {
         "name": "ButtonGroupProps",
-        "definition": "export interface ButtonGroupProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  direction?: ButtonGroupDirection\r\n  width?: number | string\r\n  height?: number | string\r\n  radius?: number | string\r\n}",
+        "definition": "export interface ButtonGroupProps extends ElementStyleProps {\n  fontSize?: number\n  direction?: ButtonGroupDirection\n  width?: number | string\n  height?: number | string\n  radius?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -1649,7 +1685,7 @@
       },
       {
         "name": "CardProps",
-        "definition": "export interface CardProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  header?: string\r\n  footer?: string\r\n  shadow?: CardShadow\r\n  width?: number | string\n  height?: number | string\n  padding?: number | string\n  bodyStyle?: CSSProperties\n}",
+        "definition": "export interface CardProps extends ElementStyleProps {\n  fontSize?: number\n  header?: string\n  footer?: string\n  shadow?: CardShadow\n  width?: number | string\n  height?: number | string\n  padding?: number | string\n  bodyStyle?: CSSProperties\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -1836,7 +1872,7 @@
       },
       {
         "name": "DividerProps",
-        "definition": "export interface DividerProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  direction?: DividerDirection\r\n  contentPosition?: DividerContentPosition\n  borderStyle?: DividerBorderStyle\n  thickness?: number | string\n  margin?: number | string\n}",
+        "definition": "export interface DividerProps extends ElementStyleProps {\n  fontSize?: number\n  direction?: DividerDirection\n  contentPosition?: DividerContentPosition\n  borderStyle?: DividerBorderStyle\n  thickness?: number | string\n  margin?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -3528,7 +3564,7 @@
       },
       {
         "name": "IconProps",
-        "definition": "export interface IconProps {\r\n  name: string\r\n  variant?: IconVariant\r\n  fontSize?: number\n  iconSize?: number | string\n  offsetY?: number | string\n  color?: string\n  title?: string\n  decorative?: boolean\n  spin?: boolean\r\n}",
+        "definition": "export interface IconProps {\n  name: string\n  variant?: IconVariant\n  fontSize?: number\n  iconSize?: number | string\n  offsetY?: number | string\n  color?: string\n  title?: string\n  decorative?: boolean\n  spin?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -3891,7 +3927,7 @@
       },
       {
         "name": "LayoutProps",
-        "definition": "export interface LayoutProps {\r\n  fontSize?: number\n  mode?: LayoutMode\n  fullHeight?: boolean\n  sidebarWidth?: number | string\n  sidebarCollapsed?: boolean\r\n  sidebarCollapsedWidth?: number | string\r\n  gap?: number | string\r\n  topbarHeight?: number | string\n  footerHeight?: number | string\n  topbarBackgroundColor?: string\n  topbarTextColor?: string\n  topbarRadius?: number | string\n  topbarBorderColor?: string\n  sidebarBackgroundColor?: string\n  sidebarTextColor?: string\n  sidebarRadius?: number | string\n  sidebarBorderColor?: string\n  sidebarPadding?: number | string\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentPadding?: number | string\n  contentRadius?: number | string\n  footerBackgroundColor?: string\n  footerTextColor?: string\n  footerRadius?: number | string\n  footerBorderColor?: string\n}",
+        "definition": "export interface LayoutProps {\n  fontSize?: number\n  mode?: LayoutMode\n  fullHeight?: boolean\n  sidebarWidth?: number | string\n  sidebarCollapsed?: boolean\n  sidebarCollapsedWidth?: number | string\n  gap?: number | string\n  topbarHeight?: number | string\n  footerHeight?: number | string\n  topbarBackgroundColor?: string\n  topbarTextColor?: string\n  topbarRadius?: number | string\n  topbarBorderColor?: string\n  sidebarBackgroundColor?: string\n  sidebarTextColor?: string\n  sidebarRadius?: number | string\n  sidebarBorderColor?: string\n  sidebarPadding?: number | string\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentPadding?: number | string\n  contentRadius?: number | string\n  footerBackgroundColor?: string\n  footerTextColor?: string\n  footerRadius?: number | string\n  footerBorderColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -4755,7 +4791,7 @@
       },
       {
         "name": "TextProps",
-        "definition": "export interface TextProps extends ElementStyleProps {\r\n  modelValue?: string | number\n  variant?: TextType\n  tag?: string\n  truncated?: boolean\n  formatter?: TextFormatter\n  disabled?: boolean\n  fontFamily?: string\n  fontWeight?: number | string\n  fontSize?: number\n  lineHeight?: number | string\n  width?: number | string\n  height?: number | string\n  autoHeight?: boolean\n  padding?: number | string\r\n  radius?: number | string\n  textAlign?: TextAlign\n  verticalAlign?: TextVerticalAlign\n  name?: string\n  id?: string\n  maxlength?: number\n}",
+        "definition": "export interface TextProps extends ElementStyleProps {\n  modelValue?: string | number\n  variant?: TextType\n  tag?: string\n  truncated?: boolean\n  formatter?: TextFormatter\n  disabled?: boolean\n  fontFamily?: string\n  fontWeight?: number | string\n  fontSize?: number\n  lineHeight?: number | string\n  width?: number | string\n  height?: number | string\n  autoHeight?: boolean\n  padding?: number | string\n  radius?: number | string\n  textAlign?: TextAlign\n  verticalAlign?: TextVerticalAlign\n  name?: string\n  id?: string\n  maxlength?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -5185,7 +5221,7 @@
       },
       {
         "name": "BadgeProps",
-        "definition": "export interface BadgeProps {\r\n  modelValue?: string | number\r\n  max?: number\r\n  showZero?: boolean\r\n  dot?: boolean\r\n  hidden?: boolean\r\n  status?: BadgeStatus\r\n  fontSize?: number\r\n  accentColor?: string\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  borderColor?: string\r\n}",
+        "definition": "export interface BadgeProps {\n  modelValue?: string | number\n  max?: number\n  showZero?: boolean\n  dot?: boolean\n  hidden?: boolean\n  status?: BadgeStatus\n  fontSize?: number\n  accentColor?: string\n  backgroundColor?: string\n  textColor?: string\n  borderColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -5911,6 +5947,11 @@
         "group": "状态与交互"
       },
       {
+        "name": "business-click",
+        "type": "[payload: ChatMessageClickPayload]",
+        "group": "状态与交互"
+      },
+      {
         "name": "retry",
         "type": "[message: ChatMessage]",
         "group": "组件专有功能"
@@ -5975,6 +6016,11 @@
     ],
     "methods": [
       {
+        "name": "scrollToMessage",
+        "type": "(id: ChatMessageId) => Promise<boolean>",
+        "group": "组件专有功能"
+      },
+      {
         "name": "scrollToBottom",
         "type": "(behavior?: ScrollBehavior) => Promise<void>",
         "group": "组件专有功能"
@@ -6004,7 +6050,13 @@
       },
       {
         "name": "ChatMessageKind",
-        "definition": "export type ChatMessageKind = 'text' | 'image' | 'file' | 'system'",
+        "definition": "export type ChatMessageKind = 'text' | 'image' | 'file' | 'system' | 'business'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "ChatBusinessReference",
+        "definition": "export interface ChatBusinessReference {\n  businessType: string\n  businessId: string | number\n  businessNumber: string\n  title: string\n  summary?: string\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -6022,7 +6074,7 @@
       },
       {
         "name": "ChatMessage",
-        "definition": "export interface ChatMessage {\n  id: ChatMessageId\n  senderId?: ChatMessageId\n  senderName?: string\n  avatar?: string\n  kind?: ChatMessageKind\n  content: string\n  /** 调用方格式化的时间文本。 */\n  time?: string\n  imageUrl?: string\n  fileUrl?: string\n  fileName?: string\n  /** 文件大小，单位 byte。 */\n  fileSize?: number\n  status?: ChatMessageStatus\n  quote?: ChatMessageQuote\n}",
+        "definition": "export interface ChatMessage {\n  id: ChatMessageId\n  senderId?: ChatMessageId\n  senderName?: string\n  avatar?: string\n  kind?: ChatMessageKind\n  content: string\n  /** 调用方格式化的时间文本。 */\n  time?: string\n  imageUrl?: string\n  fileUrl?: string\n  fileName?: string\n  /** 文件大小，单位 byte。 */\n  fileSize?: number\n  status?: ChatMessageStatus\n  /** 原始时间，用于历史查询；time 仍用于显示。 */\n  sentAt?: string\n  business?: ChatBusinessReference\n  quote?: ChatMessageQuote\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -6082,7 +6134,7 @@
       },
       {
         "name": "ChatEmits",
-        "definition": "export interface ChatEmits {\n  'message-click': [payload: ChatMessageClickPayload]\n  'image-click': [payload: ChatMessageClickPayload]\n  'file-click': [payload: ChatMessageClickPayload]\n  'retry': [message: ChatMessage]\n  'scroll': [payload: ChatScrollPayload]\n  'update:modelValue': [value: string]\n  'send': [payload: ChatSendPayload]\n  'attachment-add': [payload: ChatAttachmentPayload]\n  'attachment-remove': [attachment: ChatAttachment]\n  'emoji-select': [emoji: string]\n}",
+        "definition": "export interface ChatEmits {\n  'message-click': [payload: ChatMessageClickPayload]\n  'image-click': [payload: ChatMessageClickPayload]\n  'file-click': [payload: ChatMessageClickPayload]\n  'business-click': [payload: ChatMessageClickPayload]\n  'retry': [message: ChatMessage]\n  'scroll': [payload: ChatScrollPayload]\n  'update:modelValue': [value: string]\n  'send': [payload: ChatSendPayload]\n  'attachment-add': [payload: ChatAttachmentPayload]\n  'attachment-remove': [attachment: ChatAttachment]\n  'emoji-select': [emoji: string]\n}",
         "exported": true,
         "group": "事件参数"
       },
@@ -6094,7 +6146,7 @@
       },
       {
         "name": "ChatExpose",
-        "definition": "export interface ChatExpose {\n  scrollToBottom: (behavior?: ScrollBehavior) => Promise<void>\n  focus: () => void\n  clearDraft: () => void\n  sendMessage: () => void\n}",
+        "definition": "export interface ChatExpose {\n  scrollToMessage: (id: ChatMessageId) => Promise<boolean>\n  scrollToBottom: (behavior?: ScrollBehavior) => Promise<void>\n  focus: () => void\n  clearDraft: () => void\n  sendMessage: () => void\n}",
         "exported": true,
         "group": "实例与回调"
       }
@@ -6183,15 +6235,552 @@
       },
       {
         "name": "CollapseItem",
-        "definition": "export interface CollapseItem {\r\n  name: CollapseValue\r\n  title: string\r\n  content?: string\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface CollapseItem {\n  name: CollapseValue\n  title: string\n  content?: string\n  disabled?: boolean\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "CollapseProps",
-        "definition": "export interface CollapseProps {\r\n  modelValue?: CollapseValue | CollapseValue[]\r\n  items?: CollapseItem[]\r\n  accordion?: boolean\r\n}",
+        "definition": "export interface CollapseProps {\n  modelValue?: CollapseValue | CollapseValue[]\n  items?: CollapseItem[]\n  accordion?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
+      }
+    ]
+  },
+  {
+    "name": "XContactList",
+    "file": "src/components/display-components/contact-list/src/ContactList.vue",
+    "folder": "src/components/display-components/contact-list",
+    "slug": "contact-list",
+    "propsName": "ContactListProps",
+    "props": [
+      {
+        "name": "placement",
+        "type": "ContactListPlacement",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "left",
+          "right",
+          "top",
+          "inline",
+          "floating"
+        ],
+        "group": "浮层与定位",
+        "description": "浮层首选方向，空间不足时自动翻转",
+        "required": false
+      },
+      {
+        "name": "modelValue",
+        "type": "MessengerId",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "数据与绑定",
+        "description": "绑定值",
+        "required": false
+      },
+      {
+        "name": "activeKind",
+        "type": "'direct' | 'group'",
+        "default": "'direct'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "direct",
+          "group"
+        ],
+        "group": "组件专有功能",
+        "description": "当前选中条目的类别",
+        "required": false
+      },
+      {
+        "name": "contacts",
+        "type": "MessengerContact[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "可见同事",
+        "required": false
+      },
+      {
+        "name": "contactGroups",
+        "type": "MessengerContactGroup[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "当前用户的个人分组",
+        "required": false
+      },
+      {
+        "name": "groups",
+        "type": "MessengerGroup[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "可访问的群聊",
+        "required": false
+      },
+      {
+        "name": "width",
+        "type": "number | string",
+        "default": "'100%'",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "height",
+        "type": "number | string",
+        "default": "'100%'",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "高度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "default": "14",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "外观与排版",
+        "description": "字号，单位 px；不改变控件高度、内边距或圆角",
+        "required": false
+      },
+      {
+        "name": "showSearch",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "显示搜索输入框",
+        "required": false
+      },
+      {
+        "name": "showGroups",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "显示群列表",
+        "required": false
+      },
+      {
+        "name": "enableGroupManagement",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "启用个人分组操作",
+        "required": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "是否禁用",
+        "required": false
+      },
+      {
+        "name": "borderWidth",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "边框宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "borderColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "边框颜色",
+        "required": false
+      },
+      {
+        "name": "radius",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "整体圆角，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "背景色",
+        "required": false
+      },
+      {
+        "name": "textColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "文字颜色",
+        "required": false
+      },
+      {
+        "name": "teleported",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "浮层与定位",
+        "description": "是否将浮层传送到目标容器",
+        "required": false
+      },
+      {
+        "name": "teleportTo",
+        "type": "string",
+        "default": "'body'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "浮层与定位",
+        "description": "浮层挂载目标的 CSS 选择器",
+        "required": false
+      },
+      {
+        "name": "zIndex",
+        "type": "number",
+        "default": "1900",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "浮层与定位",
+        "description": "浮层层级",
+        "required": false
+      }
+    ],
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "[id: MessengerId]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:activeKind",
+        "type": "[kind: 'direct' | 'group']",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "open",
+        "type": "[payload: MessengerOpenPayload]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "update:placement",
+        "type": "[placement: ContactListPlacement]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "activate",
+        "type": "[]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "contact-group-action",
+        "type": "[payload: MessengerContactGroupAction]",
+        "group": "组件专有功能"
+      }
+    ],
+    "slots": [
+      {
+        "name": "contact",
+        "type": "contact: contact",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "group",
+        "type": "group: group",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "empty",
+        "type": "无作用域参数",
+        "group": "内容与展示"
+      },
+      {
+        "name": "footer",
+        "type": "无作用域参数",
+        "group": "内容与展示"
+      }
+    ],
+    "methods": [],
+    "types": [
+      {
+        "name": "ContactListPlacement",
+        "definition": "export type ContactListPlacement = 'inline' | 'left' | 'top' | 'right' | 'floating'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "ContactListProps",
+        "definition": "export interface ContactListProps extends ElementStyleProps, OverlayProps {\n  /** inline 嵌入页面，其余模式为独立停靠或悬浮面板。 */\n  placement?: ContactListPlacement\n  /** 当前选中的联系人或群 ID */\n  modelValue?: MessengerId\n  /** 当前选中条目的类别 */\n  activeKind?: 'direct' | 'group'\n  contacts?: MessengerContact[]\n  contactGroups?: MessengerContactGroup[]\n  groups?: MessengerGroup[]\n  width?: number | string\n  height?: number | string\n  fontSize?: number\n  showSearch?: boolean\n  showGroups?: boolean\n  enableGroupManagement?: boolean\n  disabled?: boolean\n}",
+        "exported": true,
+        "group": "属性与配置"
+      },
+      {
+        "name": "ContactListEmits",
+        "definition": "export interface ContactListEmits {\n  'update:modelValue': [id: MessengerId]\n  'update:activeKind': [kind: 'direct' | 'group']\n  'open': [payload: MessengerOpenPayload]\n  'update:placement': [placement: ContactListPlacement]\n  'activate': []\n  'contact-group-action': [payload: MessengerContactGroupAction]\n}",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "ContactListSlots",
+        "definition": "export interface ContactListSlots { footer?: () => VNode[]; contact?: (props: { contact: MessengerContact }) => VNode[]; group?: (props: { group: MessengerGroup }) => VNode[]; empty?: () => VNode[] }",
+        "exported": true,
+        "group": "插槽契约"
+      }
+    ]
+  },
+  {
+    "name": "XConversationList",
+    "file": "src/components/display-components/conversation-list/src/ConversationList.vue",
+    "folder": "src/components/display-components/conversation-list",
+    "slug": "conversation-list",
+    "propsName": "ConversationListProps",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "MessengerId",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "数据与绑定",
+        "description": "绑定值",
+        "required": false
+      },
+      {
+        "name": "conversations",
+        "type": "MessengerConversation[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "最近会话列表",
+        "required": false
+      },
+      {
+        "name": "width",
+        "type": "number | string",
+        "default": "'100%'",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "height",
+        "type": "number | string",
+        "default": "'100%'",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "高度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "default": "14",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "外观与排版",
+        "description": "字号，单位 px；不改变控件高度、内边距或圆角",
+        "required": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "是否禁用",
+        "required": false
+      },
+      {
+        "name": "borderWidth",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "边框宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "borderColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "边框颜色",
+        "required": false
+      },
+      {
+        "name": "radius",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "整体圆角，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "背景色",
+        "required": false
+      },
+      {
+        "name": "textColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "文字颜色",
+        "required": false
+      }
+    ],
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "[id: MessengerId]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "select",
+        "type": "[conversation: MessengerConversation]",
+        "group": "组件专有功能"
+      }
+    ],
+    "slots": [
+      {
+        "name": "conversation",
+        "type": "conversation: conversation",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "empty",
+        "type": "无作用域参数",
+        "group": "内容与展示"
+      }
+    ],
+    "methods": [],
+    "types": [
+      {
+        "name": "ConversationListProps",
+        "definition": "export interface ConversationListProps extends ElementStyleProps {\n  modelValue?: MessengerId\n  conversations?: MessengerConversation[]\n  width?: number | string\n  height?: number | string\n  fontSize?: number\n  disabled?: boolean\n}",
+        "exported": true,
+        "group": "属性与配置"
+      },
+      {
+        "name": "ConversationListEmits",
+        "definition": "export interface ConversationListEmits { 'update:modelValue': [id: MessengerId]; 'select': [conversation: MessengerConversation] }",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "ConversationListSlots",
+        "definition": "export interface ConversationListSlots { conversation?: (props: { conversation: MessengerConversation }) => VNode[]; empty?: () => VNode[] }",
+        "exported": true,
+        "group": "插槽契约"
       }
     ]
   },
@@ -6309,13 +6898,13 @@
     "types": [
       {
         "name": "DescriptionItem",
-        "definition": "export interface DescriptionItem {\r\n  label: string\r\n  value?: string | number\r\n  span?: number\r\n}",
+        "definition": "export interface DescriptionItem {\n  label: string\n  value?: string | number\n  span?: number\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "DescriptionsProps",
-        "definition": "export interface DescriptionsProps {\r\n  title?: string\r\n  items?: DescriptionItem[]\r\n  column?: number\r\n  bordered?: boolean\r\n  labelWidth?: number | string\r\n  labelColor?: string\r\n  textColor?: string\r\n}",
+        "definition": "export interface DescriptionsProps {\n  title?: string\n  items?: DescriptionItem[]\n  column?: number\n  bordered?: boolean\n  labelWidth?: number | string\n  labelColor?: string\n  textColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -6477,7 +7066,7 @@
     "types": [
       {
         "name": "EmptyProps",
-        "definition": "export interface EmptyProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  image?: string\r\n  imageSize?: number | string\r\n  description?: string\r\n  actionText?: string\r\n}",
+        "definition": "export interface EmptyProps extends ElementStyleProps {\n  fontSize?: number\n  image?: string\n  imageSize?: number | string\n  description?: string\n  actionText?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -6936,31 +7525,31 @@
       },
       {
         "name": "ListItem",
-        "definition": "export interface ListItem {\r\n  value: ListItemValue\r\n  title?: string\r\n  description?: string\r\n  icon?: string\r\n  avatar?: string\r\n  extra?: string | number\r\n  disabled?: boolean\r\n  draggable?: boolean\r\n}",
+        "definition": "export interface ListItem {\n  value: ListItemValue\n  title?: string\n  description?: string\n  icon?: string\n  avatar?: string\n  extra?: string | number\n  disabled?: boolean\n  draggable?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "ListItemSlotProps",
-        "definition": "export interface ListItemSlotProps {\r\n  item: ListItem\r\n  index: number\r\n  active: boolean\r\n  disabled: boolean\r\n}",
+        "definition": "export interface ListItemSlotProps {\n  item: ListItem\n  index: number\n  active: boolean\n  disabled: boolean\n}",
         "exported": true,
         "group": "插槽契约"
       },
       {
         "name": "ListItemClickPayload",
-        "definition": "export interface ListItemClickPayload extends ListItemSlotProps {\r\n  event: MouseEvent\r\n}",
+        "definition": "export interface ListItemClickPayload extends ListItemSlotProps {\n  event: MouseEvent\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "ListItemReorderPayload",
-        "definition": "export interface ListItemReorderPayload {\r\n  item: ListItem\r\n  targetItem: ListItem\r\n  fromIndex: number\r\n  toIndex: number\r\n  sourceValue: ListItemValue\r\n  targetValue: ListItemValue\r\n  position: ListReorderPosition\r\n  items: ListItem[]\r\n}",
+        "definition": "export interface ListItemReorderPayload {\n  item: ListItem\n  targetItem: ListItem\n  fromIndex: number\n  toIndex: number\n  sourceValue: ListItemValue\n  targetValue: ListItemValue\n  position: ListReorderPosition\n  items: ListItem[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "ListProps",
-        "definition": "export interface ListProps {\r\n  modelValue?: ListItemValue\r\n  items?: ListItem[]\r\n  disabled?: boolean\r\n  draggable?: boolean\r\n  fontSize?: number\r\n  height?: ListSizeValue\r\n  maxHeight?: ListSizeValue\r\n  bordered?: boolean\r\n  hoverable?: boolean\r\n  enableEqualItemHeight?: boolean\r\n  itemGap?: ListSizeValue\r\n  itemRadius?: ListSizeValue\r\n  padding?: ListSizeValue\r\n  titleFontSize?: ListSizeValue\r\n  titleTextColor?: string\r\n  descriptionFontSize?: ListSizeValue\r\n  descriptionTextColor?: string\r\n  iconFontSize?: ListSizeValue\r\n  iconTextColor?: string\r\n  extraFontSize?: ListSizeValue\r\n  extraTextColor?: string\r\n  activeBackgroundColor?: string\r\n  activeBorderColor?: string\r\n  activeTextColor?: string\r\n  loading?: boolean\r\n  loadingText?: string\r\n  finished?: boolean\r\n  finishedText?: string\r\n  loadOffset?: number\r\n}",
+        "definition": "export interface ListProps {\n  modelValue?: ListItemValue\n  items?: ListItem[]\n  disabled?: boolean\n  draggable?: boolean\n  fontSize?: number\n  height?: ListSizeValue\n  maxHeight?: ListSizeValue\n  bordered?: boolean\n  hoverable?: boolean\n  enableEqualItemHeight?: boolean\n  itemGap?: ListSizeValue\n  itemRadius?: ListSizeValue\n  padding?: ListSizeValue\n  titleFontSize?: ListSizeValue\n  titleTextColor?: string\n  descriptionFontSize?: ListSizeValue\n  descriptionTextColor?: string\n  iconFontSize?: ListSizeValue\n  iconTextColor?: string\n  extraFontSize?: ListSizeValue\n  extraTextColor?: string\n  activeBackgroundColor?: string\n  activeBorderColor?: string\n  activeTextColor?: string\n  loading?: boolean\n  loadingText?: string\n  finished?: boolean\n  finishedText?: string\n  loadOffset?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -7138,7 +7727,7 @@
       },
       {
         "name": "ProgressProps",
-        "definition": "export interface ProgressProps {\r\n  percentage?: number\r\n  status?: ProgressStatus\r\n  variant?: ProgressVariant\r\n  fontSize?: number\r\n  strokeWidth?: number\r\n  showText?: boolean\r\n  textInside?: boolean\r\n  accentColor?: string\r\n  trackColor?: string\r\n  textColor?: string\r\n  width?: number | string\r\n}",
+        "definition": "export interface ProgressProps {\n  percentage?: number\n  status?: ProgressStatus\n  variant?: ProgressVariant\n  fontSize?: number\n  strokeWidth?: number\n  showText?: boolean\n  textInside?: boolean\n  accentColor?: string\n  trackColor?: string\n  textColor?: string\n  width?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -7426,7 +8015,7 @@
     "types": [
       {
         "name": "SkeletonProps",
-        "definition": "export interface SkeletonProps {\r\n  loading?: boolean\r\n  rows?: number\r\n  animated?: boolean\r\n  avatar?: boolean\r\n  title?: boolean\r\n  round?: boolean\r\n  width?: number | string\r\n  height?: number | string\r\n}",
+        "definition": "export interface SkeletonProps {\n  loading?: boolean\n  rows?: number\n  animated?: boolean\n  avatar?: boolean\n  title?: boolean\n  round?: boolean\n  width?: number | string\n  height?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -7553,7 +8142,7 @@
     "types": [
       {
         "name": "StatisticProps",
-        "definition": "export interface StatisticProps {\r\n  modelValue?: string | number\r\n  title?: string\r\n  precision?: number\r\n  prefix?: string\r\n  suffix?: string\r\n  formatter?: (value: string | number) => string\r\n  valueColor?: string\r\n  titleColor?: string\r\n}",
+        "definition": "export interface StatisticProps {\n  modelValue?: string | number\n  title?: string\n  precision?: number\n  prefix?: string\n  suffix?: string\n  formatter?: (value: string | number) => string\n  valueColor?: string\n  titleColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -8450,73 +9039,73 @@
       },
       {
         "name": "TableSorter",
-        "definition": "export interface TableSorter {\r\n  key: string\r\n  order: TableSortOrder\r\n}",
+        "definition": "export interface TableSorter {\n  key: string\n  order: TableSortOrder\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TableColumn",
-        "definition": "export interface TableColumn<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  key: string\r\n  label: string\r\n  width?: number | string\r\n  minWidth?: number | string\r\n  align?: TableAlign\r\n  sortable?: boolean\r\n  valueGetter?: (row: Row, column: TableColumn<Row>) => unknown\r\n  formatter?: (value: unknown, row: Row) => string\r\n  editable?: boolean\r\n  readonly?: boolean\r\n}",
+        "definition": "export interface TableColumn<Row extends Record<string, unknown> = Record<string, unknown>> {\n  key: string\n  label: string\n  width?: number | string\n  minWidth?: number | string\n  align?: TableAlign\n  sortable?: boolean\n  valueGetter?: (row: Row, column: TableColumn<Row>) => unknown\n  formatter?: (value: unknown, row: Row) => string\n  editable?: boolean\n  readonly?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TableSummaryContext",
-        "definition": "export interface TableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  data: Row[]\r\n  visibleData: Row[]\r\n  columns: TableColumn<Row>[]\r\n  scope: TableSummaryScope\r\n}",
+        "definition": "export interface TableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> {\n  data: Row[]\n  visibleData: Row[]\n  columns: TableColumn<Row>[]\n  scope: TableSummaryScope\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TableSummaryValueGetter",
-        "definition": "export type TableSummaryValueGetter<Row extends Record<string, unknown> = Record<string, unknown>> = (\r\n  rows: Row[],\r\n  column: TableColumn<Row>,\r\n  context: TableSummaryContext<Row>\r\n) => unknown",
+        "definition": "export type TableSummaryValueGetter<Row extends Record<string, unknown> = Record<string, unknown>> = (\n  rows: Row[],\n  column: TableColumn<Row>,\n  context: TableSummaryContext<Row>\n) => unknown",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "TableSummaryCell",
-        "definition": "export type TableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> =\r\n  | TableSummaryAggregator\r\n  | TableSummaryValueGetter<Row>",
+        "definition": "export type TableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> =\n  | TableSummaryAggregator\n  | TableSummaryValueGetter<Row>",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TableSummaryRow",
-        "definition": "export interface TableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  label?: string\r\n  labelColumnKey?: string\r\n  cells?: Record<string, TableSummaryCell<Row>>\r\n}",
+        "definition": "export interface TableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> {\n  label?: string\n  labelColumnKey?: string\n  cells?: Record<string, TableSummaryCell<Row>>\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TableColumnSetting",
-        "definition": "export interface TableColumnSetting {\r\n  key: string\r\n  order?: number\r\n  hidden?: boolean\r\n  fixed?: TableFixed\r\n  align?: TableAlign\r\n  widthRatio?: number\r\n  width?: number\r\n}",
+        "definition": "export interface TableColumnSetting {\n  key: string\n  order?: number\n  hidden?: boolean\n  fixed?: TableFixed\n  align?: TableAlign\n  widthRatio?: number\n  width?: number\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TableRowReorderPayload",
-        "definition": "export interface TableRowReorderPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  row: Row\r\n  rows: Row[]\r\n  fromIndex: number\r\n  toIndex: number\r\n  targetRow: Row\r\n  position: TableReorderPosition\r\n}",
+        "definition": "export interface TableRowReorderPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  row: Row\n  rows: Row[]\n  fromIndex: number\n  toIndex: number\n  targetRow: Row\n  position: TableReorderPosition\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "TableAppendRowPayload",
-        "definition": "export interface TableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  row: Row\r\n  rows: Row[]\r\n}",
+        "definition": "export interface TableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  row: Row\n  rows: Row[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "TableDeleteSelectedRowsPayload",
-        "definition": "export interface TableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  keys: string[]\r\n  rows: Row[]\r\n  deletedRows: Row[]\r\n}",
+        "definition": "export interface TableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  keys: string[]\n  rows: Row[]\n  deletedRows: Row[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "TableRowClickPayload",
-        "definition": "export interface TableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  row: Row\r\n  rowIndex: number\r\n  rowKey: string\r\n  event: MouseEvent\r\n}",
+        "definition": "export interface TableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  row: Row\n  rowIndex: number\n  rowKey: string\n  event: MouseEvent\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "TableColumnResizePayload",
-        "definition": "export interface TableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  column: TableColumn<Row>\r\n  key: string\r\n  width: number\r\n  oldWidth: number\r\n  columnSettings: TableColumnSetting[]\r\n}",
+        "definition": "export interface TableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  column: TableColumn<Row>\n  key: string\n  width: number\n  oldWidth: number\n  columnSettings: TableColumnSetting[]\n}",
         "exported": true,
         "group": "事件参数"
       },
@@ -8558,147 +9147,15 @@
       },
       {
         "name": "TableExcelImportPayload",
-        "definition": "export interface TableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  file: File\r\n  rows: Row[]\r\n  columns: TableColumn<Row>[]\r\n}",
+        "definition": "export interface TableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> {\n  file: File\n  rows: Row[]\n  columns: TableColumn<Row>[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "TableProps",
-        "definition": "export interface TableProps<Row extends Record<string, unknown> = Record<string, unknown>> {\r\n  fontSize?: number\r\n  rowHeight?: number | string\r\n  data: Row[]\r\n  columns: TableColumn<Row>[]\r\n  columnSettings?: TableColumnSetting[]\r\n  sorter?: TableSorter | null\r\n  defaultSorter?: TableSorter | null\r\n  selectedRowKeys?: TableRowKey[]\r\n  selectedCellKeys?: string[]\r\n  selectionMode?: TableSelectionMode\r\n  rowKey?: string\r\n  emptyText?: string\r\n  showHeader?: boolean\r\n  summaryRow?: TableSummaryRow<Row> | false\r\n  summaryScope?: TableSummaryScope\r\n  showActions?: boolean\r\n  actionsFixed?: boolean\r\n  showSelection?: boolean\r\n  showSelectionColumn?: boolean\n  editable?: boolean\n  editableDataStrategy?: TableEditableDataStrategy\n  showDirtyActions?: boolean\n  showAppendRowButton?: boolean\n  showDeleteSelectedRowsButton?: boolean\n  saveDirtyButtonLabel?: string\n  clearDirtyButtonLabel?: string\n  resetDirtyButtonLabel?: string\n  appendRowButtonLabel?: string\n  deleteSelectedRowsButtonLabel?: string\n  rowDraggable?: boolean\n  columnResizable?: boolean\n  panelBackgroundColor?: string\n  headerBackgroundColor?: string\n  headerTextColor?: string\r\n  bodyBackgroundColor?: string\r\n  bodyStripeBackgroundColor?: string\r\n  bodyTextColor?: string\r\n  selectedCellBackgroundColor?: string\r\n  selectedCellTextColor?: string\r\n  selectedCellBorderColor?: string\r\n  selectedCellInnerBorderColor?: string\r\n  borderColor?: string\r\n  viewportBorderColor?: string\r\n  headerDividerColor?: string\r\n  rowBorderColor?: string\r\n  columnBorderColor?: string\r\n  horizontalBorderColor?: string\r\n  horizontalBorderWidth?: number | string\r\n  verticalBorderColor?: string\r\n  verticalBorderWidth?: number | string\r\n  actionsWidth?: number | string\n  fullHeight?: boolean\n}",
+        "definition": "export interface TableProps<Row extends Record<string, unknown> = Record<string, unknown>> {\n  fontSize?: number\n  rowHeight?: number | string\n  data: Row[]\n  columns: TableColumn<Row>[]\n  columnSettings?: TableColumnSetting[]\n  sorter?: TableSorter | null\n  defaultSorter?: TableSorter | null\n  selectedRowKeys?: TableRowKey[]\n  selectedCellKeys?: string[]\n  selectionMode?: TableSelectionMode\n  rowKey?: string\n  emptyText?: string\n  showHeader?: boolean\n  summaryRow?: TableSummaryRow<Row> | false\n  summaryScope?: TableSummaryScope\n  showActions?: boolean\n  actionsFixed?: boolean\n  showSelection?: boolean\n  showSelectionColumn?: boolean\n  editable?: boolean\n  editableDataStrategy?: TableEditableDataStrategy\n  showDirtyActions?: boolean\n  showAppendRowButton?: boolean\n  showDeleteSelectedRowsButton?: boolean\n  saveDirtyButtonLabel?: string\n  clearDirtyButtonLabel?: string\n  resetDirtyButtonLabel?: string\n  appendRowButtonLabel?: string\n  deleteSelectedRowsButtonLabel?: string\n  rowDraggable?: boolean\n  columnResizable?: boolean\n  panelBackgroundColor?: string\n  headerBackgroundColor?: string\n  headerTextColor?: string\n  bodyBackgroundColor?: string\n  bodyStripeBackgroundColor?: string\n  bodyTextColor?: string\n  selectedCellBackgroundColor?: string\n  selectedCellTextColor?: string\n  selectedCellBorderColor?: string\n  selectedCellInnerBorderColor?: string\n  borderColor?: string\n  viewportBorderColor?: string\n  headerDividerColor?: string\n  rowBorderColor?: string\n  columnBorderColor?: string\n  horizontalBorderColor?: string\n  horizontalBorderWidth?: number | string\n  verticalBorderColor?: string\n  verticalBorderWidth?: number | string\n  actionsWidth?: number | string\n  fullHeight?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
-      },
-      {
-        "name": "XlTableColumn",
-        "definition": "export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableColumnSetting",
-        "definition": "export type XlTableColumnSetting = TableColumnSetting",
-        "exported": false,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableAppendRowPayload",
-        "definition": "export type XlTableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableAppendRowPayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableColumnResizePayload",
-        "definition": "export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableDeleteSelectedRowsPayload",
-        "definition": "export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableDirtyCellChange",
-        "definition": "export type XlTableDirtyCellChange<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyCellChange<Row>",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableDirtyChangePayload",
-        "definition": "export type XlTableDirtyChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyChangePayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableEditableDataStrategy",
-        "definition": "export type XlTableEditableDataStrategy = TableEditableDataStrategy",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableExcelExportMode",
-        "definition": "export type XlTableExcelExportMode = TableExcelExportMode",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableExcelExportPayload",
-        "definition": "export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableExcelImportPayload",
-        "definition": "export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableRowPatchPayload",
-        "definition": "export type XlTableRowPatchPayload = TableRowPatchPayload",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableRowClickPayload",
-        "definition": "export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableProps",
-        "definition": "export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>",
-        "exported": true,
-        "group": "属性与配置"
-      },
-      {
-        "name": "XlTableSavePayload",
-        "definition": "export type XlTableSavePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableSavePayload<Row>",
-        "exported": true,
-        "group": "事件参数"
-      },
-      {
-        "name": "XlTableSorter",
-        "definition": "export type XlTableSorter = TableSorter",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableSortOrder",
-        "definition": "export type XlTableSortOrder = TableSortOrder",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableSummaryAggregator",
-        "definition": "export type XlTableSummaryAggregator = TableSummaryAggregator",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableSummaryCell",
-        "definition": "export type XlTableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryCell<Row>",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableSummaryContext",
-        "definition": "export type XlTableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryContext<Row>",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableSummaryRow",
-        "definition": "export type XlTableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryRow<Row>",
-        "exported": true,
-        "group": "组件数据"
-      },
-      {
-        "name": "XlTableSummaryScope",
-        "definition": "export type XlTableSummaryScope = TableSummaryScope",
-        "exported": true,
-        "group": "组件数据"
       }
     ]
   },
@@ -8917,7 +9374,7 @@
       },
       {
         "name": "TagProps",
-        "definition": "export interface TagProps extends ElementStyleProps {\n  variant?: TagType\n  effect?: TagEffect\n  fontSize?: number\r\n  closable?: boolean\r\n  round?: boolean\n  hit?: boolean\n  disabled?: boolean\n  accentColor?: string\n}",
+        "definition": "export interface TagProps extends ElementStyleProps {\n  variant?: TagType\n  effect?: TagEffect\n  fontSize?: number\n  closable?: boolean\n  round?: boolean\n  hit?: boolean\n  disabled?: boolean\n  accentColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -9249,7 +9706,7 @@
     "types": [
       {
         "name": "TreeContextAction",
-        "definition": "export type TreeContextAction =\r\n  | 'new-root'\r\n  | 'new-node'\r\n  | 'new-child'\r\n  | 'delete-node'\r\n  | 'manage-members'\r\n  | 'migrate-node'\r\n  | (string & {})",
+        "definition": "export type TreeContextAction =\n  | 'new-root'\n  | 'new-node'\n  | 'new-child'\n  | 'delete-node'\n  | 'manage-members'\n  | 'migrate-node'\n  | (string & {})",
         "exported": true,
         "group": "组件数据"
       },
@@ -9273,19 +9730,19 @@
       },
       {
         "name": "TreeContextMenuItem",
-        "definition": "export interface TreeContextMenuItem {\r\n  action: TreeContextAction\r\n  label: string\r\n  disabled?: boolean\r\n  visible?: boolean\r\n  tone?: TreeContextMenuItemTone\r\n}",
+        "definition": "export interface TreeContextMenuItem {\n  action: TreeContextAction\n  label: string\n  disabled?: boolean\n  visible?: boolean\n  tone?: TreeContextMenuItemTone\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TreeContextMenuContext",
-        "definition": "export interface TreeContextMenuContext {\r\n  node: TreeNodeData | null\r\n  treeData: TreeNodeData[]\r\n}",
+        "definition": "export interface TreeContextMenuContext {\n  node: TreeNodeData | null\n  treeData: TreeNodeData[]\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TreeContextMenuItems",
-        "definition": "export type TreeContextMenuItems =\r\n  | TreeContextMenuItem[]\r\n  | ((context: TreeContextMenuContext) => TreeContextMenuItem[])",
+        "definition": "export type TreeContextMenuItems =\n  | TreeContextMenuItem[]\n  | ((context: TreeContextMenuContext) => TreeContextMenuItem[])",
         "exported": true,
         "group": "组件数据"
       },
@@ -9309,13 +9766,13 @@
       },
       {
         "name": "TreeNodeData",
-        "definition": "export interface TreeNodeData {\r\n  id: string | number\r\n  rawId?: number\r\n  label: string\r\n  icon?: TreeNodeIcon\r\n  isEditing?: boolean\r\n  type?: TreeNodeType\r\n  authorId?: number | null\r\n  authorUserName?: string\r\n  authorDisplayName?: string\r\n  hasMembers?: boolean\r\n  isCurrentUserRootMember?: boolean\r\n  permissionCode?: string\n  hasChildren?: boolean\n  children?: TreeNodeData[]\n  [key: string]: unknown\n}",
+        "definition": "export interface TreeNodeData {\n  id: string | number\n  rawId?: number\n  label: string\n  icon?: TreeNodeIcon\n  isEditing?: boolean\n  type?: TreeNodeType\n  authorId?: number | null\n  authorUserName?: string\n  authorDisplayName?: string\n  hasMembers?: boolean\n  isCurrentUserRootMember?: boolean\n  permissionCode?: string\n  hasChildren?: boolean\n  children?: TreeNodeData[]\n  [key: string]: unknown\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TreeProps",
-        "definition": "export interface TreeProps {\n  fontSize?: number\r\n  treeData: TreeNodeData[]\r\n  currentTreeKey?: string\r\n  currentUserId?: number | null\r\n  activeAccentColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  hoverBackgroundColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n  activeIconColor?: string\r\n  nodeIcon?: (node: TreeNodeData) => TreeNodeIcon\r\n  allowDrag?: (node: TreeNodeData) => boolean\r\n  allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean\r\n  contextMenuItems?: TreeContextMenuItems\r\n  createRootNode?: TreeCreateRootNode\r\n  createNode?: TreeCreateNode\r\n  deleteNode?: TreeDeleteNode\r\n  canCreateChildByNode?: (node: TreeNodeData) => boolean\r\n  canDeleteNodeById?: (nodeId?: number | null) => boolean\r\n  canManageMembersByNode?: (node: TreeNodeData) => boolean\r\n  canMigrateNode?: (node: TreeNodeData) => boolean\n}",
+        "definition": "export interface TreeProps {\n  fontSize?: number\n  treeData: TreeNodeData[]\n  currentTreeKey?: string\n  currentUserId?: number | null\n  activeAccentColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  hoverBackgroundColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n  activeIconColor?: string\n  nodeIcon?: (node: TreeNodeData) => TreeNodeIcon\n  allowDrag?: (node: TreeNodeData) => boolean\n  allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean\n  contextMenuItems?: TreeContextMenuItems\n  createRootNode?: TreeCreateRootNode\n  createNode?: TreeCreateNode\n  deleteNode?: TreeDeleteNode\n  canCreateChildByNode?: (node: TreeNodeData) => boolean\n  canDeleteNodeById?: (nodeId?: number | null) => boolean\n  canManageMembersByNode?: (node: TreeNodeData) => boolean\n  canMigrateNode?: (node: TreeNodeData) => boolean\n}",
         "exported": true,
         "group": "属性与配置"
       },
@@ -9763,7 +10220,7 @@
       },
       {
         "name": "AlertProps",
-        "definition": "export interface AlertProps {\r\n  title?: string\r\n  description?: string\r\n  status?: AlertStatus\r\n  variant?: AlertVariant\r\n  closable?: boolean\r\n  showIcon?: boolean\r\n  center?: boolean\r\n}",
+        "definition": "export interface AlertProps {\n  title?: string\n  description?: string\n  status?: AlertStatus\n  variant?: AlertVariant\n  closable?: boolean\n  showIcon?: boolean\n  center?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -9918,6 +10375,18 @@
         "options": [],
         "group": "布局与尺寸",
         "description": "是否显示全屏切换图标按钮，点击后弹窗在当前浏览器页面视口内铺满显示",
+        "required": false
+      },
+      {
+        "name": "enableModal",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "是否启用遮罩、滚动锁和模态焦点管理。",
         "required": false
       },
       {
@@ -10276,7 +10745,7 @@
       },
       {
         "name": "DialogProps",
-        "definition": "export interface DialogProps extends ElementStyleProps, OverlayProps {\n  modelValue?: boolean\n  title?: string\n  fontSize?: number\n  width?: number\n  height?: number\n  minWidth?: number\n  minHeight?: number\n  maxWidth?: number\n  maxHeight?: number\n  draggable?: boolean\n  resizable?: boolean\n  showFullscreen?: boolean\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\n  maskColor?: string\n  titleColor?: string\n  headerBackgroundColor?: string\n  bodyBackgroundColor?: string\n  footerBackgroundColor?: string\n  headerBorderColor?: string\n  footerBorderColor?: string\n  showFooterDivider?: boolean\n  footerDividerColor?: string\n  footerDividerWidth?: number | string\n  footerDividerStyle?: DialogFooterDividerStyle\n  closeIconColor?: string\n  closeIconHoverColor?: string\n  closeIconHoverBackgroundColor?: string\n  shadow?: string\n  resizerColor?: string\n}",
+        "definition": "export interface DialogProps extends ElementStyleProps, OverlayProps {\n  modelValue?: boolean\n  title?: string\n  fontSize?: number\n  width?: number\n  height?: number\n  minWidth?: number\n  minHeight?: number\n  maxWidth?: number\n  maxHeight?: number\n  draggable?: boolean\n  resizable?: boolean\n  showFullscreen?: boolean\n  /** 是否启用遮罩、滚动锁和模态焦点管理。 */\n  enableModal?: boolean\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\n  maskColor?: string\n  titleColor?: string\n  headerBackgroundColor?: string\n  bodyBackgroundColor?: string\n  footerBackgroundColor?: string\n  headerBorderColor?: string\n  footerBorderColor?: string\n  showFooterDivider?: boolean\n  footerDividerColor?: string\n  footerDividerWidth?: number | string\n  footerDividerStyle?: DialogFooterDividerStyle\n  closeIconColor?: string\n  closeIconHoverColor?: string\n  closeIconHoverBackgroundColor?: string\n  shadow?: string\n  resizerColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -10827,19 +11296,19 @@
     "types": [
       {
         "name": "LoadingProps",
-        "definition": "export interface LoadingProps {\r\n  fontSize?: number\r\n  modelValue?: boolean\r\n  text?: string\r\n  fullscreen?: boolean\r\n  lock?: boolean\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  spinnerColor?: string\r\n  spinnerSize?: number | string\r\n  zIndex?: number\r\n}",
+        "definition": "export interface LoadingProps {\n  fontSize?: number\n  modelValue?: boolean\n  text?: string\n  fullscreen?: boolean\n  lock?: boolean\n  backgroundColor?: string\n  textColor?: string\n  spinnerColor?: string\n  spinnerSize?: number | string\n  zIndex?: number\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "LoadingOptions",
-        "definition": "export interface LoadingOptions extends Omit<LoadingProps, 'modelValue'> {\r\n  target?: HTMLElement | string\r\n}",
+        "definition": "export interface LoadingOptions extends Omit<LoadingProps, 'modelValue'> {\n  target?: HTMLElement | string\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "LoadingInstance",
-        "definition": "export interface LoadingInstance {\r\n  close: () => void\r\n}",
+        "definition": "export interface LoadingInstance {\n  close: () => void\n}",
         "exported": true,
         "group": "组件数据"
       }
@@ -11183,19 +11652,19 @@
       },
       {
         "name": "MessageProps",
-        "definition": "export interface MessageProps {\n  id?: string\n  message?: string\n  status?: MessageType\n  fontSize?: number\n  duration?: number\r\n  showClose?: boolean\r\n  plain?: boolean\r\n  round?: boolean\r\n  center?: boolean\r\n  offset?: number\r\n  placement?: MessagePlacement\r\n  zIndex?: number\r\n  icon?: string\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  borderColor?: string\r\n  closeColor?: string\r\n  iconColor?: string\r\n  width?: number | string\r\n  minWidth?: number | string\r\n  maxWidth?: number | string\r\n  padding?: string\r\n  radius?: number | string\r\n  shadow?: string\r\n}",
+        "definition": "export interface MessageProps {\n  id?: string\n  message?: string\n  status?: MessageType\n  fontSize?: number\n  duration?: number\n  showClose?: boolean\n  plain?: boolean\n  round?: boolean\n  center?: boolean\n  offset?: number\n  placement?: MessagePlacement\n  zIndex?: number\n  icon?: string\n  backgroundColor?: string\n  textColor?: string\n  borderColor?: string\n  closeColor?: string\n  iconColor?: string\n  width?: number | string\n  minWidth?: number | string\n  maxWidth?: number | string\n  padding?: string\n  radius?: number | string\n  shadow?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "MessageHandler",
-        "definition": "export interface MessageHandler {\r\n  close: () => void\r\n}",
+        "definition": "export interface MessageHandler {\n  close: () => void\n}",
         "exported": true,
         "group": "实例与回调"
       },
       {
         "name": "MessageOptions",
-        "definition": "export interface MessageOptions extends MessageProps {\r\n  onClose?: () => void\r\n}",
+        "definition": "export interface MessageOptions extends MessageProps {\n  onClose?: () => void\n}",
         "exported": true,
         "group": "组件数据"
       }
@@ -11677,13 +12146,13 @@
       },
       {
         "name": "MessageBoxProps",
-        "definition": "export interface MessageBoxProps extends OverlayProps {\n  modelValue?: boolean\n  title?: string\n  message?: string\n  status?: MessageBoxType\n  fontSize?: number\n  showCancelButton?: boolean\r\n  showConfirmButton?: boolean\r\n  showClose?: boolean\r\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\r\n  confirmButtonText?: string\r\n  cancelButtonText?: string\r\n  distinguishCancelAndClose?: boolean\r\n  width?: number | string\r\n  minWidth?: number | string\r\n  maxWidth?: number | string\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  titleColor?: string\r\n  borderColor?: string\r\n  iconColor?: string\r\n  maskColor?: string\r\n  confirmBackgroundColor?: string\r\n  confirmTextColor?: string\r\n  confirmBorderColor?: string\r\n  cancelBackgroundColor?: string\r\n  cancelTextColor?: string\r\n  cancelBorderColor?: string\r\n  radius?: number | string\r\n  padding?: string\r\n  shadow?: string\r\n}",
+        "definition": "export interface MessageBoxProps extends OverlayProps {\n  modelValue?: boolean\n  title?: string\n  message?: string\n  status?: MessageBoxType\n  fontSize?: number\n  showCancelButton?: boolean\n  showConfirmButton?: boolean\n  showClose?: boolean\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\n  confirmButtonText?: string\n  cancelButtonText?: string\n  distinguishCancelAndClose?: boolean\n  width?: number | string\n  minWidth?: number | string\n  maxWidth?: number | string\n  backgroundColor?: string\n  textColor?: string\n  titleColor?: string\n  borderColor?: string\n  iconColor?: string\n  maskColor?: string\n  confirmBackgroundColor?: string\n  confirmTextColor?: string\n  confirmBorderColor?: string\n  cancelBackgroundColor?: string\n  cancelTextColor?: string\n  cancelBorderColor?: string\n  radius?: number | string\n  padding?: string\n  shadow?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "MessageBoxOptions",
-        "definition": "export interface MessageBoxOptions extends Omit<MessageBoxProps, 'modelValue'> {\r\n  callback?: (action: MessageBoxAction) => void\r\n}",
+        "definition": "export interface MessageBoxOptions extends Omit<MessageBoxProps, 'modelValue'> {\n  callback?: (action: MessageBoxAction) => void\n}",
         "exported": true,
         "group": "组件数据"
       }
@@ -11845,19 +12314,19 @@
       },
       {
         "name": "NotificationProps",
-        "definition": "export interface NotificationProps {\r\n  id?: string\r\n  title?: string\r\n  message?: string\r\n  status?: NotificationStatus\r\n  placement?: NotificationPlacement\r\n  duration?: number\r\n  showClose?: boolean\r\n  fontSize?: number\r\n  zIndex?: number\r\n}",
+        "definition": "export interface NotificationProps {\n  id?: string\n  title?: string\n  message?: string\n  status?: NotificationStatus\n  placement?: NotificationPlacement\n  duration?: number\n  showClose?: boolean\n  fontSize?: number\n  zIndex?: number\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "NotificationOptions",
-        "definition": "export interface NotificationOptions extends NotificationProps {\r\n  onClose?: () => void\r\n}",
+        "definition": "export interface NotificationOptions extends NotificationProps {\n  onClose?: () => void\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "NotificationHandler",
-        "definition": "export interface NotificationHandler {\r\n  close: () => void\r\n}",
+        "definition": "export interface NotificationHandler {\n  close: () => void\n}",
         "exported": true,
         "group": "实例与回调"
       }
@@ -12045,7 +12514,7 @@
     "types": [
       {
         "name": "PopconfirmProps",
-        "definition": "export interface PopconfirmProps {\r\n  modelValue?: boolean\r\n  title?: string\r\n  content?: string\r\n  confirmText?: string\r\n  cancelText?: string\r\n  placement?: PopoverPlacement\r\n  trigger?: PopoverTrigger\r\n  disabled?: boolean\r\n  teleported?: boolean\r\n  teleportTo?: string\r\n  zIndex?: number\r\n}",
+        "definition": "export interface PopconfirmProps {\n  modelValue?: boolean\n  title?: string\n  content?: string\n  confirmText?: string\n  cancelText?: string\n  placement?: PopoverPlacement\n  trigger?: PopoverTrigger\n  disabled?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -12257,7 +12726,7 @@
       },
       {
         "name": "PopoverProps",
-        "definition": "export interface PopoverProps {\r\n  modelValue?: boolean\r\n  title?: string\r\n  content?: string\r\n  placement?: PopoverPlacement\r\n  trigger?: PopoverTrigger\r\n  disabled?: boolean\r\n  showArrow?: boolean\n  width?: number | string\n  teleported?: boolean\r\n  teleportTo?: string\r\n  zIndex?: number\r\n  fontSize?: number\r\n}",
+        "definition": "export interface PopoverProps {\n  modelValue?: boolean\n  title?: string\n  content?: string\n  placement?: PopoverPlacement\n  trigger?: PopoverTrigger\n  disabled?: boolean\n  showArrow?: boolean\n  width?: number | string\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n  fontSize?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -12529,7 +12998,7 @@
       },
       {
         "name": "TooltipProps",
-        "definition": "export interface TooltipProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  modelValue?: boolean\r\n  content?: string\r\n  placement?: TooltipPlacement\r\n  trigger?: TooltipTrigger\r\n  disabled?: boolean\r\n  showArrow?: boolean\r\n  openDelay?: number\r\n  closeDelay?: number\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number | string\n}",
+        "definition": "export interface TooltipProps extends ElementStyleProps {\n  fontSize?: number\n  modelValue?: boolean\n  content?: string\n  placement?: TooltipPlacement\n  trigger?: TooltipTrigger\n  disabled?: boolean\n  showArrow?: boolean\n  openDelay?: number\n  closeDelay?: number\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -13328,13 +13797,13 @@
       },
       {
         "name": "AutocompleteOption",
-        "definition": "export interface AutocompleteOption {\r\n  label: string\r\n  value: AutocompleteOptionValue\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface AutocompleteOption {\n  label: string\n  value: AutocompleteOptionValue\n  disabled?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "AutocompleteFieldNames",
-        "definition": "export interface AutocompleteFieldNames {\r\n  label?: string\r\n  value?: string\r\n  disabled?: string\r\n}",
+        "definition": "export interface AutocompleteFieldNames {\n  label?: string\n  value?: string\n  disabled?: string\n}",
         "exported": false,
         "group": "组件数据"
       },
@@ -13346,19 +13815,19 @@
       },
       {
         "name": "AutocompleteRemoteMethod",
-        "definition": "export type AutocompleteRemoteMethod = (\r\n  keyword: string\r\n) => AutocompleteOptionSource[] | Promise<AutocompleteOptionSource[] | void> | void",
+        "definition": "export type AutocompleteRemoteMethod = (\n  keyword: string\n) => AutocompleteOptionSource[] | Promise<AutocompleteOptionSource[] | void> | void",
         "exported": true,
         "group": "实例与回调"
       },
       {
         "name": "AutocompleteExpose",
-        "definition": "export interface AutocompleteExpose {\r\n  getOptions: () => readonly AutocompleteOption[]\r\n  getVisibleOptions: () => readonly AutocompleteOption[]\r\n}",
+        "definition": "export interface AutocompleteExpose {\n  getOptions: () => readonly AutocompleteOption[]\n  getVisibleOptions: () => readonly AutocompleteOption[]\n}",
         "exported": true,
         "group": "实例与回调"
       },
       {
         "name": "AutocompleteProps",
-        "definition": "export interface AutocompleteProps\r\n  extends Omit<\r\n    InputProps,\r\n    'type'\r\n  > {\r\n  inputValue?: string | number\r\n  valueOnInput?: boolean\r\n  clearModelValueOnInput?: boolean\r\n  autoWidth?: boolean\r\n  options?: AutocompleteOptionSource[]\r\n  fieldNames?: AutocompleteFieldNames\r\n  displayField?: AutocompleteDisplayField\r\n  remote?: boolean\r\n  remoteMethod?: AutocompleteRemoteMethod\r\n  remoteTrigger?: AutocompleteRemoteTrigger\r\n  remoteDebounce?: number\r\n  remoteMinLength?: number\r\n  popperMaxHeight?: number | string\n  popperMaxWidth?: number | string\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n  popperBackgroundColor?: string\n  loading?: boolean\r\n  loadingText?: string\r\n  emptyText?: string\r\n}",
+        "definition": "export interface AutocompleteProps\n  extends Omit<\n    InputProps,\n    'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'\r\n  > {\n  inputValue?: string | number\n  valueOnInput?: boolean\n  clearModelValueOnInput?: boolean\n  autoWidth?: boolean\n  options?: AutocompleteOptionSource[]\n  fieldNames?: AutocompleteFieldNames\n  displayField?: AutocompleteDisplayField\n  remote?: boolean\n  remoteMethod?: AutocompleteRemoteMethod\n  remoteTrigger?: AutocompleteRemoteTrigger\n  remoteDebounce?: number\n  remoteMinLength?: number\n  popperMaxHeight?: number | string\n  popperMaxWidth?: number | string\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n  popperBackgroundColor?: string\n  loading?: boolean\n  loadingText?: string\n  emptyText?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -14044,13 +14513,13 @@
       },
       {
         "name": "CascaderOption",
-        "definition": "export interface CascaderOption {\r\n  label: string\r\n  value: SelectOptionValue\r\n  disabled?: boolean\r\n  children?: CascaderOption[]\r\n}",
+        "definition": "export interface CascaderOption {\n  label: string\n  value: SelectOptionValue\n  disabled?: boolean\n  children?: CascaderOption[]\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "CascaderFieldNames",
-        "definition": "export interface CascaderFieldNames {\r\n  label?: string\r\n  value?: string\r\n  disabled?: string\r\n  children?: string\r\n}",
+        "definition": "export interface CascaderFieldNames {\n  label?: string\n  value?: string\n  disabled?: string\n  children?: string\n}",
         "exported": false,
         "group": "组件数据"
       },
@@ -14062,13 +14531,13 @@
       },
       {
         "name": "CascaderRemoteMethod",
-        "definition": "export type CascaderRemoteMethod = (\r\n  option?: CascaderOption,\r\n  path?: CascaderOption[]\r\n) => CascaderOptionSource[] | Promise<CascaderOptionSource[] | void> | void",
+        "definition": "export type CascaderRemoteMethod = (\n  option?: CascaderOption,\n  path?: CascaderOption[]\n) => CascaderOptionSource[] | Promise<CascaderOptionSource[] | void> | void",
         "exported": false,
         "group": "实例与回调"
       },
       {
         "name": "CascaderProps",
-        "definition": "export interface CascaderProps\r\n  extends Omit<\r\n    InputProps,\r\n    'modelValue' | 'type' | 'maxlength'\r\n  > {\r\n  modelValue?: SelectOptionValue[]\r\n  options?: CascaderOptionSource[]\r\n  fieldNames?: CascaderFieldNames\r\n  displayField?: CascaderDisplayField\r\n  remote?: boolean\r\n  remoteMethod?: CascaderRemoteMethod\r\n  loading?: boolean\r\n  loadingText?: string\r\n  emptyText?: string\r\n  placeholder?: string\r\n  disabled?: boolean\r\n  readonly?: boolean\r\n  clearable?: boolean\r\n  hideClearButton?: boolean\r\n  fontSize?: number\r\n  status?: CascaderStatus\r\n  prefix?: string\r\n  suffix?: string\r\n  autoWidth?: boolean\r\n  textAlign?: CascaderTextAlign\r\n  separator?: string\n  changeOnSelect?: boolean\n  popperMaxHeight?: number | string\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n  name?: string\n}",
+        "definition": "export interface CascaderProps\n  extends Omit<\n    InputProps,\n    'modelValue' | 'type' | 'maxlength' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'\r\n  > {\n  modelValue?: SelectOptionValue[]\n  options?: CascaderOptionSource[]\n  fieldNames?: CascaderFieldNames\n  displayField?: CascaderDisplayField\n  remote?: boolean\n  remoteMethod?: CascaderRemoteMethod\n  loading?: boolean\n  loadingText?: string\n  emptyText?: string\n  placeholder?: string\n  disabled?: boolean\n  readonly?: boolean\n  clearable?: boolean\n  hideClearButton?: boolean\n  fontSize?: number\n  status?: CascaderStatus\n  prefix?: string\n  suffix?: string\n  autoWidth?: boolean\n  textAlign?: CascaderTextAlign\n  separator?: string\n  changeOnSelect?: boolean\n  popperMaxHeight?: number | string\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -14279,7 +14748,7 @@
       },
       {
         "name": "CheckboxProps",
-        "definition": "export interface CheckboxProps extends ElementStyleProps {\n  height?: number | string\r\n  modelValue?: boolean | Array<string | number | boolean>\r\n  label?: string\r\n  value?: string | number | boolean\r\n  disabled?: boolean\n  indeterminate?: boolean\n  fontSize?: number\n  checkedColor?: string\n  radius?: number | string\n  name?: string\r\n}",
+        "definition": "export interface CheckboxProps extends ElementStyleProps {\n  height?: number | string\n  modelValue?: boolean | Array<string | number | boolean>\n  label?: string\n  value?: string | number | boolean\n  disabled?: boolean\n  indeterminate?: boolean\n  fontSize?: number\n  checkedColor?: string\n  radius?: number | string\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -14625,7 +15094,7 @@
     "types": [
       {
         "name": "ColorPickerPanelProps",
-        "definition": "export interface ColorPickerPanelProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  modelValue?: string\r\n  colors?: string[]\r\n}",
+        "definition": "export interface ColorPickerPanelProps extends ElementStyleProps {\n  fontSize?: number\n  modelValue?: string\n  colors?: string[]\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -15776,7 +16245,7 @@
     "types": [
       {
         "name": "DatePickerProps",
-        "definition": "export interface DatePickerProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerPopupThemeProps, OverlayProps {\n  modelValue?: string\r\n  showChinaFestivals?: boolean\r\n  festivals?: Record<string, DatePickerFestivalItem>\r\n}",
+        "definition": "export interface DatePickerProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerPopupThemeProps, OverlayProps {\n  modelValue?: string\n  showChinaFestivals?: boolean\n  festivals?: Record<string, DatePickerFestivalItem>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -16353,13 +16822,13 @@
       },
       {
         "name": "DatePickerFestivalItem",
-        "definition": "export interface DatePickerFestivalItem {\r\n  name: string\r\n  type: DatePickerFestivalType\r\n}",
+        "definition": "export interface DatePickerFestivalItem {\n  name: string\n  type: DatePickerFestivalType\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DatePickerPanelProps",
-        "definition": "export interface DatePickerPanelProps extends ElementStyleProps, PickerPanelThemeProps, PickerCalendarThemeProps {\r\n  fontSize?: number\r\n  modelValue?: string\r\n  year?: number\r\n  month?: number\r\n  showChinaFestivals?: boolean\r\n  festivals?: Record<string, DatePickerFestivalItem>\r\n}",
+        "definition": "export interface DatePickerPanelProps extends ElementStyleProps, PickerPanelThemeProps, PickerCalendarThemeProps {\n  fontSize?: number\n  modelValue?: string\n  year?: number\n  month?: number\n  showChinaFestivals?: boolean\n  festivals?: Record<string, DatePickerFestivalItem>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -17654,7 +18123,7 @@
     "types": [
       {
         "name": "DateTimePickerProps",
-        "definition": "export interface DateTimePickerProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerDateTimePopupThemeProps, OverlayProps {\n  modelValue?: string\r\n  showChinaFestivals?: boolean\r\n  festivals?: Record<string, DatePickerFestivalItem>\r\n}",
+        "definition": "export interface DateTimePickerProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerDateTimePopupThemeProps, OverlayProps {\n  modelValue?: string\n  showChinaFestivals?: boolean\n  festivals?: Record<string, DatePickerFestivalItem>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -17955,7 +18424,7 @@
       },
       {
         "name": "FormItemRule",
-        "definition": "export interface FormItemRule {\r\n  required?: boolean\r\n  message?: string\r\n  trigger?: string | string[]\r\n  min?: number\r\n  max?: number\r\n  len?: number\r\n  pattern?: RegExp\r\n  validator?: (rule: FormItemRule, value: unknown, model?: Record<string, unknown>) => boolean | string | Error | Promise<boolean | string | Error>\r\n}",
+        "definition": "export interface FormItemRule {\n  required?: boolean\n  message?: string\n  trigger?: string | string[]\n  min?: number\n  max?: number\n  len?: number\n  pattern?: RegExp\n  validator?: (rule: FormItemRule, value: unknown, model?: Record<string, unknown>) => boolean | string | Error | Promise<boolean | string | Error>\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -17991,19 +18460,19 @@
       },
       {
         "name": "FormProps",
-        "definition": "export interface FormProps extends ElementStyleProps {\r\n  model?: Record<string, unknown>\r\n  rules?: FormRules\r\n  disabled?: boolean\r\n  fontSize?: number\n  inline?: boolean\n  height?: string | number\n  labelWidth?: string | number\n  labelPosition?: FormLabelPosition\n  loading?: boolean\n  accentColor?: string\n  radius?: number | string\n}",
+        "definition": "export interface FormProps extends ElementStyleProps {\n  model?: Record<string, unknown>\n  rules?: FormRules\n  disabled?: boolean\n  fontSize?: number\n  inline?: boolean\n  height?: string | number\n  labelWidth?: string | number\n  labelPosition?: FormLabelPosition\n  loading?: boolean\n  accentColor?: string\n  radius?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "FormItemProps",
-        "definition": "export interface FormItemProps {\r\n  label?: string\r\n  prop?: string\r\n  required?: boolean\r\n  rules?: FormItemRule[]\r\n  error?: string\r\n  help?: string\r\n  fontSize?: number\r\n  disabled?: boolean\n  labelWidth?: string | number\n  labelHeight?: string | number\n  labelGap?: string | number\n  labelPosition?: FormLabelPosition\n  labelVisible?: boolean\n  contentHeight?: string | number\n  contentFullHeight?: boolean\n  align?: FormItemAlign\n  labelAlign?: FormItemHorizontalAlign\r\n  contentAlign?: FormItemHorizontalAlign | 'stretch'\r\n  contentJustify?: FormItemContentJustify\r\n  contentClass?: FormItemClass\r\n  contentStyle?: FormItemStyle\r\n  labelClass?: FormItemClass\r\n  labelStyle?: FormItemStyle\r\n  labelTextColor?: string\r\n  labelColor?: string\r\n  contentTextColor?: string\r\n  backgroundColor?: string\r\n  borderColor?: string\r\n  requiredMarkColor?: string\r\n  errorTextColor?: string\r\n  hintTextColor?: string\r\n  descriptionTextColor?: string\r\n  loading?: boolean\r\n}",
+        "definition": "export interface FormItemProps {\n  label?: string\n  prop?: string\n  required?: boolean\n  rules?: FormItemRule[]\n  error?: string\n  help?: string\n  fontSize?: number\n  disabled?: boolean\n  labelWidth?: string | number\n  labelHeight?: string | number\n  labelGap?: string | number\n  labelPosition?: FormLabelPosition\n  labelVisible?: boolean\n  contentHeight?: string | number\n  contentFullHeight?: boolean\n  align?: FormItemAlign\n  labelAlign?: FormItemHorizontalAlign\n  contentAlign?: FormItemHorizontalAlign | 'stretch'\n  contentJustify?: FormItemContentJustify\n  contentClass?: FormItemClass\n  contentStyle?: FormItemStyle\n  labelClass?: FormItemClass\n  labelStyle?: FormItemStyle\n  labelTextColor?: string\n  labelColor?: string\n  contentTextColor?: string\n  backgroundColor?: string\n  borderColor?: string\n  requiredMarkColor?: string\n  errorTextColor?: string\n  hintTextColor?: string\n  descriptionTextColor?: string\n  loading?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "FormExpose",
-        "definition": "export interface FormExpose {\r\n  validate: FormValidateMethod\r\n  validateField: FormValidateFieldMethod\r\n  resetFields: (props?: string | string[]) => void\r\n  clearValidate: (props?: string | string[]) => void\r\n  scrollToField: (prop: string) => void\r\n}",
+        "definition": "export interface FormExpose {\n  validate: FormValidateMethod\n  validateField: FormValidateFieldMethod\n  resetFields: (props?: string | string[]) => void\n  clearValidate: (props?: string | string[]) => void\n  scrollToField: (prop: string) => void\n}",
         "exported": true,
         "group": "实例与回调"
       }
@@ -18521,7 +18990,7 @@
       },
       {
         "name": "FormItemRule",
-        "definition": "export interface FormItemRule {\r\n  required?: boolean\r\n  message?: string\r\n  trigger?: string | string[]\r\n  min?: number\r\n  max?: number\r\n  len?: number\r\n  pattern?: RegExp\r\n  validator?: (rule: FormItemRule, value: unknown, model?: Record<string, unknown>) => boolean | string | Error | Promise<boolean | string | Error>\r\n}",
+        "definition": "export interface FormItemRule {\n  required?: boolean\n  message?: string\n  trigger?: string | string[]\n  min?: number\n  max?: number\n  len?: number\n  pattern?: RegExp\n  validator?: (rule: FormItemRule, value: unknown, model?: Record<string, unknown>) => boolean | string | Error | Promise<boolean | string | Error>\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -18557,19 +19026,19 @@
       },
       {
         "name": "FormProps",
-        "definition": "export interface FormProps extends ElementStyleProps {\r\n  model?: Record<string, unknown>\r\n  rules?: FormRules\r\n  disabled?: boolean\r\n  fontSize?: number\n  inline?: boolean\n  height?: string | number\n  labelWidth?: string | number\n  labelPosition?: FormLabelPosition\n  loading?: boolean\n  accentColor?: string\n  radius?: number | string\n}",
+        "definition": "export interface FormProps extends ElementStyleProps {\n  model?: Record<string, unknown>\n  rules?: FormRules\n  disabled?: boolean\n  fontSize?: number\n  inline?: boolean\n  height?: string | number\n  labelWidth?: string | number\n  labelPosition?: FormLabelPosition\n  loading?: boolean\n  accentColor?: string\n  radius?: number | string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "FormItemProps",
-        "definition": "export interface FormItemProps {\r\n  label?: string\r\n  prop?: string\r\n  required?: boolean\r\n  rules?: FormItemRule[]\r\n  error?: string\r\n  help?: string\r\n  fontSize?: number\r\n  disabled?: boolean\n  labelWidth?: string | number\n  labelHeight?: string | number\n  labelGap?: string | number\n  labelPosition?: FormLabelPosition\n  labelVisible?: boolean\n  contentHeight?: string | number\n  contentFullHeight?: boolean\n  align?: FormItemAlign\n  labelAlign?: FormItemHorizontalAlign\r\n  contentAlign?: FormItemHorizontalAlign | 'stretch'\r\n  contentJustify?: FormItemContentJustify\r\n  contentClass?: FormItemClass\r\n  contentStyle?: FormItemStyle\r\n  labelClass?: FormItemClass\r\n  labelStyle?: FormItemStyle\r\n  labelTextColor?: string\r\n  labelColor?: string\r\n  contentTextColor?: string\r\n  backgroundColor?: string\r\n  borderColor?: string\r\n  requiredMarkColor?: string\r\n  errorTextColor?: string\r\n  hintTextColor?: string\r\n  descriptionTextColor?: string\r\n  loading?: boolean\r\n}",
+        "definition": "export interface FormItemProps {\n  label?: string\n  prop?: string\n  required?: boolean\n  rules?: FormItemRule[]\n  error?: string\n  help?: string\n  fontSize?: number\n  disabled?: boolean\n  labelWidth?: string | number\n  labelHeight?: string | number\n  labelGap?: string | number\n  labelPosition?: FormLabelPosition\n  labelVisible?: boolean\n  contentHeight?: string | number\n  contentFullHeight?: boolean\n  align?: FormItemAlign\n  labelAlign?: FormItemHorizontalAlign\n  contentAlign?: FormItemHorizontalAlign | 'stretch'\n  contentJustify?: FormItemContentJustify\n  contentClass?: FormItemClass\n  contentStyle?: FormItemStyle\n  labelClass?: FormItemClass\n  labelStyle?: FormItemStyle\n  labelTextColor?: string\n  labelColor?: string\n  contentTextColor?: string\n  backgroundColor?: string\n  borderColor?: string\n  requiredMarkColor?: string\n  errorTextColor?: string\n  hintTextColor?: string\n  descriptionTextColor?: string\n  loading?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "FormExpose",
-        "definition": "export interface FormExpose {\r\n  validate: FormValidateMethod\r\n  validateField: FormValidateFieldMethod\r\n  resetFields: (props?: string | string[]) => void\r\n  clearValidate: (props?: string | string[]) => void\r\n  scrollToField: (prop: string) => void\r\n}",
+        "definition": "export interface FormExpose {\n  validate: FormValidateMethod\n  validateField: FormValidateFieldMethod\n  resetFields: (props?: string | string[]) => void\n  clearValidate: (props?: string | string[]) => void\n  scrollToField: (prop: string) => void\n}",
         "exported": true,
         "group": "实例与回调"
       }
@@ -18949,6 +19418,42 @@
         "required": false
       },
       {
+        "name": "inputOffsetY",
+        "type": "number",
+        "default": "0",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "输入内容垂直偏移，单位 px；正值向下，负值向上。",
+        "required": false
+      },
+      {
+        "name": "prefixOffsetY",
+        "type": "number",
+        "default": "0",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "前缀垂直偏移，单位 px；正值向下，负值向上。",
+        "required": false
+      },
+      {
+        "name": "suffixOffsetY",
+        "type": "number",
+        "default": "0",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "后缀垂直偏移，单位 px；正值向下，负值向上。",
+        "required": false
+      },
+      {
         "name": "accentColor",
         "type": "string",
         "default": "—",
@@ -19289,7 +19794,7 @@
       },
       {
         "name": "InputProps",
-        "definition": "export interface InputProps extends BaseInputProps {\r\n  fontSize?: number\r\n}",
+        "definition": "export interface InputProps extends BaseInputProps {\n  fontSize?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -19601,7 +20106,7 @@
     "types": [
       {
         "name": "InputNumberProps",
-        "definition": "export interface InputNumberProps extends ElementStyleProps {\n  showActiveBorder?: boolean\n  height?: number | string\n  padding?: number | string\r\n  modelValue?: number\r\n  min?: number\r\n  max?: number\r\n  step?: number\r\n  disabled?: boolean\r\n  readonly?: boolean\r\n  placeholder?: string\n  fullWidth?: boolean\n  fullHeight?: boolean\n  accentColor?: string\n  activeBorderColor?: string\n  radius?: number | string\n  fontFamily?: string\n  fontSize?: number\r\n  decreaseButtonBackgroundColor?: string\r\n  increaseButtonBackgroundColor?: string\r\n}",
+        "definition": "export interface InputNumberProps extends ElementStyleProps {\n  showActiveBorder?: boolean\n  height?: number | string\n  padding?: number | string\n  modelValue?: number\n  min?: number\n  max?: number\n  step?: number\n  disabled?: boolean\n  readonly?: boolean\n  placeholder?: string\n  fullWidth?: boolean\n  fullHeight?: boolean\n  accentColor?: string\n  activeBorderColor?: string\n  radius?: number | string\n  fontFamily?: string\n  fontSize?: number\n  decreaseButtonBackgroundColor?: string\n  increaseButtonBackgroundColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -19836,13 +20341,13 @@
       },
       {
         "name": "RadioProps",
-        "definition": "export interface RadioProps extends ElementStyleProps {\n  height?: number | string\n\r\n  modelValue?: string | number | boolean\r\n  label?: string\r\n  value: string | number | boolean\r\n  disabled?: boolean\r\n  fontFamily?: string\r\n  fontSize?: number\r\n  labelColor?: string\r\n  buttonColor?: string\r\n  buttonSize?: number | string\r\n  name?: string\r\n}",
+        "definition": "export interface RadioProps extends ElementStyleProps {\n  height?: number | string\n\n  modelValue?: string | number | boolean\n  label?: string\n  value: string | number | boolean\n  disabled?: boolean\n  fontFamily?: string\n  fontSize?: number\n  labelColor?: string\n  buttonColor?: string\n  buttonSize?: number | string\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "RadioButtonProps",
-        "definition": "export interface RadioButtonProps extends RadioProps {\r\n  variant?: ButtonVariant\r\n  direction?: ButtonGroupDirection\r\n  width?: number | string\r\n  height?: number | string\r\n  radius?: number | string\r\n  activeBackgroundColor?: string\r\n  activeBorderColor?: string\r\n  activeTextColor?: string\r\n}",
+        "definition": "export interface RadioButtonProps extends RadioProps {\n  variant?: ButtonVariant\n  direction?: ButtonGroupDirection\n  width?: number | string\n  height?: number | string\n  radius?: number | string\n  activeBackgroundColor?: string\n  activeBorderColor?: string\n  activeTextColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -20156,13 +20661,13 @@
       },
       {
         "name": "RadioProps",
-        "definition": "export interface RadioProps extends ElementStyleProps {\n  height?: number | string\n\r\n  modelValue?: string | number | boolean\r\n  label?: string\r\n  value: string | number | boolean\r\n  disabled?: boolean\r\n  fontFamily?: string\r\n  fontSize?: number\r\n  labelColor?: string\r\n  buttonColor?: string\r\n  buttonSize?: number | string\r\n  name?: string\r\n}",
+        "definition": "export interface RadioProps extends ElementStyleProps {\n  height?: number | string\n\n  modelValue?: string | number | boolean\n  label?: string\n  value: string | number | boolean\n  disabled?: boolean\n  fontFamily?: string\n  fontSize?: number\n  labelColor?: string\n  buttonColor?: string\n  buttonSize?: number | string\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "RadioButtonProps",
-        "definition": "export interface RadioButtonProps extends RadioProps {\r\n  variant?: ButtonVariant\r\n  direction?: ButtonGroupDirection\r\n  width?: number | string\r\n  height?: number | string\r\n  radius?: number | string\r\n  activeBackgroundColor?: string\r\n  activeBorderColor?: string\r\n  activeTextColor?: string\r\n}",
+        "definition": "export interface RadioButtonProps extends RadioProps {\n  variant?: ButtonVariant\n  direction?: ButtonGroupDirection\n  width?: number | string\n  height?: number | string\n  radius?: number | string\n  activeBackgroundColor?: string\n  activeBorderColor?: string\n  activeTextColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -20254,13 +20759,13 @@
       },
       {
         "name": "SelectOption",
-        "definition": "export interface SelectOption {\r\n  label: string\r\n  value: SelectOptionValue\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface SelectOption {\n  label: string\n  value: SelectOptionValue\n  disabled?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "SelectFieldNames",
-        "definition": "export interface SelectFieldNames {\r\n  label?: string\r\n  value?: string\r\n  disabled?: string\r\n}",
+        "definition": "export interface SelectFieldNames {\n  label?: string\n  value?: string\n  disabled?: string\n}",
         "exported": false,
         "group": "组件数据"
       },
@@ -20278,13 +20783,13 @@
       },
       {
         "name": "SelectProps",
-        "definition": "export interface SelectProps\r\n  extends Omit<\r\n    InputProps,\r\n    'modelValue' | 'type' | 'maxlength'\r\n  > {\r\n  modelValue?: SelectOptionValue | SelectOptionValue[]\r\n  options?: SelectOptionSource[]\r\n  fieldNames?: SelectFieldNames\r\n  displayField?: SelectDisplayField\r\n  remote?: boolean\r\n  remoteMethod?: SelectRemoteMethod\r\n  loading?: boolean\r\n  loadingText?: string\r\n  emptyText?: string\r\n  placeholder?: string\r\n  disabled?: boolean\r\n  readonly?: boolean\r\n  clearable?: boolean\r\n  hideClearButton?: boolean\r\n  multiple?: boolean\r\n  fontSize?: number\r\n  status?: SelectStatus\r\n  prefix?: string\r\n  suffix?: string\r\n  autoWidth?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number | string\n  popperMaxWidth?: number | string\n  popperBackgroundColor?: string\n  textAlign?: SelectTextAlign\r\n  name?: string\r\n}",
+        "definition": "export interface SelectProps\n  extends Omit<\n    InputProps,\n    'modelValue' | 'type' | 'maxlength' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'\r\n  > {\n  modelValue?: SelectOptionValue | SelectOptionValue[]\n  options?: SelectOptionSource[]\n  fieldNames?: SelectFieldNames\n  displayField?: SelectDisplayField\n  remote?: boolean\n  remoteMethod?: SelectRemoteMethod\n  loading?: boolean\n  loadingText?: string\n  emptyText?: string\n  placeholder?: string\n  disabled?: boolean\n  readonly?: boolean\n  clearable?: boolean\n  hideClearButton?: boolean\n  multiple?: boolean\n  fontSize?: number\n  status?: SelectStatus\n  prefix?: string\n  suffix?: string\n  autoWidth?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number | string\n  popperMaxWidth?: number | string\n  popperBackgroundColor?: string\n  textAlign?: SelectTextAlign\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "OptionProps",
-        "definition": "export interface OptionProps {\r\n  label: string\r\n  value: SelectOptionValue\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface OptionProps {\n  label: string\n  value: SelectOptionValue\n  disabled?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -20981,13 +21486,13 @@
       },
       {
         "name": "SelectOption",
-        "definition": "export interface SelectOption {\r\n  label: string\r\n  value: SelectOptionValue\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface SelectOption {\n  label: string\n  value: SelectOptionValue\n  disabled?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "SelectFieldNames",
-        "definition": "export interface SelectFieldNames {\r\n  label?: string\r\n  value?: string\r\n  disabled?: string\r\n}",
+        "definition": "export interface SelectFieldNames {\n  label?: string\n  value?: string\n  disabled?: string\n}",
         "exported": false,
         "group": "组件数据"
       },
@@ -21005,13 +21510,13 @@
       },
       {
         "name": "SelectProps",
-        "definition": "export interface SelectProps\r\n  extends Omit<\r\n    InputProps,\r\n    'modelValue' | 'type' | 'maxlength'\r\n  > {\r\n  modelValue?: SelectOptionValue | SelectOptionValue[]\r\n  options?: SelectOptionSource[]\r\n  fieldNames?: SelectFieldNames\r\n  displayField?: SelectDisplayField\r\n  remote?: boolean\r\n  remoteMethod?: SelectRemoteMethod\r\n  loading?: boolean\r\n  loadingText?: string\r\n  emptyText?: string\r\n  placeholder?: string\r\n  disabled?: boolean\r\n  readonly?: boolean\r\n  clearable?: boolean\r\n  hideClearButton?: boolean\r\n  multiple?: boolean\r\n  fontSize?: number\r\n  status?: SelectStatus\r\n  prefix?: string\r\n  suffix?: string\r\n  autoWidth?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number | string\n  popperMaxWidth?: number | string\n  popperBackgroundColor?: string\n  textAlign?: SelectTextAlign\r\n  name?: string\r\n}",
+        "definition": "export interface SelectProps\n  extends Omit<\n    InputProps,\n    'modelValue' | 'type' | 'maxlength' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'\r\n  > {\n  modelValue?: SelectOptionValue | SelectOptionValue[]\n  options?: SelectOptionSource[]\n  fieldNames?: SelectFieldNames\n  displayField?: SelectDisplayField\n  remote?: boolean\n  remoteMethod?: SelectRemoteMethod\n  loading?: boolean\n  loadingText?: string\n  emptyText?: string\n  placeholder?: string\n  disabled?: boolean\n  readonly?: boolean\n  clearable?: boolean\n  hideClearButton?: boolean\n  multiple?: boolean\n  fontSize?: number\n  status?: SelectStatus\n  prefix?: string\n  suffix?: string\n  autoWidth?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number | string\n  popperMaxWidth?: number | string\n  popperBackgroundColor?: string\n  textAlign?: SelectTextAlign\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "OptionProps",
-        "definition": "export interface OptionProps {\r\n  label: string\r\n  value: SelectOptionValue\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface OptionProps {\n  label: string\n  value: SelectOptionValue\n  disabled?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -21198,7 +21703,7 @@
     "types": [
       {
         "name": "SliderProps",
-        "definition": "export interface SliderProps extends ElementStyleProps {\r\n  fontSize?: number\r\n  modelValue?: number\r\n  min?: number\r\n  max?: number\r\n  step?: number\n  disabled?: boolean\n  showValue?: boolean\n  vertical?: boolean\n}",
+        "definition": "export interface SliderProps extends ElementStyleProps {\n  fontSize?: number\n  modelValue?: number\n  min?: number\n  max?: number\n  step?: number\n  disabled?: boolean\n  showValue?: boolean\n  vertical?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -21490,13 +21995,13 @@
       },
       {
         "name": "SwitchProps",
-        "definition": "export interface SwitchProps extends ElementStyleProps {\n  height?: number | string\r\n  modelValue?: boolean\r\n  disabled?: boolean\r\n  activeText?: string\n  inactiveText?: string\n  labelPosition?: SwitchLabelPosition\n  activeValue?: SwitchValue\n  inactiveValue?: SwitchValue\n  checkedColor?: string\n  inactiveColor?: string\n  thumbColor?: string\r\n  buttonSize?: number | string\r\n  fontSize?: number\r\n  fontFamily?: string\r\n  radius?: number | string\r\n  name?: string\r\n}",
+        "definition": "export interface SwitchProps extends ElementStyleProps {\n  height?: number | string\n  modelValue?: boolean\n  disabled?: boolean\n  activeText?: string\n  inactiveText?: string\n  labelPosition?: SwitchLabelPosition\n  activeValue?: SwitchValue\n  inactiveValue?: SwitchValue\n  checkedColor?: string\n  inactiveColor?: string\n  thumbColor?: string\n  buttonSize?: number | string\n  fontSize?: number\n  fontFamily?: string\n  radius?: number | string\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "SwitchEmits",
-        "definition": "export interface SwitchEmits {\r\n  'update:modelValue': [value: SwitchValue]\r\n  change: [value: SwitchValue]\r\n}",
+        "definition": "export interface SwitchEmits {\n  'update:modelValue': [value: SwitchValue]\n  change: [value: SwitchValue]\n}",
         "exported": true,
         "group": "事件参数"
       }
@@ -22867,7 +23372,7 @@
     "types": [
       {
         "name": "TimePickerProps",
-        "definition": "export interface TimePickerProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerTimePopupThemeProps, OverlayProps {\n  modelValue?: string\r\n}",
+        "definition": "export interface TimePickerProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerTimePopupThemeProps, OverlayProps {\n  modelValue?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -23742,7 +24247,7 @@
     "types": [
       {
         "name": "TimeSelectProps",
-        "definition": "export interface TimeSelectProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerTimePopupThemeProps {\r\n  modelValue?: string\r\n  start?: string\r\n  end?: string\r\n  stepMinutes?: number\r\n}",
+        "definition": "export interface TimeSelectProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerTimePopupThemeProps {\n  modelValue?: string\n  start?: string\n  end?: string\n  stepMinutes?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -24003,19 +24508,19 @@
       },
       {
         "name": "UploadFile",
-        "definition": "export interface UploadFile {\r\n  uid: string\r\n  name: string\r\n  size: number\r\n  status: UploadStatus\r\n  percentage: number\r\n  raw?: File\r\n  response?: unknown\r\n  error?: unknown\r\n}",
+        "definition": "export interface UploadFile {\n  uid: string\n  name: string\n  size: number\n  status: UploadStatus\n  percentage: number\n  raw?: File\n  response?: unknown\n  error?: unknown\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "UploadProgressHandler",
-        "definition": "export interface UploadProgressHandler {\r\n  (percentage: number): void\r\n}",
+        "definition": "export interface UploadProgressHandler {\n  (percentage: number): void\n}",
         "exported": false,
         "group": "实例与回调"
       },
       {
         "name": "UploadProps",
-        "definition": "export interface UploadProps {\n  height?: number | string\r\n  modelValue?: UploadFile[]\r\n  accept?: string\r\n  multiple?: boolean\r\n  disabled?: boolean\r\n  drag?: boolean\r\n  autoUpload?: boolean\r\n  limit?: number\r\n  maxSize?: number\r\n  buttonText?: string\r\n  tip?: string\r\n  listType?: UploadListType\r\n  fontSize?: number\r\n  requestMethod?: (file: File, onProgress: UploadProgressHandler) => Promise<unknown>\r\n}",
+        "definition": "export interface UploadProps {\n  height?: number | string\n  modelValue?: UploadFile[]\n  accept?: string\n  multiple?: boolean\n  disabled?: boolean\n  drag?: boolean\n  autoUpload?: boolean\n  limit?: number\n  maxSize?: number\n  buttonText?: string\n  tip?: string\n  listType?: UploadListType\n  fontSize?: number\n  requestMethod?: (file: File, onProgress: UploadProgressHandler) => Promise<unknown>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -24065,13 +24570,13 @@
     "types": [
       {
         "name": "BreadcrumbItem",
-        "definition": "export interface BreadcrumbItem {\r\n  label: string\r\n  to?: string\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface BreadcrumbItem {\n  label: string\n  to?: string\n  disabled?: boolean\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "BreadcrumbProps",
-        "definition": "export interface BreadcrumbProps {\r\n  items?: BreadcrumbItem[]\r\n  separator?: string\r\n}",
+        "definition": "export interface BreadcrumbProps {\n  items?: BreadcrumbItem[]\n  separator?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -24414,7 +24919,7 @@
       },
       {
         "name": "DropdownPlacement",
-        "definition": "export type DropdownPlacement =\r\n  | 'bottom-start'\r\n  | 'bottom'\r\n  | 'bottom-end'\r\n  | 'top-start'\r\n  | 'top'\r\n  | 'top-end'\r\n  | 'left-start'\r\n  | 'left'\r\n  | 'left-end'\r\n  | 'right-start'\r\n  | 'right'\r\n  | 'right-end'",
+        "definition": "export type DropdownPlacement =\n  | 'bottom-start'\n  | 'bottom'\n  | 'bottom-end'\n  | 'top-start'\n  | 'top'\n  | 'top-end'\n  | 'left-start'\n  | 'left'\n  | 'left-end'\n  | 'right-start'\n  | 'right'\n  | 'right-end'",
         "exported": true,
         "group": "组件数据"
       },
@@ -24426,7 +24931,7 @@
       },
       {
         "name": "DropdownProps",
-        "definition": "export interface DropdownProps extends ElementStyleProps {\n  modelValue?: boolean\n  trigger?: DropdownTrigger\r\n  placement?: DropdownPlacement\r\n  fontSize?: number\r\n  disabled?: boolean\r\n  hideOnClick?: boolean\n  showArrow?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  offset?: number | string\n  popperWidth?: number | string\n  zIndex?: number\n  radius?: number | string\n  shadow?: string\r\n  hoverBackgroundColor?: string\r\n  hoverTextColor?: string\r\n  activeBackgroundColor?: string\r\n  activeTextColor?: string\r\n}",
+        "definition": "export interface DropdownProps extends ElementStyleProps {\n  modelValue?: boolean\n  trigger?: DropdownTrigger\n  placement?: DropdownPlacement\n  fontSize?: number\n  disabled?: boolean\n  hideOnClick?: boolean\n  showArrow?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  offset?: number | string\n  popperWidth?: number | string\n  zIndex?: number\n  radius?: number | string\n  shadow?: string\n  hoverBackgroundColor?: string\n  hoverTextColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -24674,7 +25179,7 @@
     "types": [
       {
         "name": "DropdownItemProps",
-        "definition": "export interface DropdownItemProps extends ElementStyleProps {\r\n  command?: unknown\r\n  disabled?: boolean\r\n  divided?: boolean\r\n  icon?: string\r\n  fontSize?: number\r\n  active?: boolean\r\n  height?: number | string\r\n  padding?: string\r\n  radius?: number | string\r\n  hoverBackgroundColor?: string\r\n  hoverTextColor?: string\r\n  activeBackgroundColor?: string\r\n  activeTextColor?: string\r\n  dividedColor?: string\r\n}",
+        "definition": "export interface DropdownItemProps extends ElementStyleProps {\n  command?: unknown\n  disabled?: boolean\n  divided?: boolean\n  icon?: string\n  fontSize?: number\n  active?: boolean\n  height?: number | string\n  padding?: string\n  radius?: number | string\n  hoverBackgroundColor?: string\n  hoverTextColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n  dividedColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -24832,7 +25337,7 @@
     "types": [
       {
         "name": "DropdownMenuProps",
-        "definition": "export interface DropdownMenuProps extends ElementStyleProps {\n  fontSize?: number\n  width?: number | string\n  maxHeight?: number | string\n  minWidth?: number | string\n  padding?: number | string\n  radius?: number | string\n  shadow?: string\r\n}",
+        "definition": "export interface DropdownMenuProps extends ElementStyleProps {\n  fontSize?: number\n  width?: number | string\n  maxHeight?: number | string\n  minWidth?: number | string\n  padding?: number | string\n  radius?: number | string\n  shadow?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -25533,7 +26038,7 @@
       },
       {
         "name": "NavMenuProps",
-        "definition": "export interface NavMenuProps {\n  items: NavMenuItem[]\n  activeKey?: string\n  mode?: NavMenuMode\r\n  collapsed?: boolean\n  allowCollapse?: boolean\n  hidden?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  scrollable?: boolean\n  maxHeight?: string | number\r\n  accordion?: boolean\r\n  openKeys?: string[]\r\n  defaultOpenKeys?: string[]\r\n  textColor?: string\n  activeTextColor?: string\n  submenuActiveTextColor?: string\n  activeBackgroundColor?: string\n  activeAncestorTextColor?: string\n  activeAncestorBackgroundColor?: string\n  fontSize?: number\n  fontWeight?: number | string\n  activeFontWeight?: number | string\n  fontFamily?: string\n  itemGap?: number | string\n  itemRadius?: number | string\n  submenuItemRadius?: number | string\n  submenuPopupGap?: number | string\n  showSubmenuArrow?: boolean\n  submenuArrowIcon?: string | Component\n}",
+        "definition": "export interface NavMenuProps {\n  items: NavMenuItem[]\n  activeKey?: string\n  mode?: NavMenuMode\n  collapsed?: boolean\n  allowCollapse?: boolean\n  hidden?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  scrollable?: boolean\n  maxHeight?: string | number\n  accordion?: boolean\n  openKeys?: string[]\n  defaultOpenKeys?: string[]\n  textColor?: string\n  activeTextColor?: string\n  submenuActiveTextColor?: string\n  activeBackgroundColor?: string\n  activeAncestorTextColor?: string\n  activeAncestorBackgroundColor?: string\n  fontSize?: number\n  fontWeight?: number | string\n  activeFontWeight?: number | string\n  fontFamily?: string\n  itemGap?: number | string\n  itemRadius?: number | string\n  submenuItemRadius?: number | string\n  submenuPopupGap?: number | string\n  showSubmenuArrow?: boolean\n  submenuArrowIcon?: string | Component\n}",
         "exported": true,
         "group": "属性与配置"
       },
@@ -25955,7 +26460,7 @@
       },
       {
         "name": "NavMenuProps",
-        "definition": "export interface NavMenuProps {\n  items: NavMenuItem[]\n  activeKey?: string\n  mode?: NavMenuMode\r\n  collapsed?: boolean\n  allowCollapse?: boolean\n  hidden?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  scrollable?: boolean\n  maxHeight?: string | number\r\n  accordion?: boolean\r\n  openKeys?: string[]\r\n  defaultOpenKeys?: string[]\r\n  textColor?: string\n  activeTextColor?: string\n  submenuActiveTextColor?: string\n  activeBackgroundColor?: string\n  activeAncestorTextColor?: string\n  activeAncestorBackgroundColor?: string\n  fontSize?: number\n  fontWeight?: number | string\n  activeFontWeight?: number | string\n  fontFamily?: string\n  itemGap?: number | string\n  itemRadius?: number | string\n  submenuItemRadius?: number | string\n  submenuPopupGap?: number | string\n  showSubmenuArrow?: boolean\n  submenuArrowIcon?: string | Component\n}",
+        "definition": "export interface NavMenuProps {\n  items: NavMenuItem[]\n  activeKey?: string\n  mode?: NavMenuMode\n  collapsed?: boolean\n  allowCollapse?: boolean\n  hidden?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  scrollable?: boolean\n  maxHeight?: string | number\n  accordion?: boolean\n  openKeys?: string[]\n  defaultOpenKeys?: string[]\n  textColor?: string\n  activeTextColor?: string\n  submenuActiveTextColor?: string\n  activeBackgroundColor?: string\n  activeAncestorTextColor?: string\n  activeAncestorBackgroundColor?: string\n  fontSize?: number\n  fontWeight?: number | string\n  activeFontWeight?: number | string\n  fontFamily?: string\n  itemGap?: number | string\n  itemRadius?: number | string\n  submenuItemRadius?: number | string\n  submenuPopupGap?: number | string\n  showSubmenuArrow?: boolean\n  submenuArrowIcon?: string | Component\n}",
         "exported": true,
         "group": "属性与配置"
       },
@@ -26362,7 +26867,7 @@
       },
       {
         "name": "NavMenuProps",
-        "definition": "export interface NavMenuProps {\n  items: NavMenuItem[]\n  activeKey?: string\n  mode?: NavMenuMode\r\n  collapsed?: boolean\n  allowCollapse?: boolean\n  hidden?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  scrollable?: boolean\n  maxHeight?: string | number\r\n  accordion?: boolean\r\n  openKeys?: string[]\r\n  defaultOpenKeys?: string[]\r\n  textColor?: string\n  activeTextColor?: string\n  submenuActiveTextColor?: string\n  activeBackgroundColor?: string\n  activeAncestorTextColor?: string\n  activeAncestorBackgroundColor?: string\n  fontSize?: number\n  fontWeight?: number | string\n  activeFontWeight?: number | string\n  fontFamily?: string\n  itemGap?: number | string\n  itemRadius?: number | string\n  submenuItemRadius?: number | string\n  submenuPopupGap?: number | string\n  showSubmenuArrow?: boolean\n  submenuArrowIcon?: string | Component\n}",
+        "definition": "export interface NavMenuProps {\n  items: NavMenuItem[]\n  activeKey?: string\n  mode?: NavMenuMode\n  collapsed?: boolean\n  allowCollapse?: boolean\n  hidden?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  scrollable?: boolean\n  maxHeight?: string | number\n  accordion?: boolean\n  openKeys?: string[]\n  defaultOpenKeys?: string[]\n  textColor?: string\n  activeTextColor?: string\n  submenuActiveTextColor?: string\n  activeBackgroundColor?: string\n  activeAncestorTextColor?: string\n  activeAncestorBackgroundColor?: string\n  fontSize?: number\n  fontWeight?: number | string\n  activeFontWeight?: number | string\n  fontFamily?: string\n  itemGap?: number | string\n  itemRadius?: number | string\n  submenuItemRadius?: number | string\n  submenuPopupGap?: number | string\n  showSubmenuArrow?: boolean\n  submenuArrowIcon?: string | Component\n}",
         "exported": true,
         "group": "属性与配置"
       },
@@ -26530,7 +27035,7 @@
     "types": [
       {
         "name": "PaginationProps",
-        "definition": "export interface PaginationProps {\n  height?: number | string\r\n  modelValue?: number\r\n  total?: number\r\n  pageSize?: number\r\n  pagerCount?: number\r\n  disabled?: boolean\r\n  showTotal?: boolean\r\n  showPageSize?: boolean\r\n  pageSizes?: number[]\r\n  fontSize?: number\r\n}",
+        "definition": "export interface PaginationProps {\n  height?: number | string\n  modelValue?: number\n  total?: number\n  pageSize?: number\n  pagerCount?: number\n  disabled?: boolean\n  showTotal?: boolean\n  showPageSize?: boolean\n  pageSizes?: number[]\n  fontSize?: number\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -26624,13 +27129,13 @@
       },
       {
         "name": "StepItem",
-        "definition": "export interface StepItem {\r\n  title: string\r\n  description?: string\r\n  status?: StepStatus\r\n  disabled?: boolean\r\n}",
+        "definition": "export interface StepItem {\n  title: string\n  description?: string\n  status?: StepStatus\n  disabled?: boolean\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "StepsProps",
-        "definition": "export interface StepsProps {\r\n  modelValue?: number\r\n  items?: StepItem[]\r\n  direction?: StepsDirection\r\n  clickable?: boolean\r\n}",
+        "definition": "export interface StepsProps {\n  modelValue?: number\n  items?: StepItem[]\n  direction?: StepsDirection\n  clickable?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -27172,25 +27677,25 @@
       },
       {
         "name": "TabItem",
-        "definition": "export interface TabItem {\r\n  name: TabName\r\n  label: string\r\n  icon?: string | Component\r\n  avatarUrl?: string\r\n  avatarText?: string\r\n  disabled?: boolean\r\n  locked?: boolean\r\n  closable?: boolean\r\n  refreshable?: boolean\r\n  draggable?: boolean\r\n  lazy?: boolean\r\n}",
+        "definition": "export interface TabItem {\n  name: TabName\n  label: string\n  icon?: string | Component\n  avatarUrl?: string\n  avatarText?: string\n  disabled?: boolean\n  locked?: boolean\n  closable?: boolean\n  refreshable?: boolean\n  draggable?: boolean\n  lazy?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "TabsPaneContext",
-        "definition": "export interface TabsPaneContext {\r\n  paneName: TabName\r\n  item: TabItem\r\n}",
+        "definition": "export interface TabsPaneContext {\n  paneName: TabName\n  item: TabItem\n}",
         "exported": true,
         "group": "插槽契约"
       },
       {
         "name": "TabsReorderPayload",
-        "definition": "export interface TabsReorderPayload {\r\n  source: TabName\r\n  target: TabName\r\n  position: TabsReorderPosition\r\n}",
+        "definition": "export interface TabsReorderPayload {\n  source: TabName\n  target: TabName\n  position: TabsReorderPosition\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "TabsCloseAllPayload",
-        "definition": "export interface TabsCloseAllPayload {\r\n  names: TabName[]\r\n}",
+        "definition": "export interface TabsCloseAllPayload {\n  names: TabName[]\n}",
         "exported": true,
         "group": "事件参数"
       },
@@ -27208,7 +27713,7 @@
       },
       {
         "name": "TabsProps",
-        "definition": "export interface TabsProps {\n  modelValue?: TabName\n  items?: TabItem[]\n  variant?: TabsType\n  fontSize?: number\n  tabPosition?: TabPosition\n  labelDirection?: TabsLabelDirection\n  tabStretch?: boolean\n  closable?: boolean\n  addable?: boolean\r\n  editable?: boolean\r\n  lazy?: boolean\r\n  showAvatar?: boolean\r\n  showCloseIcon?: boolean\r\n  showRefreshIcon?: boolean\r\n  showContextMenu?: boolean\r\n  draggable?: boolean\n  activeTabTextColor?: string\n  tabBackgroundColor?: string\n  tabTextColor?: string\n  tabFontSize?: number | string\r\n  tabMinWidth?: number | string\n  tabGap?: number | string\n  padding?: number | string\n  verticalWidth?: number | string\n  verticalLabelMinHeight?: number | string\n  radius?: number | string\n  border?: string\n  contentBackgroundColor?: string\n  contextMenuBackgroundColor?: string\n  contextMenuTextColor?: string\n  fullHeight?: boolean\n  beforeLeave?: (activeName: TabName, oldActiveName: TabName) => boolean | Promise<boolean>\n}",
+        "definition": "export interface TabsProps {\n  modelValue?: TabName\n  items?: TabItem[]\n  variant?: TabsType\n  fontSize?: number\n  tabPosition?: TabPosition\n  labelDirection?: TabsLabelDirection\n  tabStretch?: boolean\n  closable?: boolean\n  addable?: boolean\n  editable?: boolean\n  lazy?: boolean\n  showAvatar?: boolean\n  showCloseIcon?: boolean\n  showRefreshIcon?: boolean\n  showContextMenu?: boolean\n  draggable?: boolean\n  activeTabTextColor?: string\n  tabBackgroundColor?: string\n  tabTextColor?: string\n  tabFontSize?: number | string\n  tabMinWidth?: number | string\n  tabGap?: number | string\n  padding?: number | string\n  verticalWidth?: number | string\n  verticalLabelMinHeight?: number | string\n  radius?: number | string\n  border?: string\n  contentBackgroundColor?: string\n  contextMenuBackgroundColor?: string\n  contextMenuTextColor?: string\n  fullHeight?: boolean\n  beforeLeave?: (activeName: TabName, oldActiveName: TabName) => boolean | Promise<boolean>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -27734,7 +28239,7 @@
       {
         "name": "teleported",
         "type": "boolean",
-        "default": "false",
+        "default": "true",
         "defaultNote": "",
         "unit": "—",
         "controlType": "boolean",
@@ -28213,7 +28718,7 @@
       {
         "name": "displayTypeOptions",
         "type": "Array<DataTableSettingsOption<DataTableSettingsDisplayType>>",
-        "default": "() => [\r\n    { label: '默认', value: '' },\r\n    { label: '文本', value: 'text' },\r\n    { label: '标签', value: 'tag' },\r\n    { label: '布尔', value: 'boolean' },\r\n    { label: '日期', value: 'date' },\r\n    { label: '数字', value: 'number' }\r\n  ]",
+        "default": "() => [\n    { label: '默认', value: '' },\n    { label: '文本', value: 'text' },\n    { label: '标签', value: 'tag' },\n    { label: '布尔', value: 'boolean' },\n    { label: '日期', value: 'date' },\n    { label: '数字', value: 'number' }\n  ]",
         "defaultNote": "",
         "unit": "—",
         "controlType": "json",
@@ -28225,7 +28730,7 @@
       {
         "name": "editorTypeOptions",
         "type": "Array<DataTableSettingsOption<DataTableSettingsEditorType>>",
-        "default": "() => [\r\n    { label: '不编辑', value: '' },\r\n    { label: '输入框', value: 'input' },\r\n    { label: '自动完成', value: 'autocomplete' },\r\n    { label: '下拉选择', value: 'select' },\r\n    { label: '单选框', value: 'radio' },\r\n    { label: '开关', value: 'boolean' },\r\n    { label: '日期', value: 'date' },\r\n    { label: '日期时间', value: 'datetime' }\r\n  ]",
+        "default": "() => [\n    { label: '不编辑', value: '' },\n    { label: '输入框', value: 'input' },\n    { label: '自动完成', value: 'autocomplete' },\n    { label: '下拉选择', value: 'select' },\n    { label: '单选框', value: 'radio' },\n    { label: '开关', value: 'boolean' },\n    { label: '日期', value: 'date' },\n    { label: '日期时间', value: 'datetime' }\n  ]",
         "defaultNote": "",
         "unit": "—",
         "controlType": "json",
@@ -28237,7 +28742,7 @@
       {
         "name": "alignOptions",
         "type": "Array<DataTableSettingsOption<TableAlign>>",
-        "default": "() => [\r\n    { label: '左', value: 'left' },\r\n    { label: '中', value: 'center' },\r\n    { label: '右', value: 'right' }\r\n  ]",
+        "default": "() => [\n    { label: '左', value: 'left' },\n    { label: '中', value: 'center' },\n    { label: '右', value: 'right' }\n  ]",
         "defaultNote": "",
         "unit": "—",
         "controlType": "json",
@@ -28249,7 +28754,7 @@
       {
         "name": "keyTypeOptions",
         "type": "Array<DataTableSettingsOption<DataTableSettingsKeyType>>",
-        "default": "() => [\r\n    { label: '非 Key', value: '' },\r\n    { label: '主 Key', value: 'primary' },\r\n    { label: '普通 Key', value: 'normal' }\r\n  ]",
+        "default": "() => [\n    { label: '非 Key', value: '' },\n    { label: '主 Key', value: 'primary' },\n    { label: '普通 Key', value: 'normal' }\n  ]",
         "defaultNote": "",
         "unit": "—",
         "controlType": "json",
@@ -28335,61 +28840,61 @@
       },
       {
         "name": "DataTableSettingsOption",
-        "definition": "export interface DataTableSettingsOption<Value extends string = string> {\r\n  label: string\r\n  value: Value\r\n}",
+        "definition": "export interface DataTableSettingsOption<Value extends string = string> {\n  label: string\n  value: Value\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DataTableSettingsTable",
-        "definition": "export interface DataTableSettingsTable {\r\n  tableKey: string\r\n  label: string\r\n  physicalTableName?: string\r\n  modelName?: string\r\n  modelFullName?: string\r\n  group?: string\r\n  businessKeys?: Array<{\r\n    key: string\r\n    label: string\r\n  }>\r\n}",
+        "definition": "export interface DataTableSettingsTable {\n  tableKey: string\n  label: string\n  physicalTableName?: string\n  modelName?: string\n  modelFullName?: string\n  group?: string\n  businessKeys?: Array<{\n    key: string\n    label: string\n  }>\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DataTableSettingsColumnMeta",
-        "definition": "export interface DataTableSettingsColumnMeta {\r\n  key: string\r\n  label?: string\r\n  type?: DataTableSettingsDisplayType | null\r\n  displayType?: DataTableSettingsDisplayType | null\r\n  editType?: DataTableSettingsEditorType | null\r\n  dataSourceKey?: string | null\r\n  isKey?: boolean\r\n  keyType?: DataTableSettingsKeyType | string | null\r\n  isHidden?: boolean\r\n  isSortable?: boolean\r\n  sortable?: boolean\r\n  align?: TableAlign | string | null\r\n  defaultFormatter?: string | null\r\n  sortOrder?: number\r\n}",
+        "definition": "export interface DataTableSettingsColumnMeta {\n  key: string\n  label?: string\n  type?: DataTableSettingsDisplayType | null\n  displayType?: DataTableSettingsDisplayType | null\n  editType?: DataTableSettingsEditorType | null\n  dataSourceKey?: string | null\n  isKey?: boolean\n  keyType?: DataTableSettingsKeyType | string | null\n  isHidden?: boolean\n  isSortable?: boolean\n  sortable?: boolean\n  align?: TableAlign | string | null\n  defaultFormatter?: string | null\n  sortOrder?: number\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DataTableSettingsRow",
-        "definition": "export interface DataTableSettingsRow {\r\n  columnKey: string\r\n  columnLabel: string\r\n  displayType: DataTableSettingsDisplayType\r\n  editType: DataTableSettingsEditorType\r\n  dataSourceKey: string\r\n  isKey: boolean\r\n  keyType: DataTableSettingsKeyType\r\n  isHidden: boolean\r\n  isSortable: boolean\r\n  align: TableAlign\r\n  defaultFormatter: string\r\n  sortOrder: number | string\r\n}",
+        "definition": "export interface DataTableSettingsRow {\n  columnKey: string\n  columnLabel: string\n  displayType: DataTableSettingsDisplayType\n  editType: DataTableSettingsEditorType\n  dataSourceKey: string\n  isKey: boolean\n  keyType: DataTableSettingsKeyType\n  isHidden: boolean\n  isSortable: boolean\n  align: TableAlign\n  defaultFormatter: string\n  sortOrder: number | string\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DataTableSettingsDataSourceOption",
-        "definition": "export interface DataTableSettingsDataSourceOption {\r\n  key: string\r\n  label: string\r\n  name?: string\r\n  sourceTableName?: string | null\r\n  sourceColumnName?: string | null\r\n  valueCount?: number\r\n}",
+        "definition": "export interface DataTableSettingsDataSourceOption {\n  key: string\n  label: string\n  name?: string\n  sourceTableName?: string | null\n  sourceColumnName?: string | null\n  valueCount?: number\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DataTableSettingsAdapter",
-        "definition": "export interface DataTableSettingsAdapter {\r\n  loadTables: () => Promise<DataTableSettingsTable[]> | DataTableSettingsTable[]\r\n  loadColumns: (table: DataTableSettingsTable) => Promise<DataTableSettingsColumnMeta[]> | DataTableSettingsColumnMeta[]\r\n  loadSettings: (table: DataTableSettingsTable) => Promise<DataTableSettingsRow[]> | DataTableSettingsRow[]\r\n  saveSettings: (table: DataTableSettingsTable, rows: DataTableSettingsRow[]) => Promise<unknown> | unknown\r\n  loadDataSources?: () => Promise<DataTableSettingsDataSourceOption[]> | DataTableSettingsDataSourceOption[]\r\n}",
+        "definition": "export interface DataTableSettingsAdapter {\n  loadTables: () => Promise<DataTableSettingsTable[]> | DataTableSettingsTable[]\n  loadColumns: (table: DataTableSettingsTable) => Promise<DataTableSettingsColumnMeta[]> | DataTableSettingsColumnMeta[]\n  loadSettings: (table: DataTableSettingsTable) => Promise<DataTableSettingsRow[]> | DataTableSettingsRow[]\n  saveSettings: (table: DataTableSettingsTable, rows: DataTableSettingsRow[]) => Promise<unknown> | unknown\n  loadDataSources?: () => Promise<DataTableSettingsDataSourceOption[]> | DataTableSettingsDataSourceOption[]\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DataTableSettingsLoadedPayload",
-        "definition": "export interface DataTableSettingsLoadedPayload {\r\n  table: DataTableSettingsTable | null\r\n  rows: DataTableSettingsRow[]\r\n}",
+        "definition": "export interface DataTableSettingsLoadedPayload {\n  table: DataTableSettingsTable | null\n  rows: DataTableSettingsRow[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "DataTableSettingsErrorPayload",
-        "definition": "export interface DataTableSettingsErrorPayload {\r\n  stage: 'tables' | 'settings' | 'dataSources' | 'save'\r\n  error: unknown\r\n}",
+        "definition": "export interface DataTableSettingsErrorPayload {\n  stage: 'tables' | 'settings' | 'dataSources' | 'save'\n  error: unknown\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "DataTableSettingsSavePayload",
-        "definition": "export interface DataTableSettingsSavePayload {\r\n  table: DataTableSettingsTable\r\n  rows: DataTableSettingsRow[]\r\n  result: unknown\r\n}",
+        "definition": "export interface DataTableSettingsSavePayload {\n  table: DataTableSettingsTable\n  rows: DataTableSettingsRow[]\n  result: unknown\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "DataTableSettingsProps",
-        "definition": "export interface DataTableSettingsProps {\r\n  adapter: DataTableSettingsAdapter\r\n  initialTableKey?: string\r\n  height?: number | string\r\n  emptyText?: string\r\n  saveButtonText?: string\r\n  showTableMeta?: boolean\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  borderColor?: string\r\n  metaTextColor?: string\r\n  headerBackgroundColor?: string\r\n  headerTextColor?: string\r\n  bodyBackgroundColor?: string\r\n  bodyStripeBackgroundColor?: string\r\n  bodyTextColor?: string\r\n  controlBackgroundColor?: string\r\n  controlTextColor?: string\r\n  controlBorderColor?: string\r\n  dropdownBackgroundColor?: string\r\n  saveButtonBackgroundColor?: string\r\n  saveButtonTextColor?: string\r\n  saveButtonBorderColor?: string\r\n  saveButtonActiveBackgroundColor?: string\r\n  saveButtonActiveBorderColor?: string\r\n  saveButtonActiveTextColor?: string\r\n  displayTypeOptions?: Array<DataTableSettingsOption<DataTableSettingsDisplayType>>\r\n  editorTypeOptions?: Array<DataTableSettingsOption<DataTableSettingsEditorType>>\r\n  alignOptions?: Array<DataTableSettingsOption<TableAlign>>\r\n  keyTypeOptions?: Array<DataTableSettingsOption<DataTableSettingsKeyType>>\r\n}",
+        "definition": "export interface DataTableSettingsProps {\n  adapter: DataTableSettingsAdapter\n  initialTableKey?: string\n  height?: number | string\n  emptyText?: string\n  saveButtonText?: string\n  showTableMeta?: boolean\n  backgroundColor?: string\n  textColor?: string\n  borderColor?: string\n  metaTextColor?: string\n  headerBackgroundColor?: string\n  headerTextColor?: string\n  bodyBackgroundColor?: string\n  bodyStripeBackgroundColor?: string\n  bodyTextColor?: string\n  controlBackgroundColor?: string\n  controlTextColor?: string\n  controlBorderColor?: string\n  dropdownBackgroundColor?: string\n  saveButtonBackgroundColor?: string\n  saveButtonTextColor?: string\n  saveButtonBorderColor?: string\n  saveButtonActiveBackgroundColor?: string\n  saveButtonActiveBorderColor?: string\n  saveButtonActiveTextColor?: string\n  displayTypeOptions?: Array<DataTableSettingsOption<DataTableSettingsDisplayType>>\n  editorTypeOptions?: Array<DataTableSettingsOption<DataTableSettingsEditorType>>\n  alignOptions?: Array<DataTableSettingsOption<TableAlign>>\n  keyTypeOptions?: Array<DataTableSettingsOption<DataTableSettingsKeyType>>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -28936,79 +29441,79 @@
       },
       {
         "name": "FileDiskColors",
-        "definition": "export interface FileDiskColors {\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  mutedTextColor?: string\r\n  borderColor?: string\r\n  headerBackgroundColor?: string\r\n  toolbarBackgroundColor?: string\r\n  itemBackgroundColor?: string\r\n  itemHoverBackgroundColor?: string\r\n  itemActiveBackgroundColor?: string\r\n  itemActiveTextColor?: string\r\n  iconColor?: string\r\n  activeIconColor?: string\r\n  emptyBackgroundColor?: string\r\n  dragOverBackgroundColor?: string\r\n  primary?: string\r\n  primarySoft?: string\r\n  primaryWeak?: string\r\n  background?: string\r\n  toolbarBackground?: string\r\n  pathBackground?: string\r\n  panelBackground?: string\r\n  text?: string\r\n  mutedText?: string\r\n  subtleText?: string\r\n  border?: string\r\n  softBorder?: string\r\n  hoverBackground?: string\r\n  selectedBackground?: string\r\n  selectedBorder?: string\r\n  disabledText?: string\r\n  thumbBackground?: string\r\n  selectionBackground?: string\r\n  selectionBorder?: string\r\n  dropBackground?: string\r\n  success?: string\r\n  danger?: string\r\n  previewBackground?: string\r\n  previewText?: string\r\n  previewControlBackground?: string\r\n  previewControlBorder?: string\r\n  previewControlHoverBackground?: string\r\n  shadow?: string\r\n}",
+        "definition": "export interface FileDiskColors {\n  backgroundColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  borderColor?: string\n  headerBackgroundColor?: string\n  toolbarBackgroundColor?: string\n  itemBackgroundColor?: string\n  itemHoverBackgroundColor?: string\n  itemActiveBackgroundColor?: string\n  itemActiveTextColor?: string\n  iconColor?: string\n  activeIconColor?: string\n  emptyBackgroundColor?: string\n  dragOverBackgroundColor?: string\n  primary?: string\n  primarySoft?: string\n  primaryWeak?: string\n  background?: string\n  toolbarBackground?: string\n  pathBackground?: string\n  panelBackground?: string\n  text?: string\n  mutedText?: string\n  subtleText?: string\n  border?: string\n  softBorder?: string\n  hoverBackground?: string\n  selectedBackground?: string\n  selectedBorder?: string\n  disabledText?: string\n  thumbBackground?: string\n  selectionBackground?: string\n  selectionBorder?: string\n  dropBackground?: string\n  success?: string\n  danger?: string\n  previewBackground?: string\n  previewText?: string\n  previewControlBackground?: string\n  previewControlBorder?: string\n  previewControlHoverBackground?: string\n  shadow?: string\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskItem",
-        "definition": "export interface FileDiskItem {\r\n  id: string | number\r\n  name: string\r\n  type: FileDiskItemType\r\n  size?: number\r\n  extension?: string\r\n  mimeType?: string\r\n  url?: string\r\n  thumbnailUrl?: string\r\n  previewUrl?: string\r\n  updatedAt?: string\r\n  createdAt?: string\r\n  path?: string\r\n  readonly?: boolean\r\n  disabled?: boolean\r\n  meta?: Record<string, unknown>\r\n}",
+        "definition": "export interface FileDiskItem {\n  id: string | number\n  name: string\n  type: FileDiskItemType\n  size?: number\n  extension?: string\n  mimeType?: string\n  url?: string\n  thumbnailUrl?: string\n  previewUrl?: string\n  updatedAt?: string\n  createdAt?: string\n  path?: string\n  readonly?: boolean\n  disabled?: boolean\n  meta?: Record<string, unknown>\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskDownloadOptions",
-        "definition": "export interface FileDiskDownloadOptions {\r\n  archive: boolean\r\n  filename?: string\r\n}",
+        "definition": "export interface FileDiskDownloadOptions {\n  archive: boolean\n  filename?: string\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskUploadProgress",
-        "definition": "export interface FileDiskUploadProgress {\r\n  file: File\r\n  percent: number\r\n}",
+        "definition": "export interface FileDiskUploadProgress {\n  file: File\n  percent: number\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "FileDiskUploadContext",
-        "definition": "export interface FileDiskUploadContext {\r\n  onProgress: (progress: FileDiskUploadProgress) => void\r\n}",
+        "definition": "export interface FileDiskUploadContext {\n  onProgress: (progress: FileDiskUploadProgress) => void\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "FileDiskTransferPayload",
-        "definition": "export interface FileDiskTransferPayload {\r\n  sourcePath: string\r\n  targetPath: string\r\n  items: FileDiskItem[]\r\n}",
+        "definition": "export interface FileDiskTransferPayload {\n  sourcePath: string\n  targetPath: string\n  items: FileDiskItem[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskAdapter",
-        "definition": "export interface FileDiskAdapter {\r\n  list?: (path: string) => FileDiskItem[] | Promise<FileDiskItem[]>\r\n  getFileUrl?: (path: string, item: FileDiskItem, usage: FileDiskFileUrlUsage) => string | Promise<string>\r\n  createFolder?: (path: string, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\r\n  upload?: (path: string, files: File[], context: FileDiskUploadContext) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\r\n  download?: (path: string, items: FileDiskItem[], options: FileDiskDownloadOptions) => void | Promise<void>\r\n  remove?: (path: string, items: FileDiskItem[]) => void | Promise<void>\r\n  rename?: (path: string, item: FileDiskItem, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\r\n  copy?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\r\n  move?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\r\n}",
+        "definition": "export interface FileDiskAdapter {\n  list?: (path: string) => FileDiskItem[] | Promise<FileDiskItem[]>\n  getFileUrl?: (path: string, item: FileDiskItem, usage: FileDiskFileUrlUsage) => string | Promise<string>\n  createFolder?: (path: string, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\n  upload?: (path: string, files: File[], context: FileDiskUploadContext) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\n  download?: (path: string, items: FileDiskItem[], options: FileDiskDownloadOptions) => void | Promise<void>\n  remove?: (path: string, items: FileDiskItem[]) => void | Promise<void>\n  rename?: (path: string, item: FileDiskItem, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\n  copy?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\n  move?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskCreateFolderPayload",
-        "definition": "export interface FileDiskCreateFolderPayload {\r\n  path: string\r\n  name: string\r\n}",
+        "definition": "export interface FileDiskCreateFolderPayload {\n  path: string\n  name: string\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskUploadPayload",
-        "definition": "export interface FileDiskUploadPayload {\r\n  path: string\r\n  files: File[]\r\n}",
+        "definition": "export interface FileDiskUploadPayload {\n  path: string\n  files: File[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskDownloadPayload",
-        "definition": "export interface FileDiskDownloadPayload {\r\n  path: string\r\n  items: FileDiskItem[]\r\n  archive: boolean\r\n}",
+        "definition": "export interface FileDiskDownloadPayload {\n  path: string\n  items: FileDiskItem[]\n  archive: boolean\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskRenamePayload",
-        "definition": "export interface FileDiskRenamePayload {\r\n  path: string\r\n  item: FileDiskItem\r\n  name: string\r\n}",
+        "definition": "export interface FileDiskRenamePayload {\n  path: string\n  item: FileDiskItem\n  name: string\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskClipboardPayload",
-        "definition": "export interface FileDiskClipboardPayload {\r\n  action: FileDiskClipboardAction\r\n  sourcePath: string\r\n  targetPath?: string\r\n  items: FileDiskItem[]\r\n}",
+        "definition": "export interface FileDiskClipboardPayload {\n  action: FileDiskClipboardAction\n  sourcePath: string\n  targetPath?: string\n  items: FileDiskItem[]\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskProps",
-        "definition": "export interface FileDiskProps {\r\n  fontSize?: number\r\n  modelValue?: string\r\n  entries?: FileDiskItem[]\r\n  adapter?: FileDiskAdapter\r\n  permissions?: Partial<Record<FileDiskPermission, boolean>>\r\n  viewMode?: FileDiskViewMode\r\n  title?: string\r\n  loading?: boolean\r\n  colors?: FileDiskColors\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  mutedTextColor?: string\r\n  borderColor?: string\r\n  headerBackgroundColor?: string\r\n  toolbarBackgroundColor?: string\r\n  itemBackgroundColor?: string\r\n  itemHoverBackgroundColor?: string\r\n  itemActiveBackgroundColor?: string\r\n  itemActiveTextColor?: string\r\n  iconColor?: string\r\n  activeIconColor?: string\r\n  emptyBackgroundColor?: string\r\n  dragOverBackgroundColor?: string\r\n  emptyText?: string\r\n  multiple?: boolean\r\n  accept?: string\r\n  disabled?: boolean\r\n  showHeader?: boolean\r\n  showTitle?: boolean\r\n  showToolbar?: boolean\r\n  showPath?: boolean\n  /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */\n  enableMinimize?: boolean\r\n  promptFolderName?: (path: string) => string | null | Promise<string | null>\r\n}",
+        "definition": "export interface FileDiskProps {\n  fontSize?: number\n  modelValue?: string\n  entries?: FileDiskItem[]\n  adapter?: FileDiskAdapter\n  permissions?: Partial<Record<FileDiskPermission, boolean>>\n  viewMode?: FileDiskViewMode\n  title?: string\n  loading?: boolean\n  colors?: FileDiskColors\n  backgroundColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  borderColor?: string\n  headerBackgroundColor?: string\n  toolbarBackgroundColor?: string\n  itemBackgroundColor?: string\n  itemHoverBackgroundColor?: string\n  itemActiveBackgroundColor?: string\n  itemActiveTextColor?: string\n  iconColor?: string\n  activeIconColor?: string\n  emptyBackgroundColor?: string\n  dragOverBackgroundColor?: string\n  emptyText?: string\n  multiple?: boolean\n  accept?: string\n  disabled?: boolean\n  showHeader?: boolean\n  showTitle?: boolean\n  showToolbar?: boolean\n  showPath?: boolean\n  /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */\n  enableMinimize?: boolean\n  promptFolderName?: (path: string) => string | null | Promise<string | null>\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -29099,7 +29604,7 @@
     "types": [
       {
         "name": "JsonEditorProps",
-        "definition": "export interface JsonEditorProps {\r\n  fontSize?: number\r\n  modelValue: string\r\n  title?: string\r\n  externalError?: string\r\n  resizable?: boolean\r\n}",
+        "definition": "export interface JsonEditorProps {\n  fontSize?: number\n  modelValue: string\n  title?: string\n  externalError?: string\n  resizable?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -29907,13 +30412,13 @@
       },
       {
         "name": "LoginSubmitPayload",
-        "definition": "export interface LoginSubmitPayload {\r\n  username: string\r\n  password: string\r\n  remember: boolean\r\n  imageCode: string\r\n  letterCode: string\r\n  phone: string\r\n  smsCode: string\r\n}",
+        "definition": "export interface LoginSubmitPayload {\n  username: string\n  password: string\n  remember: boolean\n  imageCode: string\n  letterCode: string\n  phone: string\n  smsCode: string\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "LoginProps",
-        "definition": "export interface LoginProps {\r\n  username?: string\r\n  password?: string\r\n  remember?: boolean\r\n  imageCode?: string\r\n  letterCode?: string\r\n  phone?: string\r\n  smsCode?: string\r\n  title?: string\r\n  description?: string\r\n  logoSrc?: string\r\n  logoAlt?: string\r\n  logoPosition?: LoginLogoPosition\r\n  labelPosition?: LoginLabelPosition\r\n  fontSize?: number\r\n  loading?: boolean\r\n  disabled?: boolean\r\n  usernameLabel?: string\r\n  passwordLabel?: string\r\n  usernamePlaceholder?: string\r\n  passwordPlaceholder?: string\r\n  imageCodePlaceholder?: string\r\n  letterCodePlaceholder?: string\r\n  phonePlaceholder?: string\r\n  smsCodePlaceholder?: string\r\n  loginText?: string\r\n  registerPromptText?: string\r\n  registerText?: string\r\n  smsButtonText?: string\r\n  wechatText?: string\r\n  rememberText?: string\r\n  imageCaptchaSrc?: string\r\n  imageCaptchaAlt?: string\r\n  imageCaptchaTitle?: string\r\n  imageCaptchaTip?: string\r\n  imageCaptchaSuccessText?: string\r\n  accentColor?: string\r\n  accentSoftColor?: string\r\n  backgroundColor?: string\n  borderColor?: string\n  borderWidth?: string\n  radius?: number | string\n  width?: string\n  textColor?: string\r\n  mutedTextColor?: string\n  inputBackgroundColor?: string\r\n  buttonTextColor?: string\r\n  letterCaptchaText?: string\r\n  enableImageCaptcha?: boolean\r\n  enableLetterCaptcha?: boolean\r\n  enableWechatLogin?: boolean\r\n  enableSmsLogin?: boolean\r\n  showRemember?: boolean\r\n  showRegister?: boolean\r\n}",
+        "definition": "export interface LoginProps {\n  username?: string\n  password?: string\n  remember?: boolean\n  imageCode?: string\n  letterCode?: string\n  phone?: string\n  smsCode?: string\n  title?: string\n  description?: string\n  logoSrc?: string\n  logoAlt?: string\n  logoPosition?: LoginLogoPosition\n  labelPosition?: LoginLabelPosition\n  fontSize?: number\n  loading?: boolean\n  disabled?: boolean\n  usernameLabel?: string\n  passwordLabel?: string\n  usernamePlaceholder?: string\n  passwordPlaceholder?: string\n  imageCodePlaceholder?: string\n  letterCodePlaceholder?: string\n  phonePlaceholder?: string\n  smsCodePlaceholder?: string\n  loginText?: string\n  registerPromptText?: string\n  registerText?: string\n  smsButtonText?: string\n  wechatText?: string\n  rememberText?: string\n  imageCaptchaSrc?: string\n  imageCaptchaAlt?: string\n  imageCaptchaTitle?: string\n  imageCaptchaTip?: string\n  imageCaptchaSuccessText?: string\n  accentColor?: string\n  accentSoftColor?: string\n  backgroundColor?: string\n  borderColor?: string\n  borderWidth?: string\n  radius?: number | string\n  width?: string\n  textColor?: string\n  mutedTextColor?: string\n  inputBackgroundColor?: string\n  buttonTextColor?: string\n  letterCaptchaText?: string\n  enableImageCaptcha?: boolean\n  enableLetterCaptcha?: boolean\n  enableWechatLogin?: boolean\n  enableSmsLogin?: boolean\n  showRemember?: boolean\n  showRegister?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -30284,6 +30789,613 @@
         "definition": "export interface LoginPageProps {\n  preset?: LoginPagePreset\n  width?: number | string\n  height?: number | string\n  minHeight?: number | string\n  backgroundColor?: string\n  backgroundImage?: string\n\n  header?: LoginPageSectionConfig\n  footer?: LoginPageSectionConfig\n  content?: LoginPageSectionConfig\n  contentTop?: LoginPageSectionConfig\n  contentLeft?: LoginPageSectionConfig\n  contentCenter?: LoginPageSectionConfig\n  contentRight?: LoginPageSectionConfig\n  contentBottom?: LoginPageSectionConfig\n\n  loginWidth?: number | string\n  loginProps?: LoginProps\n}",
         "exported": true,
         "group": "属性与配置"
+      }
+    ]
+  },
+  {
+    "name": "XMessenger",
+    "file": "src/components/other-components/messenger/src/Messenger.vue",
+    "folder": "src/components/other-components/messenger",
+    "slug": "messenger",
+    "propsName": "MessengerProps",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "数据与绑定",
+        "description": "绑定值",
+        "required": false
+      },
+      {
+        "name": "showContactList",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "显示独立好友列表",
+        "required": false
+      },
+      {
+        "name": "contactListPlacement",
+        "type": "MessengerContactListPlacement",
+        "default": "'right'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "left",
+          "right",
+          "top",
+          "floating"
+        ],
+        "group": "浮层与定位",
+        "description": "好友列表停靠位置，仅通过组件属性设置",
+        "required": false
+      },
+      {
+        "name": "contactListWidth",
+        "type": "number",
+        "default": "280",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "好友列表宽度，px",
+        "required": false
+      },
+      {
+        "name": "contactListHeight",
+        "type": "number",
+        "default": "520",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。",
+        "required": false
+      },
+      {
+        "name": "activeConversationId",
+        "type": "MessengerId",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "当前会话，支持 v-model:activeConversationId；未传时内部管理",
+        "required": false
+      },
+      {
+        "name": "currentUserId",
+        "type": "MessengerId",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "当前 ERP 用户 ID",
+        "required": false
+      },
+      {
+        "name": "currentUserRole",
+        "type": "'admin' | 'user'",
+        "default": "'user'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "user",
+          "admin"
+        ],
+        "group": "组件专有功能",
+        "description": "当前用户角色；仅 admin 显示好友列表设置。",
+        "required": false
+      },
+      {
+        "name": "contacts",
+        "type": "MessengerContact[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "权限过滤后的同事",
+        "required": false
+      },
+      {
+        "name": "contactGroups",
+        "type": "MessengerContactGroup[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "个人联系人分组",
+        "required": false
+      },
+      {
+        "name": "groups",
+        "type": "MessengerGroup[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "当前用户可访问的群",
+        "required": false
+      },
+      {
+        "name": "conversations",
+        "type": "MessengerConversation[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "按最近活动排列的会话",
+        "required": false
+      },
+      {
+        "name": "messagePages",
+        "type": "MessengerMessagePage[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "各会话已加载的消息，按时间从早到晚排列",
+        "required": false
+      },
+      {
+        "name": "historyResult",
+        "type": "MessengerHistoryResult",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "带查询条件的历史结果，用于避免过期结果显示在其它会话",
+        "required": false
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "default": "'内部消息'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "内容与展示",
+        "description": "未选择会话时的窗口标题；选中后显示好友名或群名",
+        "required": false
+      },
+      {
+        "name": "width",
+        "type": "number",
+        "default": "800",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "height",
+        "type": "number",
+        "default": "640",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "高度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "default": "14",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "外观与排版",
+        "description": "字号，单位 px；不改变控件高度、内边距或圆角",
+        "required": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "是否禁用",
+        "required": false
+      },
+      {
+        "name": "allowCreateGroup",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "在群聊视图搜索框右侧显示创建群聊图标。",
+        "required": false
+      },
+      {
+        "name": "enableContactGroupManagement",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "启用管理员设置中的个人分组操作",
+        "required": false
+      },
+      {
+        "name": "showBusinessPicker",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "显示业务单据选择入口",
+        "required": false
+      },
+      {
+        "name": "borderWidth",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "边框宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "borderColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "边框颜色",
+        "required": false
+      },
+      {
+        "name": "radius",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "整体圆角，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "背景色",
+        "required": false
+      },
+      {
+        "name": "textColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "文字颜色",
+        "required": false
+      },
+      {
+        "name": "teleported",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "浮层与定位",
+        "description": "是否将浮层传送到目标容器",
+        "required": false
+      },
+      {
+        "name": "teleportTo",
+        "type": "string",
+        "default": "'body'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "浮层与定位",
+        "description": "浮层挂载目标的 CSS 选择器",
+        "required": false
+      },
+      {
+        "name": "zIndex",
+        "type": "number",
+        "default": "1900",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "浮层与定位",
+        "description": "浮层层级",
+        "required": false
+      }
+    ],
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "[visible: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:contactListHeight",
+        "type": "[height: number]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:activeConversationId",
+        "type": "[id: MessengerId]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "open-conversation",
+        "type": "[payload: MessengerOpenPayload]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "send",
+        "type": "[payload: MessengerSendPayload]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "load-history",
+        "type": "[payload: { conversationId: MessengerId; beforeMessageId?: MessengerId }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "history-query",
+        "type": "[payload: MessengerHistoryQuery]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "locate-message",
+        "type": "[payload: { conversationId: MessengerId; messageId: MessengerId }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "read-request",
+        "type": "[payload: { conversationId: MessengerId; lastMessageId: MessengerId }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "contact-group-action",
+        "type": "[payload: MessengerContactGroupAction]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "group-action",
+        "type": "[payload: MessengerGroupAction]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "business-select",
+        "type": "[payload: { conversationId: MessengerId }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "business-click",
+        "type": "[payload: { conversationId: MessengerId; message: ChatMessage }]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "image-click",
+        "type": "[payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "file-click",
+        "type": "[payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "retry",
+        "type": "[payload: { conversationId: MessengerId; message: ChatMessage }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "attachment-add",
+        "type": "[payload: { conversationId: MessengerId; detail: ChatAttachmentPayload }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "attachment-remove",
+        "type": "[payload: { conversationId: MessengerId; attachment: ChatAttachment }]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "close",
+        "type": "[]",
+        "group": "状态与交互"
+      }
+    ],
+    "slots": [],
+    "methods": [
+      {
+        "name": "openConversation",
+        "type": "(payload: MessengerOpenPayload) => void",
+        "group": "状态与交互"
+      },
+      {
+        "name": "selectConversation",
+        "type": "(id: MessengerId) => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "addBusinessReference",
+        "type": "(conversationId: MessengerId, reference: ChatBusinessReference) => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "locateMessage",
+        "type": "(conversationId: MessengerId, messageId: MessengerId) => Promise<void>",
+        "group": "组件专有功能"
+      }
+    ],
+    "types": [
+      {
+        "name": "MessengerId",
+        "definition": "export type MessengerId = ChatMessageId",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerContact",
+        "definition": "export interface MessengerContact {\n  id: MessengerId\n  name: string\n  avatar?: string\n  department?: string\n  status?: 'online' | 'offline' | 'busy' | 'away'\n  groupId?: MessengerId\n  unreadCount?: number\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerContactGroup",
+        "definition": "export interface MessengerContactGroup { id: MessengerId; name: string }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerGroupPermissions",
+        "definition": "export interface MessengerGroupPermissions {\n  canRename?: boolean\n  canManageMembers?: boolean\n  canManageAdmins?: boolean\n  canEditAnnouncement?: boolean\n  canLeave?: boolean\n  canDissolve?: boolean\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerGroup",
+        "definition": "export interface MessengerGroup {\n  id: MessengerId\n  name: string\n  avatar?: string\n  memberIds: MessengerId[]\n  ownerId?: MessengerId\n  adminIds?: MessengerId[]\n  announcement?: string\n  unreadCount?: number\n  permissions?: MessengerGroupPermissions\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerConversation",
+        "definition": "export interface MessengerConversation {\n  id: MessengerId\n  kind: 'direct' | 'group'\n  targetId: MessengerId\n  title: string\n  avatar?: string\n  lastMessage?: string\n  /** ISO 8601 时间用于日期分档；预格式化文字直接显示。 */\r\n  lastMessageTime?: string\n  unreadCount?: number\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerMessagePage",
+        "definition": "export interface MessengerMessagePage { conversationId: MessengerId; messages: ChatMessage[]; hasMore?: boolean; loading?: boolean }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerHistoryMessageType",
+        "definition": "export type MessengerHistoryMessageType = 'all' | 'media' | 'emoji' | 'file' | 'link'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerHistoryQuery",
+        "definition": "export interface MessengerHistoryQuery { conversationId: MessengerId; keyword: string; startDate: string; endDate: string; page: number; pageSize: number; messageType?: MessengerHistoryMessageType; senderId?: MessengerId }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerHistoryResult",
+        "definition": "export interface MessengerHistoryResult extends MessengerHistoryQuery { messages: ChatMessage[]; total: number; loading?: boolean }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerOpenPayload",
+        "definition": "export interface MessengerOpenPayload { kind: 'direct' | 'group'; targetId: MessengerId }",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "MessengerSendPayload",
+        "definition": "export interface MessengerSendPayload extends ChatSendPayload { conversationId: MessengerId; businessReferences: ChatBusinessReference[] }",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "MessengerContactGroupAction",
+        "definition": "export type MessengerContactGroupAction =\n  | { action: 'create'; name: string }\n  | { action: 'rename'; groupId: MessengerId; name: string }\n  | { action: 'delete'; groupId: MessengerId }\n  | { action: 'move'; contactId: MessengerId; groupId?: MessengerId }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerGroupAction",
+        "definition": "export type MessengerGroupAction =\n  | { action: 'create'; name: string; memberIds: MessengerId[] }\n  | { action: 'rename'; groupId: MessengerId; name: string }\n  | { action: 'members'; groupId: MessengerId; memberIds: MessengerId[] }\n  | { action: 'admins'; groupId: MessengerId; adminIds: MessengerId[] }\n  | { action: 'announcement'; groupId: MessengerId; announcement: string }\n  | { action: 'leave' | 'dissolve'; groupId: MessengerId }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerContactListPlacement",
+        "definition": "export type MessengerContactListPlacement = Exclude<ContactListPlacement, 'inline'>",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "MessengerProps",
+        "definition": "export interface MessengerProps extends ElementStyleProps, OverlayProps {\n  /** 独立聊天窗口是否显示，好友列表单独控制。 */\n  modelValue?: boolean\n  showContactList?: boolean\n  contactListPlacement?: MessengerContactListPlacement\n  contactListWidth?: number\n  /** 好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。 */\r\n  contactListHeight?: number\n  activeConversationId?: MessengerId\n  currentUserId?: MessengerId\r\n  /** 当前用户角色；仅 admin 显示好友列表设置。 */\r\n  currentUserRole?: 'admin' | 'user'\n  contacts?: MessengerContact[]\n  contactGroups?: MessengerContactGroup[]\n  groups?: MessengerGroup[]\n  conversations?: MessengerConversation[]\n  messagePages?: MessengerMessagePage[]\n  historyResult?: MessengerHistoryResult\n  title?: string\n  width?: number\n  height?: number\n  fontSize?: number\n  disabled?: boolean\n  /** 在群聊视图搜索框右侧显示创建群聊图标。 */\r\n  allowCreateGroup?: boolean\n  enableContactGroupManagement?: boolean\n  showBusinessPicker?: boolean\n}",
+        "exported": true,
+        "group": "属性与配置"
+      },
+      {
+        "name": "MessengerEmits",
+        "definition": "export interface MessengerEmits {\n  'update:modelValue': [visible: boolean]\r\n  'update:contactListHeight': [height: number]\n  'update:activeConversationId': [id: MessengerId]\n  'open-conversation': [payload: MessengerOpenPayload]\n  'send': [payload: MessengerSendPayload]\n  'load-history': [payload: { conversationId: MessengerId; beforeMessageId?: MessengerId }]\n  'history-query': [payload: MessengerHistoryQuery]\n  'locate-message': [payload: { conversationId: MessengerId; messageId: MessengerId }]\n  'read-request': [payload: { conversationId: MessengerId; lastMessageId: MessengerId }]\n  'contact-group-action': [payload: MessengerContactGroupAction]\n  'group-action': [payload: MessengerGroupAction]\n  'business-select': [payload: { conversationId: MessengerId }]\n  'business-click': [payload: { conversationId: MessengerId; message: ChatMessage }]\n  'image-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\n  'file-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\n  'retry': [payload: { conversationId: MessengerId; message: ChatMessage }]\n  'attachment-add': [payload: { conversationId: MessengerId; detail: ChatAttachmentPayload }]\n  'attachment-remove': [payload: { conversationId: MessengerId; attachment: ChatAttachment }]\n  'close': []\n}",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "MessengerExpose",
+        "definition": "export interface MessengerExpose {\n  openConversation: (payload: MessengerOpenPayload) => void\n  selectConversation: (id: MessengerId) => void\n  addBusinessReference: (conversationId: MessengerId, reference: ChatBusinessReference) => void\n  locateMessage: (conversationId: MessengerId, messageId: MessengerId) => Promise<void>\n}",
+        "exported": true,
+        "group": "实例与回调"
       }
     ]
   },
@@ -31478,13 +32590,13 @@
       },
       {
         "name": "RichTextEditorTheme",
-        "definition": "export interface RichTextEditorTheme {\r\n  toolbarBackground?: string\r\n  toolbarBorderColor?: string\r\n  toolbarTextColor?: string\r\n  toolbarHoverBackground?: string\r\n  toolbarHoverTextColor?: string\r\n  toolbarActiveBackground?: string\r\n  toolbarActiveTextColor?: string\r\n  toolbarDividerColor?: string\r\n  contentBackgroundColor?: string\n  contentTextColor?: string\r\n  placeholderColor?: string\r\n  overlayBackground?: string\n  overlayBorderColor?: string\n  overlayTextColor?: string\n  outlineActiveColor?: string\n}",
+        "definition": "export interface RichTextEditorTheme {\n  toolbarBackground?: string\n  toolbarBorderColor?: string\n  toolbarTextColor?: string\n  toolbarHoverBackground?: string\n  toolbarHoverTextColor?: string\n  toolbarActiveBackground?: string\n  toolbarActiveTextColor?: string\n  toolbarDividerColor?: string\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  placeholderColor?: string\n  overlayBackground?: string\n  overlayBorderColor?: string\n  overlayTextColor?: string\n  outlineActiveColor?: string\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "RichTextEditorProps",
-        "definition": "export interface RichTextEditorProps {\r\n  fontSize?: number\r\n  modelValue?: string\r\n  fallbackHtml?: string\r\n  readonly?: boolean\n  minHeight?: number | string\n  fullHeight?: boolean\n  canSave?: boolean\n  showToolbar?: boolean\r\n  toolbarButtons?: RichTextEditorToolbarButton[]\r\n  toolbarTooltipPlacement?: 'top' | 'bottom'\r\n  showOutline?: boolean\r\n  pasteImages?: boolean\r\n  contentBackgroundColor?: string\n  contentTextColor?: string\r\n  contentFontSize?: number | string\r\n  theme?: RichTextEditorTheme\r\n  uploadImage?: (file: File) => Promise<UploadResult>\r\n  uploadFile?: (file: File) => Promise<UploadResult>\r\n}",
+        "definition": "export interface RichTextEditorProps {\n  fontSize?: number\n  modelValue?: string\n  fallbackHtml?: string\n  readonly?: boolean\n  minHeight?: number | string\n  fullHeight?: boolean\n  canSave?: boolean\n  showToolbar?: boolean\n  toolbarButtons?: RichTextEditorToolbarButton[]\n  toolbarTooltipPlacement?: 'top' | 'bottom'\n  showOutline?: boolean\n  pasteImages?: boolean\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentFontSize?: number | string\n  theme?: RichTextEditorTheme\n  uploadImage?: (file: File) => Promise<UploadResult>\n  uploadFile?: (file: File) => Promise<UploadResult>\n}",
         "exported": true,
         "group": "属性与配置"
       },

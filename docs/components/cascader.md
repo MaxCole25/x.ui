@@ -217,7 +217,7 @@ export interface CascaderOption {
 export interface CascaderProps
   extends Omit<
     InputProps,
-    'modelValue' | 'type' | 'maxlength'
+    'modelValue' | 'type' | 'maxlength' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'
   > {
   modelValue?: SelectOptionValue[]
   options?: CascaderOptionSource[]

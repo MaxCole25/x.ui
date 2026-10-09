@@ -34,7 +34,7 @@ import Example14Source from '../examples/table/Example14.vue?raw'
 
 组件主体使用 `div + CSS grid` 实现，方便后续扩展固定列、虚拟滚动和单元格编辑。
 
-组件同时导出兼容别名 `XlTable`、`XlTableColumn`、`XlTableProps`。
+组件统一使用 `XTable`，公开类型使用 `Table*` 命名。
 
 ## 使用示例
 
@@ -774,132 +774,6 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
 }
 ```
 
-### XlTableColumn
-
-```ts
-export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>
-```
-
-### XlTableAppendRowPayload
-
-```ts
-export type XlTableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableAppendRowPayload<Row>
-```
-
-### XlTableColumnResizePayload
-
-```ts
-export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
-```
-
-### XlTableDeleteSelectedRowsPayload
-
-```ts
-export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>
-```
-
-### XlTableDirtyCellChange
-
-```ts
-export type XlTableDirtyCellChange<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyCellChange<Row>
-```
-
-### XlTableDirtyChangePayload
-
-```ts
-export type XlTableDirtyChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyChangePayload<Row>
-```
-
-### XlTableEditableDataStrategy
-
-```ts
-export type XlTableEditableDataStrategy = TableEditableDataStrategy
-```
-
-### XlTableExcelExportMode
-
-```ts
-export type XlTableExcelExportMode = TableExcelExportMode
-```
-
-### XlTableExcelExportPayload
-
-```ts
-export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
-```
-
-### XlTableExcelImportPayload
-
-```ts
-export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>
-```
-
-### XlTableRowPatchPayload
-
-```ts
-export type XlTableRowPatchPayload = TableRowPatchPayload
-```
-
-### XlTableRowClickPayload
-
-```ts
-export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>
-```
-
-### XlTableProps
-
-```ts
-export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>
-```
-
-### XlTableSavePayload
-
-```ts
-export type XlTableSavePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableSavePayload<Row>
-```
-
-### XlTableSorter
-
-```ts
-export type XlTableSorter = TableSorter
-```
-
-### XlTableSortOrder
-
-```ts
-export type XlTableSortOrder = TableSortOrder
-```
-
-### XlTableSummaryAggregator
-
-```ts
-export type XlTableSummaryAggregator = TableSummaryAggregator
-```
-
-### XlTableSummaryCell
-
-```ts
-export type XlTableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryCell<Row>
-```
-
-### XlTableSummaryContext
-
-```ts
-export type XlTableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryContext<Row>
-```
-
-### XlTableSummaryRow
-
-```ts
-export type XlTableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryRow<Row>
-```
-
-### XlTableSummaryScope
-
-```ts
-export type XlTableSummaryScope = TableSummaryScope
-```
-
 ## 关联类型
 
 以下定义用于理解接口关联，未从包主入口直接导出；不要按这些名称从包名导入。
@@ -912,12 +786,6 @@ export type TableSummaryValueGetter<Row extends Record<string, unknown> = Record
   column: TableColumn<Row>,
   context: TableSummaryContext<Row>
 ) => unknown
-```
-
-### XlTableColumnSetting
-
-```ts
-export type XlTableColumnSetting = TableColumnSetting
 ```
 
 ## 验收说明

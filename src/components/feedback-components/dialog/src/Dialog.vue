@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   draggable: true,
   resizable: true,
   showFullscreen: false,
+  enableModal: true,
   closeOnMaskClick: true,
   closeOnEsc: true,
   showFooterDivider: true,
@@ -113,6 +114,13 @@ function centerPopup() {
 function close() {
   visible.value = false
   emit('close')
+}
+
+function onDialogEsc(event: KeyboardEvent) {
+  if (props.enableModal || !props.closeOnEsc || event.isComposing) return
+  event.preventDefault()
+  event.stopPropagation()
+  close()
 }
 
 function onMaskClick() {
@@ -275,13 +283,14 @@ const maskStyle = computed(() => ({
 const fullscreenIconClass = computed(() => (isFullscreen.value ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line'))
 const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '全屏显示'))
 const modalRef = ref<HTMLElement | null>(null)
-useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
+const modalVisible = computed(() => visible.value && props.enableModal)
+useModal({ visible: modalVisible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
 </script>
 
 <template>
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
-    <div v-if="visible" class="x-dialog__mask" :style="maskStyle" @click.self="onMaskClick">
-      <div ref="modalRef" role="dialog" aria-modal="true" :aria-labelledby="props.title || $slots.header ? titleId : undefined" :aria-label="props.title || '弹窗'" tabindex="-1" class="x-dialog" v-bind="$attrs" :class="['x-dialog', { 'is-fullscreen': isFullscreen }]" :style="[popupStyle, createFontStyle(props.fontSize ?? 14)]">
+    <div v-if="visible" class="x-dialog__mask" :class="{ 'is-modeless': !enableModal }" :style="maskStyle" @click.self="onMaskClick">
+      <div ref="modalRef" role="dialog" :aria-modal="enableModal ? true : undefined" @keydown.esc="onDialogEsc" :aria-labelledby="props.title || $slots.header ? titleId : undefined" :aria-label="props.title || '弹窗'" tabindex="-1" class="x-dialog" v-bind="$attrs" :class="['x-dialog', { 'is-fullscreen': isFullscreen }]" :style="[popupStyle, createFontStyle(props.fontSize ?? 14)]">
         <header class="x-dialog__header" @mousedown="startDrag">
           <div :id="titleId" class="x-dialog__title"><slot name="header">{{ title }}</slot></div>
           <div class="x-dialog__actions" @mousedown.stop>
@@ -313,6 +322,9 @@ useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: (
   z-index: var(--x-dialog-z-index, var(--x-z-index-dialog, 1900));
   background: var(--x-dialog-mask, rgba(18, 28, 45, 0.4));
 }
+
+.x-dialog__mask.is-modeless { pointer-events: none; background: transparent; }
+.x-dialog__mask.is-modeless .x-dialog { pointer-events: auto; }
 
 .x-dialog {
   position: absolute;

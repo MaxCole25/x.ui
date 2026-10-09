@@ -22,7 +22,7 @@ const appearance = reactive({ fontSize: 14,
     <Variant title="外观接口">
       <ApiPlayground component="XLoading">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
-          <XLoading 
+          <XLoading
               :model-value="appearance.loading"
               :text="appearance.text"
 

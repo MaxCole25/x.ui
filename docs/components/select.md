@@ -287,7 +287,7 @@ export interface SelectOption {
 export interface SelectProps
   extends Omit<
     InputProps,
-    'modelValue' | 'type' | 'maxlength'
+    'modelValue' | 'type' | 'maxlength' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'
   > {
   modelValue?: SelectOptionValue | SelectOptionValue[]
   options?: SelectOptionSource[]

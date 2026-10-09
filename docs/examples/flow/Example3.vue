@@ -1,12 +1,17 @@
 <script setup lang="ts">
-const icons = ['check', 'time', 'close'].map((name, id) => ({ id, name, label: ['完成', '等待', '关闭'][id] }))
+const iconNames = ['home', 'user', 'search', 'setting', 'edit', 'save', 'copy', 'download', 'upload', 'calendar', 'check', 'refresh']
+const icons = Array.from({ length: 24 }, (_, id) => ({
+  id,
+  name: iconNames[id % iconNames.length],
+  label: `入口 ${id + 1}`
+}))
 import { XText, XGrid, XFlow, XIcon } from '@x-soft88/x-ui'
 import '@x-soft88/x-ui/style.css'
 </script>
 
 <template>
   <XFlow
-    :items="icons.slice(0, 12)"
+    :items="icons"
     item-key="id"
     item-width="88px"
     :gap="10"
@@ -23,7 +28,7 @@ import '@x-soft88/x-ui/style.css'
   >
     <template #default="{ item }">
       <XGrid :columns="1" :gap="6" justify-items="center" padding="8px 4px">
-        <XIcon :name="item.name" :font-size="22" />
+        <XIcon :name="item.name" :icon-size="24" />
         <XText variant="muted" :font-size="12" truncated width="100%">{{ item.label }}</XText>
       </XGrid>
     </template>

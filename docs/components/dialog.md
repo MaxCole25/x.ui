@@ -84,6 +84,7 @@ import Example1Source from '../examples/dialog/Example1.vue?raw'
 
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
+| `enableModal` | 启用遮罩、页面滚动锁和模态焦点管理；false 时为可与其它面板交互的独立窗口 | `boolean` | `true` | — |
 | `closeOnMaskClick` | 点击遮罩是否关闭 | `boolean` | `true` | — |
 | `closeOnEsc` | 是否允许按 Esc 关闭；仅作用于最上层模态框 | `boolean` | `true` | — |
 | `maskColor` | 遮罩颜色 | `string` | `—` | — |
@@ -149,6 +150,7 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
   draggable?: boolean
   resizable?: boolean
   showFullscreen?: boolean
+  enableModal?: boolean
   closeOnMaskClick?: boolean
   closeOnEsc?: boolean
   maskColor?: string
@@ -195,3 +197,7 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
 ## 交互验收补充
 
 弹窗内 Select 展开时，第一次 Esc 只关闭下拉，第二次 Esc 根据 closeOnEsc 处理弹窗。closeOnEsc=false 不阻止内部下拉关闭；嵌套模态框只处理层级最高的一层。所属 Teleport 子浮层参与焦点循环，关闭顶层后恢复原焦点；最后一层关闭后恢复页面滚动。
+
+## 非模态窗口
+
+设置 `:enable-modal="false"` 后，不显示遮罩、不锁住页面滚动，也不限制焦点在窗口内。窗口仍支持拖动、缩放和全屏；只有窗口本身接收鼠标事件，外部页面和其它窗口可以继续操作。Esc 在窗口焦点内部且 closeOnEsc 开启时关闭当前窗口。需要点击置前时，父级通过 pointerdown 事件更新 zIndex，默认模态行为保持不变。

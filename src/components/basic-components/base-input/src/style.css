@@ -88,6 +88,8 @@
   outline: none;
   padding: 0;
   text-align: var(--x-base-input-text-align, left);
+  position: relative;
+  top: var(--x-base-input-offset-y, 0px);
   width: 100%;
 }
 
@@ -124,11 +126,15 @@
 
 .x-base-input__prefix {
   padding-left: 0;
+  position: relative;
+  top: var(--x-base-input-prefix-offset-y, 0px);
 }
 
 .x-base-input__suffix {
   min-width: var(--x-base-input-suffix-min-width, 0);
   padding-right: 0;
+  position: relative;
+  top: var(--x-base-input-suffix-offset-y, 0px);
 }
 
 .x-base-input__clear {

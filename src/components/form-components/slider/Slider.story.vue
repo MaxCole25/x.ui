@@ -31,7 +31,7 @@ const sample = reactive({
     <Variant title="外观接口">
       <ApiPlayground component="XSlider">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
-          <XSlider 
+          <XSlider
 
             v-model="sample.number"
             :min="appearance.min"

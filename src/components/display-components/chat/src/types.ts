@@ -2,7 +2,14 @@ import type { VNode } from 'vue'
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
 export type ChatMessageId = string | number
-export type ChatMessageKind = 'text' | 'image' | 'file' | 'system'
+export type ChatMessageKind = 'text' | 'image' | 'file' | 'system' | 'business'
+export interface ChatBusinessReference {
+  businessType: string
+  businessId: string | number
+  businessNumber: string
+  title: string
+  summary?: string
+}
 export type ChatMessageStatus = 'sending' | 'sent' | 'read' | 'failed'
 export interface ChatMessageQuote {
   senderName: string
@@ -24,6 +31,9 @@ export interface ChatMessage {
   /** 文件大小，单位 byte。 */
   fileSize?: number
   status?: ChatMessageStatus
+  /** 原始时间，用于历史查询；time 仍用于显示。 */
+  sentAt?: string
+  business?: ChatBusinessReference
   quote?: ChatMessageQuote
 }
 export interface ChatProps extends ElementStyleProps {
@@ -112,6 +122,7 @@ export interface ChatEmits {
   'message-click': [payload: ChatMessageClickPayload]
   'image-click': [payload: ChatMessageClickPayload]
   'file-click': [payload: ChatMessageClickPayload]
+  'business-click': [payload: ChatMessageClickPayload]
   'retry': [message: ChatMessage]
   'scroll': [payload: ChatScrollPayload]
   'update:modelValue': [value: string]
@@ -128,6 +139,7 @@ export interface ChatSlots {
   avatar?: (props: ChatMessageSlotProps) => VNode[]
 }
 export interface ChatExpose {
+  scrollToMessage: (id: ChatMessageId) => Promise<boolean>
   scrollToBottom: (behavior?: ScrollBehavior) => Promise<void>
   focus: () => void
   clearDraft: () => void

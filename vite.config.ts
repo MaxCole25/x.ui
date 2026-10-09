@@ -1,3 +1,4 @@
+import { renameSync } from 'node:fs'
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
@@ -16,7 +17,10 @@ export default defineConfig(() => {
           exclude: ['src/**/*.story.vue', 'src/components/_story/**'],
           tsconfigPath: 'tsconfig.build.json',
           insertTypesEntry: true,
-          rollupTypes: true
+          rollupTypes: true,
+          afterBuild() {
+            renameSync(resolve(__dirname, 'dist/x-ui.d.ts'), resolve(__dirname, 'dist/index.d.ts'))
+          }
         })
     ],
     build: isHistoire

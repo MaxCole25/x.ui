@@ -3,6 +3,8 @@ import Example1 from '../examples/input/Example1.vue'
 import Example1Source from '../examples/input/Example1.vue?raw'
 import Example2 from '../examples/input/Example2.vue'
 import Example2Source from '../examples/input/Example2.vue?raw'
+import Example3 from '../examples/input/Example3.vue'
+import Example3Source from '../examples/input/Example3.vue?raw'
 </script>
 # Input 输入框
 
@@ -20,6 +22,14 @@ import Example2Source from '../examples/input/Example2.vue?raw'
 
 <XDocDemo title="尺寸" :code="Example2Source">
   <Example2 />
+</XDocDemo>
+
+### 前后缀
+
+通过三个数字输入框微调输入内容、前缀和后缀的位置。偏移仅调整显示位置，不改变外框高度、内边距或清空按钮位置；输入内容偏移也会移动占位文本和光标。
+
+<XDocDemo title="前后缀" :code="Example3Source">
+  <Example3 />
 </XDocDemo>
 
 ## 属性
@@ -66,6 +76,9 @@ import Example2Source from '../examples/input/Example2.vue?raw'
 | `padding` | 内边距，数字按 px 处理；字符串使用 CSS 单位 | `number \| string` | `—` | — |
 | `radius` | 整体圆角，数字按 px 处理 | `number \| string` | `—` | — |
 | `textAlign` | 文本对齐方式 | `BaseInputTextAlign` | `—` | — |
+| `inputOffsetY` | 输入内容垂直偏移，正值向下、负值向上，支持小数 | `number` | `0` | px |
+| `prefixOffsetY` | 前缀垂直偏移，作用于前缀文本或插槽，正值向下、负值向上 | `number` | `0` | px |
+| `suffixOffsetY` | 后缀垂直偏移，作用于后缀文本或插槽，正值向下、负值向上 | `number` | `0` | px |
 | `inputBackgroundColor` | 输入区域背景色，优先级高于 `backgroundColor` | `string` | `—` | — |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | — |
 | `borderColor` | 边框颜色 | `string` | `—` | — |
@@ -157,5 +170,6 @@ export interface InputProps extends BaseInputProps {
 
 ## 验收说明
 
+- 在前后缀示例中分别调整三个垂直偏移，确认输入内容、前缀、后缀独立移动；恢复默认后偏移均为 0。
 - 调整各功能分组中的属性，核对实际显示与默认值。
 - 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。

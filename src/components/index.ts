@@ -45,6 +45,9 @@ export * from './form-components/time-select'
 export * from './basic-components/scrollbar'
 export * from './display-components/avatar'
 export * from './display-components/chat'
+export * from './display-components/contact-list'
+export * from './display-components/conversation-list'
+export * from './other-components/messenger'
 export * from './display-components/chart'
 export * from './display-components/scrolling-text'
 export * from './display-components/tag'
@@ -78,7 +81,7 @@ export type {
   TreeTableSlots
 } from './display-components/tree-table'
 export * from './navigation-components/tabs'
-export { XTable, XlTable } from './display-components/table'
+export { XTable } from './display-components/table'
 export type {
   TableAlign,
   TableAppendRowPayload,
@@ -109,27 +112,6 @@ export type {
   TableSummaryContext,
   TableSummaryRow,
   TableSummaryScope,
-  XlTableAppendRowPayload,
-  XlTableColumn,
-  XlTableColumnResizePayload,
-  XlTableDeleteSelectedRowsPayload,
-  XlTableDirtyCellChange,
-  XlTableDirtyChangePayload,
-  XlTableEditableDataStrategy,
-  XlTableExcelExportMode,
-  XlTableExcelExportPayload,
-  XlTableExcelImportPayload,
-  XlTableProps,
-  XlTableRowClickPayload,
-  XlTableRowPatchPayload,
-  XlTableSavePayload,
-  XlTableSorter,
-  XlTableSortOrder,
-  XlTableSummaryAggregator,
-  XlTableSummaryCell,
-  XlTableSummaryContext,
-  XlTableSummaryRow,
-  XlTableSummaryScope
 } from './display-components/table'
 export * from './other-components/login'
 export * from './other-components/login-page'

@@ -91,6 +91,7 @@ export function propUnits(sourceFile, checker, component) {
   return (name, type) => {
     // 仓库 fontSize 公开契约明确规定 number/px，见 docs/guide/typography.md。
     if (name === 'fontSize') return 'px'
+    if (['XBaseInput', 'XInput'].includes(component) && ['inputOffsetY', 'prefixOffsetY', 'suffixOffsetY'].includes(name)) return 'px'
     if (component === 'XText' && name === 'lineHeight') return '数字为行高倍数；字符串使用 CSS 单位'
     // ScrollingText.vue: distance(px) / speed = duration(s)。
     if (component === 'XScrollingText' && name === 'speed') return 'px/s'

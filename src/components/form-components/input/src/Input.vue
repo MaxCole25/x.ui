@@ -16,6 +16,9 @@ const props = withDefaults(defineProps<InputProps>(), {
   readonly: false,
   clearable: false,
   hideClearButton: false,
+  inputOffsetY: 0,
+  prefixOffsetY: 0,
+  suffixOffsetY: 0,
   status: 'default',
   showActiveBorder: true
 })

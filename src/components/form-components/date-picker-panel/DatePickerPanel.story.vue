@@ -28,7 +28,7 @@ const sample = reactive({
     <Variant title="外观接口">
       <ApiPlayground component="XDatePickerPanel">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
-          <XDatePickerPanel 
+          <XDatePickerPanel
 
               v-model="sample.date"
               :year="appearance.year"

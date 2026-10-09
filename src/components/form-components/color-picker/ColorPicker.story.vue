@@ -31,7 +31,7 @@ const sample = reactive({
     <Variant title="外观接口">
       <ApiPlayground component="XColorPicker">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
-          <XColorPicker 
+          <XColorPicker
             v-model="sample.color"
             :panel-mode="appearance.panelMode"
 

@@ -25,7 +25,7 @@ const state = reactive({
     <Variant title="外观接口">
       <ApiPlayground component="XLayout">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
-          <XLayout 
+          <XLayout
           :mode="state.mode"
 
           :sidebar-collapsed="state.sidebarCollapsed"

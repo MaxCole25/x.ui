@@ -134,11 +134,11 @@
 - 颜色命名：主题色使用 `accentColor`，选中色使用 `checkedColor`，头像背景使用 `avatarBackgroundColor`；`XIcon.color` 作为图标颜色惯例保留。
 - 泛化词：视觉形态使用 `variant`，反馈状态使用 `status`；原生输入 `type`、选项/表单项中的 `value`、`label` 可按行业惯例保留。
 
-## 审计范围与保留别名
+## 审计范围与表格命名
 
 Props 命名零命中只表示脚本当前规则未命中导出的组件 Props，不代表全部事件、插槽、expose 和公开类型已经合规。本次行为修复保持现有事件、插槽和实例接口，不新增旧命名别名；Select 的可访问性标识和选项归属工具属于内部实现。
 
-既有 XlTable 组件及 XlTable* 类型别名保留给已有调用方。新接口和文档示例使用 XTable / Table*，禁止继续扩散历史别名。
+表格组件统一使用 XTable，公开类型统一使用 Table*，不提供旧命名别名。
 
 ## 审计脚本
 

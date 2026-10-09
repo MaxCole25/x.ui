@@ -1,19 +1,19 @@
 # 公开属性命名审计
 
-本报告由 `pnpm api:naming:audit:write` 生成，用于记录当前公开组件 Props 的命名治理状态。报告只统计 `src/components/**/src/types.ts` 中导出的组件 `*Props`，并排除 `XlTableProps` 兼容别名，避免重复计算 `TableProps`。
+本报告由 `pnpm api:naming:audit:write` 生成，用于记录当前公开组件 Props 的命名治理状态。报告只统计 `src/components/**/src/types.ts` 中导出的组件 `*Props`。
 
 pre-1.0 阶段不保留旧命名兼容，`legacy` 和 `review` 命中数都必须保持为 0。新增组件和新增公开属性应优先遵守 [公开接口命名规范](/guide/api-naming)。
 
-生成日期：2026-10-08
+生成日期：2026-10-09
 
 ## 汇总
 
 | 项 | 数量 |
 | --- | --- |
-| 公开组件 Props 接口 | 91 |
-| 有效 Props 出现次数 | 2032 |
-| 唯一 Props 名称 | 666 |
-| 直接声明唯一字段 | 605 |
+| 公开组件 Props 接口 | 94 |
+| 有效 Props 出现次数 | 2101 |
+| 唯一 Props 名称 | 689 |
+| 直接声明唯一字段 | 628 |
 | 命中审计规则次数 | 0 |
 | legacy 命中次数 | 0 |
 | review 命中次数 | 0 |

@@ -38,6 +38,8 @@ import Example5Source from '../examples/base-input/Example5.vue?raw'
 
 ### 前后缀
 
+通过三个数字输入框微调输入内容、前缀和后缀的位置。偏移仅调整显示位置，不改变外框高度、内边距或清空按钮位置；输入内容偏移也会移动占位文本和光标，替换 inner 插槽时由插槽自行控制位置。
+
 <XDocDemo title="前后缀" :code="Example4Source">
   <Example4 />
 </XDocDemo>
@@ -92,6 +94,9 @@ import Example5Source from '../examples/base-input/Example5.vue?raw'
 | `padding` | 外层 `div` 内边距 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `radius` | 圆角 | `number \| string` | `—`<br>未设置时使用 --x-form-radius，未提供该变量时为 6px | 数字为 px；字符串使用 CSS 单位 |
 | `textAlign` | 文字对齐方式 | `BaseInputTextAlign` | `—` | — |
+| `inputOffsetY` | 输入内容垂直偏移，正值向下、负值向上，支持小数 | `number` | `0` | px |
+| `prefixOffsetY` | 前缀垂直偏移，作用于前缀文本或插槽，正值向下、负值向上 | `number` | `0` | px |
+| `suffixOffsetY` | 后缀垂直偏移，作用于后缀文本或插槽，正值向下、负值向上 | `number` | `0` | px |
 | `inputBackgroundColor` | 输入区域背景色，优先级高于 `backgroundColor` | `string` | `—` | — |
 | `borderWidth` | 边框粗细 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `borderColor` | 边框色 | `string` | `—` | — |
@@ -203,6 +208,12 @@ export interface BaseInputProps extends ElementStyleProps {
   status?: BaseInputStatus
   prefix?: string
   suffix?: string
+  /** 输入内容垂直偏移，单位 px；正值向下，负值向上。 */
+  inputOffsetY?: number
+  /** 前缀垂直偏移，单位 px；正值向下，负值向上。 */
+  prefixOffsetY?: number
+  /** 后缀垂直偏移，单位 px；正值向下，负值向上。 */
+  suffixOffsetY?: number
   accentColor?: string
   activeBorderColor?: string
   clearIconColor?: string
@@ -243,5 +254,6 @@ export type BaseInputParser = (displayValue: string) => string | number
 
 ## 验收说明
 
+- 在前后缀示例中分别调整三个垂直偏移，确认输入内容、前缀、后缀独立移动；恢复默认后偏移均为 0。
 - 调整各功能分组中的属性，核对实际显示与默认值。
 - 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。

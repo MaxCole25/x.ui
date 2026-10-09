@@ -44,6 +44,9 @@ import { XTools } from './components/navigation-components/tools'
 import { XUserStatus } from './components/navigation-components/user-status'
 import { XEmpty } from './components/display-components/empty'
 import { XChat } from './components/display-components/chat'
+import { XContactList } from './components/display-components/contact-list'
+import { XConversationList } from './components/display-components/conversation-list'
+import { XMessenger } from './components/other-components/messenger'
 import { XFileDisk } from './components/other-components/file-disk'
 import { XFlow, XFlowItem } from './components/basic-components/flow'
 import { XForm, XFormItem } from './components/form-components/form'
@@ -148,6 +151,9 @@ const components = [
   XUserStatus,
   XEmpty,
   XChat,
+  XContactList,
+  XConversationList,
+  XMessenger,
   XDrawer,
   XDivider,
   XForm,

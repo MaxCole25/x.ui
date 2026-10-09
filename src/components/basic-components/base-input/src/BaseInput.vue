@@ -19,6 +19,9 @@ const props = withDefaults(defineProps<BaseInputProps>(), {
   formatOnBlur: true,
   autoHeight: false,
   hideClearButton: false,
+  inputOffsetY: 0,
+  prefixOffsetY: 0,
+  suffixOffsetY: 0,
   fontSize: undefined,
   status: 'default',
   showActiveBorder: true
@@ -67,7 +70,10 @@ const inputStyle = computed(() => ({
   '--x-base-input-width': toCssSize(props.width),
   '--x-base-input-height': props.autoHeight ? 'auto' : toCssSize(props.height),
   '--x-base-input-padding': toCssSize(props.padding),
-  '--x-base-input-text-align': props.textAlign
+  '--x-base-input-text-align': props.textAlign,
+  '--x-base-input-offset-y': toCssSize(props.inputOffsetY),
+  '--x-base-input-prefix-offset-y': toCssSize(props.prefixOffsetY),
+  '--x-base-input-suffix-offset-y': toCssSize(props.suffixOffsetY)
 }))
 
 const formatValue = (value: string | number) => {

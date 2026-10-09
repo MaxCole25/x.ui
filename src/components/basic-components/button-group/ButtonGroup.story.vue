@@ -10,7 +10,7 @@ import '../../../styles/index.css'
     <Variant title="外观接口">
       <ApiPlayground component="XButtonGroup" :sample-count="3">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
-          <XButtonGroup 
+          <XButtonGroup
 
            v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
             <XButton variant="outline">左侧</XButton>

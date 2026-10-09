@@ -166,7 +166,7 @@ import Example2Source from '../examples/time-picker/Example2.vue?raw'
 ### TimePickerProps
 
 ```ts
-export interface TimePickerProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerTimePopupThemeProps, OverlayProps {
+export interface TimePickerProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerTimePopupThemeProps, OverlayProps {
   modelValue?: string
 }
 ```

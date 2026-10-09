@@ -30,7 +30,7 @@ export type CascaderRemoteMethod = (
 export interface CascaderProps
   extends Omit<
     InputProps,
-    'modelValue' | 'type' | 'maxlength'
+    'modelValue' | 'type' | 'maxlength' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'
   > {
   modelValue?: SelectOptionValue[]
   options?: CascaderOptionSource[]

@@ -7,6 +7,8 @@ import Example3 from '../examples/brick/Example3.vue'
 import Example3Source from '../examples/brick/Example3.vue?raw'
 import Example4 from '../examples/brick/Example4.vue'
 import Example4Source from '../examples/brick/Example4.vue?raw'
+import Example5 from '../examples/brick/Example5.vue'
+import Example5Source from '../examples/brick/Example5.vue?raw'
 </script>
 # 砖格 Brick
 
@@ -26,6 +28,18 @@ import Example4Source from '../examples/brick/Example4.vue?raw'
 
 <XDocDemo title="竖向分隔" :code="Example2Source">
   <Example2 />
+</XDocDemo>
+
+### 多层嵌套
+
+下面通过四层 `XBrick` 组合页面布局：第一层上下分隔页面顶部、主区和底部；第二层把主区分成左侧导航和右侧工作区；第三层把工作区分成摘要和详情；第四层把详情分成两个等宽区域。
+
+每层 `XBrick` 都放在上一层的 `XBrickItem` 中。内层设置 `width="100%"`、`height="100%"` 撑满所在区域；外层显式设置高度，使多层百分比高度有确定的参考尺寸。
+
+`itemSize` 按所在层的 `direction` 决定固定宽度或高度。未设置主轴尺寸的区域平分剩余空间，`gap` 只控制当前层的间距。承载嵌套布局的区域使用 `padding="0"`，文字区域再单独设置内边距与居中，避免继承的内边距逐层累加。
+
+<XDocDemo title="四层嵌套布局" :code="Example5Source">
+  <Example5 />
 </XDocDemo>
 
 ### 根据数量生成空容器

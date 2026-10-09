@@ -31,7 +31,7 @@ export interface AutocompleteExpose {
 export interface AutocompleteProps
   extends Omit<
     InputProps,
-    'type'
+    'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'
   > {
   inputValue?: string | number
   valueOnInput?: boolean

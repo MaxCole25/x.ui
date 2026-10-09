@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<UserStatusProps>(), {
   placement: 'bottom-end',
   disabled: false,
   hideOnClick: true,
-  teleported: false,
+  teleported: true,
   teleportTo: 'body',
   zIndex: overlayZIndex.popper
 })

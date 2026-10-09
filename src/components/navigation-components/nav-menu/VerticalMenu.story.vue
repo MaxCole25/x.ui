@@ -10,9 +10,9 @@ import '../../../styles/index.css'
     <Variant title="外观接口">
       <ApiPlayground component="XVerticalMenu">
         <template #default="{ apiProps = {}, apiEvents = {}, captureInstance }">
-          
+
             <XVerticalMenu :items="items" v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance"></XVerticalMenu>
-          
+
         </template>
       </ApiPlayground>
     </Variant>

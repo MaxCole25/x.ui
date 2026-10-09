@@ -18,7 +18,6 @@ const getNumberArg = (name, fallback) => {
 const maxLegacyFindings = getNumberArg('max-legacy', Number.POSITIVE_INFINITY)
 const maxReviewFindings = getNumberArg('max-review', 0)
 
-const legacyAliases = new Set(['XlTableProps'])
 const legacyTypeOwners = new Set(['MessageBoxProps', 'MessageProps', 'TabsProps', 'TagProps', 'TextProps'])
 const acceptedBareWords = new Set([
   'BaseInputProps:type',
@@ -188,7 +187,6 @@ const collectPropInterfaces = () => {
         isExported(node) &&
         name &&
         name.endsWith('Props') &&
-        !legacyAliases.has(name) &&
         (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node))
 
       if (exportedProps) {
@@ -380,7 +378,7 @@ const buildMarkdownReport = () => {
 
   return `# 公开属性命名审计
 
-本报告由 \`pnpm api:naming:audit:write\` 生成，用于记录当前公开组件 Props 的命名治理状态。报告只统计 \`src/components/**/src/types.ts\` 中导出的组件 \`*Props\`，并排除 \`XlTableProps\` 兼容别名，避免重复计算 \`TableProps\`。
+本报告由 \`pnpm api:naming:audit:write\` 生成，用于记录当前公开组件 Props 的命名治理状态。报告只统计 \`src/components/**/src/types.ts\` 中导出的组件 \`*Props\`。
 
 pre-1.0 阶段不保留旧命名兼容，\`legacy\` 和 \`review\` 命中数都必须保持为 0。新增组件和新增公开属性应优先遵守 [公开接口命名规范](/guide/api-naming)。
 

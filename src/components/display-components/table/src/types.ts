@@ -191,26 +191,3 @@ export interface TableProps<Row extends Record<string, unknown> = Record<string,
   actionsWidth?: number | string
   fullHeight?: boolean
 }
-
-export type XlTableColumn<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumn<Row>
-export type XlTableColumnSetting = TableColumnSetting
-export type XlTableAppendRowPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableAppendRowPayload<Row>
-export type XlTableColumnResizePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableColumnResizePayload<Row>
-export type XlTableDeleteSelectedRowsPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDeleteSelectedRowsPayload<Row>
-export type XlTableDirtyCellChange<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyCellChange<Row>
-export type XlTableDirtyChangePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableDirtyChangePayload<Row>
-export type XlTableEditableDataStrategy = TableEditableDataStrategy
-export type XlTableExcelExportMode = TableExcelExportMode
-export type XlTableExcelExportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelExportPayload<Row>
-export type XlTableExcelImportPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableExcelImportPayload<Row>
-export type XlTableRowPatchPayload = TableRowPatchPayload
-export type XlTableRowClickPayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableRowClickPayload<Row>
-export type XlTableProps<Row extends Record<string, unknown> = Record<string, unknown>> = TableProps<Row>
-export type XlTableSavePayload<Row extends Record<string, unknown> = Record<string, unknown>> = TableSavePayload<Row>
-export type XlTableSorter = TableSorter
-export type XlTableSortOrder = TableSortOrder
-export type XlTableSummaryAggregator = TableSummaryAggregator
-export type XlTableSummaryCell<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryCell<Row>
-export type XlTableSummaryContext<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryContext<Row>
-export type XlTableSummaryRow<Row extends Record<string, unknown> = Record<string, unknown>> = TableSummaryRow<Row>
-export type XlTableSummaryScope = TableSummaryScope

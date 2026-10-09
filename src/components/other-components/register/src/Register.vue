@@ -901,7 +901,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 520px) {
-  
+
 
   .x-register__brand,
   .x-register--logo-right .x-register__brand {
@@ -909,7 +909,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
   }
 
-  
+
 
   .x-register--label-left .x-register__field:not(.x-register__field--inline):not(.x-register__field--captcha),
   .x-register--label-left .x-register__inline-control {

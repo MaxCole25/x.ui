@@ -201,7 +201,7 @@ import Example2Source from '../examples/date-time-picker/Example2.vue?raw'
 ### DateTimePickerProps
 
 ```ts
-export interface DateTimePickerProps extends Omit<InputProps, 'modelValue' | 'type'>, PickerDateTimePopupThemeProps, OverlayProps {
+export interface DateTimePickerProps extends Omit<InputProps, 'modelValue' | 'type' | 'inputOffsetY' | 'prefixOffsetY' | 'suffixOffsetY'>, PickerDateTimePopupThemeProps, OverlayProps {
   modelValue?: string
   showChinaFestivals?: boolean
   festivals?: Record<string, DatePickerFestivalItem>

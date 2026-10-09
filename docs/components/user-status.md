@@ -14,6 +14,8 @@ import Example2Source from '../examples/user-status/Example2.vue?raw'
 
 ### 基础用法
 
+菜单默认挂载到 `body`，避免被页头、工具栏或示例容器的 `overflow` 裁切。需要在当前容器内显示时，可设置 `:teleported="false"`。
+
 <XDocDemo title="基础用法" :code="Example1Source">
   <Example1 />
 </XDocDemo>
@@ -88,7 +90,7 @@ import Example2Source from '../examples/user-status/Example2.vue?raw'
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
 | `placement` | 菜单弹出位置 | `DropdownPlacement` | `'bottom-end'` | — |
-| `teleported` | 是否将弹层挂载到 `teleportTo` | `boolean` | `false` | — |
+| `teleported` | 是否将弹层挂载到 `teleportTo` | `boolean` | `true` | — |
 | `teleportTo` | 弹层挂载目标 | `string` | `'body'` | — |
 | `zIndex` | 弹层层级 | `number` | `2000` | — |
 

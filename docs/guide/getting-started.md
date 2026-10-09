@@ -155,4 +155,4 @@ import '@x-soft88/x-ui/style.css'
 
 子路径同时提供默认组件和公开类型，图表继续使用现有 ECharts peer dependency。多入口构建改善了根入口按需消费：只导入 XButton 不再带入图表、编辑器和 XLSX。全量样式路径保持不变，仍包含组件库全部样式及字体资源；此轮没有拆分样式或扩大 peer dependencies。
 
-已有 `XlTable` 及 `XlTable*` 类型别名仍保留，用于已有调用方；新代码使用 `XTable` 和 `Table*`，不再扩散别名。
+表格组件统一使用 `XTable`，公开类型使用 `Table*`，不提供旧命名别名。

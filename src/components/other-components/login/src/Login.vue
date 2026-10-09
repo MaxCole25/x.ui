@@ -992,7 +992,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 520px) {
-  
+
 
   .x-login__brand,
   .x-login--logo-right .x-login__brand {
@@ -1000,7 +1000,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
   }
 
-  
+
 
   .x-login--label-left .x-login__field:not(.x-login__field--inline):not(.x-login__field--captcha),
   .x-login--label-left .x-login__inline-control {

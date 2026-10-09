@@ -12,6 +12,8 @@ import Example2Source from '../examples/float-button-group/Example2.vue?raw'
 
 ## 使用示例
 
+以下示例使用 `position="absolute"`，并在外层设置 `position: relative` 和明确高度，让按钮组定位在各自的预览容器内。实际页面需要按钮始终悬浮在视口角落时，使用默认的 `position="fixed"`。
+
 ### 点击菜单
 
 <XDocDemo title="点击菜单" :code="Example1Source">
@@ -26,7 +28,7 @@ import Example2Source from '../examples/float-button-group/Example2.vue?raw'
 
 ### 定位说明
 
-未设置 `top`、`right`、`bottom`、`left` 时，组件会根据 `placement`、`offsetX`、`offsetY` 计算位置。传入任意自定义坐标后，对应方向会覆盖 `placement` 推导出的坐标；例如 `position="absolute"` 配合 `right="32"`、`bottom="32"` 可以把按钮组固定在局部容器右下角。
+未设置 `top`、`right`、`bottom`、`left` 时，组件会根据 `placement`、`offsetX`、`offsetY` 计算位置。传入任意自定义坐标后，对应方向会覆盖 `placement` 推导出的坐标；例如父容器设置 `position: relative` 和明确高度后，`position="absolute"` 配合 `:right="32"`、`:bottom="32"` 可以把按钮组定位在局部容器右下角。缺少局部定位容器时，按钮组会相对于更外层的定位元素显示，可能落到整页底部。左下角示例应同时设置 `placement="bottom-left"`，使排列方向和默认坐标与目标位置一致。
 
 ### FloatButtonGroupItem
 
