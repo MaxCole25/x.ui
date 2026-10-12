@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite'
 import { resolve } from 'node:path'
 const components = {
+  "XGantt": "src/components/display-components/gantt",
   "registerXChartAnalyticsModules": "src/components/display-components/chart",
   "XBaseInput": "src/components/basic-components/base-input",
   "XBrick": "src/components/basic-components/brick",

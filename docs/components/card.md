@@ -8,6 +8,14 @@ import Example2Source from '../examples/card/Example2.vue?raw'
 
 用于承载一组相关内容，可配置头部、底部、边框、背景和阴影。
 
+头部和底部的两条分隔线可通过 `dividerWidth` 和 `dividerColor` 统一设置粗细和颜色，独立于外框的 `borderWidth` 和 `borderColor`。未设置时，分隔线粗细为 `1px`，颜色使用全局变量 `--x-color-border`；将 `dividerWidth` 设为 `0` 可隐藏分隔线。
+
+```vue
+<XCard header="项目概览" footer="更新时间：09:30" :divider-width="2" divider-color="#a5b4fc">
+  今日新增 12 条任务，3 条需要优先处理。
+</XCard>
+```
+
 ## 使用示例
 
 ### 基础用法
@@ -51,6 +59,8 @@ import Example2Source from '../examples/card/Example2.vue?raw'
 | `padding` | 内边距，数字按 px 处理；字符串使用 CSS 单位 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `borderColor` | 边框颜色 | `string` | `—` | — |
+| `dividerWidth` | 分隔线粗细，统一控制头部和底部分隔线；设为 0 可隐藏，未设置时为 1px | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `dividerColor` | 分隔线颜色，未设置时使用全局变量 --x-color-border | `string` | `—` | — |
 | `radius` | 整体圆角，数字按 px 处理 | `number \| string` | `—` | — |
 | `backgroundColor` | 背景色 | `string` | `—` | — |
 | `textColor` | 文字颜色 | `string` | `—` | — |
@@ -92,6 +102,10 @@ export interface CardProps extends ElementStyleProps {
   width?: number | string
   height?: number | string
   padding?: number | string
+  /** 分隔线粗细，数字按 px 处理；设为 0 可隐藏 */
+  dividerWidth?: number | string
+  /** 分隔线颜色 */
+  dividerColor?: string
   bodyStyle?: CSSProperties
 }
 ```

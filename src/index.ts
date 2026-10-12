@@ -81,6 +81,7 @@ import { XTimePicker } from './components/form-components/time-picker'
 import { XTimeSelect } from './components/form-components/time-select'
 import { XTree } from './components/display-components/tree'
 import { XTreeTable } from './components/display-components/tree-table'
+import { XGantt } from './components/display-components/gantt'
 import './styles/index.css'
 
 export { defaultControlMetrics } from './components/_utils/size'
@@ -89,6 +90,7 @@ export type { FontSize } from './components/_utils/size'
 export * from './components'
 
 const components = [
+  XGantt,
   XBadge,
   XCollapse,
   XDescriptions,

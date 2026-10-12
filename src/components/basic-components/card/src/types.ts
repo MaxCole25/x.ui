@@ -11,5 +11,9 @@ export interface CardProps extends ElementStyleProps {
   width?: number | string
   height?: number | string
   padding?: number | string
+  /** 分隔线粗细，数字按 px 处理；设为 0 可隐藏 */
+  dividerWidth?: number | string
+  /** 分隔线颜色 */
+  dividerColor?: string
   bodyStyle?: CSSProperties
 }

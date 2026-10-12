@@ -83,6 +83,7 @@ export default defineConfig({
               { text: '通讯录 ContactList', link: '/components/contact-list' },
               { text: '会话列表 ConversationList', link: '/components/conversation-list' },
               { text: '图表 Chart', link: '/components/chart' },
+              { text: '甘特图 Gantt', link: '/components/gantt' },
               { text: '空状态 Empty', link: '/components/empty' },
               { text: '徽标 Badge', link: '/components/badge' },
               { text: '折叠面板 Collapse', link: '/components/collapse' },

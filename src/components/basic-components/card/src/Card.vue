@@ -18,6 +18,8 @@ const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const cardStyle = computed(() => ({
   '--x-card-border-width': toCssSize(props.borderWidth),
   '--x-card-border-color': props.borderColor,
+  '--x-card-divider-width': toCssSize(props.dividerWidth),
+  '--x-card-divider-color': props.dividerColor,
   '--x-card-bg': props.backgroundColor,
   '--x-card-text': props.textColor,
   '--x-card-width': toCssSize(props.width),

@@ -182,6 +182,23 @@ function summary(kind: 'direct' | 'group', targetId: MessengerId, unreadCount?: 
   }
 }
 const contactRows = computed(() => props.contacts.map(contact => ({ ...contact, kind: 'direct' as const, ...summary('direct', contact.id, contact.unreadCount) })))
+const totalUnreadCount = computed(() => {
+  const conversationUnread = props.conversations.reduce((total, conversation) => {
+    const target = conversation.kind === 'direct'
+      ? props.contacts.find(contact => contact.id === conversation.targetId)
+      : props.groups.find(group => group.id === conversation.targetId)
+    return total + (conversation.unreadCount ?? target?.unreadCount ?? 0)
+  }, 0)
+  const contactUnread = props.contacts.reduce((total, contact) => total + (
+    props.conversations.some(conversation => conversation.kind === 'direct' && conversation.targetId === contact.id)
+      ? 0 : contact.unreadCount ?? 0
+  ), 0)
+  const groupUnread = props.groups.reduce((total, group) => total + (
+    props.conversations.some(conversation => conversation.kind === 'group' && conversation.targetId === group.id)
+      ? 0 : group.unreadCount ?? 0
+  ), 0)
+  return conversationUnread + contactUnread + groupUnread
+})
 const filteredContacts = computed(() => contactRows.value.filter(contact => matches(contact.name, contact.department)))
 const recent = computed(() => props.conversations.filter(item => item.kind === 'direct').map(item => {
   const contact = contactRows.value.find(contact => contact.id === item.targetId)
@@ -283,7 +300,10 @@ const modes = [
       <button type="button" class="x-messenger-contacts__resizer" aria-label="拖拽调整好友列表高度" title="拖拽调整高度" @pointerdown.stop="startResize" @keydown.up.prevent="setListHeight(listHeight - 20)" @keydown.down.prevent="setListHeight(listHeight + 20)" />
     </section>
     <div v-show="!panelVisible" ref="launcher" class="x-messenger-contacts__launcher" :style="launcherStyle">
-      <button type="button" title="打开消息列表" aria-label="打开消息列表" :aria-expanded="panelVisible" @click="openPanel"><XIcon name="message-3" variant="fill" :icon-size="26" /></button>
+      <button type="button" :title="totalUnreadCount > 0 ? '打开消息列表，' + totalUnreadCount + '条未读消息' : '打开消息列表'" :aria-label="totalUnreadCount > 0 ? '打开消息列表，' + totalUnreadCount + '条未读消息' : '打开消息列表'" :aria-expanded="panelVisible" @click="openPanel">
+        <XIcon name="message-3" variant="fill" :icon-size="26" />
+        <span v-if="totalUnreadCount > 0" class="x-messenger-contacts__launcher-badge" aria-hidden="true">{{ totalUnreadCount > 99 ? '99+' : totalUnreadCount }}</span>
+      </button>
     </div>
   </Teleport>
   <XDialog v-if="currentUserRole === 'admin'" v-model="showSettings" title="联系人设置" :width="760" :height="520" :min-width="560" :min-height="360" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="zIndex + 1" :radius="radius" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" header-background-color="color-mix(in srgb, var(--x-color-primary, #4385ef) 5%, var(--x-color-surface, white))" close-icon-color="var(--x-color-text-muted, #7a8493)">
@@ -389,6 +409,7 @@ input, select { min-width: 0; height: 32px; box-sizing: border-box; border: 1px 
 .x-messenger-contacts__launcher { position: fixed; z-index: var(--x-messenger-contact-z-index, var(--x-z-index-dialog, 1900)); }
 .x-messenger-contacts__launcher button { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; border-radius: 16px; color: white; background: linear-gradient(135deg, #3d9cf2, #8560dc); box-shadow: 0 6px 20px rgba(71, 104, 209, .28); }
 .x-messenger-contacts__launcher button:hover { filter: brightness(1.08); }
+.x-messenger-contacts__launcher-badge { position: absolute; top: -5px; right: -5px; display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 5px; box-sizing: border-box; border: 2px solid var(--x-color-surface, white); border-radius: 11px; color: white; background: var(--x-color-danger, #e95353); font-size: 11px; font-weight: var(--x-font-weight-medium, 500); line-height: 1; white-space: nowrap; pointer-events: none; }
 .x-messenger-contacts__settings { display: flex; flex-direction: column; height: 100%; min-height: 0; font: inherit; color: inherit; }
 .x-messenger-contacts__settings-create, .x-messenger-contacts__settings-rename { display: flex; gap: 6px; flex-shrink: 0; margin-bottom: 12px; }
 .x-messenger-contacts__settings input { min-width: 0; }

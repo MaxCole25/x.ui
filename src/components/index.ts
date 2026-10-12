@@ -140,3 +140,5 @@ export * from './feedback-components/alert'
 export * from './feedback-components/popover'
 export * from './feedback-components/popconfirm'
 export * from './feedback-components/notification'
+
+export * from './display-components/gantt'

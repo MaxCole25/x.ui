@@ -1585,6 +1585,30 @@
         "required": false
       },
       {
+        "name": "dividerWidth",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "分隔线粗细，数字按 px 处理；设为 0 可隐藏",
+        "required": false
+      },
+      {
+        "name": "dividerColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "分隔线颜色",
+        "required": false
+      },
+      {
         "name": "bodyStyle",
         "type": "CSSProperties",
         "default": "—",
@@ -1685,7 +1709,7 @@
       },
       {
         "name": "CardProps",
-        "definition": "export interface CardProps extends ElementStyleProps {\n  fontSize?: number\n  header?: string\n  footer?: string\n  shadow?: CardShadow\n  width?: number | string\n  height?: number | string\n  padding?: number | string\n  bodyStyle?: CSSProperties\n}",
+        "definition": "export interface CardProps extends ElementStyleProps {\n  fontSize?: number\n  header?: string\n  footer?: string\n  shadow?: CardShadow\n  width?: number | string\n  height?: number | string\n  padding?: number | string\n  /** 分隔线粗细，数字按 px 处理；设为 0 可隐藏 */\n  dividerWidth?: number | string\n  /** 分隔线颜色 */\n  dividerColor?: string\n  bodyStyle?: CSSProperties\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -7069,6 +7093,756 @@
         "definition": "export interface EmptyProps extends ElementStyleProps {\n  fontSize?: number\n  image?: string\n  imageSize?: number | string\n  description?: string\n  actionText?: string\n}",
         "exported": true,
         "group": "属性与配置"
+      }
+    ]
+  },
+  {
+    "name": "XGantt",
+    "file": "src/components/display-components/gantt/src/Gantt.vue",
+    "folder": "src/components/display-components/gantt",
+    "slug": "gantt",
+    "propsName": "GanttProps",
+    "props": [
+      {
+        "name": "tasks",
+        "type": "GanttTask[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "GanttTask[]",
+        "required": false
+      },
+      {
+        "name": "dependencies",
+        "type": "GanttDependency[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "GanttDependency[]",
+        "required": false
+      },
+      {
+        "name": "columns",
+        "type": "GanttColumn[]",
+        "default": "() => [{ key: 'title', title: '任务名称', width: 230 }, { key: 'start', title: '开始日期', width: 110 }, { key: 'end', title: '结束日期', width: 110 }]",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "GanttColumn[]",
+        "required": false
+      },
+      {
+        "name": "view",
+        "type": "GanttView",
+        "default": "'day'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "day",
+          "week",
+          "month"
+        ],
+        "group": "组件专有功能",
+        "description": "'day' \\| 'week' \\| 'month'",
+        "required": false
+      },
+      {
+        "name": "zoom",
+        "type": "number",
+        "default": "1",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "number",
+        "required": false
+      },
+      {
+        "name": "startDate",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "endDate",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "selectedTaskId",
+        "type": "GanttId | null",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "GanttId \\| null",
+        "required": false
+      },
+      {
+        "name": "expandedTaskIds",
+        "type": "GanttId[]",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "GanttId[]",
+        "required": false
+      },
+      {
+        "name": "height",
+        "type": "number | string",
+        "default": "520",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "高度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "rowHeight",
+        "type": "number",
+        "default": "40",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "number",
+        "required": false
+      },
+      {
+        "name": "tableWidth",
+        "type": "number",
+        "default": "450",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "number",
+        "required": false
+      },
+      {
+        "name": "fontSize",
+        "type": "number",
+        "default": "14",
+        "defaultNote": "",
+        "unit": "px",
+        "controlType": "number",
+        "options": [],
+        "group": "外观与排版",
+        "description": "字号，单位 px；不改变控件高度、内边距或圆角",
+        "required": false
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "default": "6",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "外观与排版",
+        "description": "整体圆角，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "accentColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "主题强调色",
+        "required": false
+      },
+      {
+        "name": "readonly",
+        "type": "boolean",
+        "default": "undefined",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "是否只读",
+        "required": false
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "是否禁用",
+        "required": false
+      },
+      {
+        "name": "showToolbar",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "showSettings",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "boolean",
+        "required": false
+      },
+      {
+        "name": "enableAutoSchedule",
+        "type": "boolean",
+        "default": "undefined",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "boolean",
+        "required": false
+      },
+      {
+        "name": "scheduleStartDate",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "string",
+        "required": false
+      },
+      {
+        "name": "showToday",
+        "type": "boolean",
+        "default": "undefined",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "showWeekends",
+        "type": "boolean",
+        "default": "undefined",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "showProgress",
+        "type": "boolean",
+        "default": "undefined",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "showDependencies",
+        "type": "boolean",
+        "default": "undefined",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "showFooter",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "",
+        "required": false
+      },
+      {
+        "name": "weekStartsOn",
+        "type": "number",
+        "default": "1",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "number",
+        "required": false
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "default": "'zh-CN'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "string",
+        "required": false
+      },
+      {
+        "name": "calendar",
+        "type": "GanttCalendar",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "{ weekendDays?: number[]; holidays?: string[]; workingDates?: string[] }",
+        "required": false
+      },
+      {
+        "name": "canEditTask",
+        "type": "(task: GanttTask, action: GanttAction) => boolean",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "callback",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "(task, action) => boolean",
+        "required": false
+      },
+      {
+        "name": "beforeTaskChange",
+        "type": "(change: GanttChangePayload) => boolean | void | Promise<boolean | void>",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "callback",
+        "options": [],
+        "group": "状态与交互",
+        "description": "返回 false 或抛出异常则拒绝变更；只有通过后才发出更新事件。",
+        "required": false
+      },
+      {
+        "name": "beforeScheduleChange",
+        "type": "(change: GanttScheduleChangePayload) => boolean | void | Promise<boolean | void>",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "callback",
+        "options": [],
+        "group": "状态与交互",
+        "description": "批量保存入口，拒绝时整个排程及设置不提交。",
+        "required": false
+      }
+    ],
+    "events": [
+      {
+        "name": "update:tasks",
+        "type": "[tasks: GanttTask[]]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:view",
+        "type": "[view: GanttView]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:zoom",
+        "type": "[zoom: number]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:selectedTaskId",
+        "type": "[id: GanttId | null]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:expandedTaskIds",
+        "type": "[ids: GanttId[]]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:tableWidth",
+        "type": "[width: number]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:calendar",
+        "type": "[calendar: GanttCalendar]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:readonly",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:enableAutoSchedule",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:scheduleStartDate",
+        "type": "[value: string]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:showToday",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:showWeekends",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:showProgress",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:showDependencies",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "schedule-change",
+        "type": "[change: GanttScheduleChangePayload]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "schedule-reject",
+        "type": "[rejection: GanttScheduleRejectPayload]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "task-click",
+        "type": "[task: GanttTask, source: 'table' | 'bar']",
+        "group": "状态与交互"
+      },
+      {
+        "name": "task-dblclick",
+        "type": "[task: GanttTask, source: 'table' | 'bar']",
+        "group": "状态与交互"
+      },
+      {
+        "name": "task-select",
+        "type": "[id: GanttId | null]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "task-change",
+        "type": "[change: GanttChangePayload]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "task-reject",
+        "type": "[change: GanttChangePayload]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "zoom-change",
+        "type": "[zoom: number]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "range-change",
+        "type": "[range: GanttRange]",
+        "group": "状态与交互"
+      },
+      {
+        "name": "column-resize",
+        "type": "[column: GanttColumn, width: number]",
+        "group": "布局与尺寸"
+      },
+      {
+        "name": "data-error",
+        "type": "[issues: GanttIssue[]]",
+        "group": "组件专有功能"
+      }
+    ],
+    "slots": [
+      {
+        "name": "toolbar",
+        "type": "view: localView; zoom: localZoom; fit-to-tasks: fitToTasks; open-settings: openSettings",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "cell",
+        "type": "task: currentTask(row.task); column: column; value: cellValue(currentTask(row.task), column)",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "milestone",
+        "type": "task: currentTask(row.task); selected: selected === row.task.id",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "task",
+        "type": "task: currentTask(row.task); selected: selected === row.task.id",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "empty",
+        "type": "无作用域参数",
+        "group": "内容与展示"
+      },
+      {
+        "name": "footer",
+        "type": "count: rows.length; range: getVisibleRange()",
+        "group": "内容与展示"
+      }
+    ],
+    "methods": [
+      {
+        "name": "scrollToDate",
+        "type": "(date: string) => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "scrollToTask",
+        "type": "(id: GanttId) => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "selectTask",
+        "type": "(id: GanttId | null) => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "setRange",
+        "type": "(start: string, end: string) => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "zoomIn",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "zoomOut",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "fitToTasks",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "expandAll",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "collapseAll",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "refresh",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "getVisibleRange",
+        "type": "() => { start: string; end: string; }",
+        "group": "状态与交互"
+      },
+      {
+        "name": "cancelEdit",
+        "type": "() => void",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "openSettings",
+        "type": "() => void",
+        "group": "状态与交互"
+      },
+      {
+        "name": "reschedule",
+        "type": "() => Promise<boolean>",
+        "group": "组件专有功能"
+      }
+    ],
+    "types": [
+      {
+        "name": "GanttId",
+        "definition": "export type GanttId = string | number",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttView",
+        "definition": "export type GanttView = 'day' | 'week' | 'month'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttAction",
+        "definition": "export type GanttAction = 'move' | 'resize-start' | 'resize-end' | 'progress'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttTask",
+        "definition": "export interface GanttTask {\n  id: GanttId\n  parentId?: GanttId\n  title: string\n  start: string\n  end: string\n  progress?: number\n  /** 自动排程使用的工作日工期；里程碑为 0。 */\n  workdayDuration?: number\n  taskType?: 'task' | 'summary' | 'milestone'\n  barColor?: string\n  readonly?: boolean\n  data?: Record<string, unknown>\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttColumn",
+        "definition": "export interface GanttColumn {\n  key: string\n  title: string\n  width?: number\n  minWidth?: number\n  align?: 'left' | 'center' | 'right'\n  visible?: boolean\n  resizable?: boolean\n  formatter?: (task: GanttTask) => string\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttDependency",
+        "definition": "export interface GanttDependency {\n  id: GanttId\n  from: GanttId\n  to: GanttId\n  dependencyType?: 'FS' | 'SS' | 'FF' | 'SF'\n  lag?: number\n  lagUnit?: 'day'\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttResource",
+        "definition": "export interface GanttResource { id: GanttId; name: string; capacity?: number; data?: Record<string, unknown> }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttAssignment",
+        "definition": "export interface GanttAssignment { id: GanttId; taskId: GanttId; resourceId: GanttId; start?: string; end?: string; quantity?: number }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttRange",
+        "definition": "export interface GanttRange { start: string; end: string }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttIssue",
+        "definition": "export interface GanttIssue { taskId?: GanttId; dependencyId?: GanttId; message: string }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttChangePayload",
+        "definition": "export interface GanttChangePayload { task: GanttTask; previous: GanttTask; action: GanttAction }",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "GanttCalendar",
+        "definition": "export interface GanttCalendar { weekendDays?: number[]; holidays?: string[]; workingDates?: string[] }",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttSettings",
+        "definition": "export interface GanttSettings {\n  enableAutoSchedule: boolean\n  scheduleStartDate: string\n  calendar: GanttCalendar\n  readonly: boolean\n  showToday: boolean\n  showWeekends: boolean\n  showProgress: boolean\n  showDependencies: boolean\n}",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttScheduleReason",
+        "definition": "export type GanttScheduleReason = 'settings' | 'edit' | 'reschedule'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "GanttScheduleChangePayload",
+        "definition": "export interface GanttScheduleChangePayload {\n  previousTasks: GanttTask[]\n  tasks: GanttTask[]\n  changes: { previous: GanttTask; task: GanttTask }[]\n  previousSettings: GanttSettings\n  settings: GanttSettings\n  reason: GanttScheduleReason\n}",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "GanttScheduleRejectPayload",
+        "definition": "export interface GanttScheduleRejectPayload { change?: GanttScheduleChangePayload; issues: GanttIssue[] }",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "GanttProps",
+        "definition": "export interface GanttProps {\n  tasks?: GanttTask[]\n  dependencies?: GanttDependency[]\n  columns?: GanttColumn[]\n  view?: GanttView\n  zoom?: number\n  startDate?: string\n  endDate?: string\n  selectedTaskId?: GanttId | null\n  expandedTaskIds?: GanttId[]\n  height?: number | string\n  rowHeight?: number\n  tableWidth?: number\n  fontSize?: number\n  radius?: number\n  accentColor?: string\n  readonly?: boolean\n  disabled?: boolean\n  showToolbar?: boolean\n  showSettings?: boolean\n  enableAutoSchedule?: boolean\n  scheduleStartDate?: string\n  showToday?: boolean\n  showWeekends?: boolean\n  showProgress?: boolean\n  showDependencies?: boolean\n  showFooter?: boolean\n  weekStartsOn?: number\n  locale?: string\n  calendar?: GanttCalendar\n  canEditTask?: (task: GanttTask, action: GanttAction) => boolean\n  /** 返回 false 或抛出异常则拒绝变更；只有通过后才发出更新事件。 */\n  beforeTaskChange?: (change: GanttChangePayload) => boolean | void | Promise<boolean | void>\n  /** 批量保存入口，拒绝时整个排程及设置不提交。 */\n  beforeScheduleChange?: (change: GanttScheduleChangePayload) => boolean | void | Promise<boolean | void>\n}",
+        "exported": true,
+        "group": "属性与配置"
+      },
+      {
+        "name": "GanttEmits",
+        "definition": "export interface GanttEmits {\n  (event: 'update:tasks', tasks: GanttTask[]): void\n  (event: 'update:view', view: GanttView): void\n  (event: 'update:zoom', zoom: number): void\n  (event: 'update:selectedTaskId', id: GanttId | null): void\n  (event: 'update:expandedTaskIds', ids: GanttId[]): void\n  (event: 'update:tableWidth', width: number): void\n  (event: 'update:calendar', calendar: GanttCalendar): void\n  (event: 'update:readonly', value: boolean): void\n  (event: 'update:enableAutoSchedule', value: boolean): void\n  (event: 'update:scheduleStartDate', value: string): void\n  (event: 'update:showToday', value: boolean): void\n  (event: 'update:showWeekends', value: boolean): void\n  (event: 'update:showProgress', value: boolean): void\n  (event: 'update:showDependencies', value: boolean): void\n  (event: 'schedule-change', change: GanttScheduleChangePayload): void\n  (event: 'schedule-reject', rejection: GanttScheduleRejectPayload): void\n  (event: 'task-click', task: GanttTask, source: 'table' | 'bar'): void\n  (event: 'task-dblclick', task: GanttTask, source: 'table' | 'bar'): void\n  (event: 'task-select', id: GanttId | null): void\n  (event: 'task-change', change: GanttChangePayload): void\n  (event: 'task-reject', change: GanttChangePayload): void\n  (event: 'zoom-change', zoom: number): void\n  (event: 'range-change', range: GanttRange): void\n  (event: 'column-resize', column: GanttColumn, width: number): void\n  (event: 'data-error', issues: GanttIssue[]): void\n}",
+        "exported": true,
+        "group": "事件参数"
+      },
+      {
+        "name": "GanttSlots",
+        "definition": "export interface GanttSlots {\n  toolbar?: (props: { view: GanttView; zoom: number; fitToTasks: () => void; openSettings: () => void }) => VNode[]\n  cell?: (props: { task: GanttTask; column: GanttColumn; value: string }) => VNode[]\n  task?: (props: { task: GanttTask; selected: boolean }) => VNode[]\n  milestone?: (props: { task: GanttTask; selected: boolean }) => VNode[]\n  empty?: () => VNode[]\n  footer?: (props: { count: number; range: GanttRange }) => VNode[]\n}",
+        "exported": true,
+        "group": "插槽契约"
+      },
+      {
+        "name": "GanttExpose",
+        "definition": "export interface GanttExpose {\n  scrollToDate: (date: string) => void\n  scrollToTask: (id: GanttId) => void\n  selectTask: (id: GanttId | null) => void\n  setRange: (start: string, end: string) => void\n  zoomIn: () => void\n  zoomOut: () => void\n  fitToTasks: () => void\n  expandAll: () => void\n  collapseAll: () => void\n  refresh: () => void\n  getVisibleRange: () => GanttRange\n  cancelEdit: () => void\n  openSettings: () => void\n  reschedule: () => Promise<boolean>\n}",
+        "exported": true,
+        "group": "实例与回调"
       }
     ]
   },

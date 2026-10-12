@@ -37,12 +37,12 @@
 }
 
 .x-card__header {
-  border-bottom: 1px solid var(--x-color-border);
+  border-bottom: var(--x-card-divider-width, 1px) solid var(--x-card-divider-color, var(--x-color-border));
   font-weight: var(--x-font-weight-semibold, 600);
 }
 
 .x-card__footer {
-  border-top: 1px solid var(--x-color-border);
+  border-top: var(--x-card-divider-width, 1px) solid var(--x-card-divider-color, var(--x-color-border));
 }
 
 .x-card__body {

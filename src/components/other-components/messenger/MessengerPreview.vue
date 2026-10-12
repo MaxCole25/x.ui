@@ -27,6 +27,7 @@ const events = computed(() => {
     <button type="button" @click="apiProps.modelValue = true">打开聊天窗口</button>
     <button type="button" @click="apiProps.showContactList = !(apiProps.showContactList ?? true)">{{ apiProps.showContactList === false ? '显示好友列表' : '隐藏好友列表' }}</button>
     <button type="button" @click="handlers.receive()">模拟收到消息</button>
+    <p>取消固定后可查看消息图标右上角的未读数量气泡，点击「模拟收到消息」查看数量变化。</p>
     <p>{{ notice }}</p>
     <XMessenger ref="messenger" v-bind="publicProps" v-on="events" @vue:mounted="captureInstance" />
   </div>
