@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref, watch } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -10,17 +12,21 @@ defineOptions({
   name: 'XIconSelect'
 })
 
-const props = withDefaults(defineProps<IconSelectProps>(), {
+const rawProps = withDefaults(defineProps<IconSelectProps>(), {
   fontSize: 14,
   disabled: false,
   readonly: false,
-  placeholder: '双击选择图标',
-  emptyText: '暂无图标',
+  placeholder: localePropDefault('icon-select.placeholder'),
+  emptyText: localePropDefault('icon-select.emptyText'),
   iconColor: '#334155',
   selectedIconColor: '#1264f4',
   accentColor: '#1264f4',
   panelHeight: 320,
   iconSize: undefined
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'icon-select.placeholder',
+  emptyText: 'icon-select.emptyText'
 })
 
 const emit = defineEmits<{

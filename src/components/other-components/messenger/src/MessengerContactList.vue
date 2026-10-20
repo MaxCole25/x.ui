@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { XAvatar } from '../../../display-components/avatar'
@@ -30,8 +31,8 @@ const emit = defineEmits<{
 const slots = defineSlots<{ 'business-settings'?: () => any }>()
 const settingsTab = ref('contacts')
 const settingsTabs = computed(() => [
-  { name: 'contacts', label: '联系人分组' },
-  ...(slots['business-settings'] ? [{ name: 'business', label: '表设置' }] : []),
+  { name: 'contacts', get label() { return t("extension.28b5504d541f") } },
+  ...(slots['business-settings'] ? [{ name: 'business', get label() { return t("extension.619f1acbeac4") } }] : []),
 ])
 const mounted = ref(false)
 const surface = ref<HTMLElement>()
@@ -280,7 +281,7 @@ function summary(kind: 'direct' | 'group', targetId: MessengerId, unreadCount?: 
   const messages = props.messagePages.find(page => page.conversationId === conversation?.id)?.messages ?? []
   const last = messages[messages.length - 1]
   return {
-    lastMessage: conversation?.lastMessage ?? (last?.business ? last.business.title : last?.fileName || last?.content || (last?.kind === 'image' ? '[图片]' : '')),
+    lastMessage: conversation?.lastMessage ?? (last?.business ? last.business.title : last?.fileName || last?.content || (last?.kind === 'image' ? t("extension.4f622a639dae") : '')),
     lastMessageTime: conversation?.lastMessageTime ?? last?.sentAt ?? last?.time ?? '',
     unreadCount: conversation?.unreadCount ?? unreadCount ?? 0
   }
@@ -306,7 +307,7 @@ const recent = computed(() => props.conversations.filter(item => item.kind === '
   const contact = contactRows.value.find(contact => contact.id === item.targetId)
   return contact ?? { id: item.targetId, name: item.title, avatar: item.avatar, kind: 'direct' as const, ...summary('direct', item.targetId) }
 }).filter(item => matches(item.name, 'department' in item ? item.department : '')))
-const sections = computed(() => [...props.contactGroups, { id: undefined, name: '未分组' }].map(group => ({
+const sections = computed(() => [...props.contactGroups, { id: undefined, get name() { return t("extension.8de957a7b7a2") } }].map(group => ({
   ...group, contacts: filteredContacts.value.filter(contact => group.id === undefined
     ? !props.contactGroups.some(item => item.id === contact.groupId) : contact.groupId === group.id)
 })))
@@ -353,23 +354,23 @@ function renameGroup() {
   action({ action: 'rename', groupId: editingId.value, name: editingName.value.trim() }); editingId.value = undefined
 }
 const modes = computed(() => [
-  { value: 'contacts' as const, label: '显示分组', icon: 'contacts-book', unreadCount: 0 },
-  { value: 'recent' as const, label: '最近消息', icon: 'chat-history', unreadCount: recentUnreadCount.value },
-  { value: 'groups' as const, label: '群聊', icon: 'discuss', unreadCount: groupUnreadCount.value }
+  { value: 'contacts' as const, get label() { return t("extension.7cdf68ad557d") }, icon: 'contacts-book', unreadCount: 0 },
+  { value: 'recent' as const, get label() { return t("extension.050ad14c26be") }, icon: 'chat-history', unreadCount: recentUnreadCount.value },
+  { value: 'groups' as const, get label() { return t("extension.89ed678339c9") }, icon: 'discuss', unreadCount: groupUnreadCount.value }
 ])
 </script>
 <template>
   <Teleport :to="teleportTo" :disabled="!teleported || !mounted">
-    <section v-show="panelVisible" ref="surface" class="x-messenger-contacts" :class="{ 'is-floating': contactListPlacement === 'floating' }" :style="style" aria-label="信息" @pointerdown.capture="emit('activate')" @focusin="emit('activate')">
+    <section v-show="panelVisible" ref="surface" class="x-messenger-contacts" :class="{ 'is-floating': contactListPlacement === 'floating' }" :style="style" :aria-label="t('extension.2da40f40736c')" @pointerdown.capture="emit('activate')" @focusin="emit('activate')">
       <header class="x-messenger-contacts__header" @pointerdown="startDrag">
-        <strong><span class="x-messenger-contacts__brand"><XIcon name="message-3" variant="fill" :icon-size="18" /></span>信息</strong>
-        <button type="button" class="x-messenger-contacts__pin" :title="pinned ? '取消固定' : '固定好友列表'" :aria-label="pinned ? '取消固定' : '固定好友列表'" :aria-pressed="pinned" :class="{ 'is-selected': pinned }" @click="togglePinned"><XIcon name="pushpin-2" variant="fill" :icon-size="18" /></button>
+        <strong><span class="x-messenger-contacts__brand"><XIcon name="message-3" variant="fill" :icon-size="18" /></span>{{ t("extension.2da40f40736c") }}</strong>
+        <button type="button" class="x-messenger-contacts__pin" :title="pinned ? t('extension.09250f2cdb60') : t('extension.5ad3fd8352f0')" :aria-label="pinned ? t('extension.09250f2cdb60') : t('extension.5ad3fd8352f0')" :aria-pressed="pinned" :class="{ 'is-selected': pinned }" @click="togglePinned"><XIcon name="pushpin-2" variant="fill" :icon-size="18" /></button>
       </header>
 
       <div class="x-messenger-contacts__search">
-        <label class="x-messenger-contacts__search-field"><XIcon name="search" :icon-size="16" /><input v-model="keyword" :placeholder="view === 'groups' ? '搜索群聊' : '搜索姓名、部门'" aria-label="搜索联系人" :disabled="disabled" /></label>
-        <XTooltip v-if="view === 'groups' && allowCreateGroup" content="创建群聊" :disabled="disabled" :teleported="teleported" :teleport-to="teleportTo" :z-index="Math.max(overlayZIndex.tooltip, zIndex + 1)">
-          <button type="button" class="x-messenger-contacts__create-group" aria-label="创建群聊" :disabled="disabled" @click="startCreateGroup"><XIcon name="add" :icon-size="20" /></button>
+        <label class="x-messenger-contacts__search-field"><XIcon name="search" :icon-size="16" /><input v-model="keyword" :placeholder="view === 'groups' ? t('extension.25e8c9a6aaa2') : t('extension.c94d6475e263')" :aria-label="t('extension.6600f231bedc')" :disabled="disabled" /></label>
+        <XTooltip v-if="view === 'groups' && allowCreateGroup" :content="t('extension.a18c255e478e')" :disabled="disabled" :teleported="teleported" :teleport-to="teleportTo" :z-index="Math.max(overlayZIndex.tooltip, zIndex + 1)">
+          <button type="button" class="x-messenger-contacts__create-group" :aria-label="t('extension.a18c255e478e')" :disabled="disabled" @click="startCreateGroup"><XIcon name="add" :icon-size="20" /></button>
         </XTooltip>
       </div>
       <div class="x-messenger-contacts__scroll">
@@ -379,73 +380,73 @@ const modes = computed(() => [
             <template v-if="!collapsed.has(section.id)">
               <button v-for="contact in section.contacts" :key="contact.id" type="button" class="x-messenger-contacts__item" :class="{ 'is-active': modelValue === contact.id && activeKind === 'direct' }" :disabled="disabled" @click="select('direct', contact.id)" @dblclick="open('direct', contact.id)" @keydown.enter.prevent="open('direct', contact.id)">
                 <XAvatar :src="contact.avatar" :name="contact.name" :avatar-size="36" :background-color="messageAvatarColor(contact.id, contact.name)" text-color="#ffffff" />
-                <span class="x-messenger-contacts__info"><span class="x-messenger-contacts__line"><strong>{{ contact.name }}</strong><time :title="contact.lastMessageTime">{{ formatTime(contact.lastMessageTime) }}</time></span><span class="x-messenger-contacts__line"><small>{{ contact.lastMessage || '暂无消息' }}</small><span v-if="contact.unreadCount > 0" class="x-messenger-contacts__badge" :aria-label="contact.unreadCount + '条未读消息'">{{ contact.unreadCount > 99 ? '99+' : contact.unreadCount }}</span></span></span>
+                <span class="x-messenger-contacts__info"><span class="x-messenger-contacts__line"><strong>{{ contact.name }}</strong><time :title="contact.lastMessageTime">{{ formatTime(contact.lastMessageTime) }}</time></span><span class="x-messenger-contacts__line"><small>{{ contact.lastMessage || t('extension.30dfbcb48883') }}</small><span v-if="contact.unreadCount > 0" class="x-messenger-contacts__badge" :aria-label="contact.unreadCount + t('extension.786d87138747')">{{ contact.unreadCount > 99 ? '99+' : contact.unreadCount }}</span></span></span>
               </button>
             </template>
           </div>
-          <p v-if="!filteredContacts.length" class="x-messenger-contacts__empty">暂无联系人</p>
+          <p v-if="!filteredContacts.length" class="x-messenger-contacts__empty">{{ t("extension.c85b5b6be350") }}</p>
         </template>
         <template v-else>
           <button v-for="row in rows" :key="row.id" type="button" class="x-messenger-contacts__item" :class="{ 'is-active': modelValue === row.id && activeKind === row.kind }" :disabled="disabled" @click="select(row.kind, row.id)" @dblclick="open(row.kind, row.id)" @keydown.enter.prevent="open(row.kind, row.id)">
             <XAvatar :src="row.avatar" :name="row.name" :avatar-size="36" :background-color="messageAvatarColor(row.kind === 'group' ? 'group-' + row.id : row.id, row.name)" text-color="#ffffff" />
-            <span class="x-messenger-contacts__info"><span class="x-messenger-contacts__line"><strong>{{ row.name }}</strong><time :title="row.lastMessageTime">{{ formatTime(row.lastMessageTime) }}</time></span><span class="x-messenger-contacts__line"><small>{{ row.lastMessage || '暂无消息' }}</small><span v-if="row.unreadCount > 0" class="x-messenger-contacts__badge" :aria-label="row.unreadCount + '条未读消息'">{{ row.unreadCount > 99 ? '99+' : row.unreadCount }}</span></span></span>
+            <span class="x-messenger-contacts__info"><span class="x-messenger-contacts__line"><strong>{{ row.name }}</strong><time :title="row.lastMessageTime">{{ formatTime(row.lastMessageTime) }}</time></span><span class="x-messenger-contacts__line"><small>{{ row.lastMessage || t('extension.30dfbcb48883') }}</small><span v-if="row.unreadCount > 0" class="x-messenger-contacts__badge" :aria-label="row.unreadCount + t('extension.786d87138747')">{{ row.unreadCount > 99 ? '99+' : row.unreadCount }}</span></span></span>
           </button>
-          <p v-if="!rows.length" class="x-messenger-contacts__empty">{{ view === 'recent' ? '暂无最近联系人' : '暂无群聊' }}</p>
+          <p v-if="!rows.length" class="x-messenger-contacts__empty">{{ view === 'recent' ? t('extension.71817264f18c') : t('extension.56e66d454472') }}</p>
         </template>
       </div>
       <footer class="x-messenger-contacts__footer">
-        <nav aria-label="联系人视图">
-          <button v-for="mode in modes" :key="mode.value" type="button" :title="mode.unreadCount > 0 ? mode.label + '，' + mode.unreadCount + '条未读消息' : mode.label" :aria-label="mode.label" :aria-description="mode.unreadCount > 0 ? mode.unreadCount + '条未读消息' : undefined" :aria-pressed="view === mode.value" :class="['x-messenger-contacts__mode', 'is-' + mode.value, { 'is-selected': view === mode.value }]" :disabled="disabled" @click="view = mode.value"><XBadge :model-value="mode.unreadCount" :hidden="mode.unreadCount <= 0" :max="99" :font-size="10" border-color="var(--x-color-surface, white)"><XIcon :name="mode.icon" :variant="view === mode.value ? 'fill' : 'line'" :icon-size="18" /></XBadge></button>
+        <nav :aria-label="t('extension.2d088e430341')">
+          <button v-for="mode in modes" :key="mode.value" type="button" :title="lt(mode.unreadCount > 0 ? mode.label + '，' + mode.unreadCount + t('extension.786d87138747') : mode.label)" :aria-label="mode.label" :aria-description="mode.unreadCount > 0 ? mode.unreadCount + '条未读消息' : undefined" :aria-pressed="view === mode.value" :class="['x-messenger-contacts__mode', 'is-' + mode.value, { 'is-selected': view === mode.value }]" :disabled="disabled" @click="view = mode.value"><XBadge :model-value="mode.unreadCount" :hidden="mode.unreadCount <= 0" :max="99" :font-size="10" border-color="var(--x-color-surface, white)"><XIcon :name="mode.icon" :variant="view === mode.value ? 'fill' : 'line'" :icon-size="18" /></XBadge></button>
         </nav>
-        <button v-if="currentUserRole === 'admin'" type="button" class="x-messenger-contacts__settings-trigger" title="设置" aria-label="联系人设置" :aria-expanded="showSettings" :disabled="disabled" @click="showSettings = !showSettings"><XIcon name="settings-3" :icon-size="18" /></button>
+        <button v-if="currentUserRole === 'admin'" type="button" class="x-messenger-contacts__settings-trigger" :title="t('extension.7debf9cb0372')" :aria-label="t('extension.6f32cf20c755')" :aria-expanded="showSettings" :disabled="disabled" @click="showSettings = !showSettings"><XIcon name="settings-3" :icon-size="18" /></button>
       </footer>
-      <button type="button" class="x-messenger-contacts__resizer" aria-label="拖拽调整好友列表高度" title="拖拽调整高度" @pointerdown.stop="startResize" @keydown.up.prevent="setListHeight(listHeight - 20)" @keydown.down.prevent="setListHeight(listHeight + 20)" />
+      <button type="button" class="x-messenger-contacts__resizer" :aria-label="t('extension.2883e03aca9f')" :title="t('extension.d21cc19f269c')" @pointerdown.stop="startResize" @keydown.up.prevent="setListHeight(listHeight - 20)" @keydown.down.prevent="setListHeight(listHeight + 20)" />
     </section>
     <div v-show="!panelVisible" ref="launcher" class="x-messenger-contacts__launcher" :class="{ 'is-floating': contactListPlacement === 'floating' }" :style="launcherStyle">
-      <button type="button" :title="totalUnreadCount > 0 ? '打开消息列表，' + totalUnreadCount + '条未读消息' : '打开消息列表'" :aria-label="totalUnreadCount > 0 ? '打开消息列表，' + totalUnreadCount + '条未读消息' : '打开消息列表'" :aria-expanded="panelVisible" @pointerdown="startLauncherDrag" @click="clickLauncher" @keydown.left.prevent="moveLauncherBy(-20, 0)" @keydown.right.prevent="moveLauncherBy(20, 0)" @keydown.up.prevent="moveLauncherBy(0, -20)" @keydown.down.prevent="moveLauncherBy(0, 20)">
+      <button type="button" :title="totalUnreadCount > 0 ? t('extension.195aa95b12b9') + totalUnreadCount + t('extension.786d87138747') : t('extension.ab9e0f36977b')" :aria-label="totalUnreadCount > 0 ? t('extension.195aa95b12b9') + totalUnreadCount + t('extension.786d87138747') : t('extension.ab9e0f36977b')" :aria-expanded="panelVisible" @pointerdown="startLauncherDrag" @click="clickLauncher" @keydown.left.prevent="moveLauncherBy(-20, 0)" @keydown.right.prevent="moveLauncherBy(20, 0)" @keydown.up.prevent="moveLauncherBy(0, -20)" @keydown.down.prevent="moveLauncherBy(0, 20)">
         <XIcon name="message-3" variant="fill" :icon-size="26" />
         <span v-if="totalUnreadCount > 0" class="x-messenger-contacts__launcher-badge" aria-hidden="true">{{ totalUnreadCount > 99 ? '99+' : totalUnreadCount }}</span>
       </button>
     </div>
   </Teleport>
-  <XDialog v-if="currentUserRole === 'admin'" v-model="showSettings" title="聊天设置" :width="760" :height="520" :min-width="560" :min-height="360" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="zIndex + 1" :radius="radius" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" header-background-color="color-mix(in srgb, var(--x-color-primary, #4385ef) 5%, var(--x-color-surface, white))" close-icon-color="var(--x-color-text-muted, #7a8493)">
+  <XDialog v-if="currentUserRole === 'admin'" v-model="showSettings" :title="t('extension.10e35a2ffb28')" :width="760" :height="520" :min-width="560" :min-height="360" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="zIndex + 1" :radius="radius" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" header-background-color="color-mix(in srgb, var(--x-color-primary, #4385ef) 5%, var(--x-color-surface, white))" close-icon-color="var(--x-color-text-muted, #7a8493)">
     <XTabs v-model="settingsTab" :items="settingsTabs" variant="line" full-height lazy :show-context-menu="false">
       <template #pane="{ item }">
         <template v-if="item.name === 'contacts'">
       <div v-if="canManage" class="x-messenger-contacts__settings">
-        <form class="x-messenger-contacts__settings-create" @submit.prevent="createGroup"><input v-model="newGroupName" placeholder="新分组名称" aria-label="新分组名称" :disabled="disabled" /><button class="x-messenger-contacts__primary" :disabled="disabled || !newGroupName.trim()"><XIcon name="add" :icon-size="16" />新增分组</button></form>
+        <form class="x-messenger-contacts__settings-create" @submit.prevent="createGroup"><input v-model="newGroupName" :placeholder="t('extension.168435b6eff7')" :aria-label="t('extension.168435b6eff7')" :disabled="disabled" /><button class="x-messenger-contacts__primary" :disabled="disabled || !newGroupName.trim()"><XIcon name="add" :icon-size="16" />{{ t("extension.ac8e6b057594") }}</button></form>
         <div class="x-messenger-contacts__settings-columns">
-          <section class="x-messenger-contacts__settings-pane" aria-label="好友分组">
-            <header><XIcon name="organization-chart" :icon-size="18" /><strong>好友分组</strong><small>{{ contactGroups.length }} 组</small></header>
-            <p class="x-messenger-contacts__settings-hint">展开目标分组，双击成员可移出</p>
+          <section class="x-messenger-contacts__settings-pane" :aria-label="t('extension.4f7585a0296d')">
+            <header><XIcon name="organization-chart" :icon-size="18" /><strong>{{ t("extension.4f7585a0296d") }}</strong><small>{{ contactGroups.length }}{{ t("extension.726ff2fac521") }}</small></header>
+            <p class="x-messenger-contacts__settings-hint">{{ t("extension.9d15f903dcd7") }}</p>
             <div class="x-messenger-contacts__settings-scroll">
               <div v-for="group in settingsGroups" :key="group.id" class="x-messenger-contacts__settings-group" :class="{ 'is-selected': settingsGroupId === group.id }">
                 <div class="x-messenger-contacts__settings-group-header">
-                  <button type="button" class="x-messenger-contacts__settings-group-toggle" :aria-label="'展开分组' + group.name" :aria-expanded="settingsGroupId === group.id" :disabled="disabled" @click="toggleSettingsGroup(group.id)"><XIcon name="arrow-down-s" :icon-size="16" :class="{ 'is-collapsed': settingsGroupId !== group.id }" /><span>{{ group.name }}</span><small>{{ group.members.length }}</small></button>
-                  <button type="button" :title="'编辑' + group.name" :aria-label="'编辑分组' + group.name" :disabled="disabled" @click="editingId = group.id; editingName = group.name"><XIcon name="edit" :icon-size="15" /></button>
-                  <button type="button" class="x-messenger-contacts__danger" :title="'删除' + group.name" :aria-label="'删除分组' + group.name" :disabled="disabled" @click="action({ action: 'delete', groupId: group.id })"><XIcon name="delete-bin" :icon-size="15" /></button>
+                  <button type="button" class="x-messenger-contacts__settings-group-toggle" :aria-label="t('extension.5601c1642de5') + group.name" :aria-expanded="settingsGroupId === group.id" :disabled="disabled" @click="toggleSettingsGroup(group.id)"><XIcon name="arrow-down-s" :icon-size="16" :class="{ 'is-collapsed': settingsGroupId !== group.id }" /><span>{{ group.name }}</span><small>{{ group.members.length }}</small></button>
+                  <button type="button" :title="t('extension.a7f814c0a40d') + group.name" :aria-label="t('extension.24e6cf225ea3') + group.name" :disabled="disabled" @click="editingId = group.id; editingName = group.name"><XIcon name="edit" :icon-size="15" /></button>
+                  <button type="button" class="x-messenger-contacts__danger" :title="t('extension.3755f56f2f83') + group.name" :aria-label="t('extension.777f53cc71b1') + group.name" :disabled="disabled" @click="action({ action: 'delete', groupId: group.id })"><XIcon name="delete-bin" :icon-size="15" /></button>
                 </div>
-                <form v-if="editingId === group.id" class="x-messenger-contacts__settings-rename" @submit.prevent="renameGroup"><input v-model="editingName" aria-label="分组名称" :disabled="disabled" /><button :disabled="disabled || !editingName.trim()">保存</button><button type="button" @click="editingId = undefined">取消</button></form>
+                <form v-if="editingId === group.id" class="x-messenger-contacts__settings-rename" @submit.prevent="renameGroup"><input v-model="editingName" :aria-label="t('extension.65731c12ae52')" :disabled="disabled" /><button :disabled="disabled || !editingName.trim()">{{ t("extension.fadf24dbc5a9") }}</button><button type="button" @click="editingId = undefined">{{ t("extension.4d0b4688c787") }}</button></form>
                 <div v-if="settingsGroupId === group.id" class="x-messenger-contacts__settings-members">
-                  <button v-for="member in group.members" :key="member.id" type="button" class="x-messenger-contacts__settings-user" :aria-label="'移出分组' + member.name" title="双击移出分组" :disabled="disabled" @dblclick="removeFromSettingsGroup(member.id)" @keydown.enter.prevent="removeFromSettingsGroup(member.id)"><XAvatar :name="member.name" :src="member.avatar" :avatar-size="28" :background-color="messageAvatarColor(member.id, member.name)" text-color="#ffffff" /><span>{{ member.name }}</span><XIcon name="arrow-right" :icon-size="16" /></button>
-                  <p v-if="!group.members.length" class="x-messenger-contacts__settings-empty">暂无成员，可双击右侧用户加入</p>
+                  <button v-for="member in group.members" :key="member.id" type="button" class="x-messenger-contacts__settings-user" :aria-label="t('extension.b915aa065b2a') + member.name" :title="t('extension.4cd2498702d5')" :disabled="disabled" @dblclick="removeFromSettingsGroup(member.id)" @keydown.enter.prevent="removeFromSettingsGroup(member.id)"><XAvatar :name="member.name" :src="member.avatar" :avatar-size="28" :background-color="messageAvatarColor(member.id, member.name)" text-color="#ffffff" /><span>{{ member.name }}</span><XIcon name="arrow-right" :icon-size="16" /></button>
+                  <p v-if="!group.members.length" class="x-messenger-contacts__settings-empty">{{ t("extension.79f77c7b9119") }}</p>
                 </div>
               </div>
-              <p v-if="!contactGroups.length" class="x-messenger-contacts__settings-empty">暂无分组，请先新增分组</p>
+              <p v-if="!contactGroups.length" class="x-messenger-contacts__settings-empty">{{ t("extension.e661ef1cae7a") }}</p>
             </div>
           </section>
-          <section class="x-messenger-contacts__settings-pane" aria-label="未分组用户">
-            <header><XIcon name="user-3" :icon-size="18" /><strong>未分组用户</strong><small>{{ ungroupedUsers.length }} 人</small></header>
-            <p class="x-messenger-contacts__settings-hint">{{ activeSettingsGroup ? '双击加入「' + activeSettingsGroup.name + '」' : '请先展开左侧目标分组' }}</p>
-            <input v-model="settingsKeyword" class="x-messenger-contacts__settings-search" placeholder="搜索用户、部门" aria-label="搜索未分组用户" :disabled="disabled" />
+          <section class="x-messenger-contacts__settings-pane" :aria-label="t('extension.1a78c3ee6f91')">
+            <header><XIcon name="user-3" :icon-size="18" /><strong>{{ t("extension.1a78c3ee6f91") }}</strong><small>{{ ungroupedUsers.length }}{{ t("extension.4912771a4216") }}</small></header>
+            <p class="x-messenger-contacts__settings-hint">{{ activeSettingsGroup ? t('extension.3e3a298f07cf') + activeSettingsGroup.name + '」' : t('extension.4d0b8cd2b560') }}</p>
+            <input v-model="settingsKeyword" class="x-messenger-contacts__settings-search" :placeholder="t('extension.1a68161db0f3')" :aria-label="t('extension.605d5c0f54fc')" :disabled="disabled" />
             <div class="x-messenger-contacts__settings-scroll">
-              <button v-for="user in settingsUsers" :key="user.id" type="button" class="x-messenger-contacts__settings-user" :aria-label="'加入分组' + user.name" :title="activeSettingsGroup ? '双击加入' + activeSettingsGroup.name : '请先展开左侧分组'" :disabled="disabled || !activeSettingsGroup" @dblclick="moveToSettingsGroup(user.id)" @keydown.enter.prevent="moveToSettingsGroup(user.id)"><XAvatar :name="user.name" :src="user.avatar" :avatar-size="28" :background-color="messageAvatarColor(user.id, user.name)" text-color="#ffffff" /><span>{{ user.name }}</span><XIcon name="arrow-left" :icon-size="16" /></button>
-              <p v-if="!settingsUsers.length" class="x-messenger-contacts__settings-empty">{{ settingsKeyword.trim() ? '暂无匹配用户' : '暂无未分组用户' }}</p>
+              <button v-for="user in settingsUsers" :key="user.id" type="button" class="x-messenger-contacts__settings-user" :aria-label="t('extension.98f81e481a28') + user.name" :title="activeSettingsGroup ? t('extension.94b03760fb9a') + activeSettingsGroup.name : t('extension.873be1a2fcf0')" :disabled="disabled || !activeSettingsGroup" @dblclick="moveToSettingsGroup(user.id)" @keydown.enter.prevent="moveToSettingsGroup(user.id)"><XAvatar :name="user.name" :src="user.avatar" :avatar-size="28" :background-color="messageAvatarColor(user.id, user.name)" text-color="#ffffff" /><span>{{ user.name }}</span><XIcon name="arrow-left" :icon-size="16" /></button>
+              <p v-if="!settingsUsers.length" class="x-messenger-contacts__settings-empty">{{ settingsKeyword.trim() ? t('extension.4865b3fa349a') : t('extension.df36b108776b') }}</p>
             </div>
           </section>
         </div>
       </div>
-      <p v-else>分组管理未启用</p>
+      <p v-else>{{ t("extension.246b795adb8d") }}</p>
         </template>
         <slot v-else name="business-settings" />
       </template>

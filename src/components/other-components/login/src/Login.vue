@@ -1,4 +1,7 @@
-﻿<script setup lang="ts">
+﻿<script setup lang="ts">import { translate as t } from '../../../../locale'
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { toCssSize } from '../../../_utils/elementStyle'
 import { useImageCaptcha } from '../../_shared/useImageCaptcha'
 
@@ -10,7 +13,7 @@ defineOptions({
   name: 'XLogin'
 })
 
-const props = withDefaults(defineProps<LoginProps>(), {
+const rawProps = withDefaults(defineProps<LoginProps>(), {
   username: '',
   password: '',
   remember: false,
@@ -18,8 +21,8 @@ const props = withDefaults(defineProps<LoginProps>(), {
   letterCode: '',
   phone: '',
   smsCode: '',
-  title: '欢迎登录',
-  description: '请输入账号信息继续访问系统',
+  title: localePropDefault('login.title'),
+  description: localePropDefault('login.description'),
   logoSrc: '',
   logoAlt: 'Logo',
   logoPosition: 'top',
@@ -27,25 +30,25 @@ const props = withDefaults(defineProps<LoginProps>(), {
   fontSize: 14,
   loading: false,
   disabled: false,
-  usernameLabel: '用户名',
-  passwordLabel: '密码',
-  usernamePlaceholder: '请输入用户名',
-  passwordPlaceholder: '请输入密码',
-  imageCodePlaceholder: '请输入图像验证码',
-  letterCodePlaceholder: '请输入字母验证码',
-  phonePlaceholder: '请输入手机号',
-  smsCodePlaceholder: '请输入短信验证码',
-  loginText: '登录',
-  registerPromptText: '还没有账号？',
-  registerText: '立即注册',
-  smsButtonText: '获取验证码',
-  wechatText: '微信登录',
-  rememberText: '记住我',
+  usernameLabel: localePropDefault('login.usernameLabel'),
+  passwordLabel: localePropDefault('login.passwordLabel'),
+  usernamePlaceholder: localePropDefault('login.usernamePlaceholder'),
+  passwordPlaceholder: localePropDefault('login.passwordPlaceholder'),
+  imageCodePlaceholder: localePropDefault('login.imageCodePlaceholder'),
+  letterCodePlaceholder: localePropDefault('login.letterCodePlaceholder'),
+  phonePlaceholder: localePropDefault('login.phonePlaceholder'),
+  smsCodePlaceholder: localePropDefault('login.smsCodePlaceholder'),
+  loginText: localePropDefault('login.loginText'),
+  registerPromptText: localePropDefault('login.registerPromptText'),
+  registerText: localePropDefault('login.registerText'),
+  smsButtonText: localePropDefault('login.smsButtonText'),
+  wechatText: localePropDefault('login.wechatText'),
+  rememberText: localePropDefault('login.rememberText'),
   imageCaptchaSrc: '',
-  imageCaptchaAlt: '滑块图像验证',
-  imageCaptchaTitle: '拖动下方滑块完成拼图',
-  imageCaptchaTip: '按住滑块，拖动拼图完成验证',
-  imageCaptchaSuccessText: '验证通过',
+  imageCaptchaAlt: localePropDefault('login.imageCaptchaAlt'),
+  imageCaptchaTitle: localePropDefault('login.imageCaptchaTitle'),
+  imageCaptchaTip: localePropDefault('login.imageCaptchaTip'),
+  imageCaptchaSuccessText: localePropDefault('login.imageCaptchaSuccessText'),
   accentColor: '#0b4a52',
   accentSoftColor: '#e1f5f7',
   backgroundColor: '#ffffff',
@@ -64,6 +67,28 @@ const props = withDefaults(defineProps<LoginProps>(), {
   enableSmsLogin: false,
   showRemember: true,
   showRegister: true
+})
+const props = useLocaleProps(rawProps, {
+  title: 'login.title',
+  description: 'login.description',
+  usernameLabel: 'login.usernameLabel',
+  passwordLabel: 'login.passwordLabel',
+  usernamePlaceholder: 'login.usernamePlaceholder',
+  passwordPlaceholder: 'login.passwordPlaceholder',
+  imageCodePlaceholder: 'login.imageCodePlaceholder',
+  letterCodePlaceholder: 'login.letterCodePlaceholder',
+  phonePlaceholder: 'login.phonePlaceholder',
+  smsCodePlaceholder: 'login.smsCodePlaceholder',
+  loginText: 'login.loginText',
+  registerPromptText: 'login.registerPromptText',
+  registerText: 'login.registerText',
+  smsButtonText: 'login.smsButtonText',
+  wechatText: 'login.wechatText',
+  rememberText: 'login.rememberText',
+  imageCaptchaAlt: 'login.imageCaptchaAlt',
+  imageCaptchaTitle: 'login.imageCaptchaTitle',
+  imageCaptchaTip: 'login.imageCaptchaTip',
+  imageCaptchaSuccessText: 'login.imageCaptchaSuccessText'
 })
 
 const emit = defineEmits<{
@@ -245,7 +270,7 @@ onBeforeUnmount(() => {
           <button
             class="x-login__eye"
             type="button"
-            :aria-label="isPasswordVisible ? '隐藏密码' : '显示密码'"
+            :aria-label="isPasswordVisible ? t('extension.c970421215b1') : t('extension.f60cb7b63d06')"
             :disabled="props.disabled || props.loading"
             @blur="hidePassword"
             @mouseleave="hidePassword"
@@ -302,17 +327,17 @@ onBeforeUnmount(() => {
             </button>
           </div>
           <div class="x-login__captcha-tools">
-            <button class="x-login__captcha-tool" type="button" :disabled="props.disabled || props.loading" aria-label="帮助" @click="emit('image-captcha-help')">
+            <button class="x-login__captcha-tool" type="button" :disabled="props.disabled || props.loading" :aria-label="t('extension.adf465ebf0e6')" @click="emit('image-captcha-help')">
               <svg class="x-login__svg-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                 <path d="M12 2C6.477 2 2 6.477 2 12S6.477 22 12 22 22 17.523 22 12 17.523 2 12 2ZM12 20C7.582 20 4 16.418 4 12S7.582 4 12 4 20 7.582 20 12 16.418 20 12 20ZM11 17H13V15H11V17ZM12 6C9.79 6 8 7.79 8 10H10C10 8.895 10.895 8 12 8S14 8.895 14 10C14 11.305 12.981 11.753 11.972 12.522 11.016 13.251 11 14.011 11 14H13C13 13.667 13.241 13.434 13.802 13.019 14.835 12.254 16 11.392 16 10 16 7.79 14.21 6 12 6Z" />
               </svg>
             </button>
-            <button class="x-login__captcha-tool" type="button" :disabled="props.disabled || props.loading" aria-label="刷新图像验证" @click="resetImageCaptcha">
+            <button class="x-login__captcha-tool" type="button" :disabled="props.disabled || props.loading" :aria-label="t('extension.60b47a8c9a60')" @click="resetImageCaptcha">
               <svg class="x-login__svg-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                 <path d="M18.537 19.567C16.784 21.08 14.499 22 12 22 6.477 22 2 17.523 2 12S6.477 2 12 2C16.137 2 19.684 4.512 21.206 8.094L19.365 8.876C18.148 6.011 15.311 4 12 4 7.582 4 4 7.582 4 12S7.582 20 12 20C13.955 20 15.747 19.299 17.137 18.135L14 15H22V23L18.537 19.567ZM6.863 5.865L10 9H2V1L5.463 4.433C7.216 2.92 9.501 2 12 2V4C10.045 4 8.253 4.701 6.863 5.865Z" />
               </svg>
             </button>
-            <button class="x-login__captcha-tool" type="button" :disabled="props.disabled || props.loading" aria-label="关闭图像验证" @click="closeImageCaptcha">
+            <button class="x-login__captcha-tool" type="button" :disabled="props.disabled || props.loading" :aria-label="t('extension.21c4a8ea120d')" @click="closeImageCaptcha">
               <svg class="x-login__svg-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                 <path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z" />
               </svg>
@@ -323,7 +348,7 @@ onBeforeUnmount(() => {
 
       <div v-if="props.enableLetterCaptcha" class="x-login__field x-login__field--inline">
         <label class="x-login__inline-control">
-          <span class="x-login__label">字母识别</span>
+          <span class="x-login__label">{{ t("extension.1ee0bf4eec3d") }}</span>
           <input
             class="x-login__input"
             :disabled="props.disabled || props.loading"
@@ -341,7 +366,7 @@ onBeforeUnmount(() => {
 
       <div v-if="props.enableSmsLogin" class="x-login__sms">
         <label class="x-login__field">
-          <span class="x-login__label">手机号</span>
+          <span class="x-login__label">{{ t("extension.5a9cc5e89148") }}</span>
           <input
             class="x-login__input"
             autocomplete="tel"
@@ -354,7 +379,7 @@ onBeforeUnmount(() => {
 
         <div class="x-login__field x-login__field--inline">
           <label class="x-login__inline-control">
-            <span class="x-login__label">短信验证</span>
+            <span class="x-login__label">{{ t("extension.d1dd99214085") }}</span>
             <input
               class="x-login__input"
               autocomplete="one-time-code"
@@ -374,7 +399,7 @@ onBeforeUnmount(() => {
 
       <button class="x-login__submit" type="submit" :disabled="props.disabled || props.loading">
         <span v-if="props.loading" class="x-login__spinner" aria-hidden="true" />
-        <span>{{ props.loading ? '登录中...' : props.loginText }}</span>
+        <span>{{ props.loading ? t('extension.ec507ddfa73c') : props.loginText }}</span>
       </button>
 
       <div class="x-login__actions">

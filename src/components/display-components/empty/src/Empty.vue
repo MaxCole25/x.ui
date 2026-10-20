@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -8,8 +10,11 @@ defineOptions({
   name: 'XEmpty'
 })
 
-const props = withDefaults(defineProps<EmptyProps>(), {
-  description: '暂无数据'
+const rawProps = withDefaults(defineProps<EmptyProps>(), {
+  description: localePropDefault('empty.description')
+})
+const props = useLocaleProps(rawProps, {
+  description: 'empty.description'
 })
 
 const emit = defineEmits<{

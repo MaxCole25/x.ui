@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, onUpdated, provide, ref, useAttrs, useId, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -15,15 +17,15 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<SelectProps>(), {
+const rawProps = withDefaults(defineProps<SelectProps>(), {
   options: () => [],
   fieldNames: () => ({}),
   displayField: 'label',
   remote: false,
   loading: false,
-  loadingText: '加载中',
-  emptyText: '暂无数据',
-  placeholder: '请选择',
+  loadingText: localePropDefault('select.loadingText'),
+  emptyText: localePropDefault('select.emptyText'),
+  placeholder: localePropDefault('select.placeholder'),
   disabled: false,
   readonly: false,
   clearable: false,
@@ -38,6 +40,11 @@ const props = withDefaults(defineProps<SelectProps>(), {
   popperBackgroundColor: '#ffffff',
   textAlign: 'left',
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  loadingText: 'select.loadingText',
+  emptyText: 'select.emptyText',
+  placeholder: 'select.placeholder'
 })
 
 const emit = defineEmits<{

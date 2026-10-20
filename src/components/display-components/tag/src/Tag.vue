@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -52,6 +55,6 @@ function handleClose(event: MouseEvent) {
     @click="handleClick"
   >
     <span class="x-tag__content"><slot /></span>
-    <button v-if="props.closable" class="x-tag__close" type="button" aria-label="关闭标签" @click="handleClose">×</button>
+    <button v-if="props.closable" class="x-tag__close" type="button" :aria-label="t('common.closeTag')" @click="handleClose">×</button>
   </span>
 </template>

@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { computed } from 'vue'
 import type { CSSProperties } from 'vue'
 import { XLogin } from '../../login'
@@ -127,8 +128,8 @@ const presetConfigs: Record<LoginPagePreset, PresetConfig> = {
   centered: {
     loginWidth: 420,
     loginProps: {
-      title: '欢迎登录',
-      description: '请输入账号信息继续访问系统',
+      get title() { return t("extension.9b628b6b73d5") },
+      get description() { return t("extension.bdca06eb8a61") },
       accentColor: '#2454d6',
       accentSoftColor: '#e8efff',
       radius: '16px'
@@ -147,8 +148,8 @@ const presetConfigs: Record<LoginPagePreset, PresetConfig> = {
   finance: {
     loginWidth: 430,
     loginProps: {
-      title: '个人中心登录',
-      description: '统一账号，安全访问业务中心',
+      get title() { return t("extension.e0b281063463") },
+      get description() { return t("extension.94afffb3afb1") },
       accentColor: '#ff5a1f',
       accentSoftColor: '#fff0e8',
       radius: '18px',
@@ -171,8 +172,8 @@ const presetConfigs: Record<LoginPagePreset, PresetConfig> = {
   recruit: {
     loginWidth: 430,
     loginProps: {
-      title: '登录/注册',
-      description: '求职者端',
+      get title() { return t("extension.65dae1eb9df6") },
+      get description() { return t("extension.000c9d7a7480") },
       accentColor: '#1688f0',
       accentSoftColor: '#e8f4ff',
       radius: '0px',
@@ -197,8 +198,8 @@ const presetConfigs: Record<LoginPagePreset, PresetConfig> = {
   retail: {
     loginWidth: 360,
     loginProps: {
-      title: '扫码登录',
-      description: '账号登录',
+      get title() { return t("extension.22e398e50ff9") },
+      get description() { return t("extension.86281394dbf7") },
       accentColor: '#f5127a',
       accentSoftColor: '#ffe8f2',
       radius: '0px',
@@ -222,8 +223,8 @@ const presetConfigs: Record<LoginPagePreset, PresetConfig> = {
   split: {
     loginWidth: 420,
     loginProps: {
-      title: '企业账号登录',
-      description: '安全、稳定、高效地进入工作台',
+      get title() { return t("extension.fed5dfd3a035") },
+      get description() { return t("extension.28c15337d410") },
       accentColor: '#0f766e',
       accentSoftColor: '#dff8f4',
       radius: '18px'
@@ -355,10 +356,10 @@ function handleLogin(payload: LoginSubmitPayload) {
         <div class="x-login-page__brand">
           <slot name="brand">
             <span class="x-login-page__brand-mark">X</span>
-            <span class="x-login-page__brand-text">@x-soft88/x-ui 登录页</span>
+            <span class="x-login-page__brand-text">{{ t("extension.7085cef3bd82") }}</span>
           </slot>
         </div>
-        <div class="x-login-page__header-extra">安全登录 · 快速访问</div>
+        <div class="x-login-page__header-extra">{{ t("extension.7f5f0b4171b4") }}</div>
       </slot>
     </header>
 
@@ -372,11 +373,11 @@ function handleLogin(payload: LoginSubmitPayload) {
           <slot name="content-left">
             <slot name="slogan">
               <p class="x-login-page__eyebrow">WELCOME</p>
-              <h1 class="x-login-page__slogan">统一身份入口</h1>
-              <p class="x-login-page__summary">支持账号、短信、验证码与第三方入口，快速搭建常规登录页面。</p>
+              <h1 class="x-login-page__slogan">{{ t("extension.1e51357608c5") }}</h1>
+              <p class="x-login-page__summary">{{ t("extension.76a4d4b672bf") }}</p>
               <div class="x-login-page__actions">
-                <button type="button">下载客户端</button>
-                <button type="button">了解更多</button>
+                <button type="button">{{ t("extension.4c09999d2dd5") }}</button>
+                <button type="button">{{ t("extension.c0c78a429097") }}</button>
               </div>
             </slot>
           </slot>
@@ -416,10 +417,10 @@ function handleLogin(payload: LoginSubmitPayload) {
 
     <footer v-if="sections.footer.visible" :class="sectionClass('footer')" :style="sectionStyle(sections.footer)">
       <slot name="footer">
-        <span>关于我们</span>
-        <span>联系我们</span>
-        <span>隐私保护</span>
-        <span>服务协议</span>
+        <span>{{ t("extension.0cc510e609ea") }}</span>
+        <span>{{ t("extension.152d3db75889") }}</span>
+        <span>{{ t("extension.3a43b2a76ac0") }}</span>
+        <span>{{ t("extension.5a5159736cca") }}</span>
       </slot>
     </footer>
   </section>

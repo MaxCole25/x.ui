@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, getCurrentInstance } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -8,15 +10,18 @@ defineOptions({
   name: 'XInputNumber'
 })
 
-const props = withDefaults(defineProps<InputNumberProps>(), {
+const rawProps = withDefaults(defineProps<InputNumberProps>(), {
   step: 1,
   disabled: false,
   readonly: false,
   fontSize: 14,
-  placeholder: '请输入数字',
+  placeholder: localePropDefault('input-number.placeholder'),
   fullWidth: false,
   fullHeight: false,
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'input-number.placeholder'
 })
 
 const emit = defineEmits<{

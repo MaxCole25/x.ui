@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -49,9 +52,9 @@ const select = (day: number) => {
 
 <template>
   <div class="x-date-panel" :style="datePanelStyle">
-    <div class="x-date-panel__header">{{ year }} 年 {{ month }} 月</div>
+    <div class="x-date-panel__header">{{ t('date.yearMonth', { year, month }) }}</div>
     <div class="x-date-panel__week">
-      <span v-for="day in ['一', '二', '三', '四', '五', '六', '日']" :key="day">{{ day }}</span>
+      <span v-for="day in [t('common.monday'), t('common.tuesday'), t('common.wednesday'), t('common.thursday'), t('common.friday'), t('common.saturday'), t('common.sunday')]" :key="day">{{ day }}</span>
     </div>
     <div class="x-date-panel__grid">
       <button

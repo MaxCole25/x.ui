@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { XAvatar } from '../../avatar'
@@ -9,13 +11,18 @@ import { createFontStyle } from '../../../_utils/size'
 import type { ChatEmits, ChatExpose, ChatMessage, ChatMessageId, ChatProps, ChatSlots } from './types'
 
 defineOptions({ name: 'XChat' })
-const props = withDefaults(defineProps<ChatProps>(), {
+const rawProps = withDefaults(defineProps<ChatProps>(), {
   messages: () => [], title: '', width: '100%', height: 420, fontSize: 14,
   showAvatar: true, showName: true, showTime: true, showStatus: true, timePlacement: 'meta',
-  enableAutoScroll: true, emptyText: '暂无消息，开始聊天吧', bubbleRadius: 8,
+  enableAutoScroll: true, emptyText: localePropDefault('chat.emptyText'), bubbleRadius: 8,
   showComposer: true, showImagePicker: true, showFilePicker: true, showEmojiPicker: true,
-  enablePaste: true, disabled: false, placeholder: '输入消息，支持粘贴图片或文件', sendText: '发送', fileAccept: '',
+  enablePaste: true, disabled: false, placeholder: localePropDefault('chat.placeholder'), sendText: localePropDefault('chat.sendText'), fileAccept: '',
   emojis: () => ['😀', '😊', '😂', '🤣', '😍', '🥰', '😘', '😎', '🤔', '😅', '😭', '😮', '😴', '🥳', '👍', '👎', '👏', '🙏', '💪', '❤️', '🎉', '🌹', '☕', '✅']
+})
+const props = useLocaleProps(rawProps, {
+  emptyText: 'chat.emptyText',
+  placeholder: 'chat.placeholder',
+  sendText: 'chat.sendText'
 })
 const emit = defineEmits<ChatEmits>()
 defineSlots<ChatSlots>()
@@ -143,7 +150,7 @@ defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, s
     <header v-if="$slots.header || title" class="x-chat__header"><slot name="header">{{ title }}</slot></header>
     <div ref="viewport" class="x-chat__viewport" role="log" aria-label="消息列表" aria-live="polite" aria-relevant="additions text" tabindex="0" @scroll="handleScroll">
       <div ref="content" class="x-chat__messages">
-        <div v-if="!messages.length" class="x-chat__empty"><slot name="empty">{{ emptyText }}</slot></div>
+        <div v-if="!messages.length" class="x-chat__empty"><slot name="empty">{{ props.emptyText }}</slot></div>
         <template v-for="{ message, index, parts, quote } in messageGroups" :key="message.id">
           <div v-if="showSeparator(message, index)" class="x-chat__time-separator"><time :datetime="message.sentAt">{{ separatorText(message) }}</time></div>
         <div class="x-chat__item" :class="{ 'is-self': isSelf(message), 'is-system': message.kind === 'system', 'is-highlighted': parts.some(part => part.message.id === highlightedId) }">
@@ -216,8 +223,8 @@ defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, s
               <button type="button" class="x-chat__tool" :aria-label="'移除 ' + attachment.name" :disabled="disabled" @click="removeAttachment(attachment)"><XIcon name="close" :icon-size="16" /></button>
             </div>
           </div>
-          <textarea ref="textarea" v-model="draft" class="x-chat__input" aria-label="消息内容" :placeholder="placeholder" :disabled="disabled" rows="2" @paste="handlePaste" @keydown="handleKeydown" />
-          <div class="x-chat__send-row"><span class="x-chat__input-tip">Enter 发送，Shift+Enter 换行</span><button type="submit" class="x-chat__send" :disabled="!canSend">{{ sendText }}</button></div>
+          <textarea ref="textarea" v-model="draft" class="x-chat__input" aria-label="消息内容" :placeholder="props.placeholder" :disabled="disabled" rows="2" @paste="handlePaste" @keydown="handleKeydown" />
+          <div class="x-chat__send-row"><span class="x-chat__input-tip">Enter 发送，Shift+Enter 换行</span><button type="submit" class="x-chat__send" :disabled="!canSend">{{ props.sendText }}</button></div>
         </form>
       </slot>
     </footer>

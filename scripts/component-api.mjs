@@ -5,6 +5,7 @@ import { parse } from 'vue/compiler-sfc'
 import { slotContracts } from './component-api-slots.mjs'
 import { descriptionKey, docComponentName, readApiDescriptions } from './component-api-docs.mjs'
 import { controlFor, defaultNoteFor, propUnits } from './component-api-values.mjs'
+const localeDefaults = JSON.parse(fs.readFileSync('src/locale/default-messages.json', 'utf8'))
 
 export const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? walk(path.join(dir, entry.name)) : [path.join(dir, entry.name).replaceAll('\\', '/')])
 export const groups = ['数据与绑定', '内容与展示', '布局与尺寸', '外观与排版', '状态与交互', '浮层与定位', '组件专有功能']
@@ -73,6 +74,7 @@ export function inventory() {
         if(name==='defineOptions') componentName=node.arguments[0]?.properties?.find(p=>p.name?.getText(sf)==='name')?.initializer?.text
         if(name==='defineProps') propsName=node.typeArguments?.[0]?.getText(sf).match(/\w+Props/)?.[0]
         if(name==='withDefaults') for(const prop of node.arguments[1]?.properties??[]) if(ts.isPropertyAssignment(prop)) defaults[prop.name.getText(sf).replace(/['"]/g,'')]=prop.initializer.getText(sf)
+        if(name==='useLocaleProps') for(const prop of node.arguments[1]?.properties??[]) if(ts.isPropertyAssignment(prop) && ts.isStringLiteral(prop.initializer)) defaults[prop.name.getText(sf)] = `'${localeDefaults[prop.initializer.text]}'`
         if(name==='defineEmits') for(const member of node.typeArguments?.[0]?.members??interfaces.get(node.typeArguments?.[0]?.getText(sf))?.members??[]) {
           if(member.name) events.push({name:member.name.getText().replace(/['"]/g,''),type:member.type?.getText()??'[]'})
           else if(ts.isCallSignatureDeclaration(member)) { const event=member.parameters[0]?.type; if(event && ts.isLiteralTypeNode(event)) events.push({name:event.literal.text,type:'['+member.parameters.slice(1).map(p=>p.getText()).join(', ')+']'}) }
@@ -95,7 +97,7 @@ export function inventory() {
       let value=defaults[name] ?? '—'
       if(value.startsWith('overlayZIndex.')) {
         const initializer=sf.statements.flatMap(statement=>ts.isVariableStatement(statement)?statement.declarationList.declarations:[])
-          .find(declaration=>declaration.name.getText()==='props')?.initializer
+          .find(declaration=>['rawProps', 'props'].includes(declaration.name.getText()))?.initializer
         // 通过实际常量声明解析层级，不再复制一份魔法数值。
         const findValue=node=>{
           if(ts.isPropertyAccessExpression(node) && node.getText()===value) {

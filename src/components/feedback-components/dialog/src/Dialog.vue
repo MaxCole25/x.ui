@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { computed, onBeforeUnmount, reactive, ref, useId, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -281,7 +284,7 @@ const maskStyle = computed(() => ({
 }))
 
 const fullscreenIconClass = computed(() => (isFullscreen.value ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line'))
-const fullscreenLabel = computed(() => (isFullscreen.value ? '退出全屏' : '全屏显示'))
+const fullscreenLabel = computed(() => (isFullscreen.value ? t('common.exitFullscreen') : t('common.fullscreen')))
 const modalRef = ref<HTMLElement | null>(null)
 const modalVisible = computed(() => visible.value && props.enableModal)
 useModal({ visible: modalVisible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
@@ -290,14 +293,14 @@ useModal({ visible: modalVisible, element: modalRef, zIndex: () => props.zIndex,
 <template>
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <div v-if="visible" class="x-dialog__mask" :class="{ 'is-modeless': !enableModal }" :style="maskStyle" @click.self="onMaskClick">
-      <div ref="modalRef" role="dialog" :aria-modal="enableModal ? true : undefined" @keydown.esc="onDialogEsc" :aria-labelledby="props.title || $slots.header ? titleId : undefined" :aria-label="props.title || '弹窗'" tabindex="-1" class="x-dialog" v-bind="$attrs" :class="['x-dialog', { 'is-fullscreen': isFullscreen }]" :style="[popupStyle, createFontStyle(props.fontSize ?? 14)]">
+      <div ref="modalRef" role="dialog" :aria-modal="enableModal ? true : undefined" @keydown.esc="onDialogEsc" :aria-labelledby="props.title || $slots.header ? titleId : undefined" :aria-label="props.title || t('common.dialog')" tabindex="-1" class="x-dialog" v-bind="$attrs" :class="['x-dialog', { 'is-fullscreen': isFullscreen }]" :style="[popupStyle, createFontStyle(props.fontSize ?? 14)]">
         <header class="x-dialog__header" @mousedown="startDrag">
           <div :id="titleId" class="x-dialog__title"><slot name="header">{{ title }}</slot></div>
           <div class="x-dialog__actions" @mousedown.stop>
             <button v-if="showFullscreen" type="button" class="x-dialog__fullscreen" :aria-label="fullscreenLabel" :title="fullscreenLabel" @click="toggleFullscreen">
               <i :class="fullscreenIconClass" aria-hidden="true" />
             </button>
-            <button type="button" class="x-dialog__close" aria-label="关闭弹窗" @click="close">×</button>
+            <button type="button" class="x-dialog__close" :aria-label="t('common.closeDialog')" @click="close">×</button>
           </div>
         </header>
 
@@ -309,7 +312,7 @@ useModal({ visible: modalVisible, element: modalRef, zIndex: () => props.zIndex,
           <slot name="footer" />
         </footer>
 
-        <div v-if="resizable && !isFullscreen" class="x-dialog__resizer" title="拖拽调整大小" @mousedown="startResize" />
+        <div v-if="resizable && !isFullscreen" class="x-dialog__resizer" :title="t('common.resize')" @mousedown="startResize" />
       </div>
     </div>
   </Teleport>

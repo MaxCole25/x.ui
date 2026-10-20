@@ -1,14 +1,20 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { ref, watch } from 'vue'
 import { XIcon } from '../../../basic-components/icon'
 import { XPopover } from '../../../feedback-components/popover'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { useChatComposer, formatChatFileSize } from '../../../display-components/chat/src/useChatComposer'
 import type { ChatProps, ChatEmits, ChatMessageQuote } from '../../../display-components/chat'
-const props = withDefaults(defineProps<ChatProps & { quote?: ChatMessageQuote; showBusinessPicker?: boolean; showGroupManagement?: boolean; historyVisible?: boolean; sendShortcut?: 'enter' | 'ctrl-enter'; zIndex?: number }>(), {
-  disabled: false, enablePaste: true, placeholder: '输入消息，支持粘贴图片或文件', showBusinessPicker: true,
+const rawProps = withDefaults(defineProps<ChatProps & { quote?: ChatMessageQuote; showBusinessPicker?: boolean; showGroupManagement?: boolean; historyVisible?: boolean; sendShortcut?: 'enter' | 'ctrl-enter'; zIndex?: number }>(), {
+  disabled: false, enablePaste: true, placeholder: localePropDefault('messenger.placeholder'), showBusinessPicker: true,
   sendShortcut: 'enter', zIndex: overlayZIndex.popper,
   emojis: () => ['😀', '😊', '😂', '👍', '❤️', '🎉', '🙏', '🤔']
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'messenger.placeholder'
 })
 const emit = defineEmits<ChatEmits & {
   'cancel-reply': []; 'history-request': []; 'group-manage': []; 'business-select': []; 'update:sendShortcut': [value: 'enter' | 'ctrl-enter']
@@ -33,39 +39,39 @@ defineExpose({ focus, clearDraft, sendMessage })
 </script>
 <template>
   <form class="x-chat__composer x-messenger-composer" @submit.prevent="sendMessage">
-    <div class="x-chat__tools" role="toolbar" aria-label="消息工具">
-      <button type="button" class="x-chat__tool" title="表情" aria-label="选择表情" :aria-expanded="showEmojis" :disabled="disabled" @click="showEmojis = !showEmojis"><XIcon name="emotion-happy" :icon-size="20" /></button>
-      <button type="button" class="x-chat__tool" title="图片" aria-label="选择本地图片" :disabled="disabled" @click="imageInput?.click()"><XIcon name="image-2" :icon-size="20" /></button>
-      <button type="button" class="x-chat__tool" title="文件" aria-label="选择本地文件" :disabled="disabled" @click="fileInput?.click()"><XIcon name="attachment-2" :icon-size="20" /></button>
-      <button v-if="showBusinessPicker" type="button" class="x-chat__tool x-messenger-composer__business" title="业务单据" aria-label="选择业务单据" :disabled="disabled" @click="emit('business-select')"><XIcon name="briefcase-2" :icon-size="20" /></button>
-      <button v-if="showGroupManagement" type="button" class="x-chat__tool x-messenger-composer__group" title="群管理" aria-label="群管理" :disabled="disabled" @click="emit('group-manage')"><XIcon name="group" :icon-size="20" /></button>
-      <button type="button" class="x-chat__tool x-messenger-composer__history" :class="{ 'is-active': historyVisible }" title="历史记录" aria-label="历史记录" :aria-expanded="historyVisible" @click="emit('history-request')"><XIcon name="history" :icon-size="20" /></button>
-      <input ref="imageInput" hidden type="file" accept="image/*" multiple :disabled="disabled" aria-label="本地图片" @change="handleFiles" />
-      <input ref="fileInput" hidden type="file" :accept="fileAccept" multiple :disabled="disabled" aria-label="本地文件" @change="handleFiles" />
+    <div class="x-chat__tools" role="toolbar" :aria-label="t('extension.708c3d2627a8')">
+      <button type="button" class="x-chat__tool" :title="t('extension.fecd664062e1')" :aria-label="t('extension.0dce177405dc')" :aria-expanded="showEmojis" :disabled="disabled" @click="showEmojis = !showEmojis"><XIcon name="emotion-happy" :icon-size="20" /></button>
+      <button type="button" class="x-chat__tool" :title="t('extension.be8da62ea113')" :aria-label="t('extension.f40986d1eae2')" :disabled="disabled" @click="imageInput?.click()"><XIcon name="image-2" :icon-size="20" /></button>
+      <button type="button" class="x-chat__tool" :title="t('extension.49deaf7da20d')" :aria-label="t('extension.95462abb0daf')" :disabled="disabled" @click="fileInput?.click()"><XIcon name="attachment-2" :icon-size="20" /></button>
+      <button v-if="showBusinessPicker" type="button" class="x-chat__tool x-messenger-composer__business" :title="t('extension.be145dccd413')" :aria-label="t('extension.1cfa13b99289')" :disabled="disabled" @click="emit('business-select')"><XIcon name="briefcase-2" :icon-size="20" /></button>
+      <button v-if="showGroupManagement" type="button" class="x-chat__tool x-messenger-composer__group" :title="t('extension.652b2fbb7b45')" :aria-label="t('extension.652b2fbb7b45')" :disabled="disabled" @click="emit('group-manage')"><XIcon name="group" :icon-size="20" /></button>
+      <button type="button" class="x-chat__tool x-messenger-composer__history" :class="{ 'is-active': historyVisible }" :title="t('extension.19e0e3f3df89')" :aria-label="t('extension.19e0e3f3df89')" :aria-expanded="historyVisible" @click="emit('history-request')"><XIcon name="history" :icon-size="20" /></button>
+      <input ref="imageInput" hidden type="file" accept="image/*" multiple :disabled="disabled" :aria-label="t('extension.4d15cea2fde2')" @change="handleFiles" />
+      <input ref="fileInput" hidden type="file" :accept="fileAccept" multiple :disabled="disabled" :aria-label="t('extension.c8a69b6fd5f7')" @change="handleFiles" />
     </div>
-    <div v-if="showEmojis" class="x-chat__emojis" role="group" aria-label="常用表情" @keydown.esc="showEmojis = false">
-      <button v-for="(emoji, index) in emojis" :key="index" type="button" :aria-label="'插入表情 ' + emoji" :disabled="disabled" @mousedown.prevent @click="insertEmoji(emoji)">{{ emoji }}</button>
+    <div v-if="showEmojis" class="x-chat__emojis" role="group" :aria-label="t('extension.e298d65346cf')" @keydown.esc="showEmojis = false">
+      <button v-for="(emoji, index) in emojis" :key="index" type="button" :aria-label="t('extension.a3df965b681e') + emoji" :disabled="disabled" @mousedown.prevent @click="insertEmoji(emoji)">{{ emoji }}</button>
     </div>
-    <div v-if="attachments.length" class="x-chat__attachments" aria-label="待发送附件">
+    <div v-if="attachments.length" class="x-chat__attachments" :aria-label="t('extension.fd8f8ccc9b7f')">
       <div v-for="attachment in attachments" :key="attachment.id" class="x-chat__attachment">
         <img v-if="attachment.kind === 'image'" :src="attachment.url" :alt="attachment.name" />
         <XIcon v-else name="file-2" :icon-size="26" />
         <span class="x-chat__attachment-info"><strong :title="attachment.name">{{ attachment.name }}</strong><small>{{ formatChatFileSize(attachment.size) }}</small></span>
-        <button type="button" class="x-chat__tool" :aria-label="'移除 ' + attachment.name" :disabled="disabled" @click="removeAttachment(attachment)"><XIcon name="close" :icon-size="16" /></button>
+        <button type="button" class="x-chat__tool" :aria-label="t('extension.0c209cd06895') + attachment.name" :disabled="disabled" @click="removeAttachment(attachment)"><XIcon name="close" :icon-size="16" /></button>
       </div>
     </div>
     <div v-if="quote" class="x-messenger-composer__reply">
-      <blockquote class="x-chat__quote"><strong>回复 {{ quote.senderName }}</strong><span>{{ quote.content }}</span></blockquote>
-      <button type="button" class="x-chat__tool" aria-label="取消回复" :disabled="disabled" @click="emit('cancel-reply'); focus()"><XIcon name="close" :icon-size="16" /></button>
+      <blockquote class="x-chat__quote"><strong>{{ t("extension.ffc7850925e7") }}{{ quote.senderName }}</strong><span>{{ quote.content }}</span></blockquote>
+      <button type="button" class="x-chat__tool" :aria-label="t('extension.6ff997b2c2f9')" :disabled="disabled" @click="emit('cancel-reply'); focus()"><XIcon name="close" :icon-size="16" /></button>
     </div>
-    <textarea ref="textarea" v-model="draft" class="x-chat__input" aria-label="消息内容" :placeholder="placeholder" :disabled="disabled" rows="2" @paste="handlePaste" @keydown="handleKeydown" />
+    <textarea ref="textarea" v-model="draft" class="x-chat__input" :aria-label="t('extension.acbc5a5d362a')" :placeholder="props.placeholder" :disabled="disabled" rows="2" @paste="handlePaste" @keydown="handleKeydown" />
     <div class="x-messenger-composer__send-row">
       <div class="x-messenger-composer__send">
-        <button type="submit" class="x-messenger-composer__submit" :disabled="!canSend" :title="sendShortcut === 'enter' ? '按 Enter 键发送消息' : '按 Ctrl + Enter 键发送消息'">发送</button>
+        <button type="submit" class="x-messenger-composer__submit" :disabled="!canSend" :title="sendShortcut === 'enter' ? t('extension.6d3de8958915') : t('extension.565a7700e4fc')">{{ t("extension.1214d633a448") }}</button>
         <XPopover v-model="showSendOptions" placement="top" :show-arrow="false" :width="244" :z-index="zIndex" :disabled="disabled">
-          <button type="button" class="x-messenger-composer__options" aria-label="发送快捷键设置" :aria-expanded="showSendOptions" :disabled="disabled" @keydown.esc.stop.prevent="showSendOptions = false"><XIcon :name="showSendOptions ? 'arrow-up-s' : 'arrow-down-s'" :icon-size="16" /></button>
+          <button type="button" class="x-messenger-composer__options" :aria-label="t('extension.b177bb2dc763')" :aria-expanded="showSendOptions" :disabled="disabled" @keydown.esc.stop.prevent="showSendOptions = false"><XIcon :name="showSendOptions ? 'arrow-up-s' : 'arrow-down-s'" :icon-size="16" /></button>
           <template #content>
-            <div class="x-messenger-composer__menu" role="menu" aria-label="发送快捷键" @keydown.esc.stop.prevent="showSendOptions = false; focus()" @click.stop>
+            <div class="x-messenger-composer__menu" role="menu" :aria-label="t('extension.b86bff83c747')" @keydown.esc.stop.prevent="showSendOptions = false; focus()" @click.stop>
               <button v-for="option in [{ value: 'enter' as const, text: '按 Enter 键发送消息' }, { value: 'ctrl-enter' as const, text: '按 Ctrl + Enter 键发送消息' }]" :key="option.value" type="button" role="menuitemradio" :aria-checked="sendShortcut === option.value" @click="selectShortcut(option.value)"><XIcon name="check" :icon-size="16" :style="{ visibility: sendShortcut === option.value ? 'visible' : 'hidden' }" /><span>{{ option.text }}</span></button>
             </div>
           </template>

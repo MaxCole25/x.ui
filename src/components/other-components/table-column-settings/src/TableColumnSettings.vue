@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref, watch } from 'vue'
 import { XButton } from '../../../basic-components/button'
 import { XDialog } from '../../../feedback-components/dialog'
@@ -10,11 +12,14 @@ import type { TableColumnSettingsProps, TableColumnSettingsSlots } from './types
 
 defineOptions({ name: 'XTableColumnSettings' })
 
-const props = withDefaults(defineProps<TableColumnSettingsProps>(), {
-  title: '列设置',
+const rawProps = withDefaults(defineProps<TableColumnSettingsProps>(), {
+  title: localePropDefault('table-column-settings.title'),
   width: 760,
   height: 620,
   disabled: false
+})
+const props = useLocaleProps(rawProps, {
+  title: 'table-column-settings.title'
 })
 
 const emit = defineEmits<{
@@ -272,7 +277,7 @@ defineExpose({
     v-if="dialogVisible"
     v-model="dialogVisible"
     class="x-table-column-settings__dialog"
-    :title="title"
+    :title="props.title"
     :width="width"
     :height="height"
     :min-width="640"

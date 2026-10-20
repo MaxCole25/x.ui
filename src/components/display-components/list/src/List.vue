@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
@@ -17,7 +19,7 @@ defineOptions({
   name: 'XList'
 })
 
-const props = withDefaults(defineProps<ListProps>(), {
+const rawProps = withDefaults(defineProps<ListProps>(), {
   items: () => [],
   disabled: false,
   draggable: false,
@@ -27,10 +29,14 @@ const props = withDefaults(defineProps<ListProps>(), {
   hoverable: true,
   enableEqualItemHeight: false,
   loading: false,
-  loadingText: '加载中',
+  loadingText: localePropDefault('list.loadingText'),
   finished: false,
-  finishedText: '没有更多了',
+  finishedText: localePropDefault('list.finishedText'),
   loadOffset: 80
+})
+const props = useLocaleProps(rawProps, {
+  loadingText: 'list.loadingText',
+  finishedText: 'list.finishedText'
 })
 
 defineSlots<{

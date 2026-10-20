@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -14,12 +19,12 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<TimeSelectProps>(), {
+const rawProps = withDefaults(defineProps<TimeSelectProps>(), {
   modelValue: '',
   start: '09:00',
   end: '18:00',
   stepMinutes: 30,
-  placeholder: '请选择时间',
+  placeholder: localePropDefault('time-select.placeholder'),
   disabled: false,
   readonly: false,
   clearable: false,
@@ -27,6 +32,9 @@ const props = withDefaults(defineProps<TimeSelectProps>(), {
   status: 'default',
   textAlign: 'center',
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'time-select.placeholder'
 })
 
 const attrs = useAttrs()
@@ -227,7 +235,7 @@ watch(
 
     <XDialog
       v-model="open"
-      title="选择时间"
+      :title="t('common.time')"
       :width="240"
       :height="440"
       :min-width="220"
@@ -238,9 +246,9 @@ watch(
       :style="dialogStyle"
     >
       <div class="x-time-select__panel-shell">
-        <div class="x-time-select__time" aria-label="时间选择">
+        <div class="x-time-select__time" :aria-label="t('common.timeSelection')">
           <div class="x-time-select__time-column">
-            <div class="x-time-select__time-label">时间</div>
+            <div class="x-time-select__time-label">{{ t('common.timeLabel') }}</div>
             <div ref="optionListRef" class="x-time-select__time-list" @scroll="handleOptionScroll">
               <button
                 v-for="option in options"
@@ -259,8 +267,8 @@ watch(
 
       <template #footer>
         <div class="x-time-select__footer">
-          <button type="button" class="x-time-select__secondary" @click="selectNow">此刻</button>
-          <button type="button" class="x-time-select__primary" @click="confirm">确定</button>
+          <button type="button" class="x-time-select__secondary" @click="selectNow">{{ t('common.now') }}</button>
+          <button type="button" class="x-time-select__primary" @click="confirm">{{ t('common.confirm') }}</button>
         </div>
       </template>
     </XDialog>

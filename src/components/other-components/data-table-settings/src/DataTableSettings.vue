@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, onMounted, ref, watch } from 'vue'
 import { XButton } from '../../../basic-components/button'
 import { XInput } from '../../../form-components/input'
@@ -21,10 +23,10 @@ import type {
 
 defineOptions({ name: 'XDataTableSettings' })
 
-const props = withDefaults(defineProps<DataTableSettingsProps>(), {
+const rawProps = withDefaults(defineProps<DataTableSettingsProps>(), {
   height: '100%',
-  emptyText: '暂无字段配置',
-  saveButtonText: '保存配置',
+  emptyText: localePropDefault('data-table-settings.emptyText'),
+  saveButtonText: localePropDefault('data-table-settings.saveButtonText'),
   showTableMeta: true,
   displayTypeOptions: () => [
     { label: '默认', value: '' },
@@ -54,6 +56,10 @@ const props = withDefaults(defineProps<DataTableSettingsProps>(), {
     { label: '主 Key', value: 'primary' },
     { label: '普通 Key', value: 'normal' }
   ]
+})
+const props = useLocaleProps(rawProps, {
+  emptyText: 'data-table-settings.emptyText',
+  saveButtonText: 'data-table-settings.saveButtonText'
 })
 
 const emit = defineEmits<{
@@ -438,7 +444,7 @@ defineExpose({
         :disabled="!selectedTable"
         @click="save"
       >
-        {{ saveButtonText }}
+        {{ props.saveButtonText }}
       </XButton>
     </div>
 
@@ -453,7 +459,7 @@ defineExpose({
       :data="rows"
       :columns="columns"
       row-key="columnKey"
-      :empty-text="emptyText"
+      :empty-text="props.emptyText"
       :row-draggable="true"
       :show-actions="false"
       :column-resizable="true"

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -64,7 +67,7 @@ const commit = (value: string) => {
           :class="{ 'is-transparent': isTransparentColor }"
           :style="{ backgroundColor: props.modelValue }"
           :disabled="props.disabled"
-          aria-label="选择颜色"
+          :aria-label="t('common.color')"
           @focus="emit('focus', $event)"
         />
         <template #content>

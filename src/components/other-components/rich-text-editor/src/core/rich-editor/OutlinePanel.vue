@@ -2,7 +2,7 @@
   <aside class="xl-outline-panel">
     <div class="xl-outline-panel__header">
       <div class="xl-outline-panel__titles">
-        <h3 class="xl-outline-panel__title">{{ title }}</h3>
+        <h3 class="xl-outline-panel__title">{{ props.title }}</h3>
       </div>
     </div>
 
@@ -38,7 +38,7 @@
         </div>
 
         <div v-else class="xl-outline-panel__empty">
-          {{ emptyText }}
+          {{ props.emptyText }}
         </div>
       </div>
     </div>
@@ -46,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../../../locale/props'
+
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 
@@ -65,7 +67,7 @@ type OutlineNode = OutlineHeading & {
   activePath: boolean
 }
 
-const props = withDefaults(
+const rawProps = withDefaults(
   defineProps<{
     editor?: Editor
     title?: string
@@ -75,13 +77,17 @@ const props = withDefaults(
     indentStep?: number
   }>(),
   {
-    title: '大纲',
-    emptyText: '当前文档没有标题',
+    title: localePropDefault('rich-text-editor.outlineTitle'),
+    emptyText: localePropDefault('rich-text-editor.outlineEmptyText'),
     minLevel: 1,
     maxLevel: 3,
     indentStep: 18
   }
 )
+const props = useLocaleProps(rawProps, {
+  title: 'rich-text-editor.outlineTitle',
+  emptyText: 'rich-text-editor.outlineEmptyText'
+})
 
 const revision = ref(0)
 const collapsedMap = ref<Record<string, boolean>>({})

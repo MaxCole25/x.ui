@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref, useSlots, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -16,7 +18,7 @@ import type {
 
 defineOptions({ name: 'XTreeTable' })
 
-const props = withDefaults(defineProps<TreeTableProps>(), {
+const rawProps = withDefaults(defineProps<TreeTableProps>(), {
   rowKey: 'id',
   childrenKey: 'children',
   treeColumnKey: undefined,
@@ -28,7 +30,10 @@ const props = withDefaults(defineProps<TreeTableProps>(), {
   expandedRowKeys: undefined,
   defaultExpandedRowKeys: undefined,
   defaultExpandAll: false,
-  emptyText: '暂无数据'
+  emptyText: localePropDefault('tree-table.emptyText')
+})
+const props = useLocaleProps(rawProps, {
+  emptyText: 'tree-table.emptyText'
 })
 
 const emit = defineEmits<{
@@ -364,7 +369,7 @@ defineExpose({ expandAll, collapseAll, toggleRow, getExpandedRowKeys })
       </div>
     </div>
 
-    <div v-else class="x-tree-table__empty">{{ emptyText }}</div>
+    <div v-else class="x-tree-table__empty">{{ props.emptyText }}</div>
   </div>
 </template>
 

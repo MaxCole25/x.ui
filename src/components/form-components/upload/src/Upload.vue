@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref, watch } from 'vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { UploadFile, UploadProps } from './types'
 
 defineOptions({ name: 'XUpload' })
 
-const props = withDefaults(defineProps<UploadProps>(), { modelValue: () => [], multiple: false, disabled: false, drag: false, autoUpload: true, limit: 0, maxSize: 0, buttonText: '选择文件', tip: '', listType: 'text', fontSize: 14 })
+const rawProps = withDefaults(defineProps<UploadProps>(), { modelValue: () => [], multiple: false, disabled: false, drag: false, autoUpload: true, limit: 0, maxSize: 0, buttonText: localePropDefault('upload.buttonText'), tip: '', listType: 'text', fontSize: 14 })
+const props = useLocaleProps(rawProps, {
+  buttonText: 'upload.buttonText'
+})
 const emit = defineEmits<{ 'update:modelValue': [files: UploadFile[]]; change: [files: UploadFile[]]; exceed: [files: File[]]; remove: [file: UploadFile, files: UploadFile[]]; progress: [file: UploadFile]; success: [file: UploadFile]; error: [file: UploadFile] }>()
 const inputRef = ref<HTMLInputElement | null>(null)
 const files = ref<UploadFile[]>([...props.modelValue])
@@ -57,7 +65,7 @@ defineExpose({ submit, clearFiles, openPicker })
     <ul v-if="files.length" class="x-upload__list">
       <li v-for="file in files" :key="file.uid" class="x-upload__file" :class="'is-' + file.status">
         <span class="x-upload__name">{{ file.name }}</span><span class="x-upload__status">{{ file.percentage }}%</span>
-        <button class="x-upload__remove" type="button" :disabled="props.disabled" aria-label="移除文件" @click="removeFile(file)">×</button>
+        <button class="x-upload__remove" type="button" :disabled="props.disabled" :aria-label="t('common.removeFile')" @click="removeFile(file)">×</button>
       </li>
     </ul>
   </div>

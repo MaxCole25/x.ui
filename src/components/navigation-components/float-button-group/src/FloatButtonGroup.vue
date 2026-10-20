@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref, watch } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -12,7 +14,7 @@ defineOptions({
   name: 'XFloatButtonGroup'
 })
 
-const props = withDefaults(defineProps<FloatButtonGroupProps>(), {
+const rawProps = withDefaults(defineProps<FloatButtonGroupProps>(), {
   items: () => [],
   mode: 'menu',
   modelValue: undefined,
@@ -30,9 +32,12 @@ const props = withDefaults(defineProps<FloatButtonGroupProps>(), {
   zIndex: overlayZIndex.popper,
   triggerIcon: 'customer-service-2',
   closeIcon: 'close',
-  triggerLabel: '快捷菜单',
+  triggerLabel: localePropDefault('float-button-group.triggerLabel'),
   tooltipPlacement: undefined,
   showTooltip: true
+})
+const props = useLocaleProps(rawProps, {
+  triggerLabel: 'float-button-group.triggerLabel'
 })
 
 const emit = defineEmits<{

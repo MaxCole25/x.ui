@@ -1,3 +1,4 @@
+import { translate as t } from '../../../../locale'
 import { dayOfWeek, flattenRows, formatDay, indexTasks, parseDay, validateDependencies } from './core'
 import type { GanttAction, GanttCalendar, GanttDependency, GanttId, GanttIssue, GanttTask } from './types'
 
@@ -16,13 +17,13 @@ export function createWorkCalendar(calendar: GanttCalendar = {}) {
     if (weekends.size === 7) {
       const found = direction > 0 ? explicit.find(value => value >= day) : [...explicit].reverse().find(value => value <= day)
       if (found !== undefined) return found
-      throw new Error('工作日历没有可用工作日，请调整休息日或补班日期')
+      throw new Error(t("extension.854127c87f89"))
     }
     while (day >= minimum && day <= maximum) {
       if (isWorking(day)) return day
       day += direction
     }
-    throw new Error('排程日期超出 0001 至 9999 年范围')
+    throw new Error(t("extension.9516dbf6b0f3"))
   }
   function shift(day: number, count: number) {
     const direction = count < 0 ? -1 : 1
@@ -63,8 +64,8 @@ export function scheduleTasks(input: ScheduleInput): { tasks: GanttTask[]; issue
   const anchor = parseDay(input.startDate)
   if (!Number.isFinite(anchor) || input.startDate < '0001-01-01') issues.push({ message: '项目起始日期无效' })
   for (const task of input.tasks) {
-    if (task.start < '0001-01-01') issues.push({ taskId: task.id, message: `${task.title}：日期超出支持范围` })
-    if (task.workdayDuration !== undefined && (!Number.isInteger(task.workdayDuration) || task.workdayDuration < (task.taskType === 'milestone' ? 0 : 1) || task.workdayDuration > 3652059)) issues.push({ taskId: task.id, message: `${task.title}：工作日工期无效` })
+    if (task.start < '0001-01-01') issues.push({ taskId: task.id, message: t("extension.e8cfef13cc8e", { p0: task.title }) })
+    if (task.workdayDuration !== undefined && (!Number.isInteger(task.workdayDuration) || task.workdayDuration < (task.taskType === 'milestone' ? 0 : 1) || task.workdayDuration > 3652059)) issues.push({ taskId: task.id, message: t("extension.ab2d120481bd", { p0: task.title }) })
   }
   for (const dependency of input.dependencies) {
     if (index.tasks.get(dependency.from)?.taskType === 'summary' || index.tasks.get(dependency.to)?.taskType === 'summary') issues.push({ dependencyId: dependency.id, message: '自动排程的依赖不能连接汇总任务' })
@@ -110,7 +111,7 @@ export function scheduleTasks(input: ScheduleInput): { tasks: GanttTask[]; issue
             if (parseDay(type[1] === 'F' ? original.end : original.start) < bound) valid = false
           }
           if (edited && (seed.start !== original.start || seed.end !== original.end)) valid = false
-          if (!valid) issues.push({ taskId: id, message: `${task.title}：固定任务无法满足排程约束` })
+          if (!valid) issues.push({ taskId: id, message: t("extension.c414dd2679e7", { p0: task.title }) })
         } else {
           task.start = formatDay(start); task.end = formatDay(end)
         }
@@ -136,9 +137,9 @@ export function scheduleTasks(input: ScheduleInput): { tasks: GanttTask[]; issue
       extents.set(task.id, { start: first, end: last })
       if (task.taskType !== 'summary' || !children.length) continue
       const start = formatDay(first), end = formatDay(last)
-      if ((task.readonly || input.canEditTask?.(task, 'move') === false) && (task.start !== start || task.end !== end)) issues.push({ taskId: task.id, message: `${task.title}：固定父任务无法汇总子任务日期` })
+      if ((task.readonly || input.canEditTask?.(task, 'move') === false) && (task.start !== start || task.end !== end)) issues.push({ taskId: task.id, message: t("extension.d29232dc89d7", { p0: task.title }) })
       else { task.start = start; task.end = end }
     }
-  } catch (error) { issues.push({ message: error instanceof Error ? error.message : '工作日历无法完成排程' }) }
+  } catch (error) { issues.push({ message: error instanceof Error ? error.message : t("extension.feff061172ed") }) }
   return { tasks: issues.length ? input.tasks : input.tasks.map(task => result.get(task.id)!), issues }
 }

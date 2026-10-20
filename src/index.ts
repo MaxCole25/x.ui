@@ -1,4 +1,5 @@
 import type { App, Plugin } from 'vue'
+import { setLocale, type XUiOptions } from './locale'
 import { XBadge } from './components/display-components/badge'
 import { XCollapse } from './components/display-components/collapse'
 import { XDescriptions } from './components/display-components/descriptions'
@@ -88,6 +89,7 @@ export { defaultControlMetrics } from './components/_utils/size'
 export type { FontSize } from './components/_utils/size'
 // 命名导出和公开类型统一由组件入口维护。
 export * from './components'
+export * from './locale'
 
 const components = [
   XGantt,
@@ -185,7 +187,8 @@ const components = [
 ]
 
 const XUi: Plugin = {
-  install(app: App) {
+  install(app: App, options: XUiOptions = {}) {
+    if (options.locale) setLocale(options.locale)
     components.forEach((component) => {
       app.component(component.name!, component)
     })

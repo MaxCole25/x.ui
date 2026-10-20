@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { toCssSize } from '../../../_utils/elementStyle'
@@ -161,7 +164,7 @@ const normalizeRules = computed<FormItemRule[]>(() => {
   ]
 
   if (props.required && !rules.some((rule) => rule.required)) {
-    rules.unshift({ required: true, message: `${props.label ?? '该字段'}不能为空` })
+    rules.unshift({ required: true, message: t('form.required', { label: props.label ?? t('common.field') }) })
   }
 
   return rules
@@ -172,18 +175,18 @@ const isRequired = computed(() => props.required || normalizeRules.value.some((r
 const isEmptyValue = (value: unknown) => value == null || value === '' || (Array.isArray(value) && value.length === 0)
 
 const runRule = async (rule: FormItemRule, value: unknown) => {
-  if (rule.required && isEmptyValue(value)) return rule.message ?? `${props.label ?? '该字段'}不能为空`
+  if (rule.required && isEmptyValue(value)) return rule.message ?? t('form.required', { label: props.label ?? t('common.field') })
   if (isEmptyValue(value)) return ''
 
   const textValue = String(value)
-  if (rule.len != null && textValue.length !== rule.len) return rule.message ?? `${props.label ?? '该字段'}长度必须为 ${rule.len}`
-  if (rule.min != null && textValue.length < rule.min) return rule.message ?? `${props.label ?? '该字段'}长度不能少于 ${rule.min}`
-  if (rule.max != null && textValue.length > rule.max) return rule.message ?? `${props.label ?? '该字段'}长度不能超过 ${rule.max}`
-  if (rule.pattern && !rule.pattern.test(textValue)) return rule.message ?? `${props.label ?? '该字段'}格式不正确`
+  if (rule.len != null && textValue.length !== rule.len) return rule.message ?? t('form.length', { label: props.label ?? t('common.field'), length: rule.len })
+  if (rule.min != null && textValue.length < rule.min) return rule.message ?? t('form.min', { label: props.label ?? t('common.field'), min: rule.min })
+  if (rule.max != null && textValue.length > rule.max) return rule.message ?? t('form.max', { label: props.label ?? t('common.field'), max: rule.max })
+  if (rule.pattern && !rule.pattern.test(textValue)) return rule.message ?? t('form.pattern', { label: props.label ?? t('common.field') })
 
   if (rule.validator) {
     const result = await rule.validator(rule, value, form?.model.value)
-    if (result === false) return rule.message ?? `${props.label ?? '该字段'}校验失败`
+    if (result === false) return rule.message ?? t('form.invalid', { label: props.label ?? t('common.field') })
     if (typeof result === 'string') return result
     if (result instanceof Error) return result.message
   }

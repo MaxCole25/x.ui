@@ -31,10 +31,10 @@ function open(options: string | MessageBoxOptions): Promise<MessageBoxAction> {
 }
 
 export const XMessageBox = Object.assign(open, {
-  alert(message: string, title = '提示', options: MessageBoxOptions = {}) {
+  alert(message: string, title?: string, options: MessageBoxOptions = {}) {
     return open({ ...options, message, title, showCancelButton: false })
   },
-  confirm(message: string, title = '提示', options: MessageBoxOptions = {}) {
+  confirm(message: string, title?: string, options: MessageBoxOptions = {}) {
     return open({ ...options, message, title, showCancelButton: true })
   }
 })

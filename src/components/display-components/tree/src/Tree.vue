@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { computed, getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import TreeNode from './TreeNode.vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -42,12 +45,12 @@ const instance = getCurrentInstance()
 const hasNodeExtraClickListener = computed(() => Boolean(instance?.vnode.props?.onNodeExtraClick))
 const shouldStopExtraClick = computed(() => Boolean(hasNodeExtraClickListener.value || instance?.slots.nodeExtra))
 const defaultContextMenuItems = computed<TreeContextMenuItem[]>(() => {
-  const items: TreeContextMenuItem[] = [{ action: 'new-root', label: '增加根节点' }]
+  const items: TreeContextMenuItem[] = [{ action: 'new-root', label: t('common.newRoot') }]
   if (contextMenu.node && props.canCreateChildByNode(contextMenu.node)) {
-    items.push({ action: 'new-child', label: '新建节点' })
+    items.push({ action: 'new-child', label: t('common.newNode') })
   }
   if (contextMenu.node && canDeleteCurrentNode()) {
-    items.push({ action: 'delete-node', label: '删除节点', tone: 'danger' })
+    items.push({ action: 'delete-node', label: t('common.deleteNode'), tone: 'danger' })
   }
   return items
 })
@@ -174,13 +177,13 @@ function createDraftNode(label: string): TreeNodeData {
 }
 
 function createDefaultRootNode() {
-  const newNode = createDraftNode('新建节点')
+  const newNode = createDraftNode(t('common.newNode'))
   props.treeData.push(newNode)
   return newNode
 }
 
 function createDefaultChildNode(parent: TreeNodeData) {
-  const newNode = createDraftNode('新建节点')
+  const newNode = createDraftNode(t('common.newNode'))
   parent.children = parent.children || []
   parent.children.push(newNode)
   setExpanded(String(parent.id), true)
@@ -314,7 +317,7 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
     @contextmenu.prevent.stop="handleRootContextMenu"
     @keydown="handleKeydown"
   >
-    <div v-if="!props.treeData.length" class="x-tree__empty">还没有数据</div>
+    <div v-if="!props.treeData.length" class="x-tree__empty">{{ t('common.noTreeData') }}</div>
     <TreeNode
       v-for="node in props.treeData"
       :key="String(node.id)"

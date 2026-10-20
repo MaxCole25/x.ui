@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -16,9 +21,9 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<DatePickerProps>(), {
+const rawProps = withDefaults(defineProps<DatePickerProps>(), {
   modelValue: '',
-  placeholder: '请选择日期',
+  placeholder: localePropDefault('date-picker.placeholder'),
   disabled: false,
   readonly: false,
   clearable: false,
@@ -30,6 +35,9 @@ const props = withDefaults(defineProps<DatePickerProps>(), {
   zIndex: overlayZIndex.dialog,
   showChinaFestivals: true,
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'date-picker.placeholder'
 })
 
 const attrs = useAttrs()
@@ -179,7 +187,7 @@ watch(
 
     <XDialog
       v-model="open"
-      title="选择日期"
+      :title="t('common.date')"
       :width="360"
       :height="420"
       :min-width="320"
@@ -194,17 +202,17 @@ watch(
     >
       <div class="x-date-picker__panel-shell">
         <div class="x-date-picker__toolbar">
-          <button type="button" class="x-date-picker__tool" aria-label="上一年" @click="goYear(-1)">
+          <button type="button" class="x-date-picker__tool" :aria-label="t('common.previousYear')" @click="goYear(-1)">
             <i class="ri-arrow-left-double-line" aria-hidden="true"></i>
           </button>
-          <button type="button" class="x-date-picker__tool" aria-label="上个月" @click="goMonth(-1)">
+          <button type="button" class="x-date-picker__tool" :aria-label="t('common.previousMonth')" @click="goMonth(-1)">
             <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
           </button>
-          <div class="x-date-picker__current">{{ panelYear }} 年 {{ panelMonth }} 月</div>
-          <button type="button" class="x-date-picker__tool" aria-label="下个月" @click="goMonth(1)">
+          <div class="x-date-picker__current">{{ t('date.yearMonth', { year: panelYear, month: panelMonth }) }}</div>
+          <button type="button" class="x-date-picker__tool" :aria-label="t('common.nextMonth')" @click="goMonth(1)">
             <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
           </button>
-          <button type="button" class="x-date-picker__tool" aria-label="下一年" @click="goYear(1)">
+          <button type="button" class="x-date-picker__tool" :aria-label="t('common.nextYear')" @click="goYear(1)">
             <i class="ri-arrow-right-double-line" aria-hidden="true"></i>
           </button>
         </div>
@@ -220,7 +228,7 @@ watch(
       </div>
       <template #footer>
         <div class="x-date-picker__footer">
-          <button type="button" class="x-date-picker__today" @click="selectToday">今天</button>
+          <button type="button" class="x-date-picker__today" @click="selectToday">{{ t('common.today') }}</button>
         </div>
       </template>
     </XDialog>

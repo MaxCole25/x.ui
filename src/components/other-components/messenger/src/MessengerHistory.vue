@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { XButton } from '../../../basic-components/button'
@@ -17,7 +18,7 @@ const messageType = ref<MessengerHistoryMessageType>(props.query.messageType ?? 
 const senderId = ref(props.query.senderId)
 const showFilters = ref(false)
 const tabs: { value: MessengerHistoryMessageType; text: string }[] = [
-  { value: 'all', text: '全部' }, { value: 'media', text: '图片/视频' }, { value: 'emoji', text: '表情' }, { value: 'file', text: '文件' }, { value: 'link', text: '链接' }
+  { value: 'all', get text() { return t("extension.778fc8f99453") } }, { value: 'media', get text() { return t("extension.c8afc3c6c411") } }, { value: 'emoji', get text() { return t("extension.fecd664062e1") } }, { value: 'file', get text() { return t("extension.49deaf7da20d") } }, { value: 'link', get text() { return t("extension.71502205499b") } }
 ]
 const senders = computed(() => {
   const users = new Map(props.contacts.map(contact => [contact.id, { id: contact.id, name: contact.name }]))
@@ -30,7 +31,7 @@ const invalidDates = computed(() => !!(startDate.value && endDate.value && start
 const sections = computed(() => {
   const groups = new Map<string, ChatMessage[]>()
   for (const message of props.result?.messages ?? []) {
-    const date = (message.sentAt || message.time || '').match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? '日期未知'
+    const date = (message.sentAt || message.time || '').match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? t("extension.f6aa34dfc6cb")
     if (!groups.has(date)) groups.set(date, [])
     groups.get(date)!.push(message)
   }
@@ -51,52 +52,52 @@ watch([() => props.query.keyword, () => props.query.startDate, () => props.query
 onBeforeUnmount(() => clearTimeout(searchTimer))
 </script>
 <template>
-  <section class="x-messenger-history" aria-label="历史消息">
+  <section class="x-messenger-history" :aria-label="t('extension.bf84b03cd1fe')">
     <form class="x-messenger-history__search" @submit.prevent="search()">
       <XIcon name="search" :icon-size="16" />
-      <input v-model="keyword" type="search" placeholder="搜索" aria-label="历史关键词" @input="scheduleSearch" />
+      <input v-model="keyword" type="search" :placeholder="t('extension.f04090805c6e')" :aria-label="t('extension.2582309aca67')" @input="scheduleSearch" />
     </form>
     <div class="x-messenger-history__toolbar">
-      <div class="x-messenger-history__tabs" role="tablist" aria-label="历史消息类型">
+      <div class="x-messenger-history__tabs" role="tablist" :aria-label="t('extension.f2e211f19a4f')">
         <button v-for="tab in tabs" :key="tab.value" type="button" role="tab" :aria-selected="messageType === tab.value" :class="{ 'is-active': messageType === tab.value }" @click="selectType(tab.value)">{{ tab.text }}</button>
       </div>
-      <button type="button" class="x-messenger-history__filter-button" :class="{ 'is-active': showFilters || filterCount }" :aria-expanded="showFilters" aria-label="历史筛选" @click="showFilters = !showFilters"><span>筛选{{ filterCount ? ' ' + filterCount : '' }}</span><XIcon name="filter-3" :icon-size="15" /></button>
+      <button type="button" class="x-messenger-history__filter-button" :class="{ 'is-active': showFilters || filterCount }" :aria-expanded="showFilters" :aria-label="t('extension.6e9772f9c9f3')" @click="showFilters = !showFilters"><span>{{ t("extension.dcce9a144a40") }}{{ filterCount ? ' ' + filterCount : '' }}</span><XIcon name="filter-3" :icon-size="15" /></button>
     </div>
     <div class="x-messenger-history__body" :class="{ 'has-filters': showFilters }">
       <div class="x-messenger-history__records" aria-live="polite">
-        <p v-if="result?.loading" class="x-messenger-history__empty">正在查询…</p>
+        <p v-if="result?.loading" class="x-messenger-history__empty">{{ t("extension.35076efc5dc7") }}</p>
         <template v-else>
-          <p v-if="result?.error" class="x-messenger-history__empty" role="alert">{{ result.error }} <XButton variant="ghost" @click="search(query.page)">重试</XButton></p>
+          <p v-if="result?.error" class="x-messenger-history__empty" role="alert">{{ result.error }} <XButton variant="ghost" @click="search(query.page)">{{ t("extension.e2d53a6d3a6a") }}</XButton></p>
           <section v-for="section in sections" :key="section.date" class="x-messenger-history__day">
             <header>{{ section.date }}</header>
-            <button v-for="message in section.messages" :key="message.id" type="button" class="x-messenger-history__record" :aria-label="'定位消息 ' + (message.fileName || message.content)" @click="emit('locate', message.id)">
+            <button v-for="message in section.messages" :key="message.id" type="button" class="x-messenger-history__record" :aria-label="t('extension.9d116265de22') + (message.fileName || message.content)" @click="emit('locate', message.id)">
               <XAvatar :name="message.senderName || '系统'" :src="message.avatar || contacts.find(user => user.id === message.senderId)?.avatar" :avatar-size="30" :background-color="messageAvatarColor(message.senderId, message.senderName)" text-color="#ffffff" />
               <span class="x-messenger-history__message">
-                <span class="x-messenger-history__meta"><span>{{ message.senderName || '系统' }}</span><time>{{ timeText(message) }}</time></span>
-                <img v-if="message.kind === 'image' && message.imageUrl" class="x-messenger-history__image" :src="message.imageUrl" :alt="message.content || '历史图片'" loading="lazy" />
-                <span v-else-if="message.kind === 'file'" class="x-messenger-history__card"><XIcon :name="isHistoryVideo(message) ? 'video' : 'file-2'" :icon-size="28" /><span><strong>{{ message.fileName || message.content }}</strong><small>{{ isHistoryVideo(message) ? '视频' : '文件' }}{{ message.fileSize !== undefined ? ' · ' + formatChatFileSize(message.fileSize) : '' }}</small></span></span>
+                <span class="x-messenger-history__meta"><span>{{ message.senderName || t('extension.1a1f6dff7826') }}</span><time>{{ timeText(message) }}</time></span>
+                <img v-if="message.kind === 'image' && message.imageUrl" class="x-messenger-history__image" :src="message.imageUrl" :alt="message.content || t('extension.d54fd9853219')" loading="lazy" />
+                <span v-else-if="message.kind === 'file'" class="x-messenger-history__card"><XIcon :name="isHistoryVideo(message) ? 'video' : 'file-2'" :icon-size="28" /><span><strong>{{ message.fileName || message.content }}</strong><small>{{ isHistoryVideo(message) ? t('extension.fa4e33b69853') : t('extension.49deaf7da20d') }}{{ message.fileSize !== undefined ? ' · ' + formatChatFileSize(message.fileSize) : '' }}</small></span></span>
                 <span v-else-if="message.business" class="x-messenger-history__card x-messenger-history__card--business"><XIcon name="briefcase-2" :icon-size="24" /><span><small>{{ message.business.businessType }} · {{ message.business.businessNumber }}</small><strong>{{ message.business.title }}</strong><small v-if="message.business.summary">{{ message.business.summary }}</small></span></span>
                 <span v-else class="x-messenger-history__text" :class="{ 'is-emoji': isHistoryEmoji(message), 'is-link': /https?:\/\//i.test(message.content) }">{{ message.content }}</span>
               </span>
             </button>
           </section>
-          <p v-if="!sections.length && !result?.error" class="x-messenger-history__empty">{{ result ? '没有匹配记录' : '正在查询…' }}</p>
+          <p v-if="!sections.length && !result?.error" class="x-messenger-history__empty">{{ result ? t('extension.82422bce4add') : t('extension.35076efc5dc7') }}</p>
         </template>
       </div>
-      <aside v-if="showFilters" class="x-messenger-history__filters" aria-label="筛选条件">
-        <header><strong>筛选条件</strong><button type="button" aria-label="关闭历史筛选" @click="showFilters = false"><XIcon name="close" :icon-size="16" /></button></header>
+      <aside v-if="showFilters" class="x-messenger-history__filters" :aria-label="t('extension.e9d5ab4d744f')">
+        <header><strong>{{ t("extension.e9d5ab4d744f") }}</strong><button type="button" :aria-label="t('extension.4b3d4aee127c')" @click="showFilters = false"><XIcon name="close" :icon-size="16" /></button></header>
         <form @submit.prevent="search()">
-          <label>发送日期<input v-model="startDate" type="date" aria-label="历史开始日期" @change="search()" /><input v-model="endDate" type="date" :min="startDate" aria-label="历史结束日期" @change="search()" /></label>
-          <p v-if="invalidDates" class="x-messenger-history__error">结束日期不能早于开始日期</p>
-          <label>发送人<select :value="senderIndex" aria-label="历史发送人" @change="selectSender"><option :value="-1">全部发送人</option><option v-for="(user, index) in senders" :key="user.id" :value="index">{{ user.name }}</option></select></label>
-          <button type="button" class="x-messenger-history__reset" @click="resetFilters">重置筛选</button>
+          <label>{{ t("extension.88648b172e08") }}<input v-model="startDate" type="date" :aria-label="t('extension.f2852306204a')" @change="search()" /><input v-model="endDate" type="date" :min="startDate" :aria-label="t('extension.52a24b874f00')" @change="search()" /></label>
+          <p v-if="invalidDates" class="x-messenger-history__error">{{ t("extension.4abaf147f640") }}</p>
+          <label>{{ t("extension.3bc6e68154f8") }}<select :value="senderIndex" :aria-label="t('extension.10fe81433023')" @change="selectSender"><option :value="-1">{{ t("extension.e19982ba1d8a") }}</option><option v-for="(user, index) in senders" :key="user.id" :value="index">{{ user.name }}</option></select></label>
+          <button type="button" class="x-messenger-history__reset" @click="resetFilters">{{ t("extension.b63e282981b5") }}</button>
         </form>
       </aside>
     </div>
-    <nav v-if="result && result.total > 0" class="x-messenger-history__pagination" aria-label="历史记录分页">
-      <button type="button" :disabled="query.page === 1 || result.loading" aria-label="上一页历史" @click="search(query.page - 1)"><XIcon name="arrow-left-s" :icon-size="18" /></button>
-      <span>{{ query.page }} / {{ Math.ceil(result.total / query.pageSize) }} · {{ result.total }} 条</span>
-      <button type="button" :disabled="query.page * query.pageSize >= result.total || result.loading" aria-label="下一页历史" @click="search(query.page + 1)"><XIcon name="arrow-right-s" :icon-size="18" /></button>
+    <nav v-if="result && result.total > 0" class="x-messenger-history__pagination" :aria-label="t('extension.8096e91289cc')">
+      <button type="button" :disabled="query.page === 1 || result.loading" :aria-label="t('extension.17bb1559e72b')" @click="search(query.page - 1)"><XIcon name="arrow-left-s" :icon-size="18" /></button>
+      <span>{{ query.page }} / {{ Math.ceil(result.total / query.pageSize) }} · {{ result.total }}{{ t("extension.bce2ef61514a") }}</span>
+      <button type="button" :disabled="query.page * query.pageSize >= result.total || result.loading" :aria-label="t('extension.dd7bec10ab5f')" @click="search(query.page + 1)"><XIcon name="arrow-right-s" :icon-size="18" /></button>
     </nav>
   </section>
 </template>

@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Component, CSSProperties } from 'vue'
@@ -554,7 +555,7 @@ defineExpose<TabsExpose>({
         type="button"
         class="x-tabs__scroll x-tabs__scroll--prev"
         :disabled="!canScrollPrev"
-        :aria-label="isVertical ? '向上滚动标签' : '向左滚动标签'"
+        :aria-label="isVertical ? t('extension.89a24ec49826') : t('extension.2cb78132c94d')"
         @click="scrollTabs('prev')"
       >
         <i :class="isVertical ? 'ri-arrow-up-s-line' : 'ri-arrow-left-s-line'" aria-hidden="true"></i>
@@ -623,12 +624,12 @@ defineExpose<TabsExpose>({
                     v-if="canClose(item)"
                     type="button"
                     class="x-tabs__close"
-                    aria-label="关闭标签"
+                    :aria-label="t('extension.118f00fbce26')"
                     @click.stop.prevent="handleCloseClick(item)"
                   >
                     <i class="ri-close-line" aria-hidden="true"></i>
                   </button>
-                  <span v-if="isTabLocked(item.name)" class="x-tabs__lock" aria-label="已锁定">
+                  <span v-if="isTabLocked(item.name)" class="x-tabs__lock" :aria-label="t('extension.3cc7a5af4c19')">
                     <i class="ri-lock-2-line" aria-hidden="true"></i>
                   </span>
                 </span>
@@ -643,7 +644,7 @@ defineExpose<TabsExpose>({
         type="button"
         class="x-tabs__scroll x-tabs__scroll--next"
         :disabled="!canScrollNext"
-        :aria-label="isVertical ? '向下滚动标签' : '向右滚动标签'"
+        :aria-label="isVertical ? t('extension.4e64a7c90ce4') : t('extension.840d91dd358e')"
         @click="scrollTabs('next')"
       >
         <i :class="isVertical ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'" aria-hidden="true"></i>
@@ -653,7 +654,7 @@ defineExpose<TabsExpose>({
         v-if="addable || editable"
         type="button"
         class="x-tabs__add"
-        aria-label="新增标签"
+        :aria-label="t('extension.71f86583e121')"
         @click="handleTabAdd"
       >
         <i class="ri-add-line" aria-hidden="true"></i>
@@ -681,28 +682,28 @@ defineExpose<TabsExpose>({
       >
         <li class="x-tabs__menu-item" :class="{ 'is-disabled': isContextTargetLocked }" @click="lockCurrentTab">
           <i class="x-tabs__menu-icon ri-lock-2-line" aria-hidden="true"></i>
-          <span>锁定标签</span>
+          <span>{{ t("extension.f84bce9afa8e") }}</span>
         </li>
         <li class="x-tabs__menu-item" :class="{ 'is-disabled': !isContextTargetInternalLocked }" @click="unlockCurrentTab">
           <i class="x-tabs__menu-icon ri-lock-unlock-line" aria-hidden="true"></i>
-          <span>解锁标签</span>
+          <span>{{ t("extension.4ae8c6e09abd") }}</span>
         </li>
         <li class="x-tabs__menu-divider" />
         <li class="x-tabs__menu-item" :class="{ 'is-disabled': isContextTargetLocked }" @click="refreshCurrentTab">
           <i class="x-tabs__menu-icon ri-refresh-line" aria-hidden="true"></i>
-          <span>刷新当前标签</span>
+          <span>{{ t("extension.5d836a02dcfe") }}</span>
         </li>
         <li class="x-tabs__menu-item" @click="refreshAllTabs">
           <i class="x-tabs__menu-icon ri-refresh-line" aria-hidden="true"></i>
-          <span>刷新所有标签</span>
+          <span>{{ t("extension.94337ae1e02c") }}</span>
         </li>
         <li class="x-tabs__menu-item" @click="closeOtherTabs">
           <i class="x-tabs__menu-icon ri-close-line" aria-hidden="true"></i>
-          <span>关闭其它标签</span>
+          <span>{{ t("extension.a01b075aa88b") }}</span>
         </li>
         <li class="x-tabs__menu-item" @click="closeAllTabs">
           <i class="x-tabs__menu-icon ri-close-circle-line" aria-hidden="true"></i>
-          <span>关闭所有标签</span>
+          <span>{{ t("extension.24cfdff7f87a") }}</span>
         </li>
       </ul>
     </teleport>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -186,7 +189,7 @@ const handleKeyup = (event: KeyboardEvent) => {
       class="x-base-input__clear"
       :class="{ 'is-visible': canClear }"
       type="button"
-      aria-label="清空"
+      :aria-label="t('common.clear')"
       :aria-hidden="canClear ? undefined : 'true'"
       :disabled="!canClear"
       :tabindex="canClear ? 0 : -1"

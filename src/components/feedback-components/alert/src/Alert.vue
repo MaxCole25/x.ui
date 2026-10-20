@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { ref } from 'vue'
 import type { AlertProps } from './types'
 
@@ -15,7 +18,7 @@ function close() { visible.value = false; emit('close') }
   <div v-if="visible" class="x-alert" :class="['x-alert--' + props.status, 'x-alert--' + props.variant, { 'is-center': props.center }]" role="alert">
     <span v-if="props.showIcon" class="x-alert__icon">{{ icons[props.status] }}</span>
     <div class="x-alert__content"><strong v-if="props.title" class="x-alert__title">{{ props.title }}</strong><p v-if="props.description || $slots.default" class="x-alert__description"><slot>{{ props.description }}</slot></p></div>
-    <button v-if="props.closable" class="x-alert__close" type="button" aria-label="关闭提示" @click="close">×</button>
+    <button v-if="props.closable" class="x-alert__close" type="button" :aria-label="t('common.closeAlert')" @click="close">×</button>
   </div>
 </template>
 

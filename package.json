@@ -20,6 +20,10 @@
     },
     "./style.css": "./dist/style.css",
     "./remixicon.css": "./src/remixicon.css",
+    "./locale": {
+      "types": "./dist/locale.d.ts",
+      "import": "./dist/locale.js"
+    },
     "./button": {
       "types": "./dist/button.d.ts",
       "import": "./dist/button.js"

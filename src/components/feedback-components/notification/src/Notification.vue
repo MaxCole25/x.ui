@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -19,7 +22,7 @@ onBeforeUnmount(() => window.clearTimeout(timer))
 <template>
   <section class="x-notification" :class="['x-notification--' + props.status, 'x-notification--' + props.placement]" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]" role="status">
     <div class="x-notification__main"><strong v-if="props.title" class="x-notification__title">{{ props.title }}</strong><p v-if="props.message || $slots.default" class="x-notification__message"><slot>{{ props.message }}</slot></p></div>
-    <button v-if="props.showClose" class="x-notification__close" type="button" aria-label="关闭通知" @click="close">×</button>
+    <button v-if="props.showClose" class="x-notification__close" type="button" :aria-label="t('common.closeNotification')" @click="close">×</button>
   </section>
 </template>
 

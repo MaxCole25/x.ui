@@ -6105,7 +6105,7 @@
       },
       {
         "name": "ChatBusinessReference",
-        "definition": "export interface ChatBusinessReference {\n  businessType: string\n  businessId: string | number\n  businessNumber: string\n  title: string\n  summary?: string\n}",
+        "definition": "export interface ChatBusinessReference {\n  businessType: string\n  businessId: string | number\n  businessNumber: string\n  title: string\n  summary?: string\n  /** 卡片操作文案，默认“查看单据”。 */\n  actionLabel?: string\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -7459,7 +7459,7 @@
       {
         "name": "locale",
         "type": "string",
-        "default": "'zh-CN'",
+        "default": "—",
         "defaultNote": "",
         "unit": "—",
         "controlType": "string",
@@ -32341,7 +32341,7 @@
       },
       {
         "name": "MessengerContact",
-        "definition": "export interface MessengerContact {\r\n  id: MessengerId\r\n  name: string\r\n  avatar?: string\r\n  department?: string\r\n  status?: 'online' | 'offline' | 'busy' | 'away'\r\n  groupId?: MessengerId\r\n  unreadCount?: number\r\n}",
+        "definition": "export interface MessengerContact {\n  id: MessengerId\n  name: string\n  avatar?: string\n  department?: string\n  status?: 'online' | 'offline' | 'busy' | 'away'\n  groupId?: MessengerId\n  unreadCount?: number\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -32353,19 +32353,19 @@
       },
       {
         "name": "MessengerGroupPermissions",
-        "definition": "export interface MessengerGroupPermissions {\r\n  canRename?: boolean\r\n  canManageMembers?: boolean\r\n  canManageAdmins?: boolean\r\n  canEditAnnouncement?: boolean\r\n  canLeave?: boolean\r\n  canDissolve?: boolean\r\n}",
+        "definition": "export interface MessengerGroupPermissions {\n  canRename?: boolean\n  canManageMembers?: boolean\n  canManageAdmins?: boolean\n  canEditAnnouncement?: boolean\n  canLeave?: boolean\n  canDissolve?: boolean\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "MessengerGroup",
-        "definition": "export interface MessengerGroup {\r\n  id: MessengerId\r\n  name: string\r\n  avatar?: string\r\n  memberIds: MessengerId[]\r\n  ownerId?: MessengerId\r\n  adminIds?: MessengerId[]\r\n  announcement?: string\r\n  unreadCount?: number\r\n  permissions?: MessengerGroupPermissions\r\n}",
+        "definition": "export interface MessengerGroup {\n  id: MessengerId\n  name: string\n  avatar?: string\n  memberIds: MessengerId[]\n  ownerId?: MessengerId\n  adminIds?: MessengerId[]\n  announcement?: string\n  unreadCount?: number\n  permissions?: MessengerGroupPermissions\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "MessengerConversation",
-        "definition": "export interface MessengerConversation {\r\n  id: MessengerId\r\n  kind: 'direct' | 'group'\r\n  targetId: MessengerId\r\n  title: string\r\n  avatar?: string\r\n  lastMessage?: string\r\n  /** ISO 8601 时间用于日期分档；预格式化文字直接显示。 */\r\n  lastMessageTime?: string\r\n  unreadCount?: number\r\n}",
+        "definition": "export interface MessengerConversation {\n  id: MessengerId\n  kind: 'direct' | 'group'\n  targetId: MessengerId\n  title: string\n  avatar?: string\n  lastMessage?: string\n  /** ISO 8601 时间用于日期分档；预格式化文字直接显示。 */\n  lastMessageTime?: string\n  unreadCount?: number\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -32389,7 +32389,7 @@
       },
       {
         "name": "MessengerHistoryResult",
-        "definition": "export interface MessengerHistoryResult extends MessengerHistoryQuery { messages: ChatMessage[]; total: number; loading?: boolean }",
+        "definition": "export interface MessengerHistoryResult extends MessengerHistoryQuery { messages: ChatMessage[]; total: number; loading?: boolean; error?: string }",
         "exported": true,
         "group": "组件数据"
       },
@@ -32407,13 +32407,13 @@
       },
       {
         "name": "MessengerContactGroupAction",
-        "definition": "export type MessengerContactGroupAction =\r\n  | { action: 'create'; name: string }\r\n  | { action: 'rename'; groupId: MessengerId; name: string }\r\n  | { action: 'delete'; groupId: MessengerId }\r\n  | { action: 'move'; contactId: MessengerId; groupId?: MessengerId }",
+        "definition": "export type MessengerContactGroupAction =\n  | { action: 'create'; name: string }\n  | { action: 'rename'; groupId: MessengerId; name: string }\n  | { action: 'delete'; groupId: MessengerId }\n  | { action: 'move'; contactId: MessengerId; groupId?: MessengerId }",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "MessengerGroupAction",
-        "definition": "export type MessengerGroupAction =\r\n  | { action: 'create'; name: string; memberIds: MessengerId[] }\r\n  | { action: 'rename'; groupId: MessengerId; name: string }\r\n  | { action: 'members'; groupId: MessengerId; memberIds: MessengerId[] }\r\n  | { action: 'admins'; groupId: MessengerId; adminIds: MessengerId[] }\r\n  | { action: 'announcement'; groupId: MessengerId; announcement: string }\r\n  | { action: 'leave' | 'dissolve'; groupId: MessengerId }",
+        "definition": "export type MessengerGroupAction =\n  | { action: 'create'; name: string; memberIds: MessengerId[] }\n  | { action: 'rename'; groupId: MessengerId; name: string }\n  | { action: 'members'; groupId: MessengerId; memberIds: MessengerId[] }\n  | { action: 'admins'; groupId: MessengerId; adminIds: MessengerId[] }\n  | { action: 'announcement'; groupId: MessengerId; announcement: string }\n  | { action: 'leave' | 'dissolve'; groupId: MessengerId }",
         "exported": true,
         "group": "组件数据"
       },
@@ -32425,19 +32425,19 @@
       },
       {
         "name": "MessengerProps",
-        "definition": "export interface MessengerProps extends ElementStyleProps, OverlayProps, Pick<ChatProps, 'bubbleBackgroundColor' | 'selfBubbleBackgroundColor' | 'selfBubbleTextColor' | 'timePlacement'> {\r\n  /** 独立聊天窗口标题栏背景色。 */\r\n  headerBackgroundColor?: string\r\n  /** 聊天消息区域背景色，与气泡和输入区分离。 */\r\n  chatBackgroundColor?: string\r\n  /** 独立聊天窗口是否显示，好友列表单独控制。 */\r\n  modelValue?: boolean\r\n  /** 当前活动会话只读，仍可切换和查询历史。 */\r\n  conversationReadonly?: boolean\r\n  /** 联系人列表初始固定状态。 */\r\n  defaultContactListPinned?: boolean\r\n  showContactList?: boolean\r\n  contactListPlacement?: MessengerContactListPlacement\r\n  /** 悬浮区域的 CSS 选择器；未指定时使用浏览器视口。 */\r\n  floatingBoundary?: string\r\n  /** 消息浮标位置的 localStorage 键；由应用按租户和用户提供，未指定时不持久化。 */\r\n  launcherPositionStorageKey?: string\r\n  contactListWidth?: number\r\n  /** 好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。 */\r\n  contactListHeight?: number\r\n  activeConversationId?: MessengerId\r\n  currentUserId?: MessengerId\r\n  /** 当前用户角色；仅 admin 显示好友列表设置。 */\r\n  currentUserRole?: 'admin' | 'user'\r\n  contacts?: MessengerContact[]\r\n  contactGroups?: MessengerContactGroup[]\r\n  groups?: MessengerGroup[]\r\n  conversations?: MessengerConversation[]\r\n  messagePages?: MessengerMessagePage[]\r\n  historyResult?: MessengerHistoryResult\r\n  title?: string\r\n  width?: number\r\n  height?: number\r\n  fontSize?: number\r\n  disabled?: boolean\r\n  /** 在群聊视图搜索框右侧显示创建群聊图标。 */\r\n  allowCreateGroup?: boolean\r\n  enableContactGroupManagement?: boolean\r\n  showBusinessPicker?: boolean\r\n}",
+        "definition": "export interface MessengerProps extends ElementStyleProps, OverlayProps, Pick<ChatProps, 'bubbleBackgroundColor' | 'selfBubbleBackgroundColor' | 'selfBubbleTextColor' | 'timePlacement'> {\n  /** 独立聊天窗口标题栏背景色。 */\n  headerBackgroundColor?: string\n  /** 聊天消息区域背景色，与气泡和输入区分离。 */\n  chatBackgroundColor?: string\n  /** 独立聊天窗口是否显示，好友列表单独控制。 */\n  modelValue?: boolean\n  /** 当前活动会话只读，仍可切换和查询历史。 */\n  conversationReadonly?: boolean\n  /** 联系人列表初始固定状态。 */\n  defaultContactListPinned?: boolean\n  showContactList?: boolean\n  contactListPlacement?: MessengerContactListPlacement\n  /** 悬浮区域的 CSS 选择器；未指定时使用浏览器视口。 */\n  floatingBoundary?: string\n  /** 消息浮标位置的 localStorage 键；由应用按租户和用户提供，未指定时不持久化。 */\n  launcherPositionStorageKey?: string\n  contactListWidth?: number\n  /** 好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。 */\n  contactListHeight?: number\n  activeConversationId?: MessengerId\n  currentUserId?: MessengerId\n  /** 当前用户角色；仅 admin 显示好友列表设置。 */\n  currentUserRole?: 'admin' | 'user'\n  contacts?: MessengerContact[]\n  contactGroups?: MessengerContactGroup[]\n  groups?: MessengerGroup[]\n  conversations?: MessengerConversation[]\n  messagePages?: MessengerMessagePage[]\n  historyResult?: MessengerHistoryResult\n  title?: string\n  width?: number\n  height?: number\n  fontSize?: number\n  disabled?: boolean\n  /** 在群聊视图搜索框右侧显示创建群聊图标。 */\n  allowCreateGroup?: boolean\n  enableContactGroupManagement?: boolean\n  showBusinessPicker?: boolean\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "MessengerEmits",
-        "definition": "export interface MessengerEmits {\r\n  'update:modelValue': [visible: boolean]\r\n  'update:contactListHeight': [height: number]\r\n  'update:activeConversationId': [id: MessengerId]\r\n  'open-conversation': [payload: MessengerOpenPayload]\r\n  'send': [payload: MessengerSendPayload]\r\n  'load-history': [payload: { conversationId: MessengerId; beforeMessageId?: MessengerId }]\r\n  'history-query': [payload: MessengerHistoryQuery]\r\n  'locate-message': [payload: { conversationId: MessengerId; messageId: MessengerId }]\r\n  'read-request': [payload: { conversationId: MessengerId; lastMessageId: MessengerId }]\r\n  'contact-group-action': [payload: MessengerContactGroupAction]\r\n  'group-action': [payload: MessengerGroupAction]\r\n  'business-select': [payload: { conversationId: MessengerId }]\r\n  'business-click': [payload: { conversationId: MessengerId; message: ChatMessage }]\r\n  'image-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\r\n  'file-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\r\n  'retry': [payload: { conversationId: MessengerId; message: ChatMessage }]\r\n  'attachment-add': [payload: { conversationId: MessengerId; detail: ChatAttachmentPayload }]\r\n  'attachment-remove': [payload: { conversationId: MessengerId; attachment: ChatAttachment }]\r\n  'close': []\r\n}",
+        "definition": "export interface MessengerEmits {\n  'update:modelValue': [visible: boolean]\n  'update:contactListHeight': [height: number]\n  'update:activeConversationId': [id: MessengerId]\n  'open-conversation': [payload: MessengerOpenPayload]\n  'send': [payload: MessengerSendPayload]\n  'load-history': [payload: { conversationId: MessengerId; beforeMessageId?: MessengerId }]\n  'history-query': [payload: MessengerHistoryQuery]\n  'locate-message': [payload: { conversationId: MessengerId; messageId: MessengerId }]\n  'read-request': [payload: { conversationId: MessengerId; lastMessageId: MessengerId }]\n  'contact-group-action': [payload: MessengerContactGroupAction]\n  'group-action': [payload: MessengerGroupAction]\n  'business-select': [payload: { conversationId: MessengerId }]\n  'business-click': [payload: { conversationId: MessengerId; message: ChatMessage }]\n  'image-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\n  'file-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\n  'retry': [payload: { conversationId: MessengerId; message: ChatMessage }]\n  'attachment-add': [payload: { conversationId: MessengerId; detail: ChatAttachmentPayload }]\n  'attachment-remove': [payload: { conversationId: MessengerId; attachment: ChatAttachment }]\n  'close': []\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "MessengerExpose",
-        "definition": "export interface MessengerExpose {\r\n  openConversation: (payload: MessengerOpenPayload) => void\r\n  selectConversation: (id: MessengerId) => void\r\n  addBusinessReference: (conversationId: MessengerId, reference: ChatBusinessReference) => void\r\n  locateMessage: (conversationId: MessengerId, messageId: MessengerId) => Promise<void>\r\n}",
+        "definition": "export interface MessengerExpose {\n  openConversation: (payload: MessengerOpenPayload) => void\n  selectConversation: (id: MessengerId) => void\n  addBusinessReference: (conversationId: MessengerId, reference: ChatBusinessReference) => void\n  locateMessage: (conversationId: MessengerId, messageId: MessengerId) => Promise<void>\n}",
         "exported": true,
         "group": "实例与回调"
       }

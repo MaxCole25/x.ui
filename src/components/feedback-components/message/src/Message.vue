@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -94,6 +97,6 @@ onBeforeUnmount(() => {
     <div class="x-message__content">
       <slot>{{ props.message }}</slot>
     </div>
-    <button v-if="props.showClose" class="x-message__close" type="button" aria-label="关闭消息" @click="close">×</button>
+    <button v-if="props.showClose" class="x-message__close" type="button" :aria-label="t('common.closeMessage')" @click="close">×</button>
   </div>
 </template>

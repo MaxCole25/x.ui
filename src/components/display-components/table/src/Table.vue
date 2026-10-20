@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { getFixedWeight, normalizeNumber, formatCssSize, setCssVariable, alignToJustify, createResolvedColumn, resolveColumnTracks, applyFixedOffsets, getColumnMinWidth, getResolvedColumnWidth, parseCssPixelSize } from './columnLayout'
 import type { ResolvedColumn } from './columnLayout'
 
@@ -39,9 +41,9 @@ import type {
 
 defineOptions({ name: 'XTable', inheritAttrs: false })
 
-const props = withDefaults(defineProps<TableProps>(), {
+const rawProps = withDefaults(defineProps<TableProps>(), {
   rowKey: 'id',
-  emptyText: '暂无数据',
+  emptyText: localePropDefault('table.emptyText'),
   showHeader: true,
   summaryRow: undefined,
   summaryScope: 'visible',
@@ -54,11 +56,11 @@ const props = withDefaults(defineProps<TableProps>(), {
   showDirtyActions: false,
   showAppendRowButton: false,
   showDeleteSelectedRowsButton: false,
-  saveDirtyButtonLabel: '保存修改',
-  clearDirtyButtonLabel: '标记已保存',
-  resetDirtyButtonLabel: '撤销修改',
-  appendRowButtonLabel: '新建行数据',
-  deleteSelectedRowsButtonLabel: '删除选择行',
+  saveDirtyButtonLabel: localePropDefault('table.saveDirtyButtonLabel'),
+  clearDirtyButtonLabel: localePropDefault('table.clearDirtyButtonLabel'),
+  resetDirtyButtonLabel: localePropDefault('table.resetDirtyButtonLabel'),
+  appendRowButtonLabel: localePropDefault('table.appendRowButtonLabel'),
+  deleteSelectedRowsButtonLabel: localePropDefault('table.deleteSelectedRowsButtonLabel'),
   rowDraggable: false,
   columnResizable: true,
   fontSize: undefined,
@@ -66,6 +68,14 @@ const props = withDefaults(defineProps<TableProps>(), {
   selectionMode: 'row',
   actionsWidth: 160,
   fullHeight: false
+})
+const props = useLocaleProps(rawProps, {
+  emptyText: 'table.emptyText',
+  saveDirtyButtonLabel: 'table.saveDirtyButtonLabel',
+  clearDirtyButtonLabel: 'table.clearDirtyButtonLabel',
+  resetDirtyButtonLabel: 'table.resetDirtyButtonLabel',
+  appendRowButtonLabel: 'table.appendRowButtonLabel',
+  deleteSelectedRowsButtonLabel: 'table.deleteSelectedRowsButtonLabel'
 })
 
 const emit = defineEmits<{
@@ -2867,8 +2877,8 @@ defineExpose({
         <button
           class="x-table__toolbar-icon-button"
           type="button"
-          :aria-label="saveDirtyButtonLabel"
-          :title="saveDirtyButtonLabel"
+          :aria-label="props.saveDirtyButtonLabel"
+          :title="props.saveDirtyButtonLabel"
           :disabled="dirtyChanges.length === 0"
           @click="handleSaveDirtyChangesButtonClick"
         >
@@ -2878,8 +2888,8 @@ defineExpose({
         <button
           class="x-table__toolbar-icon-button"
           type="button"
-          :aria-label="clearDirtyButtonLabel"
-          :title="clearDirtyButtonLabel"
+          :aria-label="props.clearDirtyButtonLabel"
+          :title="props.clearDirtyButtonLabel"
           :disabled="dirtyChanges.length === 0"
           @click="handleClearDirtyChangesButtonClick"
         >
@@ -2888,8 +2898,8 @@ defineExpose({
         <button
           class="x-table__toolbar-icon-button"
           type="button"
-          :aria-label="resetDirtyButtonLabel"
-          :title="resetDirtyButtonLabel"
+          :aria-label="props.resetDirtyButtonLabel"
+          :title="props.resetDirtyButtonLabel"
           :disabled="dirtyChanges.length === 0"
           @click="handleResetDirtyChangesButtonClick"
         >
@@ -2901,8 +2911,8 @@ defineExpose({
           v-if="showAppendRowButton"
           class="x-table__toolbar-icon-button"
           type="button"
-          :aria-label="appendRowButtonLabel"
-          :title="appendRowButtonLabel"
+          :aria-label="props.appendRowButtonLabel"
+          :title="props.appendRowButtonLabel"
           :disabled="isAppendRowButtonDisabled"
           @click="handleAppendRowButtonClick"
         >
@@ -2912,8 +2922,8 @@ defineExpose({
           v-if="showDeleteSelectedRowsButton"
           class="x-table__toolbar-icon-button x-table__toolbar-icon-button--danger"
           type="button"
-          :aria-label="deleteSelectedRowsButtonLabel"
-          :title="deleteSelectedRowsButtonLabel"
+          :aria-label="props.deleteSelectedRowsButtonLabel"
+          :title="props.deleteSelectedRowsButtonLabel"
           :disabled="isDeleteSelectedRowsButtonDisabled"
           @click="handleDeleteSelectedRowsButtonClick"
         >
@@ -3187,7 +3197,7 @@ defineExpose({
           </div>
 
           <div v-else class="x-table__empty">
-            {{ emptyText }}
+            {{ props.emptyText }}
           </div>
         </div>
 

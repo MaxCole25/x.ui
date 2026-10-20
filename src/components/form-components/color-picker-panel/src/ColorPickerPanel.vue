@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, ref, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -170,7 +173,7 @@ const commit = (value: string) => {
 
 const isActiveSwatch = (color: string) => normalizeColorText(color) === normalizeColorText(props.modelValue)
 const getSwatchStyle = (color: string) => (isTransparentColor(color) ? undefined : { backgroundColor: color })
-const getSwatchLabel = (color: string) => (isTransparentColor(color) ? '选择透明色' : `选择颜色 ${color}`)
+const getSwatchLabel = (color: string) => (isTransparentColor(color) ? t('common.transparent') : `选择颜色 ${color}`)
 
 const commitHsv = (value: HsvColor, options: { syncHueFromModelValue?: boolean } = {}) => {
   activeHue.value = ((value.h % 360) + 360) % 360
@@ -230,7 +233,7 @@ const startDrag = (event: PointerEvent, update: (event: PointerEvent) => void) =
       class="x-color-panel__field"
       role="slider"
       tabindex="0"
-      aria-label="选择颜色深浅和明暗"
+      :aria-label="t('common.colorShade')"
       :aria-valuetext="props.modelValue"
       @pointerdown="startDrag($event, updateFromColorField)"
     >
@@ -241,7 +244,7 @@ const startDrag = (event: PointerEvent, update: (event: PointerEvent) => void) =
       class="x-color-panel__hue"
       role="slider"
       tabindex="0"
-      aria-label="选择主色系"
+      :aria-label="t('common.colorHue')"
       :aria-valuenow="Math.round(parsedHsv.h)"
       aria-valuemin="0"
       aria-valuemax="360"

@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, useSlots } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -60,7 +61,7 @@ function getToolLabel(item: ToolsActionItem) {
 }
 
 function getDropdownAriaLabel(item: ToolsActionItem) {
-  return `打开${getToolLabel(item)}菜单`
+  return t("extension.eb5ff8775ce1", { p0: getToolLabel(item) })
 }
 
 function hasBadge(item: ToolsActionItem) {

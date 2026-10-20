@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, inject } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -9,15 +11,19 @@ defineOptions({
   name: 'XSwitch'
 })
 
-const props = withDefaults(defineProps<SwitchProps>(), {
+const rawProps = withDefaults(defineProps<SwitchProps>(), {
   modelValue: false,
   disabled: false,
   fontSize: undefined,
-  activeText: '开',
-  inactiveText: '关',
+  activeText: localePropDefault('switch.activeText'),
+  inactiveText: localePropDefault('switch.inactiveText'),
   labelPosition: 'outside',
   activeValue: true,
   inactiveValue: false
+})
+const props = useLocaleProps(rawProps, {
+  activeText: 'switch.activeText',
+  inactiveText: 'switch.inactiveText'
 })
 
 const emit = defineEmits<SwitchEmits>()

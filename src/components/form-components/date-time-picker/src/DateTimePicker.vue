@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -16,9 +21,9 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<DateTimePickerProps>(), {
+const rawProps = withDefaults(defineProps<DateTimePickerProps>(), {
   modelValue: '',
-  placeholder: '请选择日期时间',
+  placeholder: localePropDefault('date-time-picker.placeholder'),
   disabled: false,
   readonly: false,
   clearable: false,
@@ -30,6 +35,9 @@ const props = withDefaults(defineProps<DateTimePickerProps>(), {
   zIndex: overlayZIndex.dialog,
   showChinaFestivals: true,
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'date-time-picker.placeholder'
 })
 
 const attrs = useAttrs()
@@ -274,7 +282,7 @@ watch(
 
     <XDialog
       v-model="open"
-      title="选择日期时间"
+      :title="t('common.dateTime')"
       :width="520"
       :height="440"
       :min-width="500"
@@ -290,17 +298,17 @@ watch(
       <div class="x-date-time-picker__panel-shell">
         <div class="x-date-time-picker__calendar">
           <div class="x-date-time-picker__toolbar">
-            <button type="button" class="x-date-time-picker__tool" aria-label="上一年" @click="goYear(-1)">
+            <button type="button" class="x-date-time-picker__tool" :aria-label="t('common.previousYear')" @click="goYear(-1)">
               <i class="ri-arrow-left-double-line" aria-hidden="true"></i>
             </button>
-            <button type="button" class="x-date-time-picker__tool" aria-label="上个月" @click="goMonth(-1)">
+            <button type="button" class="x-date-time-picker__tool" :aria-label="t('common.previousMonth')" @click="goMonth(-1)">
               <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
             </button>
-            <div class="x-date-time-picker__current">{{ panelYear }} 年 {{ panelMonth }} 月</div>
-            <button type="button" class="x-date-time-picker__tool" aria-label="下个月" @click="goMonth(1)">
+            <div class="x-date-time-picker__current">{{ t('date.yearMonth', { year: panelYear, month: panelMonth }) }}</div>
+            <button type="button" class="x-date-time-picker__tool" :aria-label="t('common.nextMonth')" @click="goMonth(1)">
               <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
             </button>
-            <button type="button" class="x-date-time-picker__tool" aria-label="下一年" @click="goYear(1)">
+            <button type="button" class="x-date-time-picker__tool" :aria-label="t('common.nextYear')" @click="goYear(1)">
               <i class="ri-arrow-right-double-line" aria-hidden="true"></i>
             </button>
           </div>
@@ -316,9 +324,9 @@ watch(
           />
         </div>
 
-        <div class="x-date-time-picker__time" aria-label="时间选择">
+        <div class="x-date-time-picker__time" :aria-label="t('common.timeSelection')">
           <div class="x-date-time-picker__time-column">
-            <div class="x-date-time-picker__time-label">时</div>
+            <div class="x-date-time-picker__time-label">{{ t('common.hour') }}</div>
             <div ref="hourListRef" class="x-date-time-picker__time-list" @scroll="handleTimeScroll('hour')">
               <button
                 v-for="hour in hours"
@@ -334,7 +342,7 @@ watch(
           </div>
 
           <div class="x-date-time-picker__time-column">
-            <div class="x-date-time-picker__time-label">分</div>
+            <div class="x-date-time-picker__time-label">{{ t('common.minute') }}</div>
             <div ref="minuteListRef" class="x-date-time-picker__time-list" @scroll="handleTimeScroll('minute')">
               <button
                 v-for="minute in minutes"
@@ -353,8 +361,8 @@ watch(
 
       <template #footer>
         <div class="x-date-time-picker__footer">
-          <button type="button" class="x-date-time-picker__secondary" @click="selectNow">此刻</button>
-          <button type="button" class="x-date-time-picker__primary" @click="confirm">确定</button>
+          <button type="button" class="x-date-time-picker__secondary" @click="selectNow">{{ t('common.now') }}</button>
+          <button type="button" class="x-date-time-picker__primary" @click="confirm">{{ t('common.confirm') }}</button>
         </div>
       </template>
     </XDialog>

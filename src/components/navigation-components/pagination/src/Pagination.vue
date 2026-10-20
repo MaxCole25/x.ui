@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { computed } from 'vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import type { PaginationProps } from './types'
@@ -36,12 +39,12 @@ function setPageSize(event: Event) {
 </script>
 
 <template>
-  <nav class="x-pagination" :class="{ 'is-disabled': props.disabled }" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]" aria-label="分页">
-    <span v-if="props.showTotal" class="x-pagination__total">共 {{ props.total }} 条</span>
-    <select v-if="props.showPageSize" class="x-pagination__size" :value="props.pageSize" :disabled="props.disabled" @change="setPageSize"><option v-for="item in props.pageSizes" :key="item" :value="item">{{ item }} 条/页</option></select>
-    <button class="x-pagination__button" type="button" :disabled="props.disabled || current <= 1" @click="setPage(current - 1)">上一页</button>
+  <nav class="x-pagination" :class="{ 'is-disabled': props.disabled }" :style="[styleVars, createFontStyle(props.fontSize ?? 14)]" :aria-label="t('common.pagination')">
+    <span v-if="props.showTotal" class="x-pagination__total">{{ t('pagination.total', { total: props.total }) }}</span>
+    <select v-if="props.showPageSize" class="x-pagination__size" :value="props.pageSize" :disabled="props.disabled" @change="setPageSize"><option v-for="item in props.pageSizes" :key="item" :value="item">{{ t('pagination.pageSize', { size: item }) }}</option></select>
+    <button class="x-pagination__button" type="button" :disabled="props.disabled || current <= 1" @click="setPage(current - 1)">{{ t('common.previousPage') }}</button>
     <button v-for="page in pages" :key="page" class="x-pagination__pager" :class="{ 'is-active': page === current }" type="button" :disabled="props.disabled" @click="setPage(page)">{{ page }}</button>
-    <button class="x-pagination__button" type="button" :disabled="props.disabled || current >= pageCount" @click="setPage(current + 1)">下一页</button>
+    <button class="x-pagination__button" type="button" :disabled="props.disabled || current >= pageCount" @click="setPage(current + 1)">{{ t('common.nextPage') }}</button>
   </nav>
 </template>
 

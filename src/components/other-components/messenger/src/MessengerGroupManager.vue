@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, ref, watch } from 'vue'
 import { XAvatar } from '../../../display-components/avatar'
@@ -16,12 +17,12 @@ const armedAction = ref<'leave' | 'dissolve'>()
 const permissions = computed(() => props.group.permissions ?? {})
 const members = computed(() => props.group.memberIds.map(id => props.contacts.find(user => user.id === id) ?? { id, name: String(id), avatar: undefined }))
 const previewMembers = computed(() => members.value.slice(0, permissions.value.canManageMembers ? 13 : 15))
-const owner = computed(() => members.value.find(user => user.id === props.group.ownerId)?.name ?? '未设置')
+const owner = computed(() => members.value.find(user => user.id === props.group.ownerId)?.name ?? t("extension.55a04b58cd2c"))
 const candidates = computed(() => {
   const users = section.value === 'invite' ? props.contacts.filter(user => !props.group.memberIds.includes(user.id)) : members.value
   return users.filter(user => (user.name + ' ' + ('department' in user ? user.department ?? '' : '')).toLowerCase().includes(keyword.value.trim().toLowerCase()))
 })
-function role(id: MessengerId) { return id === props.group.ownerId ? '群主' : props.group.adminIds?.includes(id) ? '管理员' : '' }
+function role(id: MessengerId) { return id === props.group.ownerId ? t("extension.4fbe15e0f8b0") : props.group.adminIds?.includes(id) ? t("extension.ef84e765e027") : '' }
 function open(value: Section) {
   if (section.value === value) { section.value = undefined; return }
   section.value = value
@@ -66,51 +67,51 @@ watch(() => props.group, () => { groupName.value = props.group.name; announcemen
   <div class="x-messenger-group">
     <section class="x-messenger-group__identity">
       <XAvatar :name="group.name" :src="group.avatar" :avatar-size="40" avatar-background-color="linear-gradient(135deg, #ffbd6a, #ff974b)" />
-      <div><strong :title="group.name">{{ group.name }}</strong><small>群号 {{ group.id }}</small></div>
+      <div><strong :title="group.name">{{ group.name }}</strong><small>{{ t("extension.143dce79703b") }}{{ group.id }}</small></div>
     </section>
     <section class="x-messenger-group__card">
-      <header><strong>群聊成员</strong><button type="button" class="x-messenger-group__text-button" :aria-expanded="section === 'members'" @click="open('members')">查看全部 {{ members.length }} 人<XIcon name="arrow-right-s" :icon-size="16" /></button></header>
+      <header><strong>{{ t("extension.ed8e37912772") }}</strong><button type="button" class="x-messenger-group__text-button" :aria-expanded="section === 'members'" @click="open('members')">{{ t("extension.ed2172fd7894") }}{{ members.length }}{{ t("extension.4912771a4216") }}<XIcon name="arrow-right-s" :icon-size="16" /></button></header>
       <div class="x-messenger-group__members">
         <button v-for="member in previewMembers" :key="member.id" type="button" class="x-messenger-group__member" :title="member.name + (role(member.id) ? ' · ' + role(member.id) : '')" @click="open('members')"><XAvatar :name="member.name" :src="member.avatar" :avatar-size="32" :background-color="messageAvatarColor(member.id, member.name)" text-color="#ffffff" /><span>{{ member.name }}</span></button>
-        <button v-if="permissions.canManageMembers" type="button" class="x-messenger-group__member x-messenger-group__member--action" aria-label="邀请群成员" :disabled="disabled" :aria-expanded="section === 'invite'" @click="open('invite')"><span class="x-messenger-group__circle"><XIcon name="add" :icon-size="22" /></span><span>邀请</span></button>
-        <button v-if="permissions.canManageMembers" type="button" class="x-messenger-group__member x-messenger-group__member--action" aria-label="移出群成员" :disabled="disabled" :aria-expanded="section === 'remove'" @click="open('remove')"><span class="x-messenger-group__circle"><XIcon name="subtract" :icon-size="22" /></span><span>移出</span></button>
+        <button v-if="permissions.canManageMembers" type="button" class="x-messenger-group__member x-messenger-group__member--action" :aria-label="t('extension.b9453718a11d')" :disabled="disabled" :aria-expanded="section === 'invite'" @click="open('invite')"><span class="x-messenger-group__circle"><XIcon name="add" :icon-size="22" /></span><span>{{ t("extension.3d96750f4657") }}</span></button>
+        <button v-if="permissions.canManageMembers" type="button" class="x-messenger-group__member x-messenger-group__member--action" :aria-label="t('extension.51d2582a4d93')" :disabled="disabled" :aria-expanded="section === 'remove'" @click="open('remove')"><span class="x-messenger-group__circle"><XIcon name="subtract" :icon-size="22" /></span><span>{{ t("extension.0d01c5a3a219") }}</span></button>
       </div>
       <div v-if="section === 'members' || section === 'invite' || section === 'remove'" class="x-messenger-group__expanded">
-        <header><strong>{{ section === 'members' ? '全部成员' : section === 'invite' ? '邀请同事' : '移出成员' }}</strong><button type="button" aria-label="收起成员操作" @click="section = undefined"><XIcon name="arrow-up-s" :icon-size="16" /></button></header>
-        <input v-model="keyword" class="x-messenger-group__search" placeholder="搜索姓名、部门" aria-label="搜索群成员" />
+        <header><strong>{{ section === 'members' ? t('extension.961787cd7e25') : section === 'invite' ? t('extension.6f2946b7c4d2') : t('extension.7fbcf76576cc') }}</strong><button type="button" :aria-label="t('extension.7ce61027d147')" @click="section = undefined"><XIcon name="arrow-up-s" :icon-size="16" /></button></header>
+        <input v-model="keyword" class="x-messenger-group__search" :placeholder="t('extension.c94d6475e263')" :aria-label="t('extension.4aa82951227e')" />
         <div class="x-messenger-group__people">
           <label v-for="user in candidates" :key="user.id" class="x-messenger-group__person"><input v-if="section !== 'members'" type="checkbox" :checked="selection.includes(user.id)" :disabled="disabled || (section === 'remove' && user.id === group.ownerId)" @change="toggle(user.id, ($event.target as HTMLInputElement).checked)" /><XAvatar :name="user.name" :src="user.avatar" :avatar-size="28" :background-color="messageAvatarColor(user.id, user.name)" text-color="#ffffff" /><span>{{ user.name }}</span><small>{{ role(user.id) }}</small></label>
-          <p v-if="!candidates.length" class="x-messenger-group__empty">{{ section === 'invite' ? '没有可邀请的同事' : '暂无匹配成员' }}</p>
+          <p v-if="!candidates.length" class="x-messenger-group__empty">{{ section === 'invite' ? t('extension.9a4556650c32') : t('extension.93b83bfee4a1') }}</p>
         </div>
-        <button v-if="section !== 'members'" type="button" class="x-messenger-group__save" :disabled="disabled || !selection.length" @click="saveMembers">{{ section === 'invite' ? '邀请加入' : '确认移出' }}{{ selection.length ? '（' + selection.length + '）' : '' }}</button>
+        <button v-if="section !== 'members'" type="button" class="x-messenger-group__save" :disabled="disabled || !selection.length" @click="saveMembers">{{ section === 'invite' ? t('extension.73cf8eb3b944') : t('extension.f4b17e638e71') }}{{ selection.length ? '（' + selection.length + '）' : '' }}</button>
       </div>
     </section>
-    <h4>资料管理</h4>
+    <h4>{{ t("extension.416b54554c74") }}</h4>
     <section class="x-messenger-group__card x-messenger-group__card--rows">
-      <button type="button" class="x-messenger-group__row" :aria-expanded="section === 'settings' || section === 'admins'" @click="open('settings')"><span>群资料设置</span><XIcon name="arrow-right-s" :icon-size="18" /></button>
+      <button type="button" class="x-messenger-group__row" :aria-expanded="section === 'settings' || section === 'admins'" @click="open('settings')"><span>{{ t("extension.ff0306f01bac") }}</span><XIcon name="arrow-right-s" :icon-size="18" /></button>
       <div v-if="section === 'settings'" class="x-messenger-group__expanded">
-        <p class="x-messenger-group__detail"><span>群主</span><strong>{{ owner }}</strong></p>
-        <form v-if="permissions.canRename" @submit.prevent="saveName"><label>群名称<input v-model="groupName" aria-label="群名称" :disabled="disabled" /></label><button class="x-messenger-group__save" :disabled="disabled || !groupName.trim() || groupName.trim() === group.name">保存群名</button></form>
-        <p v-else class="x-messenger-group__detail"><span>群名称</span><strong>{{ group.name }}</strong></p>
-        <button v-if="permissions.canManageAdmins" type="button" class="x-messenger-group__row" :disabled="disabled" @click="open('admins')"><span>设置管理员</span><small>{{ group.adminIds?.length ?? 0 }} 人</small><XIcon name="arrow-right-s" :icon-size="16" /></button>
+        <p class="x-messenger-group__detail"><span>{{ t("extension.4fbe15e0f8b0") }}</span><strong>{{ owner }}</strong></p>
+        <form v-if="permissions.canRename" @submit.prevent="saveName"><label>{{ t("extension.9f34667d1238") }}<input v-model="groupName" :aria-label="t('extension.9f34667d1238')" :disabled="disabled" /></label><button class="x-messenger-group__save" :disabled="disabled || !groupName.trim() || groupName.trim() === group.name">{{ t("extension.6d0d378e4c3a") }}</button></form>
+        <p v-else class="x-messenger-group__detail"><span>{{ t("extension.9f34667d1238") }}</span><strong>{{ group.name }}</strong></p>
+        <button v-if="permissions.canManageAdmins" type="button" class="x-messenger-group__row" :disabled="disabled" @click="open('admins')"><span>{{ t("extension.f8c7ea21e502") }}</span><small>{{ group.adminIds?.length ?? 0 }}{{ t("extension.4912771a4216") }}</small><XIcon name="arrow-right-s" :icon-size="16" /></button>
       </div>
       <form v-if="section === 'admins'" class="x-messenger-group__expanded" @submit.prevent="saveAdmins">
-        <header><strong>设置管理员</strong><button type="button" aria-label="返回群资料" @click="open('settings')"><XIcon name="arrow-left-s" :icon-size="16" /></button></header>
+        <header><strong>{{ t("extension.f8c7ea21e502") }}</strong><button type="button" :aria-label="t('extension.b5250271b357')" @click="open('settings')"><XIcon name="arrow-left-s" :icon-size="16" /></button></header>
         <div class="x-messenger-group__people"><label v-for="member in members.filter(user => user.id !== group.ownerId)" :key="member.id" class="x-messenger-group__person"><input type="checkbox" :checked="selection.includes(member.id)" :disabled="disabled" @change="toggle(member.id, ($event.target as HTMLInputElement).checked)" /><XAvatar :name="member.name" :src="member.avatar" :avatar-size="28" :background-color="messageAvatarColor(member.id, member.name)" text-color="#ffffff" /><span>{{ member.name }}</span></label></div>
-        <button class="x-messenger-group__save" :disabled="disabled">保存管理员</button>
+        <button class="x-messenger-group__save" :disabled="disabled">{{ t("extension.36eb74241115") }}</button>
       </form>
     </section>
-    <h4>群公告</h4>
+    <h4>{{ t("extension.0de9f087e0c1") }}</h4>
     <section class="x-messenger-group__card x-messenger-group__card--rows">
-      <button type="button" class="x-messenger-group__row" :aria-expanded="section === 'announcement'" @click="open('announcement')"><span :title="group.announcement">{{ group.announcement || '暂无群公告' }}</span><XIcon name="arrow-right-s" :icon-size="18" /></button>
+      <button type="button" class="x-messenger-group__row" :aria-expanded="section === 'announcement'" @click="open('announcement')"><span :title="group.announcement">{{ group.announcement || t('extension.5c27ad20abd0') }}</span><XIcon name="arrow-right-s" :icon-size="18" /></button>
       <div v-if="section === 'announcement'" class="x-messenger-group__expanded">
-        <form v-if="permissions.canEditAnnouncement" @submit.prevent="saveAnnouncement"><textarea v-model="announcement" aria-label="群公告" placeholder="填写群公告" :disabled="disabled" rows="4" /><button class="x-messenger-group__save" :disabled="disabled || announcement === (group.announcement ?? '')">保存公告</button></form>
-        <p v-else class="x-messenger-group__announcement">{{ group.announcement || '暂无群公告' }}</p>
+        <form v-if="permissions.canEditAnnouncement" @submit.prevent="saveAnnouncement"><textarea v-model="announcement" :aria-label="t('extension.0de9f087e0c1')" :placeholder="t('extension.15cf667b42a9')" :disabled="disabled" rows="4" /><button class="x-messenger-group__save" :disabled="disabled || announcement === (group.announcement ?? '')">{{ t("extension.e1dd79bf6f75") }}</button></form>
+        <p v-else class="x-messenger-group__announcement">{{ group.announcement || t('extension.5c27ad20abd0') }}</p>
       </div>
     </section>
     <section v-if="permissions.canLeave || permissions.canDissolve" class="x-messenger-group__card x-messenger-group__card--rows x-messenger-group__danger">
-      <button v-if="permissions.canLeave" type="button" class="x-messenger-group__row" :disabled="disabled" @click="leave('leave')"><span>{{ armedAction === 'leave' ? '再次点击确认退出群聊' : '退出群聊' }}</span><XIcon name="logout-box-r" :icon-size="16" /></button>
-      <button v-if="permissions.canDissolve" type="button" class="x-messenger-group__row" :disabled="disabled" @click="leave('dissolve')"><span>{{ armedAction === 'dissolve' ? '再次点击确认解散群聊' : '解散群聊' }}</span><XIcon name="delete-bin" :icon-size="16" /></button>
+      <button v-if="permissions.canLeave" type="button" class="x-messenger-group__row" :disabled="disabled" @click="leave('leave')"><span>{{ armedAction === 'leave' ? t('extension.e9b88789cbab') : t('extension.b10fdd2d8f5b') }}</span><XIcon name="logout-box-r" :icon-size="16" /></button>
+      <button v-if="permissions.canDissolve" type="button" class="x-messenger-group__row" :disabled="disabled" @click="leave('dissolve')"><span>{{ armedAction === 'dissolve' ? t('extension.c7b1465ae388') : t('extension.baf73bd195d0') }}</span><XIcon name="delete-bin" :icon-size="16" /></button>
     </section>
   </div>
 </template>

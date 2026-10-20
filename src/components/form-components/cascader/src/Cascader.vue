@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -12,16 +17,16 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<CascaderProps>(), {
+const rawProps = withDefaults(defineProps<CascaderProps>(), {
   modelValue: () => [],
   options: () => [],
   fieldNames: () => ({}),
   displayField: 'label',
   remote: false,
   loading: false,
-  loadingText: '加载中',
-  emptyText: '暂无数据',
-  placeholder: '请选择',
+  loadingText: localePropDefault('cascader.loadingText'),
+  emptyText: localePropDefault('cascader.emptyText'),
+  placeholder: localePropDefault('cascader.placeholder'),
   disabled: false,
   readonly: false,
   clearable: false,
@@ -36,6 +41,11 @@ const props = withDefaults(defineProps<CascaderProps>(), {
   teleportTo: 'body',
   zIndex: overlayZIndex.popper,
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  loadingText: 'cascader.loadingText',
+  emptyText: 'cascader.emptyText',
+  placeholder: 'cascader.placeholder'
 })
 
 const emit = defineEmits<{
@@ -408,7 +418,7 @@ onBeforeUnmount(() => {
         class="x-cascader__clear"
         role="button"
         tabindex="-1"
-        aria-label="清空"
+        :aria-label="t('common.clear')"
         @mousedown.prevent
         @click.stop="clear"
       >

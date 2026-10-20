@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { XDialog } from '../../../feedback-components/dialog'
 import { XIcon } from '../../../basic-components/icon'
@@ -11,11 +14,14 @@ import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { MessengerEmits, MessengerExpose, MessengerProps, MessengerId, MessengerOpenPayload, MessengerHistoryQuery, MessengerHistoryMessageType } from './types'
 defineOptions({ name: 'XMessenger', inheritAttrs: false })
-const props = withDefaults(defineProps<MessengerProps>(), {
+const rawProps = withDefaults(defineProps<MessengerProps>(), {
   modelValue: false, conversationReadonly: false, defaultContactListPinned: true, contacts: () => [], contactGroups: () => [], groups: () => [], conversations: () => [], messagePages: () => [],
   chatBackgroundColor: 'var(--x-color-surface-soft, #f2f4f7)', bubbleBackgroundColor: 'var(--x-color-surface, white)', timePlacement: 'separator',
-  title: '内部消息', width: 800, height: 640, showContactList: true, contactListPlacement: 'right', contactListWidth: 280, contactListHeight: 520, fontSize: 14, disabled: false, allowCreateGroup: false,
+  title: localePropDefault('messenger.title'), width: 800, height: 640, showContactList: true, contactListPlacement: 'right', contactListWidth: 280, contactListHeight: 520, fontSize: 14, disabled: false, allowCreateGroup: false,
   currentUserRole: 'user', enableContactGroupManagement: true, showBusinessPicker: true, teleported: true, teleportTo: 'body', zIndex: overlayZIndex.dialog
+})
+const props = useLocaleProps(rawProps, {
+  title: 'messenger.title'
 })
 const slots = defineSlots<{ 'business-settings'?: () => any }>()
 const emit = defineEmits<MessengerEmits>()
@@ -67,8 +73,8 @@ const replyDrafts = reactive(new Map<MessengerId, ChatMessage>())
 const messageMenu = ref<{ conversationId: MessengerId; message: ChatMessage; left: number; top: number }>()
 const messageMenuElement = ref<HTMLElement>()
 function quoteFor(message: ChatMessage) {
-  const prefix = message.kind === 'image' ? '[图片] ' : message.kind === 'file' ? '[附件] ' : ''
-  return { messageId: message.id, senderName: message.senderName || '用户', content: prefix + (message.fileName || message.content) }
+  const prefix = message.kind === 'image' ? t("extension.c7c1f6670515") : message.kind === 'file' ? t("extension.e5c181807e4e") : ''
+  return { messageId: message.id, senderName: message.senderName || t("extension.9ba763ea3423"), content: prefix + (message.fileName || message.content) }
 }
 async function openMessageMenu(id: MessengerId, detail: ChatMessageClickPayload) {
   if (props.disabled || props.conversationReadonly || detail.message.kind === 'system'
@@ -247,14 +253,14 @@ defineExpose<MessengerExpose>({ openConversation, selectConversation, addBusines
       <slot name="business-settings" />
     </template>
   </MessengerContactList>
-  <XDialog :model-value="modelValue" :title="activeConversation?.title ?? title" :width="width" :height="height" :min-width="560" :min-height="440" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="chatLayer" :enable-modal="false" :radius="radius" :border-width="borderWidth" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" :close-on-mask-click="false" show-fullscreen class="x-messenger-dialog" :header-background-color="headerBackgroundColor ?? 'color-mix(in srgb, var(--x-color-primary, #4385ef) 12%, var(--x-color-surface, white))'" close-icon-color="var(--x-color-text-muted, #7a8493)" @pointerdown.capture="activateSurface('chat')" @focusin="activateSurface('chat')" @update:model-value="emit('update:modelValue', $event)" @close="emit('close')">
+  <XDialog :model-value="modelValue" :title="activeConversation?.title ?? props.title" :width="width" :height="height" :min-width="560" :min-height="440" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="chatLayer" :enable-modal="false" :radius="radius" :border-width="borderWidth" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" :close-on-mask-click="false" show-fullscreen class="x-messenger-dialog" :header-background-color="headerBackgroundColor ?? 'color-mix(in srgb, var(--x-color-primary, #4385ef) 12%, var(--x-color-surface, white))'" close-icon-color="var(--x-color-text-muted, #7a8493)" @pointerdown.capture="activateSurface('chat')" @focusin="activateSurface('chat')" @update:model-value="emit('update:modelValue', $event)" @close="emit('close')">
     <div ref="surface" class="x-messenger" :style="{ ...createElementStyleVars(props), fontSize: fontSize + 'px' }">
       <main class="x-messenger__main">
         <p v-if="activeGroup?.announcement" class="x-messenger__announcement">{{ activeGroup.announcement }}</p>
         <div v-for="conversation in cachedConversations" v-show="activeId === conversation.id" :key="conversation.id" class="x-messenger__session">
-          <span v-if="topConversations.has(conversation.id) && messagePage(conversation.id)?.hasMore" class="x-messenger__history-hint" role="status">{{ messagePage(conversation.id)?.loading || historyRequests.has(conversation.id) ? '正在加载更早消息…' : '继续向上滚动加载更早消息' }}</span>
-          <div v-if="businessDrafts.get(conversation.id)?.length" class="x-messenger__business-drafts"><div v-for="(reference, index) in businessDrafts.get(conversation.id)" :key="index"><span>{{ reference.businessNumber }} · {{ reference.title }}</span><button type="button" :disabled="disabled" aria-label="移除待发送单据" @click="removeBusinessReference(conversation.id, index)">×</button></div><button type="button" :disabled="disabled" @click="sendBusiness(conversation.id)">发送单据</button></div>
-          <XChat :background-color="chatBackgroundColor" :bubble-background-color="bubbleBackgroundColor" :self-bubble-background-color="selfBubbleBackgroundColor" :self-bubble-text-color="selfBubbleTextColor" :time-placement="timePlacement" :ref="instance => bindChat(conversation.id, instance)" :messages="messagePage(conversation.id)?.messages ?? []" :empty-text="conversationReadonly && activeId === conversation.id ? '暂无通知' : '暂无消息，开始聊天吧'" :current-user-id="currentUserId" :font-size="fontSize" height="100%" :disabled="disabled"
+          <span v-if="topConversations.has(conversation.id) && messagePage(conversation.id)?.hasMore" class="x-messenger__history-hint" role="status">{{ messagePage(conversation.id)?.loading || historyRequests.has(conversation.id) ? t('extension.235e0bfa467d') : t('extension.f717681370c9') }}</span>
+          <div v-if="businessDrafts.get(conversation.id)?.length" class="x-messenger__business-drafts"><div v-for="(reference, index) in businessDrafts.get(conversation.id)" :key="index"><span>{{ reference.businessNumber }} · {{ reference.title }}</span><button type="button" :disabled="disabled" :aria-label="t('extension.f5235953b7cf')" @click="removeBusinessReference(conversation.id, index)">×</button></div><button type="button" :disabled="disabled" @click="sendBusiness(conversation.id)">{{ t("extension.62b6479ee757") }}</button></div>
+          <XChat :background-color="chatBackgroundColor" :bubble-background-color="bubbleBackgroundColor" :self-bubble-background-color="selfBubbleBackgroundColor" :self-bubble-text-color="selfBubbleTextColor" :time-placement="timePlacement" :ref="instance => bindChat(conversation.id, instance)" :messages="messagePage(conversation.id)?.messages ?? []" :empty-text="conversationReadonly && activeId === conversation.id ? t('extension.652ef0104c80') : t('extension.0e32855f1851')" :current-user-id="currentUserId" :font-size="fontSize" height="100%" :disabled="disabled"
             @locate-message="locateMessage(conversation.id, $event)" @message-contextmenu="openMessageMenu(conversation.id, $event)" @send="send(conversation.id, $event)" @scroll="onChatScroll(conversation.id, $event)" @wheel.capture="loadHistory(conversation.id, $event)"
             @business-click="emit('business-click', { conversationId: conversation.id, message: $event.message })"
             @image-click="emit('image-click', { conversationId: conversation.id, detail: $event })"
@@ -263,27 +269,27 @@ defineExpose<MessengerExpose>({ openConversation, selectConversation, addBusines
             @attachment-add="emit('attachment-add', { conversationId: conversation.id, detail: $event })"
             @attachment-remove="emit('attachment-remove', { conversationId: conversation.id, attachment: $event })" >
             <template #footer>
-              <button v-if="conversationReadonly && activeId === conversation.id" type="button" @click="toggleHistory">历史记录</button>
+              <button v-if="conversationReadonly && activeId === conversation.id" type="button" @click="toggleHistory">{{ t("extension.19e0e3f3df89") }}</button>
               <MessengerComposer v-if="!conversationReadonly || activeId !== conversation.id" :ref="instance => bindComposer(conversation.id, instance)" v-model:send-shortcut="sendShortcut" :quote="replyDrafts.has(conversation.id) ? quoteFor(replyDrafts.get(conversation.id)!) : undefined" @cancel-reply="replyDrafts.delete(conversation.id)" :disabled="disabled" :show-business-picker="showBusinessPicker" :show-group-management="conversation.kind === 'group'" :history-visible="panel === 'history'" :z-index="Math.max(overlayZIndex.popper, chatLayer + 1)"
                 @send="send(conversation.id, $event)" @history-request="toggleHistory" @group-manage="panel === 'group' ? panel = undefined : editGroup()" @business-select="emit('business-select', { conversationId: conversation.id })"
                 @attachment-add="emit('attachment-add', { conversationId: conversation.id, detail: $event })" @attachment-remove="emit('attachment-remove', { conversationId: conversation.id, attachment: $event })" />
             </template>
           </XChat>
         </div>
-        <div v-if="!activeConversation" class="x-messenger__empty">双击联系人或群聊开始沟通</div>
+        <div v-if="!activeConversation" class="x-messenger__empty">{{ t("extension.b2e62a703479") }}</div>
       </main>
-      <div v-if="panel" class="x-messenger__divider" role="separator" aria-label="调整聊天区和侧栏宽度" aria-orientation="vertical" :aria-valuenow="panelWidth" tabindex="0" @pointerdown.prevent="startPanelResize" @keydown.left.prevent="setPanelWidth(panelWidth + 20)" @keydown.right.prevent="setPanelWidth(panelWidth - 20)" />
+      <div v-if="panel" class="x-messenger__divider" role="separator" :aria-label="t('extension.f651f276c5ff')" aria-orientation="vertical" :aria-valuenow="panelWidth" tabindex="0" @pointerdown.prevent="startPanelResize" @keydown.left.prevent="setPanelWidth(panelWidth + 20)" @keydown.right.prevent="setPanelWidth(panelWidth - 20)" />
       <aside v-if="panel" class="x-messenger__panel" :class="{ 'is-history': panel === 'history' }" :style="{ width: panelWidth + 'px', flexBasis: panelWidth + 'px' }">
-        <header><strong>{{ panel === 'history' ? '历史记录' : panel === 'create' ? '创建群聊' : '群管理' }}</strong><button type="button" aria-label="关闭面板" @click="panel = undefined"><XIcon name="close" :icon-size="18" /></button></header>
+        <header><strong>{{ panel === 'history' ? t('extension.19e0e3f3df89') : panel === 'create' ? t('extension.a18c255e478e') : t('extension.652b2fbb7b45') }}</strong><button type="button" :aria-label="t('extension.735da9560e0d')" @click="panel = undefined"><XIcon name="close" :icon-size="18" /></button></header>
         <MessengerHistory v-if="panel === 'history' && activeId !== undefined" :query="{ conversationId: activeId, keyword, startDate, endDate, page: historyPage, pageSize: historyPageSize, messageType: historyMessageType, senderId: historySenderId }" :result="matchingHistory" :contacts="contacts" @query="applyHistoryQuery" @locate="locateMessage(activeId, $event)" />
-        <form v-else-if="panel === 'create'" @submit.prevent="createGroup"><label>群名称<input v-model="groupName" aria-label="新群名称" :disabled="disabled" /></label><fieldset><legend>选择同事</legend><label v-for="contact in contacts" :key="contact.id" class="x-messenger__check"><input type="checkbox" :checked="memberIds.includes(contact.id)" :disabled="disabled || contact.id === currentUserId" @change="toggleMember(contact.id, ($event.target as HTMLInputElement).checked)" />{{ contact.name }}</label></fieldset><button :disabled="disabled || !groupName.trim() || memberIds.length < 2">创建群聊</button></form>
+        <form v-else-if="panel === 'create'" @submit.prevent="createGroup"><label>{{ t("extension.9f34667d1238") }}<input v-model="groupName" :aria-label="t('extension.3c3820eaaa32')" :disabled="disabled" /></label><fieldset><legend>{{ t("extension.3af33a741d34") }}</legend><label v-for="contact in contacts" :key="contact.id" class="x-messenger__check"><input type="checkbox" :checked="memberIds.includes(contact.id)" :disabled="disabled || contact.id === currentUserId" @change="toggleMember(contact.id, ($event.target as HTMLInputElement).checked)" />{{ contact.name }}</label></fieldset><button :disabled="disabled || !groupName.trim() || memberIds.length < 2">{{ t("extension.a18c255e478e") }}</button></form>
         <MessengerGroupManager v-else-if="activeGroup" :group="activeGroup" :contacts="contacts" :disabled="disabled" @action="emit('group-action', $event)" @close="panel = undefined" />
       </aside>
     </div>
   </XDialog>
   <Teleport :to="teleportTo" :disabled="!teleported">
-    <div v-if="modelValue && messageMenu" ref="messageMenuElement" class="x-messenger__message-menu" role="menu" aria-label="消息操作" :style="{ left: messageMenu.left + 'px', top: messageMenu.top + 'px', zIndex: Math.max(overlayZIndex.popper, chatLayer + 1), fontSize: fontSize + 'px' }">
-      <button type="button" role="menuitem" @click="replyToMessage">回复</button>
+    <div v-if="modelValue && messageMenu" ref="messageMenuElement" class="x-messenger__message-menu" role="menu" :aria-label="t('extension.9f225141c8f9')" :style="{ left: messageMenu.left + 'px', top: messageMenu.top + 'px', zIndex: Math.max(overlayZIndex.popper, chatLayer + 1), fontSize: fontSize + 'px' }">
+      <button type="button" role="menuitem" @click="replyToMessage">{{ t("extension.ffc7850925e7") }}</button>
     </div>
   </Teleport>
 </template>

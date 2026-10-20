@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, provide, ref, toRef } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -131,7 +134,7 @@ defineExpose({
     <slot />
     <div v-if="props.loading" class="x-form__loading" aria-live="polite">
       <span class="x-form__spinner" aria-hidden="true"></span>
-      <span>加载中</span>
+      <span>{{ t('common.loading') }}</span>
     </div>
   </form>
 </template>

@@ -18,6 +18,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
+          { text: '国际化', link: '/guide/i18n' },
           { text: '主题基础色', link: '/guide/theme' },
           { text: '字体与控件高度', link: '/guide/typography' },
           { text: '接口命名规范', link: '/guide/api-naming' },

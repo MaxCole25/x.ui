@@ -1,14 +1,19 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import type { JsonEditorProps } from './types'
 
 defineOptions({ name: 'XJsonEditor' })
 
-const props = withDefaults(defineProps<JsonEditorProps>(), {
-  title: 'JSON 数据对象',
+const rawProps = withDefaults(defineProps<JsonEditorProps>(), {
+  title: localePropDefault('json-editor.title'),
   externalError: '',
   resizable: true
+})
+const props = useLocaleProps(rawProps, {
+  title: 'json-editor.title'
 })
 
 const emit = defineEmits<{

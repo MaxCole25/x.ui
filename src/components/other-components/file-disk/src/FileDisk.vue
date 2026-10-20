@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t, getLocale } from '../../../../locale'
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { useFileSelection } from './useFileSelection'
 import { useFileContextMenu } from './useFileContextMenu'
 import { useFileUploadTasks } from './useFileUploadTasks'
@@ -32,7 +35,7 @@ defineOptions({
   name: 'XFileDisk'
 })
 
-const props = withDefaults(defineProps<FileDiskProps>(), {
+const rawProps = withDefaults(defineProps<FileDiskProps>(), {
   modelValue: '/',
   entries: () => [],
   permissions: () => ({ read: true, write: true, delete: true, view: true }),
@@ -41,9 +44,9 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
   gridFileNameLines: 2,
   showGridFileType: false,
   showGridFileSize: false,
-  title: '附件管理',
+  title: localePropDefault('file-disk.title'),
   loading: false,
-  emptyText: '暂无文件',
+  emptyText: localePropDefault('file-disk.emptyText'),
   multiple: true,
   accept: '',
   disabled: false,
@@ -54,6 +57,10 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
   showPath: true,
   enableMinimize: false,
   fontSize: undefined
+})
+const props = useLocaleProps(rawProps, {
+  title: 'file-disk.title',
+  emptyText: 'file-disk.emptyText'
 })
 
 const emit = defineEmits<{
@@ -133,7 +140,7 @@ const sortedEntries = computed(() => {
     if (left.type !== right.type) {
       return left.type === 'folder' ? -1 : 1
     }
-    return left.name.localeCompare(right.name, 'zh-CN')
+    return left.name.localeCompare(right.name, getLocale().name)
   })
 })
 const { selectedIds, selectedItems, allSelected, isSelected, emitSelection, clearSelection, toggleAll, selectItem, toggleItem } = useFileSelection(props, sortedEntries, cancelEditing, emit)
@@ -145,7 +152,7 @@ const previewItem = computed(() => imageEntries.value[previewIndex.value])
 const previewSource = computed(() => (previewItem.value ? imageSource(previewItem.value, 'preview') : ''))
 const breadcrumbItems = computed(() => {
   const segments = innerPath.value.split('/').filter(Boolean)
-  const items = [{ label: '根目录', path: '/' }]
+  const items = [{ get label() { return t("extension.18755acbbbc0") }, path: '/' }]
   segments.reduce((base, segment) => {
     const next = `${base === '/' ? '' : base}/${segment}`
     items.push({ label: segment, path: next })
@@ -706,9 +713,9 @@ function formatSize(size?: number) {
 
 function displayType(item: FileDiskItem) {
   if (item.type === 'folder') {
-    return '文件夹'
+    return t("extension.46ecac29102a")
   }
-  return item.extension ? item.extension.toUpperCase() : '文件'
+  return item.extension ? item.extension.toUpperCase() : t("extension.49deaf7da20d")
 }
 
 function itemExtension(item: FileDiskItem) {
@@ -933,7 +940,7 @@ function displayDate(value?: string) {
   if (Number.isNaN(date.getTime())) {
     return value
   }
-  return date.toLocaleString('zh-CN', { hour12: false })
+  return date.toLocaleString(getLocale().name, { hour12: false })
 }
 
 defineExpose({
@@ -958,34 +965,34 @@ defineExpose({
   >
     <header v-if="showHeader && !enableMinimize" class="x-file-disk__toolbar">
       <div v-if="showTitle" class="x-file-disk__title-wrap">
-        <strong class="x-file-disk__title">{{ title }}</strong>
-        <span class="x-file-disk__count">{{ sortedEntries.length }} 项</span>
+        <strong class="x-file-disk__title">{{ props.title }}</strong>
+        <span class="x-file-disk__count">{{ sortedEntries.length }}{{ t("extension.64728a772742") }}</span>
       </div>
 
       <div v-if="showToolbar" class="x-file-disk__actions">
-        <button v-if="isToolbarActionVisible('refresh')" type="button" class="x-file-disk__tool" :disabled="isBusy" title="刷新" @click="refresh">
+        <button v-if="isToolbarActionVisible('refresh')" type="button" class="x-file-disk__tool" :disabled="isBusy" :title="t('extension.38108eaa1d32')" @click="refresh">
           <i class="ri-refresh-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions && isToolbarActionVisible('createFolder')" type="button" class="x-file-disk__tool" :disabled="isBusy" title="新建目录" @click="createFolder">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('createFolder')" type="button" class="x-file-disk__tool" :disabled="isBusy" :title="t('extension.80e05af6a05f')" @click="createFolder">
           <i class="ri-folder-add-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions && isToolbarActionVisible('upload')" type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="isBusy" title="上传文件" @click="chooseFiles">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('upload')" type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="isBusy" :title="t('extension.484a03ac6d00')" @click="chooseFiles">
           <i class="ri-upload-2-line" aria-hidden="true" />
-          <span>上传</span>
+          <span>{{ t("extension.a977650db1ae") }}</span>
         </button>
-        <button v-if="isToolbarActionVisible('download')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="下载" @click="downloadSelected">
+        <button v-if="isToolbarActionVisible('download')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" :title="t('extension.2b9d013177da')" @click="downloadSelected">
           <i class="ri-download-2-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowCopyAction && isToolbarActionVisible('copy')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="复制" @click="copySelected('copy')">
+        <button v-if="canShowCopyAction && isToolbarActionVisible('copy')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" :title="t('extension.4edd1d00875d')" @click="copySelected('copy')">
           <i class="ri-file-copy-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions && isToolbarActionVisible('cut')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="剪切" @click="copySelected('cut')">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('cut')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" :title="t('extension.29b653b40e8c')" @click="copySelected('cut')">
           <i class="ri-scissors-cut-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions && isToolbarActionVisible('paste')" type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('paste')" type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" :title="t('extension.de7fb7d3cf47')" @click="pasteItems">
           <i class="ri-clipboard-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowDeleteAction && isToolbarActionVisible('delete')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="删除" @click="deleteSelected">
+        <button v-if="canShowDeleteAction && isToolbarActionVisible('delete')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" :title="t('extension.3755f56f2f83')" @click="deleteSelected">
           <i class="ri-delete-bin-line" aria-hidden="true" />
         </button>
         <span v-if="hasToolbarMutationActions && (isToolbarActionVisible('list') || isToolbarActionVisible('grid'))" class="x-file-disk__divider" />
@@ -994,7 +1001,7 @@ defineExpose({
           class="x-file-disk__tool"
           :class="{ 'is-active': currentView === 'list' }"
           v-if="isToolbarActionVisible('list')"
-          title="列表视图"
+          :title="t('extension.1fd2104d08a1')"
           @click="switchViewMode('list')"
         >
           <i class="ri-list-unordered" aria-hidden="true" />
@@ -1004,7 +1011,7 @@ defineExpose({
           class="x-file-disk__tool"
           :class="{ 'is-active': currentView === 'grid' }"
           v-if="isToolbarActionVisible('grid')"
-          title="图标视图"
+          :title="t('extension.9c5319c65423')"
           @click="switchViewMode('grid')"
         >
           <i class="ri-grid-line" aria-hidden="true" />
@@ -1014,7 +1021,7 @@ defineExpose({
 
     <input ref="fileInput" class="x-file-disk__file-input" type="file" :multiple="multiple" :accept="accept" @change="handleFileChange" />
 
-    <nav v-if="showPath && !enableMinimize" class="x-file-disk__path" aria-label="当前路径">
+    <nav v-if="showPath && !enableMinimize" class="x-file-disk__path" :aria-label="t('extension.f6a117584a55')">
       <button
         v-for="(item, index) in breadcrumbItems"
         :key="item.path"
@@ -1028,7 +1035,7 @@ defineExpose({
       </button>
     </nav>
 
-    <div v-if="!canRead" class="x-file-disk__empty">当前无读取权限</div>
+    <div v-if="!canRead" class="x-file-disk__empty">{{ t("extension.bbda240aec7b") }}</div>
 
     <div
       v-else
@@ -1037,13 +1044,13 @@ defineExpose({
       @mousedown="startBoxSelection"
       @contextmenu="openContextMenu"
     >
-      <div v-if="!hasContent" class="x-file-disk__empty">{{ emptyText }}</div>
+      <div v-if="!hasContent" class="x-file-disk__empty">{{ props.emptyText }}</div>
 
-      <div v-else-if="currentView === 'grid'" class="x-file-disk__grid x-scrollbar--native" role="listbox" aria-label="文件列表">
-        <button v-if="showParentEntry" type="button" class="x-file-disk__tile x-file-disk__parent" :disabled="isBusy" title="返回上级" @click="openParent" @contextmenu.stop.prevent="closeContextMenu">
+      <div v-else-if="currentView === 'grid'" class="x-file-disk__grid x-scrollbar--native" role="listbox" :aria-label="t('extension.cf750851bfb3')">
+        <button v-if="showParentEntry" type="button" class="x-file-disk__tile x-file-disk__parent" :disabled="isBusy" :title="t('extension.f31bbc690789')" @click="openParent" @contextmenu.stop.prevent="closeContextMenu">
           <span class="x-file-disk__tile-icon"><span class="x-file-disk__parent-badge"><svg class="x-file-disk__parent-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></span>
-          <span class="x-file-disk__tile-name">上级目录</span>
-          <span class="x-file-disk__tile-meta">返回上一层</span>
+          <span class="x-file-disk__tile-name">{{ t("extension.3b1c79ff9883") }}</span>
+          <span class="x-file-disk__tile-meta">{{ t("extension.94c327416801") }}</span>
         </button>
         <div v-if="creatingFolder" class="x-file-disk__tile is-editing" data-file-disk-item>
           <span class="x-file-disk__tile-icon is-folder">
@@ -1055,11 +1062,11 @@ defineExpose({
             ref="folderNameInput"
             v-model="draftFolderName"
             class="x-file-disk__name-input"
-            aria-label="新建目录名称"
+            :aria-label="t('extension.8e31344018ef')"
             @blur="submitCreateFolder"
             @keydown="handleCreateFolderKeydown"
           />
-          <span v-if="showGridFileType" class="x-file-disk__tile-meta">文件夹</span>
+          <span v-if="showGridFileType" class="x-file-disk__tile-meta">{{ t("extension.46ecac29102a") }}</span>
         </div>
 
         <button
@@ -1082,9 +1089,7 @@ defineExpose({
               :alt="item.name"
               loading="lazy"
             />
-            <span v-else-if="isImageItem(item)" class="x-file-disk__thumb-placeholder" :class="{ 'is-loading': isImageUrlLoading(item) }">
-              图片
-            </span>
+            <span v-else-if="isImageItem(item)" class="x-file-disk__thumb-placeholder" :class="{ 'is-loading': isImageUrlLoading(item) }">{{ t("extension.be8da62ea113") }}</span>
             <svg v-else class="x-file-disk__file-svg" aria-hidden="true">
               <use :href="`#${fileIconClass(item)}`" />
             </svg>
@@ -1094,7 +1099,7 @@ defineExpose({
             ref="renameInput"
             v-model="renamingName"
             class="x-file-disk__name-input"
-            :aria-label="`重命名 ${item.name}`"
+            :aria-label="t('extension.62a8838e4ddf', { p0: item.name })"
             @click.stop
             @dblclick.stop
             @blur="submitRename(item)"
@@ -1121,20 +1126,20 @@ defineExpose({
           <thead>
             <tr>
               <th class="x-file-disk__check-cell">
-                <input type="checkbox" :checked="allSelected" aria-label="全选" @change="toggleAll" />
+                <input type="checkbox" :checked="allSelected" :aria-label="t('extension.3e44b2a93338')" @change="toggleAll" />
               </th>
-              <th>名称</th>
-              <th>类型</th>
-              <th>大小</th>
-              <th>更新时间</th>
+              <th>{{ t("extension.1be7ae4fc257") }}</th>
+              <th>{{ t("extension.e4e46c7235d1") }}</th>
+              <th>{{ t("extension.fd20702c73d1") }}</th>
+              <th>{{ t("extension.093dea88c930") }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="showParentEntry" class="x-file-disk__parent" data-file-disk-item @click="openParent" @contextmenu.stop.prevent="closeContextMenu">
               <td class="x-file-disk__check-cell" />
               <td>
-                <button type="button" class="x-file-disk__parent-link x-file-disk__name" :disabled="isBusy" title="返回上级" @click.stop="openParent">
-                  <span class="x-file-disk__parent-badge"><svg class="x-file-disk__parent-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span><span>上级目录</span>
+                <button type="button" class="x-file-disk__parent-link x-file-disk__name" :disabled="isBusy" :title="t('extension.f31bbc690789')" @click.stop="openParent">
+                  <span class="x-file-disk__parent-badge"><svg class="x-file-disk__parent-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span><span>{{ t("extension.3b1c79ff9883") }}</span>
                 </button>
               </td>
               <td>-</td><td>-</td><td>-</td>
@@ -1150,13 +1155,13 @@ defineExpose({
                     ref="folderNameInput"
                     v-model="draftFolderName"
                     class="x-file-disk__name-input"
-                    aria-label="新建目录名称"
+                    :aria-label="t('extension.8e31344018ef')"
                     @blur="submitCreateFolder"
                     @keydown="handleCreateFolderKeydown"
                   />
                 </span>
               </td>
-              <td>文件夹</td>
+              <td>{{ t("extension.46ecac29102a") }}</td>
               <td>-</td>
               <td>-</td>
             </tr>
@@ -1171,7 +1176,7 @@ defineExpose({
               @contextmenu="openContextMenu($event, item)"
             >
               <td class="x-file-disk__check-cell" @click.stop>
-                <input type="checkbox" :checked="isSelected(item)" :disabled="item.disabled" :aria-label="`选择 ${item.name}`" @change="toggleItem(item)" />
+                <input type="checkbox" :checked="isSelected(item)" :disabled="item.disabled" :aria-label="t('extension.43b9aefb7e84', { p0: item.name })" @change="toggleItem(item)" />
               </td>
               <td>
                 <span class="x-file-disk__name">
@@ -1182,9 +1187,7 @@ defineExpose({
                     :alt="item.name"
                     loading="lazy"
                   />
-                  <span v-else-if="isImageItem(item)" class="x-file-disk__row-thumb-placeholder" :class="{ 'is-loading': isImageUrlLoading(item) }">
-                    图
-                  </span>
+                  <span v-else-if="isImageItem(item)" class="x-file-disk__row-thumb-placeholder" :class="{ 'is-loading': isImageUrlLoading(item) }">{{ t("extension.611a65004d83") }}</span>
                   <svg v-else class="x-file-disk__row-file-svg" aria-hidden="true">
                     <use :href="`#${fileIconClass(item)}`" />
                   </svg>
@@ -1193,7 +1196,7 @@ defineExpose({
                     ref="renameInput"
                     v-model="renamingName"
                     class="x-file-disk__name-input"
-                    :aria-label="`重命名 ${item.name}`"
+                    :aria-label="t('extension.62a8838e4ddf', { p0: item.name })"
                     @click.stop
                     @dblclick.stop
                     @blur="submitRename(item)"
@@ -1215,7 +1218,7 @@ defineExpose({
 
     <div v-if="dragging" class="x-file-disk__drop-mask">
       <i class="ri-upload-2-line" aria-hidden="true" />
-      <span>松开以上传到当前目录</span>
+      <span>{{ t("extension.8e81d2912e6c") }}</span>
     </div>
 
     <div
@@ -1227,54 +1230,54 @@ defineExpose({
     >
       <button type="button" :disabled="isBusy" @click="refresh">
         <i class="ri-refresh-line" aria-hidden="true" />
-        <span>刷新</span>
+        <span>{{ t("extension.38108eaa1d32") }}</span>
       </button>
       <button v-if="canShowWriteActions" type="button" :disabled="isBusy" @click="createFolder">
         <i class="ri-folder-add-line" aria-hidden="true" />
-        <span>新建目录</span>
+        <span>{{ t("extension.80e05af6a05f") }}</span>
       </button>
       <button v-if="canShowWriteActions" type="button" :disabled="isBusy" @click="chooseFilesFromContextMenu">
         <i class="ri-upload-2-line" aria-hidden="true" />
-        <span>上传</span>
+        <span>{{ t("extension.a977650db1ae") }}</span>
       </button>
       <span v-if="canShowWriteActions" class="x-file-disk__context-divider" />
       <button v-if="canShowWriteActions" type="button" :disabled="!canRename || isBusy" @click="beginRename">
         <i class="ri-edit-line" aria-hidden="true" />
-        <span>重命名</span>
+        <span>{{ t("extension.1cd80fd7a8b3") }}</span>
       </button>
       <button type="button" :disabled="!hasSelection || isBusy" @click="downloadSelected">
         <i class="ri-download-2-line" aria-hidden="true" />
-        <span>下载</span>
+        <span>{{ t("extension.2b9d013177da") }}</span>
       </button>
       <span v-if="canShowCopyAction || canShowWriteActions || canShowDeleteAction" class="x-file-disk__context-divider" />
       <button v-if="canShowCopyAction" type="button" :disabled="!hasSelection || isBusy" @click="copySelected('copy')">
         <i class="ri-file-copy-line" aria-hidden="true" />
-        <span>复制</span>
+        <span>{{ t("extension.4edd1d00875d") }}</span>
       </button>
       <button v-if="canShowWriteActions" type="button" :disabled="!hasSelection || isBusy" @click="copySelected('cut')">
         <i class="ri-scissors-cut-line" aria-hidden="true" />
-        <span>剪切</span>
+        <span>{{ t("extension.29b653b40e8c") }}</span>
       </button>
       <button v-if="canShowWriteActions" type="button" :disabled="!canPaste || isBusy" @click="pasteItems">
         <i class="ri-clipboard-line" aria-hidden="true" />
-        <span>粘贴</span>
+        <span>{{ t("extension.de7fb7d3cf47") }}</span>
       </button>
       <button v-if="canShowDeleteAction" type="button" :disabled="!hasSelection || isBusy" @click="deleteSelected">
         <i class="ri-delete-bin-line" aria-hidden="true" />
-        <span>删除</span>
+        <span>{{ t("extension.3755f56f2f83") }}</span>
       </button>
       <span class="x-file-disk__context-divider" />
       <button type="button" :disabled="currentView === 'list'" @click="switchViewMode('list')">
         <i class="ri-list-unordered" aria-hidden="true" />
-        <span>列表视图</span>
+        <span>{{ t("extension.1fd2104d08a1") }}</span>
       </button>
       <button type="button" :disabled="currentView === 'grid' && currentGridIconSize === 'large'" @click="switchGridIconSize('large')">
         <i class="ri-grid-fill" aria-hidden="true" />
-        <span>大图标</span>
+        <span>{{ t("extension.09bc0c862c96") }}</span>
       </button>
       <button type="button" :disabled="currentView === 'grid' && currentGridIconSize === 'small'" @click="switchGridIconSize('small')">
         <i class="ri-grid-line" aria-hidden="true" />
-        <span>小图标</span>
+        <span>{{ t("extension.0c571a4e4818") }}</span>
       </button>
     </div>
 
@@ -1282,7 +1285,7 @@ defineExpose({
       <div v-for="task in uploadTasks" :key="task.id" class="x-file-disk__upload-item" :class="`is-${task.status}`">
         <div class="x-file-disk__upload-head">
           <span>{{ task.name }}</span>
-          <span>{{ task.status === 'error' ? '失败' : `${task.percent}%` }}</span>
+          <span>{{ task.status === 'error' ? t('extension.3e3c8068bb0e') : `${task.percent}%` }}</span>
         </div>
         <div class="x-file-disk__upload-track">
           <span class="x-file-disk__upload-bar" :style="{ width: `${task.percent}%` }" />
@@ -1302,10 +1305,10 @@ defineExpose({
       <div class="x-file-disk__preview-top">
         <span class="x-file-disk__preview-count">{{ previewIndex + 1 }} / {{ imageEntries.length }}</span>
       </div>
-      <button type="button" class="x-file-disk__preview-close" title="关闭预览" @click="closeImagePreview">
+      <button type="button" class="x-file-disk__preview-close" :title="t('extension.bf7630879471')" @click="closeImagePreview">
         <i class="ri-close-line" aria-hidden="true" />
       </button>
-      <button type="button" class="x-file-disk__preview-nav is-prev" title="上一张" @click="showPreviousImage">
+      <button type="button" class="x-file-disk__preview-nav is-prev" :title="t('extension.b9f734ae8010')" @click="showPreviousImage">
         <i class="ri-arrow-left-s-line" aria-hidden="true" />
       </button>
       <img
@@ -1318,8 +1321,8 @@ defineExpose({
         draggable="false"
         @mousedown="startPreviewDrag"
       />
-      <div v-else class="x-file-disk__preview-empty">图片加载中...</div>
-      <button type="button" class="x-file-disk__preview-nav is-next" title="下一张" @click="showNextImage">
+      <div v-else class="x-file-disk__preview-empty">{{ t("extension.5c3c31e55c2f") }}</div>
+      <button type="button" class="x-file-disk__preview-nav is-next" :title="t('extension.9a3dc99df8f4')" @click="showNextImage">
         <i class="ri-arrow-right-s-line" aria-hidden="true" />
       </button>
       <div class="x-file-disk__preview-title" :title="previewItem.name">{{ previewItem.name }}</div>

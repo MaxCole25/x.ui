@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
 import { computed, nextTick, ref, watch } from 'vue'
 import { XDialog } from '../../../feedback-components/dialog'
 import { XButton } from '../../../basic-components/button'
@@ -9,12 +10,12 @@ import type { GanttSettings, GanttScheduleReason } from './types'
 const props = defineProps<{ modelValue: boolean; settings: GanttSettings; pending: boolean; error: string; disabled: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean]; apply: [settings: GanttSettings, reason: GanttScheduleReason] }>()
 const draft = ref(copySettings(props.settings))
-const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+const weekdays = computed(() => [t('common.sunday'), t('common.monday'), t('common.tuesday'), t('common.wednesday'), t('common.thursday'), t('common.friday'), t('common.saturday')])
 const newHoliday = ref(''), newWorkingDate = ref('')
 const calendarKeys = ['holidays', 'workingDates'] as const
-const calendarTitles = { holidays: '节假日', workingDates: '调休补班日期' }
+const calendarTitles = { get holidays() { return t("extension.7470711099df") }, get workingDates() { return t("extension.0806c9683f75") } }
 const displayFields = ['showToday', 'showWeekends', 'showProgress', 'showDependencies'] as const
-const displayTitles = { showToday: '显示今天线', showWeekends: '显示休息日背景', showProgress: '显示进度', showDependencies: '显示依赖线' }
+const displayTitles = { get showToday() { return t("extension.e693835f2157") }, get showWeekends() { return t("extension.9892849da95c") }, get showProgress() { return t("extension.83dba218eb39") }, get showDependencies() { return t("extension.05227b5cebfc") } }
 const restMode = ref('double')
 const holidayYear = ref(2026), selectedHoliday = ref(''), holidayFeedback = ref('')
 const holidayYears = Object.keys(holidayPresets).map(Number)
@@ -50,64 +51,64 @@ function addLegalHoliday(name: string) {
   const presets = name === 'all' ? annualHolidays.value.holidays : annualHolidays.value.holidays.filter(preset => preset.name === name)
   draft.value.calendar.holidays = [...new Set([...(draft.value.calendar.holidays ?? []), ...presets.flatMap(holidayDates)])].sort()
   draft.value.calendar.workingDates = [...new Set([...(draft.value.calendar.workingDates ?? []), ...presets.flatMap(preset => preset.workingDates)])].sort()
-  holidayFeedback.value = `已加入 ${holidayYear.value} 年${name === 'all' ? '全年法定节假日' : name}及对应补班日期，请点击应用。`
+  holidayFeedback.value = t("extension.1d7d0ab8345e", { p0: holidayYear.value, p1: name === 'all' ? t("extension.8624f58c155e") : name })
   void nextTick(() => { selectedHoliday.value = '' })
 }
 function close(value: boolean) { if (!props.pending) emit('update:modelValue', value) }
 </script>
 
 <template>
-  <XDialog :model-value="modelValue" title="甘特图设置" :width="600" :height="650" :max-width="600" :min-width="300" :close-on-mask-click="!pending" :close-on-esc="!pending" @update:model-value="close">
+  <XDialog :model-value="modelValue" :title="t('extension.cbe9aafdbc7d')" :width="600" :height="650" :max-width="600" :min-width="300" :close-on-mask-click="!pending" :close-on-esc="!pending" @update:model-value="close">
     <div class="x-gantt-settings" :aria-busy="pending">
       <fieldset :disabled="calendarLocked">
-        <legend>排程</legend>
-        <label><input v-model="draft.enableAutoSchedule" type="checkbox">开启自动排程</label>
-        <label>项目起始日期<input v-model="draft.scheduleStartDate" aria-label="项目起始日期" type="date" min="0001-01-01" max="9999-12-31"></label>
-        <p>按工作日保留工期，并联动依赖任务和父任务日期。</p>
-        <XButton width="110px" :disabled="calendarLocked || !draft.enableAutoSchedule" @click="emit('apply', copySettings(draft), 'reschedule')">重新排程</XButton>
+        <legend>{{ t("extension.76d6bcb018f4") }}</legend>
+        <label><input v-model="draft.enableAutoSchedule" type="checkbox">{{ t("extension.c5f882c1ee11") }}</label>
+        <label>{{ t("extension.1665f7839abd") }}<input v-model="draft.scheduleStartDate" :aria-label="t('extension.1665f7839abd')" type="date" min="0001-01-01" max="9999-12-31"></label>
+        <p>{{ t("extension.742871e5afc4") }}</p>
+        <XButton width="110px" :disabled="calendarLocked || !draft.enableAutoSchedule" @click="emit('apply', copySettings(draft), 'reschedule')">{{ t("extension.46ae19d7c441") }}</XButton>
       </fieldset>
       <fieldset :disabled="calendarLocked">
-        <legend>工作日历</legend>
-        <label>每周休息<select aria-label="每周休息" :value="restMode" @change="setRestMode(($event.target as HTMLSelectElement).value)"><option value="none">无固定休息日</option><option value="single">单休</option><option value="double">双休</option><option value="custom">自定义</option></select></label>
-        <label v-if="restMode === 'single'">休息日<select aria-label="单休休息日" :value="draft.calendar.weekendDays?.[0] ?? 0" @change="draft.calendar.weekendDays = [Number(($event.target as HTMLSelectElement).value)]"><option v-for="(day, index) in weekdays" :key="index" :value="index">{{ day }}</option></select></label>
+        <legend>{{ t("extension.db825c350825") }}</legend>
+        <label>{{ t("extension.b0c548f091b6") }}<select :aria-label="t('extension.b0c548f091b6')" :value="restMode" @change="setRestMode(($event.target as HTMLSelectElement).value)"><option value="none">{{ t("extension.87359b0d8666") }}</option><option value="single">{{ t("extension.15b9d803b8cb") }}</option><option value="double">{{ t("extension.232746dfd528") }}</option><option value="custom">{{ t("extension.c493338e8c33") }}</option></select></label>
+        <label v-if="restMode === 'single'">{{ t("extension.743a4ad0dd4c") }}<select :aria-label="t('extension.b68ed1b4f0b4')" :value="draft.calendar.weekendDays?.[0] ?? 0" @change="draft.calendar.weekendDays = [Number(($event.target as HTMLSelectElement).value)]"><option v-for="(day, index) in weekdays" :key="index" :value="index">{{ day }}</option></select></label>
         <div v-if="restMode === 'custom'" class="x-gantt-settings__days"><label v-for="(day, index) in weekdays" :key="index"><input type="checkbox" :checked="draft.calendar.weekendDays?.includes(index)" @change="toggleDay(index, ($event.target as HTMLInputElement).checked)">{{ day }}</label></div>
         <div class="x-gantt-settings__legal-holidays">
-          <h4>法定节假日</h4>
+          <h4>{{ t("extension.b2625d43a187") }}</h4>
           <div class="x-gantt-settings__date-add">
-            <label>年份<select v-model.number="holidayYear" aria-label="法定节假日年份" @change="holidayFeedback = ''"><option v-for="year in holidayYears" :key="year" :value="year">{{ year }} 年</option></select></label>
-            <select v-model="selectedHoliday" aria-label="选择法定节假日" @change="addLegalHoliday(selectedHoliday)">
-              <option value="">选择假期加入日历</option>
-              <option value="all">全年法定节假日</option>
-              <option v-for="preset in annualHolidays.holidays" :key="preset.name" :value="preset.name">{{ preset.name }}（{{ preset.start.slice(5) }} 至 {{ preset.end.slice(5) }}）</option>
+            <label>{{ t("extension.c668c7a28f7c") }}<select v-model.number="holidayYear" :aria-label="t('extension.6f18730e6ba3')" @change="holidayFeedback = ''"><option v-for="year in holidayYears" :key="year" :value="year">{{ year }}{{ t("extension.6f14c2641c25") }}</option></select></label>
+            <select v-model="selectedHoliday" :aria-label="t('extension.d09465eaec02')" @change="addLegalHoliday(selectedHoliday)">
+              <option value="">{{ t("extension.ea34e0590493") }}</option>
+              <option value="all">{{ t("extension.8624f58c155e") }}</option>
+              <option v-for="preset in annualHolidays.holidays" :key="preset.name" :value="preset.name">{{ preset.name }}（{{ preset.start.slice(5) }}{{ t("extension.43401e739ef4") }}{{ preset.end.slice(5) }}）</option>
             </select>
           </div>
-          <p>含公布的放假调休区间及补班日期，可继续手动增删。<a :href="annualHolidays.source" target="_blank" rel="noopener noreferrer">查看官方安排</a></p>
+          <p>{{ t("extension.9b6b04bb62f8") }}<a :href="annualHolidays.source" target="_blank" rel="noopener noreferrer">{{ t("extension.53f5d3b15f5f") }}</a></p>
           <p v-if="holidayFeedback" role="status">{{ holidayFeedback }}</p>
         </div>
         <div v-for="key in calendarKeys" :key="key" class="x-gantt-settings__dates">
           <h4>{{ calendarTitles[key] }}</h4>
           <div class="x-gantt-settings__date-add">
-            <input v-if="key === 'holidays'" v-model="newHoliday" type="date" min="0001-01-01" max="9999-12-31" aria-label="新增节假日">
-            <input v-else v-model="newWorkingDate" type="date" min="0001-01-01" max="9999-12-31" aria-label="新增调休补班日期">
-            <button type="button" @click="addDate(key)">添加</button>
+            <input v-if="key === 'holidays'" v-model="newHoliday" type="date" min="0001-01-01" max="9999-12-31" :aria-label="t('extension.42f3dc56864d')">
+            <input v-else v-model="newWorkingDate" type="date" min="0001-01-01" max="9999-12-31" :aria-label="t('extension.73dce7fd2db8')">
+            <button type="button" @click="addDate(key)">{{ t("extension.94191ce210d3") }}</button>
           </div>
-          <ul><li v-for="date in draft.calendar[key]" :key="date"><span>{{ date }}</span><button type="button" :aria-label="`删除${calendarTitles[key]}${date}`" @click="draft.calendar[key] = draft.calendar[key]?.filter(value => value !== date)">删除</button></li></ul>
-          <p v-if="!draft.calendar[key]?.length">尚未配置{{ calendarTitles[key] }}</p>
+          <ul><li v-for="date in draft.calendar[key]" :key="date"><span>{{ date }}</span><button type="button" :aria-label="t('extension.14b9dc8d1aa8', { p0: calendarTitles[key], p1: date })" @click="draft.calendar[key] = draft.calendar[key]?.filter(value => value !== date)">{{ t("extension.3755f56f2f83") }}</button></li></ul>
+          <p v-if="!draft.calendar[key]?.length">{{ t("extension.5838d0141870") }}{{ calendarTitles[key] }}</p>
         </div>
-        <p>补班日期优先于节假日和每周休息日；已有自定义日期会保留。</p>
+        <p>{{ t("extension.443d23f4dba0") }}</p>
       </fieldset>
       <fieldset :disabled="pending || disabled">
-        <legend>编辑与显示</legend>
-        <label><input v-model="draft.readonly" type="checkbox">只读</label>
+        <legend>{{ t("extension.c934080bbc1f") }}</legend>
+        <label><input v-model="draft.readonly" type="checkbox">{{ t("extension.ffc1d065fb53") }}</label>
         <label v-for="key in displayFields" :key="key"><input v-model="draft[key]" type="checkbox">{{ displayTitles[key] }}</label>
-        <p v-if="draft.readonly">只读时可以查看和定位，不能编辑任务或执行排程。</p>
+        <p v-if="draft.readonly">{{ t("extension.869a51058147") }}</p>
       </fieldset>
       <p v-if="error" class="x-gantt-settings__error" role="alert">{{ error }}</p>
     </div>
     <template #footer>
-      <span v-if="pending" role="status">正在保存排程…</span>
-      <XButton width="72px" :disabled="pending" @click="close(false)">取消</XButton>
-      <XButton width="72px" :disabled="pending || disabled" @click="emit('apply', copySettings(draft), 'settings')">应用</XButton>
+      <span v-if="pending" role="status">{{ t("extension.5bfd1c9bc456") }}</span>
+      <XButton width="72px" :disabled="pending" @click="close(false)">{{ t("extension.4d0b4688c787") }}</XButton>
+      <XButton width="72px" :disabled="pending || disabled" @click="emit('apply', copySettings(draft), 'settings')">{{ t("extension.4562024ddec7") }}</XButton>
     </template>
   </XDialog>
 </template>

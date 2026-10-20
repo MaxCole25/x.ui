@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
@@ -15,9 +20,9 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<TimePickerProps>(), {
+const rawProps = withDefaults(defineProps<TimePickerProps>(), {
   modelValue: '',
-  placeholder: '请选择时间',
+  placeholder: localePropDefault('time-picker.placeholder'),
   disabled: false,
   readonly: false,
   clearable: false,
@@ -28,6 +33,9 @@ const props = withDefaults(defineProps<TimePickerProps>(), {
   teleportTo: 'body',
   zIndex: overlayZIndex.dialog,
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  placeholder: 'time-picker.placeholder'
 })
 
 const attrs = useAttrs()
@@ -236,7 +244,7 @@ watch(
 
     <XDialog
       v-model="open"
-      title="选择时间"
+      :title="t('common.time')"
       :width="260"
       :height="440"
       :min-width="240"
@@ -250,9 +258,9 @@ watch(
       :style="dialogStyle"
     >
       <div class="x-time-picker__panel-shell">
-        <div class="x-time-picker__time" aria-label="时间选择">
+        <div class="x-time-picker__time" :aria-label="t('common.timeSelection')">
           <div class="x-time-picker__time-column">
-            <div class="x-time-picker__time-label">时</div>
+            <div class="x-time-picker__time-label">{{ t('common.hour') }}</div>
             <div ref="hourListRef" class="x-time-picker__time-list" @scroll="handleTimeScroll('hour')">
               <button
                 v-for="hour in hours"
@@ -268,7 +276,7 @@ watch(
           </div>
 
           <div class="x-time-picker__time-column">
-            <div class="x-time-picker__time-label">分</div>
+            <div class="x-time-picker__time-label">{{ t('common.minute') }}</div>
             <div ref="minuteListRef" class="x-time-picker__time-list" @scroll="handleTimeScroll('minute')">
               <button
                 v-for="minute in minutes"
@@ -287,8 +295,8 @@ watch(
 
       <template #footer>
         <div class="x-time-picker__footer">
-          <button type="button" class="x-time-picker__secondary" @click="selectNow">此刻</button>
-          <button type="button" class="x-time-picker__primary" @click="confirm">确定</button>
+          <button type="button" class="x-time-picker__secondary" @click="selectNow">{{ t('common.now') }}</button>
+          <button type="button" class="x-time-picker__primary" @click="confirm">{{ t('common.confirm') }}</button>
         </div>
       </template>
     </XDialog>

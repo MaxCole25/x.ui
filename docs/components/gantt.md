@@ -88,7 +88,7 @@ import Example1Source from '../examples/gantt/Example1.vue?raw'
 | zoom | `number` | `1` | 缩放倍率，实际限制 0.25～4，支持 v-model:zoom |
 | startDate / endDate | `string` | 自动范围 | 首尾包含的日期，可单独指定；未指定范围在任务前后留白 |
 | weekStartsOn | `number` | `1` | 周起始日，0～6，0 为周日 |
-| locale | `string` | `'zh-CN'` | Intl 日期表头语言，如 en-US |
+| locale | `string` | 跟随全局语言，默认 `'zh-CN'` | Intl 日期表头语言，如 en-US；显式指定时优先使用 |
 | calendar | `{ weekendDays?: number[]; holidays?: string[]; workingDates?: string[] }` | 周六日休息 | 工作日期覆盖节假日与周末标记，日期格式同任务 |
 | enableAutoSchedule | `boolean` | `false` | 开启工作日及依赖自动排程，支持 v-model:enableAutoSchedule |
 | scheduleStartDate | `string` | 初始最早任务日期，无任务时为今天 | 项目起始日期，与时间轴 startDate 独立，支持 v-model:scheduleStartDate |

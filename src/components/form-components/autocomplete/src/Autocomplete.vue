@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { createFontStyle } from '../../../_utils/size'
 import { computed, inject, nextTick, onBeforeUnmount, ref, useAttrs, watch } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
@@ -18,7 +23,7 @@ defineOptions({
   inheritAttrs: false
 })
 
-const props = withDefaults(defineProps<AutocompleteProps>(), {
+const rawProps = withDefaults(defineProps<AutocompleteProps>(), {
   valueOnInput: true,
   clearModelValueOnInput: false,
   autoWidth: false,
@@ -37,9 +42,13 @@ const props = withDefaults(defineProps<AutocompleteProps>(), {
   zIndex: overlayZIndex.popper,
   popperBackgroundColor: '#ffffff',
   loading: false,
-  loadingText: '加载中',
-  emptyText: '暂无匹配数据',
+  loadingText: localePropDefault('autocomplete.loadingText'),
+  emptyText: localePropDefault('autocomplete.emptyText'),
   showActiveBorder: true
+})
+const props = useLocaleProps(rawProps, {
+  loadingText: 'autocomplete.loadingText',
+  emptyText: 'autocomplete.emptyText'
 })
 
 const emit = defineEmits<{
@@ -637,7 +646,7 @@ onBeforeUnmount(() => {
             v-if="showClear"
             class="x-base-input__clear x-autocomplete__clear is-visible"
             type="button"
-            aria-label="清空"
+            :aria-label="t('common.clear')"
             @mousedown.prevent
             @click.stop="handleClear"
           >

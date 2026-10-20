@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script setup lang="ts">import { translate as t } from '../../../../locale'
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { toCssSize } from '../../../_utils/elementStyle'
 import { useImageCaptcha } from '../../_shared/useImageCaptcha'
 
@@ -10,7 +13,7 @@ defineOptions({
   name: 'XRegister'
 })
 
-const props = withDefaults(defineProps<RegisterProps>(), {
+const rawProps = withDefaults(defineProps<RegisterProps>(), {
   username: '',
   displayName: '',
   phone: '',
@@ -20,8 +23,8 @@ const props = withDefaults(defineProps<RegisterProps>(), {
   agreementChecked: false,
   letterCode: '',
   imageCode: '',
-  title: '创建账号',
-  description: '填写注册信息后即可开始使用',
+  title: localePropDefault('register.title'),
+  description: localePropDefault('register.description'),
   logoSrc: '',
   logoAlt: 'Logo',
   logoPosition: 'top',
@@ -29,30 +32,30 @@ const props = withDefaults(defineProps<RegisterProps>(), {
   fontSize: 14,
   loading: false,
   disabled: false,
-  usernameLabel: '用户名',
-  displayNameLabel: '显示名称',
-  phoneLabel: '手机号',
-  smsCodeLabel: '短信验证',
-  passwordLabel: '密码',
-  confirmPasswordLabel: '确认密码',
-  usernamePlaceholder: '请输入用户名',
-  displayNamePlaceholder: '请输入显示名称',
-  phonePlaceholder: '请输入手机号',
-  smsCodePlaceholder: '请输入短信验证码',
-  passwordPlaceholder: '请输入密码',
-  confirmPasswordPlaceholder: '请再次输入密码',
-  imageCodePlaceholder: '请输入图像验证码',
-  letterCodePlaceholder: '请输入字母验证码',
-  registerText: '注册',
-  loginPromptText: '已有账号？',
-  loginText: '立即登录',
-  smsButtonText: '获取验证码',
-  agreementText: '我已阅读并同意用户协议',
+  usernameLabel: localePropDefault('register.usernameLabel'),
+  displayNameLabel: localePropDefault('register.displayNameLabel'),
+  phoneLabel: localePropDefault('register.phoneLabel'),
+  smsCodeLabel: localePropDefault('register.smsCodeLabel'),
+  passwordLabel: localePropDefault('register.passwordLabel'),
+  confirmPasswordLabel: localePropDefault('register.confirmPasswordLabel'),
+  usernamePlaceholder: localePropDefault('register.usernamePlaceholder'),
+  displayNamePlaceholder: localePropDefault('register.displayNamePlaceholder'),
+  phonePlaceholder: localePropDefault('register.phonePlaceholder'),
+  smsCodePlaceholder: localePropDefault('register.smsCodePlaceholder'),
+  passwordPlaceholder: localePropDefault('register.passwordPlaceholder'),
+  confirmPasswordPlaceholder: localePropDefault('register.confirmPasswordPlaceholder'),
+  imageCodePlaceholder: localePropDefault('register.imageCodePlaceholder'),
+  letterCodePlaceholder: localePropDefault('register.letterCodePlaceholder'),
+  registerText: localePropDefault('register.registerText'),
+  loginPromptText: localePropDefault('register.loginPromptText'),
+  loginText: localePropDefault('register.loginText'),
+  smsButtonText: localePropDefault('register.smsButtonText'),
+  agreementText: localePropDefault('register.agreementText'),
   imageCaptchaSrc: '',
-  imageCaptchaAlt: '滑块图像验证',
-  imageCaptchaTitle: '拖动下方滑块完成拼图',
-  imageCaptchaTip: '按住滑块，拖动拼图完成验证',
-  imageCaptchaSuccessText: '验证通过',
+  imageCaptchaAlt: localePropDefault('register.imageCaptchaAlt'),
+  imageCaptchaTitle: localePropDefault('register.imageCaptchaTitle'),
+  imageCaptchaTip: localePropDefault('register.imageCaptchaTip'),
+  imageCaptchaSuccessText: localePropDefault('register.imageCaptchaSuccessText'),
   letterCaptchaText: '',
   accentColor: '#0b4a52',
   accentSoftColor: '#e1f5f7',
@@ -72,6 +75,33 @@ const props = withDefaults(defineProps<RegisterProps>(), {
   showSmsCode: true,
   showAgreement: true,
   showLogin: true
+})
+const props = useLocaleProps(rawProps, {
+  title: 'register.title',
+  description: 'register.description',
+  usernameLabel: 'register.usernameLabel',
+  displayNameLabel: 'register.displayNameLabel',
+  phoneLabel: 'register.phoneLabel',
+  smsCodeLabel: 'register.smsCodeLabel',
+  passwordLabel: 'register.passwordLabel',
+  confirmPasswordLabel: 'register.confirmPasswordLabel',
+  usernamePlaceholder: 'register.usernamePlaceholder',
+  displayNamePlaceholder: 'register.displayNamePlaceholder',
+  phonePlaceholder: 'register.phonePlaceholder',
+  smsCodePlaceholder: 'register.smsCodePlaceholder',
+  passwordPlaceholder: 'register.passwordPlaceholder',
+  confirmPasswordPlaceholder: 'register.confirmPasswordPlaceholder',
+  imageCodePlaceholder: 'register.imageCodePlaceholder',
+  letterCodePlaceholder: 'register.letterCodePlaceholder',
+  registerText: 'register.registerText',
+  loginPromptText: 'register.loginPromptText',
+  loginText: 'register.loginText',
+  smsButtonText: 'register.smsButtonText',
+  agreementText: 'register.agreementText',
+  imageCaptchaAlt: 'register.imageCaptchaAlt',
+  imageCaptchaTitle: 'register.imageCaptchaTitle',
+  imageCaptchaTip: 'register.imageCaptchaTip',
+  imageCaptchaSuccessText: 'register.imageCaptchaSuccessText'
 })
 
 const emit = defineEmits<{
@@ -275,7 +305,7 @@ onBeforeUnmount(() => {
           <button
             class="x-register__eye"
             type="button"
-            :aria-label="isPasswordVisible ? '隐藏密码' : '显示密码'"
+            :aria-label="isPasswordVisible ? t('extension.c970421215b1') : t('extension.f60cb7b63d06')"
             :disabled="props.disabled || props.loading"
             @blur="isPasswordVisible = false"
             @mouseleave="isPasswordVisible = false"
@@ -313,7 +343,7 @@ onBeforeUnmount(() => {
           <button
             class="x-register__eye"
             type="button"
-            :aria-label="isConfirmPasswordVisible ? '隐藏确认密码' : '显示确认密码'"
+            :aria-label="isConfirmPasswordVisible ? t('extension.4b0e0c588816') : t('extension.e024bf58b096')"
             :disabled="props.disabled || props.loading"
             @blur="isConfirmPasswordVisible = false"
             @mouseleave="isConfirmPasswordVisible = false"
@@ -353,15 +383,13 @@ onBeforeUnmount(() => {
               <span v-else class="x-register__slider-bars" aria-hidden="true"><i /><i /><i /></span>
             </button>
           </div>
-          <button class="x-register__captcha-refresh" type="button" :disabled="props.disabled || props.loading" @click="resetImageCaptcha">
-            刷新验证
-          </button>
+          <button class="x-register__captcha-refresh" type="button" :disabled="props.disabled || props.loading" @click="resetImageCaptcha">{{ t("extension.0957a40335ea") }}</button>
         </div>
       </div>
 
       <div v-if="props.enableLetterCaptcha" class="x-register__field x-register__field--inline">
         <label class="x-register__inline-control">
-          <span class="x-register__label">字母识别</span>
+          <span class="x-register__label">{{ t("extension.1ee0bf4eec3d") }}</span>
           <input
             class="x-register__input"
             :disabled="props.disabled || props.loading"
@@ -399,7 +427,7 @@ onBeforeUnmount(() => {
 
       <button class="x-register__submit" type="submit" :disabled="props.disabled || props.loading">
         <span v-if="props.loading" class="x-register__spinner" aria-hidden="true" />
-        <span>{{ props.loading ? '注册中...' : props.registerText }}</span>
+        <span>{{ props.loading ? t('extension.ed5c1a9851ae') : props.registerText }}</span>
       </button>
 
       <div class="x-register__actions">

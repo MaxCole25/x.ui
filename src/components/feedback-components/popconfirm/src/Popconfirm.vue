@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref } from 'vue'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import XPopover from '../../popover/src/Popover.vue'
@@ -6,7 +8,12 @@ import type { PopconfirmProps } from './types'
 
 defineOptions({ name: 'XPopconfirm' })
 
-const props = withDefaults(defineProps<PopconfirmProps>(), { modelValue: undefined, title: '确认执行该操作？', content: '', confirmText: '确认', cancelText: '取消', placement: 'top', trigger: 'click', disabled: false, teleported: true, teleportTo: 'body', zIndex: overlayZIndex.popper })
+const rawProps = withDefaults(defineProps<PopconfirmProps>(), { modelValue: undefined, title: localePropDefault('popconfirm.title'), content: '', confirmText: localePropDefault('popconfirm.confirmText'), cancelText: localePropDefault('popconfirm.cancelText'), placement: 'top', trigger: 'click', disabled: false, teleported: true, teleportTo: 'body', zIndex: overlayZIndex.popper })
+const props = useLocaleProps(rawProps, {
+  title: 'popconfirm.title',
+  confirmText: 'popconfirm.confirmText',
+  cancelText: 'popconfirm.cancelText'
+})
 const emit = defineEmits<{ 'update:modelValue': [value: boolean]; confirm: []; cancel: [] }>()
 const uncontrolledVisible = ref(false)
 const visible = computed({ get: () => props.modelValue ?? uncontrolledVisible.value, set: (value) => { if (props.modelValue === undefined) uncontrolledVisible.value = value; emit('update:modelValue', value) } })

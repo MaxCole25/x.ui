@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
 import { computed, ref, useId } from 'vue'
 import { createElementStyleVars, toCssSize } from '../../../_utils/elementStyle'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
@@ -81,12 +84,12 @@ useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: (
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <Transition name="x-drawer-fade" @after-enter="emit('open')">
       <div v-if="visible || !props.destroyOnClose" v-show="visible" class="x-drawer__mask" :style="maskStyle" @click.self="onMaskClick">
-        <aside ref="modalRef" tabindex="-1" :aria-labelledby="props.withHeader && (props.title || $slots.header) ? titleId : undefined" :aria-label="props.title || '抽屉'" v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, 'x-drawer']" :style="[drawerStyle, createFontStyle(mergedSize)]" role="dialog" aria-modal="true">
+        <aside ref="modalRef" tabindex="-1" :aria-labelledby="props.withHeader && (props.title || $slots.header) ? titleId : undefined" :aria-label="props.title || t('common.drawer')" v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, 'x-drawer']" :style="[drawerStyle, createFontStyle(mergedSize)]" role="dialog" aria-modal="true">
           <header v-if="props.withHeader" class="x-drawer__header">
             <div :id="titleId"><slot name="header">
               <h2 class="x-drawer__title">{{ props.title }}</h2>
             </slot></div>
-            <button v-if="props.showClose" type="button" class="x-drawer__close" aria-label="关闭抽屉" @click="close">×</button>
+            <button v-if="props.showClose" type="button" class="x-drawer__close" :aria-label="t('common.closeDrawer')" @click="close">×</button>
           </header>
           <section class="x-drawer__body x-scrollbar--native">
             <slot />

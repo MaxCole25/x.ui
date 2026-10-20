@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useLocale } from '../../../../locale'
+const { t } = useLocale()
+
+import { useLocaleProps, localePropDefault } from '../../../../locale/props'
+
 import { computed, ref, useId } from 'vue'
 import { createFontStyle, getComponentMetrics } from '../../../_utils/size'
 import { overlayZIndex } from '../../../_utils/zIndex'
@@ -9,8 +14,8 @@ defineOptions({
   name: 'XMessageBox'
 })
 
-const props = withDefaults(defineProps<MessageBoxProps>(), {
-  title: '提示',
+const rawProps = withDefaults(defineProps<MessageBoxProps>(), {
+  title: localePropDefault('message-box.title'),
   message: '',
   status: 'info',
   fontSize: undefined,
@@ -19,8 +24,8 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   showClose: true,
   closeOnMaskClick: true,
   closeOnEsc: true,
-  confirmButtonText: '确定',
-  cancelButtonText: '取消',
+  confirmButtonText: localePropDefault('message-box.confirmButtonText'),
+  cancelButtonText: localePropDefault('message-box.cancelButtonText'),
   distinguishCancelAndClose: false,
   teleported: true,
   teleportTo: 'body',
@@ -28,6 +33,11 @@ const props = withDefaults(defineProps<MessageBoxProps>(), {
   minWidth: 280,
   maxWidth: 'calc(100vw - 32px)',
   zIndex: overlayZIndex.messageBox
+})
+const props = useLocaleProps(rawProps, {
+  title: 'message-box.title',
+  confirmButtonText: 'message-box.confirmButtonText',
+  cancelButtonText: 'message-box.cancelButtonText'
 })
 const titleId = useId()
 
@@ -109,7 +119,7 @@ useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: (
             <i class="x-message-box__icon" :class="[iconClass, `x-message-box__icon--${mergedStatus}`]" aria-hidden="true"></i>
             <slot name="title">{{ props.title }}</slot>
           </div>
-          <button v-if="props.showClose" class="x-message-box__close" type="button" aria-label="关闭弹窗" @click="finish('close')">×</button>
+          <button v-if="props.showClose" class="x-message-box__close" type="button" :aria-label="t('common.closeDialog')" @click="finish('close')">×</button>
         </header>
         <div class="x-message-box__body">
           <slot>{{ props.message }}</slot>
