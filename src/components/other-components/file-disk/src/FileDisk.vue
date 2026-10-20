@@ -23,7 +23,9 @@ import type {
   FileDiskUploadProgress,
   FileDiskUploadStatus,
   FileDiskUploadPayload,
-  FileDiskViewMode
+  FileDiskViewMode,
+  FileDiskGridIconSize,
+  FileDiskToolbarAction
 } from './types'
 
 defineOptions({
@@ -35,6 +37,10 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
   entries: () => [],
   permissions: () => ({ read: true, write: true, delete: true, view: true }),
   viewMode: 'grid',
+  gridIconSize: 'small',
+  gridFileNameLines: 2,
+  showGridFileType: false,
+  showGridFileSize: false,
   title: '附件管理',
   loading: false,
   emptyText: '暂无文件',
@@ -44,6 +50,7 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
   showHeader: true,
   showTitle: true,
   showToolbar: true,
+  hiddenToolbarActions: () => [],
   showPath: true,
   enableMinimize: false,
   fontSize: undefined
@@ -52,6 +59,7 @@ const props = withDefaults(defineProps<FileDiskProps>(), {
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'update:viewMode': [value: FileDiskViewMode]
+  'update:gridIconSize': [value: FileDiskGridIconSize]
   'selection-change': [items: FileDiskItem[]]
   'path-change': [path: string]
   'create-folder': [payload: { path: string; name: string }]
@@ -66,6 +74,7 @@ const emit = defineEmits<{
   open: [item: FileDiskItem]
 }>()
 
+const diskRoot = ref<HTMLElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const bodyRoot = ref<HTMLElement | null>(null)
 const previewRoot = ref<HTMLElement | null>(null)
@@ -113,6 +122,9 @@ const canWrite = computed(() => props.permissions.write !== false && !props.disa
 const canDelete = computed(() => props.permissions.delete !== false && !props.disabled)
 const canView = computed(() => props.permissions.view !== false)
 const isBusy = computed(() => props.loading || busy.value)
+const currentGridIconSize = ref<FileDiskGridIconSize>(props.gridIconSize)
+watch(() => props.gridIconSize, (value) => { currentGridIconSize.value = value })
+const gridFileNameLines = computed(() => Math.max(1, Math.floor(props.gridFileNameLines)))
 const currentView = ref<FileDiskViewMode>(props.viewMode)
 watch(() => props.viewMode, (value) => { currentView.value = value })
 const sourceEntries = computed(() => (props.adapter?.list ? innerEntries.value : props.entries))
@@ -147,8 +159,13 @@ const canRename = computed(() => canWrite.value && selectedItems.value.length ==
 const canShowWriteActions = computed(() => canWrite.value)
 const canShowCopyAction = computed(() => canWrite.value)
 const canShowDeleteAction = computed(() => canDelete.value)
+function isToolbarActionVisible(action: FileDiskToolbarAction) {
+  return !props.hiddenToolbarActions.includes(action)
+}
 const hasToolbarMutationActions = computed(() =>
-  canShowWriteActions.value || canShowCopyAction.value || canShowDeleteAction.value
+  (canShowWriteActions.value && (['createFolder', 'upload', 'cut', 'paste'] as const).some(isToolbarActionVisible))
+  || (canShowCopyAction.value && isToolbarActionVisible('copy'))
+  || (canShowDeleteAction.value && isToolbarActionVisible('delete'))
 )
 const hasUploadTasks = computed(() => uploadTasks.value.length > 0)
 const previewImageStyle = computed<CSSProperties>(() => ({
@@ -180,7 +197,12 @@ const rootStyle = computed<CSSProperties>(() => ({
   '--x-file-disk-font-size': `${sizePreset.value.fontSize}px`,
   '--x-file-disk-control-height': `${sizePreset.value.height}px`,
   '--x-file-disk-control-padding': sizePreset.value.padding,
-  '--x-file-disk-radius': sizePreset.value.radius
+  '--x-file-disk-radius': sizePreset.value.radius,
+  '--x-file-disk-grid-item-width': currentGridIconSize.value === 'large' ? '112px' : '80px',
+  '--x-file-disk-grid-icon-height': currentGridIconSize.value === 'large' ? '48px' : '32px',
+  '--x-file-disk-grid-icon-size': currentGridIconSize.value === 'large' ? '38px' : '24px',
+  '--x-file-disk-grid-thumb-width': currentGridIconSize.value === 'large' ? '64px' : '40px',
+  '--x-file-disk-grid-name-lines': gridFileNameLines.value
 }))
 
 watch(
@@ -214,11 +236,23 @@ watch(
 )
 
 onMounted(() => {
+  window.addEventListener('dragover', handleDragOutside, true)
+  window.addEventListener('dragleave', handleDragOutside, true)
+  window.addEventListener('drop', resetDragging, true)
+  window.addEventListener('dragend', resetDragging, true)
+  window.addEventListener('blur', resetDragging, true)
+  window.addEventListener('keydown', handleDragCancel, true)
   ensureFileIconSprite()
   refresh()
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('dragover', handleDragOutside, true)
+  window.removeEventListener('dragleave', handleDragOutside, true)
+  window.removeEventListener('drop', resetDragging, true)
+  window.removeEventListener('dragend', resetDragging, true)
+  window.removeEventListener('blur', resetDragging, true)
+  window.removeEventListener('keydown', handleDragCancel, true)
   stopBoxSelection()
   stopPreviewDrag()
 })
@@ -374,8 +408,31 @@ async function uploadFiles(files: File[]) {
   })
 }
 
+function resetDragging() {
+  dragging.value = false
+}
+
+function isDragInside(event: DragEvent) {
+  const rect = diskRoot.value?.getBoundingClientRect()
+  return Boolean(rect
+    && event.clientX >= rect.left && event.clientX < rect.right
+    && event.clientY >= rect.top && event.clientY < rect.bottom)
+}
+
+function handleDragOutside(event: DragEvent) {
+  if (!dragging.value) return
+  const leftWindow = event.type === 'dragleave' && !event.relatedTarget
+    && (event.target === document || event.target === document.documentElement)
+  if (leftWindow || !isDragInside(event)) resetDragging()
+}
+
+function handleDragCancel(event: KeyboardEvent) {
+  if (event.key === 'Escape') resetDragging()
+}
+
 function handleDragOver(event: DragEvent) {
-  if (!canWrite.value) {
+  if (!canWrite.value || !event.dataTransfer?.types.includes('Files')) {
+    resetDragging()
     return
   }
   event.preventDefault()
@@ -383,17 +440,15 @@ function handleDragOver(event: DragEvent) {
 }
 
 function handleDragLeave(event: DragEvent) {
-  if (event.currentTarget === event.target) {
-    dragging.value = false
-  }
+  if (!isDragInside(event)) resetDragging()
 }
 
 async function handleDrop(event: DragEvent) {
-  if (!canWrite.value) {
+  resetDragging()
+  if (!canWrite.value || !event.dataTransfer?.types.includes('Files')) {
     return
   }
   event.preventDefault()
-  dragging.value = false
   await uploadFiles(Array.from(event.dataTransfer?.files ?? []))
 }
 
@@ -603,6 +658,12 @@ function stopBoxSelection() {
 
 function isInteractiveTarget(target: EventTarget | null) {
   return target instanceof HTMLElement && Boolean(target.closest('button, input, select, textarea, a, [data-file-disk-item]'))
+}
+
+function switchGridIconSize(size: FileDiskGridIconSize) {
+  currentGridIconSize.value = size
+  emit('update:gridIconSize', size)
+  switchViewMode('grid')
 }
 
 function switchViewMode(mode: FileDiskViewMode) {
@@ -885,6 +946,7 @@ defineExpose({
 
 <template>
   <section
+    ref="diskRoot"
     class="x-file-disk"
     :class="{ 'is-dragging': dragging, 'is-busy': isBusy, ['x-file-disk']: true }"
     :style="[rootStyle, createFontStyle(mergedSize)]"
@@ -901,36 +963,37 @@ defineExpose({
       </div>
 
       <div v-if="showToolbar" class="x-file-disk__actions">
-        <button type="button" class="x-file-disk__tool" :disabled="isBusy" title="刷新" @click="refresh">
+        <button v-if="isToolbarActionVisible('refresh')" type="button" class="x-file-disk__tool" :disabled="isBusy" title="刷新" @click="refresh">
           <i class="ri-refresh-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool" :disabled="isBusy" title="新建目录" @click="createFolder">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('createFolder')" type="button" class="x-file-disk__tool" :disabled="isBusy" title="新建目录" @click="createFolder">
           <i class="ri-folder-add-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="isBusy" title="上传文件" @click="chooseFiles">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('upload')" type="button" class="x-file-disk__tool x-file-disk__tool--text" :disabled="isBusy" title="上传文件" @click="chooseFiles">
           <i class="ri-upload-2-line" aria-hidden="true" />
           <span>上传</span>
         </button>
-        <button type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="下载" @click="downloadSelected">
+        <button v-if="isToolbarActionVisible('download')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="下载" @click="downloadSelected">
           <i class="ri-download-2-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowCopyAction" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="复制" @click="copySelected('copy')">
+        <button v-if="canShowCopyAction && isToolbarActionVisible('copy')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="复制" @click="copySelected('copy')">
           <i class="ri-file-copy-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="剪切" @click="copySelected('cut')">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('cut')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="剪切" @click="copySelected('cut')">
           <i class="ri-scissors-cut-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowWriteActions" type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
+        <button v-if="canShowWriteActions && isToolbarActionVisible('paste')" type="button" class="x-file-disk__tool" :disabled="!canPaste || isBusy" title="粘贴" @click="pasteItems">
           <i class="ri-clipboard-line" aria-hidden="true" />
         </button>
-        <button v-if="canShowDeleteAction" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="删除" @click="deleteSelected">
+        <button v-if="canShowDeleteAction && isToolbarActionVisible('delete')" type="button" class="x-file-disk__tool" :disabled="!hasSelection || isBusy" title="删除" @click="deleteSelected">
           <i class="ri-delete-bin-line" aria-hidden="true" />
         </button>
-        <span v-if="hasToolbarMutationActions" class="x-file-disk__divider" />
+        <span v-if="hasToolbarMutationActions && (isToolbarActionVisible('list') || isToolbarActionVisible('grid'))" class="x-file-disk__divider" />
         <button
           type="button"
           class="x-file-disk__tool"
           :class="{ 'is-active': currentView === 'list' }"
+          v-if="isToolbarActionVisible('list')"
           title="列表视图"
           @click="switchViewMode('list')"
         >
@@ -940,6 +1003,7 @@ defineExpose({
           type="button"
           class="x-file-disk__tool"
           :class="{ 'is-active': currentView === 'grid' }"
+          v-if="isToolbarActionVisible('grid')"
           title="图标视图"
           @click="switchViewMode('grid')"
         >
@@ -995,7 +1059,7 @@ defineExpose({
             @blur="submitCreateFolder"
             @keydown="handleCreateFolderKeydown"
           />
-          <span class="x-file-disk__tile-meta">文件夹</span>
+          <span v-if="showGridFileType" class="x-file-disk__tile-meta">文件夹</span>
         </div>
 
         <button
@@ -1039,7 +1103,9 @@ defineExpose({
           <span v-else class="x-file-disk__tile-name" :title="item.name">
             {{ item.name }}
           </span>
-          <span class="x-file-disk__tile-meta">{{ displayType(item) }} · {{ formatSize(item.size) }}</span>
+          <span v-if="showGridFileType || (showGridFileSize && item.type === 'file')" class="x-file-disk__tile-meta">
+            <template v-if="showGridFileType">{{ displayType(item) }}</template><template v-if="showGridFileSize && item.type === 'file'">{{ showGridFileType ? ' · ' : '' }}{{ formatSize(item.size) }}</template>
+          </span>
         </button>
       </div>
 
@@ -1202,9 +1268,13 @@ defineExpose({
         <i class="ri-list-unordered" aria-hidden="true" />
         <span>列表视图</span>
       </button>
-      <button type="button" :disabled="currentView === 'grid'" @click="switchViewMode('grid')">
+      <button type="button" :disabled="currentView === 'grid' && currentGridIconSize === 'large'" @click="switchGridIconSize('large')">
+        <i class="ri-grid-fill" aria-hidden="true" />
+        <span>大图标</span>
+      </button>
+      <button type="button" :disabled="currentView === 'grid' && currentGridIconSize === 'small'" @click="switchGridIconSize('small')">
         <i class="ri-grid-line" aria-hidden="true" />
-        <span>图标视图</span>
+        <span>小图标</span>
       </button>
     </div>
 
@@ -1454,7 +1524,7 @@ defineExpose({
   box-sizing: border-box;
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(auto-fill, minmax(0, min(112px, 100%)));
+  grid-template-columns: repeat(auto-fill, minmax(0, min(var(--x-file-disk-grid-item-width, 80px), 100%)));
   grid-auto-rows: max-content;
   height: 100%;
   overflow: auto;
@@ -1472,7 +1542,7 @@ defineExpose({
   display: grid;
   font: inherit;
   gap: 6px;
-  grid-template-rows: 48px auto auto;
+  grid-template-rows: var(--x-file-disk-grid-icon-height, 32px) auto;
   min-width: 0;
   padding: 10px 8px;
   text-align: center;
@@ -1492,13 +1562,13 @@ defineExpose({
 .x-file-disk__tile-icon {
   align-items: center;
   display: inline-flex;
-  height: 48px;
+  height: var(--x-file-disk-grid-icon-height, 32px);
   justify-content: center;
 }
 
 .x-file-disk__tile-icon svg {
-  height: 38px;
-  width: 38px;
+  height: var(--x-file-disk-grid-icon-size, 24px);
+  width: var(--x-file-disk-grid-icon-size, 24px);
 }
 
 .x-file-disk__parent-badge {
@@ -1508,14 +1578,14 @@ defineExpose({
   color: var(--x-file-disk-icon-color, var(--x-color-success, #0b806a));
   display: inline-flex;
   flex: 0 0 auto;
-  height: 40px;
+  height: var(--x-file-disk-grid-icon-size, 24px);
   justify-content: center;
-  width: 40px;
+  width: var(--x-file-disk-grid-icon-size, 24px);
 }
 
 .x-file-disk__parent-badge .x-file-disk__parent-icon {
-  height: 24px;
-  width: 24px;
+  height: 64%;
+  width: 64%;
 }
 
 .x-file-disk__parent-link .x-file-disk__parent-badge {
@@ -1545,8 +1615,8 @@ defineExpose({
 .x-file-disk__file-svg {
   display: block;
   fill: var(--x-file-disk-icon-color, currentColor);
-  height: 42px;
-  width: 42px;
+  height: var(--x-file-disk-grid-icon-size, 24px);
+  width: var(--x-file-disk-grid-icon-size, 24px);
 }
 
 .x-file-disk__row-file-svg {
@@ -1568,9 +1638,9 @@ defineExpose({
   border-radius: 5px;
   box-sizing: border-box;
   display: block;
-  height: 48px;
+  height: var(--x-file-disk-grid-icon-height, 32px);
   object-fit: cover;
-  width: 64px;
+  width: var(--x-file-disk-grid-thumb-width, 40px);
 }
 
 .x-file-disk__row-thumb {
@@ -1600,8 +1670,8 @@ defineExpose({
 }
 
 .x-file-disk__thumb-placeholder {
-  height: 48px;
-  width: 64px;
+  height: var(--x-file-disk-grid-icon-height, 32px);
+  width: var(--x-file-disk-grid-thumb-width, 40px);
 }
 
 .x-file-disk__row-thumb-placeholder {
@@ -1618,6 +1688,13 @@ defineExpose({
 }
 
 .x-file-disk__tile-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--x-file-disk-grid-name-lines, 2);
+  line-clamp: var(--x-file-disk-grid-name-lines, 2);
+  max-height: calc(var(--x-file-disk-grid-name-lines, 2) * 20px);
+  overflow-wrap: anywhere;
+  white-space: normal;
   font-size: var(--x-file-disk-font-size, 14px);
   font-weight: 400;
   line-height: 20px;

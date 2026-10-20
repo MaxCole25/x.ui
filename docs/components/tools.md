@@ -47,6 +47,7 @@ import Example2Source from '../examples/tools/Example2.vue?raw'
 | key | 工具项唯一标识 | `string \| number` |
 | name | 工具项名称 | `string` |
 | showName | 是否显示工具项名称，设为 `false` 时只显示图标 | `boolean` |
+| showArrow | 普通下拉项是否显示独立箭头，默认显示；分离按钮始终保留箭头入口 | `boolean` |
 | icon | 图标名称，使用 `XIcon` 的图标命名 | `string` |
 | disabled | 是否禁用当前项 | `boolean` |
 | badgeValue | 角标内容 | `string \| number` |
@@ -193,6 +194,7 @@ export interface ToolsActionItem {
   key: ToolsItemKey
   name?: string
   showName?: boolean
+  showArrow?: boolean
   icon?: string
   disabled?: boolean
   badgeValue?: string | number
@@ -246,3 +248,5 @@ export interface ToolsProps extends ElementStyleProps {
 
 - 调整各功能分组中的属性，核对实际显示与默认值。
 - 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。
+
+普通下拉工具项配置 `showArrow: false` 可隐藏旁边的独立箭头，点击图标或名称仍打开下拉菜单；`split-dropdown` 保留独立箭头以区分主操作和菜单操作。

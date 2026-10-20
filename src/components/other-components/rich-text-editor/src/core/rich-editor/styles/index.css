@@ -464,7 +464,7 @@
 .xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-track,
 .xl-code-node__pre::-webkit-scrollbar-track,
 .xl-editor__content .ProseMirror pre::-webkit-scrollbar-track {
-  background: var(--x-scrollbar-track-color, #f1f5f9);
+  background: var(--x-scrollbar-track-color, transparent);
 }
 
 .xl-editor__viewport::-webkit-scrollbar-thumb,
@@ -479,7 +479,7 @@
 .xl-editor__content .ProseMirror .tableWrapper::-webkit-scrollbar-thumb:hover,
 .xl-code-node__pre::-webkit-scrollbar-thumb:hover,
 .xl-editor__content .ProseMirror pre::-webkit-scrollbar-thumb:hover {
-  background: var(--x-scrollbar-thumb-color, #cbd5e1);
+  background: var(--x-scrollbar-thumb-hover-color, #94a3b8);
 }
 
 .xl-editor__content {

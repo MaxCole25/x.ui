@@ -4,14 +4,14 @@ import { XIcon } from '../../../basic-components/icon'
 import { XPopover } from '../../../feedback-components/popover'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { useChatComposer, formatChatFileSize } from '../../../display-components/chat/src/useChatComposer'
-import type { ChatProps, ChatEmits } from '../../../display-components/chat'
-const props = withDefaults(defineProps<ChatProps & { showBusinessPicker?: boolean; showGroupManagement?: boolean; historyVisible?: boolean; sendShortcut?: 'enter' | 'ctrl-enter'; zIndex?: number }>(), {
+import type { ChatProps, ChatEmits, ChatMessageQuote } from '../../../display-components/chat'
+const props = withDefaults(defineProps<ChatProps & { quote?: ChatMessageQuote; showBusinessPicker?: boolean; showGroupManagement?: boolean; historyVisible?: boolean; sendShortcut?: 'enter' | 'ctrl-enter'; zIndex?: number }>(), {
   disabled: false, enablePaste: true, placeholder: '输入消息，支持粘贴图片或文件', showBusinessPicker: true,
   sendShortcut: 'enter', zIndex: overlayZIndex.popper,
   emojis: () => ['😀', '😊', '😂', '👍', '❤️', '🎉', '🙏', '🤔']
 })
 const emit = defineEmits<ChatEmits & {
-  'history-request': []; 'group-manage': []; 'business-select': []; 'update:sendShortcut': [value: 'enter' | 'ctrl-enter']
+  'cancel-reply': []; 'history-request': []; 'group-manage': []; 'business-select': []; 'update:sendShortcut': [value: 'enter' | 'ctrl-enter']
 }>()
 const { textarea, imageInput, fileInput, draft, attachments, showEmojis, canSend, focus, clearDraft, sendMessage, handleFiles, handlePaste, insertEmoji, removeAttachment } = useChatComposer(props, emit)
 const showSendOptions = ref(false)
@@ -54,6 +54,10 @@ defineExpose({ focus, clearDraft, sendMessage })
         <button type="button" class="x-chat__tool" :aria-label="'移除 ' + attachment.name" :disabled="disabled" @click="removeAttachment(attachment)"><XIcon name="close" :icon-size="16" /></button>
       </div>
     </div>
+    <div v-if="quote" class="x-messenger-composer__reply">
+      <blockquote class="x-chat__quote"><strong>回复 {{ quote.senderName }}</strong><span>{{ quote.content }}</span></blockquote>
+      <button type="button" class="x-chat__tool" aria-label="取消回复" :disabled="disabled" @click="emit('cancel-reply'); focus()"><XIcon name="close" :icon-size="16" /></button>
+    </div>
     <textarea ref="textarea" v-model="draft" class="x-chat__input" aria-label="消息内容" :placeholder="placeholder" :disabled="disabled" rows="2" @paste="handlePaste" @keydown="handleKeydown" />
     <div class="x-messenger-composer__send-row">
       <div class="x-messenger-composer__send">
@@ -71,6 +75,8 @@ defineExpose({ focus, clearDraft, sendMessage })
   </form>
 </template>
 <style scoped>
+.x-messenger-composer__reply { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.x-messenger-composer__reply blockquote { display: block; flex: 1; min-width: 0; margin: 0; }
 .x-messenger-composer { gap: 6px; }
 .x-messenger-composer .x-chat__tool { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 0; padding: 0; background: transparent; }
 .x-messenger-composer .x-chat__tool:hover:not(:disabled),.x-messenger-composer .x-chat__tool.is-active { background: var(--x-color-primary-soft, #eaf3ff); }

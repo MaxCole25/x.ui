@@ -90,6 +90,7 @@ function commitCategoryValue(
 <template>
   <Story title="展示组件/表格 Table" group="components">
     <Variant title="外观接口">
+      <p>开启选择并切换为单元格模式后，拖拽选区并按 Ctrl/Cmd+C，检查复制源范围的流动虚线；选择其它单元格后源标记应保留。再次复制会更新标记，按 Esc 或开始编辑会取消标记。</p>
       <ApiPlayground component="XTable" :initial-props="initialProps">
         <template #default="{ apiProps, apiEvents, captureInstance }">
           <XTable v-bind="apiProps" :data="apiProps.data as Record<string, unknown>[]" :columns="apiProps.columns as TableColumn[]" v-on="apiEvents" @vue:mounted="captureInstance">

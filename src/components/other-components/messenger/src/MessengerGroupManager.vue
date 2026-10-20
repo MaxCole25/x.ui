@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, ref, watch } from 'vue'
 import { XAvatar } from '../../../display-components/avatar'
 import { XIcon } from '../../../basic-components/icon'
@@ -70,7 +71,7 @@ watch(() => props.group, () => { groupName.value = props.group.name; announcemen
     <section class="x-messenger-group__card">
       <header><strong>群聊成员</strong><button type="button" class="x-messenger-group__text-button" :aria-expanded="section === 'members'" @click="open('members')">查看全部 {{ members.length }} 人<XIcon name="arrow-right-s" :icon-size="16" /></button></header>
       <div class="x-messenger-group__members">
-        <button v-for="member in previewMembers" :key="member.id" type="button" class="x-messenger-group__member" :title="member.name + (role(member.id) ? ' · ' + role(member.id) : '')" @click="open('members')"><XAvatar :name="member.name" :src="member.avatar" :avatar-size="32" avatar-background-color="linear-gradient(135deg, #63b6dd, #5b83cf)" /><span>{{ member.name }}</span></button>
+        <button v-for="member in previewMembers" :key="member.id" type="button" class="x-messenger-group__member" :title="member.name + (role(member.id) ? ' · ' + role(member.id) : '')" @click="open('members')"><XAvatar :name="member.name" :src="member.avatar" :avatar-size="32" :background-color="messageAvatarColor(member.id, member.name)" text-color="#ffffff" /><span>{{ member.name }}</span></button>
         <button v-if="permissions.canManageMembers" type="button" class="x-messenger-group__member x-messenger-group__member--action" aria-label="邀请群成员" :disabled="disabled" :aria-expanded="section === 'invite'" @click="open('invite')"><span class="x-messenger-group__circle"><XIcon name="add" :icon-size="22" /></span><span>邀请</span></button>
         <button v-if="permissions.canManageMembers" type="button" class="x-messenger-group__member x-messenger-group__member--action" aria-label="移出群成员" :disabled="disabled" :aria-expanded="section === 'remove'" @click="open('remove')"><span class="x-messenger-group__circle"><XIcon name="subtract" :icon-size="22" /></span><span>移出</span></button>
       </div>
@@ -78,7 +79,7 @@ watch(() => props.group, () => { groupName.value = props.group.name; announcemen
         <header><strong>{{ section === 'members' ? '全部成员' : section === 'invite' ? '邀请同事' : '移出成员' }}</strong><button type="button" aria-label="收起成员操作" @click="section = undefined"><XIcon name="arrow-up-s" :icon-size="16" /></button></header>
         <input v-model="keyword" class="x-messenger-group__search" placeholder="搜索姓名、部门" aria-label="搜索群成员" />
         <div class="x-messenger-group__people">
-          <label v-for="user in candidates" :key="user.id" class="x-messenger-group__person"><input v-if="section !== 'members'" type="checkbox" :checked="selection.includes(user.id)" :disabled="disabled || (section === 'remove' && user.id === group.ownerId)" @change="toggle(user.id, ($event.target as HTMLInputElement).checked)" /><XAvatar :name="user.name" :src="user.avatar" :avatar-size="28" avatar-background-color="linear-gradient(135deg, #63b6dd, #5b83cf)" /><span>{{ user.name }}</span><small>{{ role(user.id) }}</small></label>
+          <label v-for="user in candidates" :key="user.id" class="x-messenger-group__person"><input v-if="section !== 'members'" type="checkbox" :checked="selection.includes(user.id)" :disabled="disabled || (section === 'remove' && user.id === group.ownerId)" @change="toggle(user.id, ($event.target as HTMLInputElement).checked)" /><XAvatar :name="user.name" :src="user.avatar" :avatar-size="28" :background-color="messageAvatarColor(user.id, user.name)" text-color="#ffffff" /><span>{{ user.name }}</span><small>{{ role(user.id) }}</small></label>
           <p v-if="!candidates.length" class="x-messenger-group__empty">{{ section === 'invite' ? '没有可邀请的同事' : '暂无匹配成员' }}</p>
         </div>
         <button v-if="section !== 'members'" type="button" class="x-messenger-group__save" :disabled="disabled || !selection.length" @click="saveMembers">{{ section === 'invite' ? '邀请加入' : '确认移出' }}{{ selection.length ? '（' + selection.length + '）' : '' }}</button>
@@ -95,7 +96,7 @@ watch(() => props.group, () => { groupName.value = props.group.name; announcemen
       </div>
       <form v-if="section === 'admins'" class="x-messenger-group__expanded" @submit.prevent="saveAdmins">
         <header><strong>设置管理员</strong><button type="button" aria-label="返回群资料" @click="open('settings')"><XIcon name="arrow-left-s" :icon-size="16" /></button></header>
-        <div class="x-messenger-group__people"><label v-for="member in members.filter(user => user.id !== group.ownerId)" :key="member.id" class="x-messenger-group__person"><input type="checkbox" :checked="selection.includes(member.id)" :disabled="disabled" @change="toggle(member.id, ($event.target as HTMLInputElement).checked)" /><XAvatar :name="member.name" :src="member.avatar" :avatar-size="28" avatar-background-color="linear-gradient(135deg, #63b6dd, #5b83cf)" /><span>{{ member.name }}</span></label></div>
+        <div class="x-messenger-group__people"><label v-for="member in members.filter(user => user.id !== group.ownerId)" :key="member.id" class="x-messenger-group__person"><input type="checkbox" :checked="selection.includes(member.id)" :disabled="disabled" @change="toggle(member.id, ($event.target as HTMLInputElement).checked)" /><XAvatar :name="member.name" :src="member.avatar" :avatar-size="28" :background-color="messageAvatarColor(member.id, member.name)" text-color="#ffffff" /><span>{{ member.name }}</span></label></div>
         <button class="x-messenger-group__save" :disabled="disabled">保存管理员</button>
       </form>
     </section>

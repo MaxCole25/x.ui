@@ -9,15 +9,20 @@ export interface ChatBusinessReference {
   businessNumber: string
   title: string
   summary?: string
+  /** 卡片操作文案，默认“查看单据”。 */
+  actionLabel?: string
 }
 export type ChatMessageStatus = 'sending' | 'sent' | 'read' | 'failed'
 export interface ChatMessageQuote {
+  messageId?: ChatMessageId
   senderName: string
   content: string
 }
 /** 按数组顺序显示，id 在当前会话内唯一。 */
 export interface ChatMessage {
   id: ChatMessageId
+  /** 同次发送的分组标识；同一发送人的连续同组消息共用气泡，文字显示在附件下方。 */
+  groupId?: string
   senderId?: ChatMessageId
   senderName?: string
   avatar?: string
@@ -52,6 +57,8 @@ export interface ChatProps extends ElementStyleProps {
   showName?: boolean
   /** 显示时间 */
   showTime?: boolean
+  /** 时间位置；separator 按 sentAt 显示居中的相对日期提示。 */
+  timePlacement?: 'meta' | 'separator'
   /** 显示发送状态 */
   showStatus?: boolean
   /** 启用自动跟随底部 */
@@ -120,6 +127,8 @@ export interface ChatScrollPayload {
 }
 export interface ChatEmits {
   'message-click': [payload: ChatMessageClickPayload]
+  'locate-message': [messageId: ChatMessageId]
+  'message-contextmenu': [payload: ChatMessageClickPayload]
   'image-click': [payload: ChatMessageClickPayload]
   'file-click': [payload: ChatMessageClickPayload]
   'business-click': [payload: ChatMessageClickPayload]

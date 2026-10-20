@@ -11,6 +11,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<CheckboxProps>(), {
   disabled: false,
+  readonly: false,
   indeterminate: false,
   fontSize: undefined,
   value: true
@@ -29,6 +30,8 @@ const checkboxStyle = computed(() => ({
   ...createElementStyleVars(props),
   height: toCssSize(props.height ?? 32),
   '--x-checkbox-color': props.checkedColor,
+  '--x-checkbox-disabled-bg': props.disabledBackgroundColor,
+  '--x-checkbox-disabled-text-color': props.disabledTextColor,
   '--x-checkbox-border-color': props.borderColor,
   '--x-checkbox-border-width': toCssSize(props.borderWidth),
   '--x-checkbox-bg': props.backgroundColor,
@@ -36,8 +39,12 @@ const checkboxStyle = computed(() => ({
   '--x-checkbox-radius': toCssSize(props.radius)
 }))
 
+const handleClick = (event: MouseEvent) => {
+  if (props.readonly) event.preventDefault()
+}
+
 const toggle = () => {
-  if (mergedDisabled.value) return
+  if (mergedDisabled.value || props.readonly) return
 
   const next = Array.isArray(props.modelValue)
     ? checked.value
@@ -53,8 +60,9 @@ const toggle = () => {
 <template>
   <label
     class="x-checkbox"
-    :class="['x-checkbox', { 'is-checked': checked, 'is-disabled': mergedDisabled, 'is-indeterminate': props.indeterminate }]"
+    :class="['x-checkbox', { 'is-checked': checked, 'is-disabled': mergedDisabled, 'is-readonly': props.readonly, 'is-indeterminate': props.indeterminate }]"
     :style="[checkboxStyle, createFontStyle(mergedSize)]"
+    @click="handleClick"
   >
     <input
       class="x-checkbox__native"
@@ -63,6 +71,7 @@ const toggle = () => {
       :value="String(props.value)"
       :checked="checked"
       :disabled="mergedDisabled"
+      :aria-readonly="props.readonly || undefined"
       :indeterminate.prop="props.indeterminate"
       @change="toggle"
     />

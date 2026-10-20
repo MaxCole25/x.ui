@@ -12,12 +12,14 @@ export type {
   FileDiskCreateFolderPayload,
   FileDiskDownloadOptions,
   FileDiskDownloadPayload,
+  FileDiskGridIconSize,
   FileDiskItem,
   FileDiskItemType,
   FileDiskPermission,
   FileDiskProps,
   FileDiskRenamePayload,
   FileDiskTransferPayload,
+  FileDiskToolbarAction,
   FileDiskUploadPayload,
   FileDiskViewMode
 } from './src/types'

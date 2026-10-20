@@ -242,6 +242,7 @@ function handleVisibleChange(item: ToolsActionItem, visible: boolean) {
               <span v-if="shouldShowName(item)" class="x-tools__name">{{ item.name }}</span>
             </button>
             <button
+              v-if="getItemType(item) === 'split-dropdown' || item.showArrow !== false"
               class="x-tools__arrow"
               type="button"
               :disabled="isItemDisabled(item)"

@@ -8,6 +8,8 @@ import Example2Source from '../examples/tree-table/Example2.vue?raw'
 
 `XTreeTable` 用于展示树形层级和多列字段，适合菜单、页面、权限、目录、分类等数据。首版聚焦展示、展开收起和独立行勾选。
 
+自定义单元格插槽直接在单元格内渲染，为复选框、按钮等控件保留焦点光圈空间；默认文本仍使用省略显示。
+
 ## 使用示例
 
 ### 无表头菜单

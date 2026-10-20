@@ -618,7 +618,7 @@ defineExpose<TabsExpose>({
                   </span>
                   <span class="x-tabs__label-text">{{ item.label }}</span>
                 </span>
-                <span class="x-tabs__actions">
+                <span v-if="canClose(item) || isTabLocked(item.name)" class="x-tabs__actions">
                   <button
                     v-if="canClose(item)"
                     type="button"

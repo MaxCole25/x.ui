@@ -1,6 +1,6 @@
 .x-scrollbar,
 .x-scrollbar--native {
-  scrollbar-color: var(--x-scrollbar-thumb-color, #cbd5e1) var(--x-scrollbar-track-color, #f1f5f9);
+  scrollbar-color: var(--x-scrollbar-thumb-color, #cbd5e1) var(--x-scrollbar-track-color, transparent);
   scrollbar-width: thin;
 }
 
@@ -26,6 +26,8 @@
 
 .x-scrollbar::-webkit-scrollbar-track,
 .x-scrollbar--native::-webkit-scrollbar-track {
-  background: var(--x-scrollbar-track-color, #f1f5f9);
+  background: var(--x-scrollbar-track-color, transparent);
   border-radius: 999px;
 }
+
+.x-scrollbar::-webkit-scrollbar-thumb:hover, .x-scrollbar--native::-webkit-scrollbar-thumb:hover { background: var(--x-scrollbar-thumb-hover-color, #94a3b8); }

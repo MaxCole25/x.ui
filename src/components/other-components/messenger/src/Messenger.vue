@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { XDialog } from '../../../feedback-components/dialog'
 import { XIcon } from '../../../basic-components/icon'
 import MessengerContactList from './MessengerContactList.vue'
 import MessengerComposer from './MessengerComposer.vue'
 import MessengerHistory from './MessengerHistory.vue'
 import MessengerGroupManager from './MessengerGroupManager.vue'
-import { XChat, type ChatBusinessReference, type ChatExpose, type ChatSendPayload, type ChatScrollPayload } from '../../../display-components/chat'
+import { XChat, type ChatBusinessReference, type ChatExpose, type ChatSendPayload, type ChatScrollPayload, type ChatMessage, type ChatMessageClickPayload } from '../../../display-components/chat'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import type { MessengerEmits, MessengerExpose, MessengerProps, MessengerId, MessengerOpenPayload, MessengerHistoryQuery, MessengerHistoryMessageType } from './types'
 defineOptions({ name: 'XMessenger', inheritAttrs: false })
 const props = withDefaults(defineProps<MessengerProps>(), {
-  modelValue: false, contacts: () => [], contactGroups: () => [], groups: () => [], conversations: () => [], messagePages: () => [],
+  modelValue: false, conversationReadonly: false, defaultContactListPinned: true, contacts: () => [], contactGroups: () => [], groups: () => [], conversations: () => [], messagePages: () => [],
+  chatBackgroundColor: 'var(--x-color-surface-soft, #f2f4f7)', bubbleBackgroundColor: 'var(--x-color-surface, white)', timePlacement: 'separator',
   title: '内部消息', width: 800, height: 640, showContactList: true, contactListPlacement: 'right', contactListWidth: 280, contactListHeight: 520, fontSize: 14, disabled: false, allowCreateGroup: false,
   currentUserRole: 'user', enableContactGroupManagement: true, showBusinessPicker: true, teleported: true, teleportTo: 'body', zIndex: overlayZIndex.dialog
 })
+const slots = defineSlots<{ 'business-settings'?: () => any }>()
 const emit = defineEmits<MessengerEmits>()
 const internalActiveId = ref<MessengerId>()
 const activeId = computed(() => props.activeConversationId ?? internalActiveId.value)
@@ -61,6 +63,50 @@ onBeforeUnmount(() => surfaceObserver?.disconnect())
 const visited = ref(new Set<MessengerId>())
 const cachedConversations = computed(() => props.conversations.filter(item => visited.value.has(item.id)))
 const chats = new Map<MessengerId, ChatExpose>()
+const replyDrafts = reactive(new Map<MessengerId, ChatMessage>())
+const messageMenu = ref<{ conversationId: MessengerId; message: ChatMessage; left: number; top: number }>()
+const messageMenuElement = ref<HTMLElement>()
+function quoteFor(message: ChatMessage) {
+  const prefix = message.kind === 'image' ? '[图片] ' : message.kind === 'file' ? '[附件] ' : ''
+  return { messageId: message.id, senderName: message.senderName || '用户', content: prefix + (message.fileName || message.content) }
+}
+async function openMessageMenu(id: MessengerId, detail: ChatMessageClickPayload) {
+  if (props.disabled || props.conversationReadonly || detail.message.kind === 'system'
+    || detail.message.status === 'sending' || detail.message.status === 'failed'
+    || !props.conversations.some(item => item.id === id)) return
+  detail.event.preventDefault()
+  messageMenu.value = { conversationId: id, message: detail.message,
+    left: Math.max(8, Math.min(detail.event.clientX, window.innerWidth - 128)),
+    top: Math.max(8, Math.min(detail.event.clientY, window.innerHeight - 48)) }
+  await nextTick()
+  messageMenuElement.value?.querySelector<HTMLButtonElement>('button')?.focus()
+}
+function replyToMessage() {
+  const target = messageMenu.value
+  if (!target) return
+  replyDrafts.set(target.conversationId, target.message)
+  messageMenu.value = undefined
+  composers.get(target.conversationId)?.focus()
+}
+function dismissMessageMenu(event: PointerEvent) {
+  if (!messageMenuElement.value?.contains(event.target as Node)) messageMenu.value = undefined
+}
+function dismissMessageMenuOnEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape' && messageMenu.value) {
+    const id = messageMenu.value.conversationId
+    messageMenu.value = undefined
+    composers.get(id)?.focus()
+  }
+}
+onMounted(() => {
+  document.addEventListener('pointerdown', dismissMessageMenu)
+  document.addEventListener('keydown', dismissMessageMenuOnEscape)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', dismissMessageMenu)
+  document.removeEventListener('keydown', dismissMessageMenuOnEscape)
+})
+watch(() => props.disabled || props.conversationReadonly, value => { if (value) messageMenu.value = undefined })
 const businessDrafts = reactive(new Map<MessengerId, ChatBusinessReference[]>())
 const topConversations = reactive(new Set<MessengerId>())
 const historyRequests = reactive(new Map<MessengerId, { beforeMessageId?: MessengerId; loadingSeen: boolean }>())
@@ -95,12 +141,15 @@ function openConversation(payload: MessengerOpenPayload) {
 }
 function bindChat(id: MessengerId, instance: unknown) { if (instance) chats.set(id, instance as ChatExpose); else chats.delete(id) }
 function addBusinessReference(conversationId: MessengerId, reference: ChatBusinessReference) {
-  if (props.disabled || !props.conversations.some(item => item.id === conversationId)) return
+  if (props.disabled || (props.conversationReadonly && activeId.value === conversationId) || !props.conversations.some(item => item.id === conversationId)) return
   businessDrafts.set(conversationId, [...(businessDrafts.get(conversationId) ?? []), reference])
 }
 function removeBusinessReference(id: MessengerId, index: number) { businessDrafts.set(id, (businessDrafts.get(id) ?? []).filter((_item, current) => current !== index)) }
 function send(id: MessengerId, payload: ChatSendPayload) {
-  emit('send', { conversationId: id, ...payload, businessReferences: [...(businessDrafts.get(id) ?? [])] })
+  if (props.disabled || (props.conversationReadonly && activeId.value === id)) return
+  const reply = replyDrafts.get(id)
+  emit('send', { conversationId: id, ...payload, businessReferences: [...(businessDrafts.get(id) ?? [])], replyToMessageId: reply?.id, quote: reply ? quoteFor(reply) : undefined })
+  replyDrafts.delete(id)
   businessDrafts.delete(id)
 }
 function sendBusiness(id: MessengerId) {
@@ -163,6 +212,7 @@ function createGroup() {
   panel.value = undefined
 }
 watch(activeId, async id => {
+  messageMenu.value = undefined
   panel.value = undefined
   pendingLocation.value = undefined
   keyword.value = ''; startDate.value = ''; endDate.value = ''; historyPage.value = 1; historyMessageType.value = 'all'; historySenderId.value = undefined
@@ -172,7 +222,7 @@ watch(activeId, async id => {
   if (props.modelValue) { composers.get(id)?.focus(); read(id) }
 }, { immediate: true })
 watch(() => props.modelValue, async visible => {
-  if (!visible) { chats.clear(); composers.clear(); visited.value = new Set(); businessDrafts.clear(); topConversations.clear(); historyRequests.clear(); return }
+  if (!visible) { messageMenu.value = undefined; replyDrafts.clear(); chats.clear(); composers.clear(); visited.value = new Set(); businessDrafts.clear(); topConversations.clear(); historyRequests.clear(); return }
   if (activeId.value !== undefined) visited.value = new Set([...visited.value, activeId.value])
   await nextTick()
   if (activeId.value !== undefined) { composers.get(activeId.value)?.focus(); read(activeId.value) }
@@ -184,23 +234,28 @@ watch(() => props.messagePages, async () => {
 watch(() => props.conversations, () => {
   const validIds = new Set(props.conversations.map(item => item.id))
   visited.value = new Set([...visited.value].filter(id => validIds.has(id)))
+  for (const id of replyDrafts.keys()) if (!validIds.has(id)) replyDrafts.delete(id)
+  if (messageMenu.value && !validIds.has(messageMenu.value.conversationId)) messageMenu.value = undefined
   for (const id of businessDrafts.keys()) if (!validIds.has(id)) businessDrafts.delete(id)
 }, { deep: true })
 defineExpose<MessengerExpose>({ openConversation, selectConversation, addBusinessReference, locateMessage })
 </script>
 <template>
-  <MessengerContactList v-if="showContactList" v-model="selectedContact" v-model:active-kind="selectedKind" :contact-list-placement="contactListPlacement" :contact-list-width="contactListWidth" :contact-list-height="contactListHeight" :contacts="contacts" :contact-groups="contactGroups" :groups="groups" :font-size="fontSize" :enable-contact-group-management="enableContactGroupManagement" :conversations="conversations" :message-pages="messagePages" :current-user-role="currentUserRole" :allow-create-group="allowCreateGroup" :disabled="disabled" :teleported="teleported" :teleport-to="teleportTo" :z-index="contactLayer" :radius="radius" :border-color="borderColor" :border-width="borderWidth" :background-color="backgroundColor" :text-color="textColor"
+  <MessengerContactList :launcher-position-storage-key="launcherPositionStorageKey" :floating-boundary="floatingBoundary" :default-contact-list-pinned="defaultContactListPinned" v-if="showContactList" v-model="selectedContact" v-model:active-kind="selectedKind" :contact-list-placement="contactListPlacement" :contact-list-width="contactListWidth" :contact-list-height="contactListHeight" :contacts="contacts" :contact-groups="contactGroups" :groups="groups" :font-size="fontSize" :enable-contact-group-management="enableContactGroupManagement" :conversations="conversations" :message-pages="messagePages" :current-user-role="currentUserRole" :allow-create-group="allowCreateGroup" :disabled="disabled" :teleported="teleported" :teleport-to="teleportTo" :z-index="contactLayer" :radius="radius" :border-color="borderColor" :border-width="borderWidth" :background-color="backgroundColor" :text-color="textColor"
     @create-group="startCreate" @update:contact-list-height="emit('update:contactListHeight', $event)" @activate="activateSurface('contacts')" @open="openConversation" @contact-group-action="emit('contact-group-action', $event)">
+    <template v-if="slots['business-settings']" #business-settings>
+      <slot name="business-settings" />
+    </template>
   </MessengerContactList>
-  <XDialog :model-value="modelValue" :title="activeConversation?.title ?? title" :width="width" :height="height" :min-width="560" :min-height="440" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="chatLayer" :enable-modal="false" :radius="radius" :border-width="borderWidth" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" :close-on-mask-click="false" show-fullscreen class="x-messenger-dialog" header-background-color="color-mix(in srgb, var(--x-color-primary, #4385ef) 5%, var(--x-color-surface, white))" close-icon-color="var(--x-color-text-muted, #7a8493)" @pointerdown.capture="activateSurface('chat')" @focusin="activateSurface('chat')" @update:model-value="emit('update:modelValue', $event)" @close="emit('close')">
+  <XDialog :model-value="modelValue" :title="activeConversation?.title ?? title" :width="width" :height="height" :min-width="560" :min-height="440" :font-size="fontSize" :teleported="teleported" :teleport-to="teleportTo" :z-index="chatLayer" :enable-modal="false" :radius="radius" :border-width="borderWidth" :border-color="borderColor" :background-color="backgroundColor" :text-color="textColor" :close-on-mask-click="false" show-fullscreen class="x-messenger-dialog" :header-background-color="headerBackgroundColor ?? 'color-mix(in srgb, var(--x-color-primary, #4385ef) 12%, var(--x-color-surface, white))'" close-icon-color="var(--x-color-text-muted, #7a8493)" @pointerdown.capture="activateSurface('chat')" @focusin="activateSurface('chat')" @update:model-value="emit('update:modelValue', $event)" @close="emit('close')">
     <div ref="surface" class="x-messenger" :style="{ ...createElementStyleVars(props), fontSize: fontSize + 'px' }">
       <main class="x-messenger__main">
         <p v-if="activeGroup?.announcement" class="x-messenger__announcement">{{ activeGroup.announcement }}</p>
         <div v-for="conversation in cachedConversations" v-show="activeId === conversation.id" :key="conversation.id" class="x-messenger__session">
           <span v-if="topConversations.has(conversation.id) && messagePage(conversation.id)?.hasMore" class="x-messenger__history-hint" role="status">{{ messagePage(conversation.id)?.loading || historyRequests.has(conversation.id) ? '正在加载更早消息…' : '继续向上滚动加载更早消息' }}</span>
           <div v-if="businessDrafts.get(conversation.id)?.length" class="x-messenger__business-drafts"><div v-for="(reference, index) in businessDrafts.get(conversation.id)" :key="index"><span>{{ reference.businessNumber }} · {{ reference.title }}</span><button type="button" :disabled="disabled" aria-label="移除待发送单据" @click="removeBusinessReference(conversation.id, index)">×</button></div><button type="button" :disabled="disabled" @click="sendBusiness(conversation.id)">发送单据</button></div>
-          <XChat :ref="instance => bindChat(conversation.id, instance)" :messages="messagePage(conversation.id)?.messages ?? []" :current-user-id="currentUserId" :font-size="fontSize" height="100%" :disabled="disabled"
-            @send="send(conversation.id, $event)" @scroll="onChatScroll(conversation.id, $event)" @wheel.capture="loadHistory(conversation.id, $event)"
+          <XChat :background-color="chatBackgroundColor" :bubble-background-color="bubbleBackgroundColor" :self-bubble-background-color="selfBubbleBackgroundColor" :self-bubble-text-color="selfBubbleTextColor" :time-placement="timePlacement" :ref="instance => bindChat(conversation.id, instance)" :messages="messagePage(conversation.id)?.messages ?? []" :empty-text="conversationReadonly && activeId === conversation.id ? '暂无通知' : '暂无消息，开始聊天吧'" :current-user-id="currentUserId" :font-size="fontSize" height="100%" :disabled="disabled"
+            @locate-message="locateMessage(conversation.id, $event)" @message-contextmenu="openMessageMenu(conversation.id, $event)" @send="send(conversation.id, $event)" @scroll="onChatScroll(conversation.id, $event)" @wheel.capture="loadHistory(conversation.id, $event)"
             @business-click="emit('business-click', { conversationId: conversation.id, message: $event.message })"
             @image-click="emit('image-click', { conversationId: conversation.id, detail: $event })"
             @file-click="emit('file-click', { conversationId: conversation.id, detail: $event })"
@@ -208,7 +263,8 @@ defineExpose<MessengerExpose>({ openConversation, selectConversation, addBusines
             @attachment-add="emit('attachment-add', { conversationId: conversation.id, detail: $event })"
             @attachment-remove="emit('attachment-remove', { conversationId: conversation.id, attachment: $event })" >
             <template #footer>
-              <MessengerComposer :ref="instance => bindComposer(conversation.id, instance)" v-model:send-shortcut="sendShortcut" :disabled="disabled" :show-business-picker="showBusinessPicker" :show-group-management="conversation.kind === 'group'" :history-visible="panel === 'history'" :z-index="Math.max(overlayZIndex.popper, chatLayer + 1)"
+              <button v-if="conversationReadonly && activeId === conversation.id" type="button" @click="toggleHistory">历史记录</button>
+              <MessengerComposer v-if="!conversationReadonly || activeId !== conversation.id" :ref="instance => bindComposer(conversation.id, instance)" v-model:send-shortcut="sendShortcut" :quote="replyDrafts.has(conversation.id) ? quoteFor(replyDrafts.get(conversation.id)!) : undefined" @cancel-reply="replyDrafts.delete(conversation.id)" :disabled="disabled" :show-business-picker="showBusinessPicker" :show-group-management="conversation.kind === 'group'" :history-visible="panel === 'history'" :z-index="Math.max(overlayZIndex.popper, chatLayer + 1)"
                 @send="send(conversation.id, $event)" @history-request="toggleHistory" @group-manage="panel === 'group' ? panel = undefined : editGroup()" @business-select="emit('business-select', { conversationId: conversation.id })"
                 @attachment-add="emit('attachment-add', { conversationId: conversation.id, detail: $event })" @attachment-remove="emit('attachment-remove', { conversationId: conversation.id, attachment: $event })" />
             </template>
@@ -225,8 +281,17 @@ defineExpose<MessengerExpose>({ openConversation, selectConversation, addBusines
       </aside>
     </div>
   </XDialog>
+  <Teleport :to="teleportTo" :disabled="!teleported">
+    <div v-if="modelValue && messageMenu" ref="messageMenuElement" class="x-messenger__message-menu" role="menu" aria-label="消息操作" :style="{ left: messageMenu.left + 'px', top: messageMenu.top + 'px', zIndex: Math.max(overlayZIndex.popper, chatLayer + 1), fontSize: fontSize + 'px' }">
+      <button type="button" role="menuitem" @click="replyToMessage">回复</button>
+    </div>
+  </Teleport>
 </template>
 <style scoped>
+.x-messenger__message-menu { position: fixed; width: 120px; padding: 4px; box-sizing: border-box; border: 1px solid var(--x-color-border, #dde2ea); border-radius: 7px; color: var(--x-color-text, #303846); background: var(--x-color-surface, white); box-shadow: 0 4px 16px rgb(0 0 0 / 12%); }
+.x-messenger__message-menu button { width: 100%; padding: 6px 10px; border: 0; border-radius: 4px; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.x-messenger__message-menu button:hover,.x-messenger__message-menu button:focus-visible { background: var(--x-color-primary-soft, #eaf3ff); outline: none; }
+
 .x-messenger { display: flex; width: 100%; height: 100%; min-height: 0; color: var(--x-element-text, var(--x-color-text, #303846)); background: var(--x-element-bg, var(--x-color-surface, white)); }
 .x-messenger button,.x-messenger input,.x-messenger textarea { font: inherit; }.x-messenger button { cursor: pointer; border: 1px solid var(--x-color-border, #dde2ea); border-radius: 4px; padding: 5px 8px; background: var(--x-color-surface, white); color: inherit; }.x-messenger button:disabled { cursor: default; opacity: .55; }
 .x-messenger__main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }.x-messenger__announcement { margin: 0; padding: 8px 12px; background: var(--x-color-surface-soft, #f6f8fb); font-size: 12px; max-height: 56px; overflow: auto; overflow-wrap: anywhere; }.x-messenger__session { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; }.x-messenger__session :deep(.x-chat) { flex: 1; min-height: 0; height: 0 !important; border: 0; border-radius: 0; }

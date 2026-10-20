@@ -4,11 +4,11 @@ import { XChat, type ChatMessage, type ChatSendPayload } from './index'
 import { createChatMessages } from './demo'
 import '../../../styles/index.css'
 
-const createInitialProps = () => ({ messages: createChatMessages(), currentUserId: 'me', title: '小林', height: 400 })
+const createInitialProps = () => ({ messages: createChatMessages(), currentUserId: 'me', title: '小林', height: 400, timePlacement: 'meta', businessReferences: [{ businessType: 'task', businessId: 10, businessNumber: 'T20261016-0010', title: '生产表任务 · 待领取', summary: '来源业务：合同表；请进入任务中心办理。', actionLabel: '查看任务' }] })
 let nextId = 6
 function send(payload: ChatSendPayload, values: Record<string, unknown>) {
   const messages = (values.messages ?? []) as ChatMessage[]
-  const base = { senderId: values.currentUserId as string | number | undefined, senderName: '我', time: '刚刚', status: 'sent' as const }
+  const base = { groupId: 'send-' + nextId, senderId: values.currentUserId as string | number | undefined, senderName: '我', time: '刚刚', status: 'sent' as const }
   if (payload.content) messages.push({ ...base, id: nextId++, content: payload.content })
   for (const attachment of payload.attachments) {
     messages.push({ ...base, id: nextId++, kind: attachment.kind, content: attachment.name,

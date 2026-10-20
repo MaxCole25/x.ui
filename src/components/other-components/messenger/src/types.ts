@@ -1,7 +1,7 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 import type { ContactListPlacement } from '../../../display-components/contact-list'
 import type { OverlayProps } from '../../../_utils/overlay'
-import type { ChatAttachment, ChatAttachmentPayload, ChatBusinessReference, ChatMessage, ChatMessageClickPayload, ChatMessageId, ChatSendPayload } from '../../../display-components/chat'
+import type { ChatProps, ChatAttachment, ChatAttachmentPayload, ChatBusinessReference, ChatMessage, ChatMessageClickPayload, ChatMessageId, ChatSendPayload, ChatMessageQuote } from '../../../display-components/chat'
 export type MessengerId = ChatMessageId
 export interface MessengerContact {
   id: MessengerId
@@ -46,9 +46,9 @@ export interface MessengerConversation {
 export interface MessengerMessagePage { conversationId: MessengerId; messages: ChatMessage[]; hasMore?: boolean; loading?: boolean }
 export type MessengerHistoryMessageType = 'all' | 'media' | 'emoji' | 'file' | 'link'
 export interface MessengerHistoryQuery { conversationId: MessengerId; keyword: string; startDate: string; endDate: string; page: number; pageSize: number; messageType?: MessengerHistoryMessageType; senderId?: MessengerId }
-export interface MessengerHistoryResult extends MessengerHistoryQuery { messages: ChatMessage[]; total: number; loading?: boolean }
+export interface MessengerHistoryResult extends MessengerHistoryQuery { messages: ChatMessage[]; total: number; loading?: boolean; error?: string }
 export interface MessengerOpenPayload { kind: 'direct' | 'group'; targetId: MessengerId }
-export interface MessengerSendPayload extends ChatSendPayload { conversationId: MessengerId; businessReferences: ChatBusinessReference[] }
+export interface MessengerSendPayload extends ChatSendPayload { conversationId: MessengerId; businessReferences: ChatBusinessReference[]; replyToMessageId?: MessengerId; quote?: ChatMessageQuote }
 export type MessengerContactGroupAction =
   | { action: 'create'; name: string }
   | { action: 'rename'; groupId: MessengerId; name: string }
@@ -63,11 +63,23 @@ export type MessengerGroupAction =
   | { action: 'leave' | 'dissolve'; groupId: MessengerId }
 
 export type MessengerContactListPlacement = Exclude<ContactListPlacement, 'inline'>
-export interface MessengerProps extends ElementStyleProps, OverlayProps {
+export interface MessengerProps extends ElementStyleProps, OverlayProps, Pick<ChatProps, 'bubbleBackgroundColor' | 'selfBubbleBackgroundColor' | 'selfBubbleTextColor' | 'timePlacement'> {
+  /** 独立聊天窗口标题栏背景色。 */
+  headerBackgroundColor?: string
+  /** 聊天消息区域背景色，与气泡和输入区分离。 */
+  chatBackgroundColor?: string
   /** 独立聊天窗口是否显示，好友列表单独控制。 */
   modelValue?: boolean
+  /** 当前活动会话只读，仍可切换和查询历史。 */
+  conversationReadonly?: boolean
+  /** 联系人列表初始固定状态。 */
+  defaultContactListPinned?: boolean
   showContactList?: boolean
   contactListPlacement?: MessengerContactListPlacement
+  /** 悬浮区域的 CSS 选择器；未指定时使用浏览器视口。 */
+  floatingBoundary?: string
+  /** 消息浮标位置的 localStorage 键；由应用按租户和用户提供，未指定时不持久化。 */
+  launcherPositionStorageKey?: string
   contactListWidth?: number
   /** 好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。 */
   contactListHeight?: number

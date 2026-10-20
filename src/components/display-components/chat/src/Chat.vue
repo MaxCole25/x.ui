@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { XAvatar } from '../../avatar'
 import { XIcon } from '../../../basic-components/icon'
@@ -10,7 +11,7 @@ import type { ChatEmits, ChatExpose, ChatMessage, ChatMessageId, ChatProps, Chat
 defineOptions({ name: 'XChat' })
 const props = withDefaults(defineProps<ChatProps>(), {
   messages: () => [], title: '', width: '100%', height: 420, fontSize: 14,
-  showAvatar: true, showName: true, showTime: true, showStatus: true,
+  showAvatar: true, showName: true, showTime: true, showStatus: true, timePlacement: 'meta',
   enableAutoScroll: true, emptyText: '暂无消息，开始聊天吧', bubbleRadius: 8,
   showComposer: true, showImagePicker: true, showFilePicker: true, showEmojiPicker: true,
   enablePaste: true, disabled: false, placeholder: '输入消息，支持粘贴图片或文件', sendText: '发送', fileAccept: '',
@@ -24,11 +25,29 @@ const content = ref<HTMLDivElement>()
 const shouldFollow = ref(true)
 let lastScrollTop = 0
 let resizeObserver: ResizeObserver | undefined
+const messageGroups = computed(() => {
+  const groups: { message: ChatMessage; index: number; parts: { message: ChatMessage; index: number }[] }[] = []
+  props.messages.forEach((message, index) => {
+    const previous = groups[groups.length - 1]
+    const part = { message, index }
+    if (message.groupId && message.kind !== 'system' && previous?.message.kind !== 'system'
+      && previous?.message.groupId === message.groupId && previous.message.senderId === message.senderId) {
+      previous.parts.push(part)
+      previous.message = message
+    } else {
+      groups.push({ message, index, parts: [part] })
+    }
+  })
+  return groups.map(group => ({ ...group, quote: group.parts.find(part => part.message.quote)?.message.quote, parts: [
+    ...group.parts.filter(part => part.message.kind && part.message.kind !== 'text'),
+    ...group.parts.filter(part => !part.message.kind || part.message.kind === 'text')
+  ] }))
+})
 const highlightedId = ref<ChatMessageId>()
 let highlightTimer: ReturnType<typeof setTimeout> | undefined
 async function scrollToMessage(id: ChatMessageId) {
   await nextTick()
-  const index = props.messages.findIndex(message => message.id === id)
+  const index = messageGroups.value.findIndex(group => group.parts.some(part => part.message.id === id))
   const item = content.value?.querySelectorAll<HTMLElement>('.x-chat__item')[index]
   if (!item || !viewport.value) return false
   shouldFollow.value = false
@@ -37,6 +56,9 @@ async function scrollToMessage(id: ChatMessageId) {
   clearTimeout(highlightTimer)
   highlightTimer = setTimeout(() => { highlightedId.value = undefined }, 2400)
   return true
+}
+async function locateQuote(messageId: ChatMessageId) {
+  if (!await scrollToMessage(messageId)) emit('locate-message', messageId)
 }
 watch(() => props.messages[0]?.id, async (firstId, previousId) => {
   if (previousId === undefined || firstId === previousId || !props.messages.some(message => message.id === previousId)) return
@@ -50,6 +72,34 @@ watch(() => props.messages[0]?.id, async (firstId, previousId) => {
   lastScrollTop = element.scrollTop
 }, { flush: 'pre' })
 const isSelf = (message: ChatMessage) => props.currentUserId !== undefined && message.senderId === props.currentUserId
+const now = ref(new Date())
+let clockTimer: ReturnType<typeof setInterval> | undefined
+const messageDate = (message: ChatMessage) => {
+  const date = message.sentAt ? new Date(message.sentAt) : undefined
+  return date && !Number.isNaN(date.getTime()) ? date : undefined
+}
+const sameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+function separatorText(message: ChatMessage) {
+  const date = messageDate(message)
+  if (!date) return message.time ?? ''
+  const pad = (value: number) => String(value).padStart(2, '0')
+  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  if (sameDay(date, now.value)) return time
+  const yesterday = new Date(now.value); yesterday.setDate(yesterday.getDate() - 1)
+  if (sameDay(date, yesterday)) return `昨天 ${time}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${time}`
+}
+function showSeparator(message: ChatMessage, index: number) {
+  if (!props.showTime || props.timePlacement !== 'separator' || !separatorText(message)) return false
+  if (index === 0) return true
+  const previous = props.messages[index - 1]
+  const date = messageDate(message), previousDate = messageDate(previous)
+  if (date && previousDate) return !sameDay(date, previousDate) || Math.abs(date.getTime() - previousDate.getTime()) >= 5 * 60 * 1000
+  return separatorText(message) !== separatorText(previous)
+}
+const isEmojiMessage = (message: ChatMessage) => (!message.kind || message.kind === 'text')
+  && message.content.trim().length > 0
+  && /^(?:\p{Extended_Pictographic}|\p{Emoji_Presentation}|\p{Emoji_Modifier}|\uFE0F|\u200D|\s|[0-9#*]\uFE0F?\u20E3)+$/u.test(message.content)
 const statusText = { sending: '发送中', sent: '已发送', read: '已读', failed: '发送失败' }
 const chatStyle = computed(() => ({
   ...createFontStyle(props.fontSize), ...createElementStyleVars(props),
@@ -78,12 +128,13 @@ function followBottom() {
 watch(() => props.messages, followBottom, { deep: true, flush: 'post' })
 watch(() => props.enableAutoScroll, enabled => { if (enabled) void scrollToBottom() })
 onMounted(() => {
+  clockTimer = setInterval(() => { now.value = new Date() }, 60000)
   if (props.enableAutoScroll) void scrollToBottom()
   resizeObserver = new ResizeObserver(followBottom)
   resizeObserver.observe(content.value!)
   resizeObserver.observe(viewport.value!)
 })
-onBeforeUnmount(() => { resizeObserver?.disconnect(); clearTimeout(highlightTimer) })
+onBeforeUnmount(() => { clearInterval(clockTimer); resizeObserver?.disconnect(); clearTimeout(highlightTimer) })
 defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, sendMessage })
 </script>
 
@@ -93,39 +144,46 @@ defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, s
     <div ref="viewport" class="x-chat__viewport" role="log" aria-label="消息列表" aria-live="polite" aria-relevant="additions text" tabindex="0" @scroll="handleScroll">
       <div ref="content" class="x-chat__messages">
         <div v-if="!messages.length" class="x-chat__empty"><slot name="empty">{{ emptyText }}</slot></div>
-        <div v-for="(message, index) in messages" :key="message.id" class="x-chat__item" :class="{ 'is-self': isSelf(message), 'is-system': message.kind === 'system', 'is-highlighted': message.id === highlightedId }">
+        <template v-for="{ message, index, parts, quote } in messageGroups" :key="message.id">
+          <div v-if="showSeparator(message, index)" class="x-chat__time-separator"><time :datetime="message.sentAt">{{ separatorText(message) }}</time></div>
+        <div class="x-chat__item" :class="{ 'is-self': isSelf(message), 'is-system': message.kind === 'system', 'is-highlighted': parts.some(part => part.message.id === highlightedId) }">
           <template v-if="message.kind === 'system'">
             <span class="x-chat__system"><slot name="message" :message="message" :index="index" :is-self="false">{{ message.content }}</slot></span>
           </template>
           <template v-else>
             <div v-if="showAvatar" class="x-chat__avatar">
               <slot name="avatar" :message="message" :index="index" :is-self="isSelf(message)">
-                <XAvatar :src="message.avatar" :name="message.senderName || (isSelf(message) ? '我' : '访客')" :avatar-size="36" :font-size="14" shape="square" :radius="8" />
+                <XAvatar :background-color="messageAvatarColor(message.senderId, message.senderName)" text-color="#ffffff" :src="message.avatar" :name="message.senderName || (isSelf(message) ? '我' : '访客')" :avatar-size="36" :font-size="14" shape="square" :radius="8" />
               </slot>
             </div>
             <div class="x-chat__body">
-              <div v-if="(showName && message.senderName) || (showTime && message.time)" class="x-chat__meta">
+              <div v-if="(showName && message.senderName) || (showTime && timePlacement === 'meta' && message.time)" class="x-chat__meta">
                 <span v-if="showName && message.senderName">{{ message.senderName }}</span>
-                <span v-if="showTime && message.time">{{ message.time }}</span>
+                <span v-if="showTime && timePlacement === 'meta' && message.time">{{ message.time }}</span>
               </div>
               <div class="x-chat__bubble" @click="emit('message-click', { message, index, isSelf: isSelf(message), event: $event })">
-                <slot name="message" :message="message" :index="index" :is-self="isSelf(message)">
-                  <blockquote v-if="message.quote" class="x-chat__quote"><strong>{{ message.quote.senderName }}</strong><span>{{ message.quote.content }}</span></blockquote>
-                  <button v-if="message.kind === 'image' && message.imageUrl" class="x-chat__image-button" type="button" :aria-label="message.content || '查看图片'" @click="emit('image-click', { message, index, isSelf: isSelf(message), event: $event })">
-                    <img class="x-chat__image" :src="message.imageUrl" :alt="message.content || '聊天图片'" @load="followBottom" />
+                <blockquote v-if="quote" class="x-chat__quote">
+                  <div class="x-chat__quote-content"><strong>{{ quote.senderName }}</strong><span>{{ quote.content }}</span></div>
+                  <button v-if="quote.messageId !== undefined" type="button" class="x-chat__quote-jump" aria-label="跳转到原消息" title="跳转到原消息" @click.stop="locateQuote(quote.messageId)"><XIcon name="arrow-up" :icon-size="16" /></button>
+                </blockquote>
+                <div v-for="{ message: part, index: partIndex } in parts" :key="part.id" class="x-chat__part" @contextmenu="emit('message-contextmenu', { message: part, index: partIndex, isSelf: isSelf(part), event: $event })">
+                <slot name="message" :message="part" :index="partIndex" :is-self="isSelf(part)">
+                  <button v-if="part.kind === 'image' && part.imageUrl" class="x-chat__image-button" type="button" :aria-label="part.content || '查看图片'" @click="emit('image-click', { message: part, index: partIndex, isSelf: isSelf(part), event: $event })">
+                    <img class="x-chat__image" :src="part.imageUrl" :alt="part.content || '聊天图片'" @load="followBottom" />
                   </button>
-                  <button v-else-if="message.kind === 'file'" type="button" class="x-chat__file" @click="emit('file-click', { message, index, isSelf: isSelf(message), event: $event })">
+                  <button v-else-if="part.kind === 'file'" type="button" class="x-chat__file" @click="emit('file-click', { message: part, index: partIndex, isSelf: isSelf(part), event: $event })">
                     <XIcon name="file-2" :icon-size="28" />
-                    <span><strong>{{ message.fileName || message.content }}</strong><small>{{ message.fileSize === undefined ? '文件' : formatChatFileSize(message.fileSize) }} · 点击查看</small></span>
+                    <span><strong>{{ part.fileName || part.content }}</strong><small>{{ part.fileSize === undefined ? '文件' : formatChatFileSize(part.fileSize) }} · 点击查看</small></span>
                   </button>
-                  <button v-else-if="message.kind === 'business' && message.business" type="button" class="x-chat__business" @click="emit('business-click', { message, index, isSelf: isSelf(message), event: $event })">
-                    <small>{{ message.business.businessType }} · {{ message.business.businessNumber }}</small>
-                    <strong>{{ message.business.title }}</strong>
-                    <span v-if="message.business.summary">{{ message.business.summary }}</span>
-                    <small>查看单据 →</small>
+                  <button v-else-if="part.kind === 'business' && part.business" type="button" class="x-chat__business" @click="emit('business-click', { message: part, index: partIndex, isSelf: isSelf(part), event: $event })">
+                    <small>{{ part.business.businessType }} · {{ part.business.businessNumber }}</small>
+                    <strong>{{ part.business.title }}</strong>
+                    <span v-if="part.business.summary">{{ part.business.summary }}</span>
+                    <small>{{ part.business.actionLabel || '查看单据' }} →</small>
                   </button>
-                  <span v-else class="x-chat__text">{{ message.content }}</span>
+                  <span v-else class="x-chat__text" :class="{ 'is-emoji': isEmojiMessage(part) }">{{ part.content }}</span>
                 </slot>
+                </div>
               </div>
               <div v-if="showStatus && isSelf(message) && message.status" class="x-chat__status" :class="{ 'is-failed': message.status === 'failed' }">
                 <span>{{ statusText[message.status] }}</span>
@@ -134,6 +192,7 @@ defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, s
             </div>
           </template>
         </div>
+        </template>
       </div>
     </div>
     <footer v-if="$slots.footer || showComposer" class="x-chat__footer">
@@ -166,6 +225,9 @@ defineExpose<ChatExpose>({ scrollToMessage, scrollToBottom, focus, clearDraft, s
 </template>
 
 <style scoped>
+.x-chat__time-separator { display: flex; justify-content: center; margin: 8px 0 20px; color: var(--x-color-text-muted, #737b8c); font-size: var(--x-font-size-caption, 12px); }
+.x-chat__time-separator time { padding: 3px 10px; border-radius: 10px; background: color-mix(in srgb, var(--x-color-surface, white) 60%, transparent); }
+
 .x-chat__business { display: grid; gap: 6px; width: min(280px, 100%); border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
 .x-chat__business small { color: var(--x-color-text-muted, #737b8c); }
 .x-chat__item.is-highlighted .x-chat__bubble { outline: 2px solid var(--x-color-primary, #409eff); outline-offset: 3px; }

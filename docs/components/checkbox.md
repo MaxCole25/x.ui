@@ -28,9 +28,11 @@ import Example5Source from '../examples/checkbox/Example5.vue?raw'
   <Example2 />
 </XDocDemo>
 
-### 半选和禁用
+### 半选、只读和禁用
 
-<XDocDemo title="半选和禁用" :code="Example3Source">
+只读状态保留正常的选中颜色，可聚焦查看，鼠标点击和键盘操作均不会改变绑定值或触发更新事件。`disabled` 与 `readonly` 同时设置时，禁用状态优先。
+
+<XDocDemo title="半选、只读和禁用" :code="Example3Source">
   <Example3 />
 </XDocDemo>
 
@@ -41,6 +43,8 @@ import Example5Source from '../examples/checkbox/Example5.vue?raw'
 </XDocDemo>
 
 ### 业务主题
+
+使用 `disabledBackgroundColor` 和 `disabledTextColor` 覆盖禁用背景与前景色，支持 CSS 变量；前景色同时作用于文字、勾选和半选标记。未设置时分别继承 `--x-color-disabled-bg`、`--x-color-disabled-text`，边框继承 `--x-color-disabled-border`。由 `XForm disabled` 触发的禁用状态同样生效。
 
 <XDocDemo title="业务主题" :code="Example5Source">
   <Example5 />
@@ -76,6 +80,8 @@ import Example5Source from '../examples/checkbox/Example5.vue?raw'
 | --- | --- | --- | --- | --- |
 | `fontSize` | 字号，数字单位 px，不影响高度、内边距和圆角 | `number` | `undefined` | px |
 | `checkedColor` | 选中色 | `string` | `—` | — |
+| `disabledBackgroundColor` | 禁用时复选框背景色，默认使用主题禁用背景色 | `string` | `—` | — |
+| `disabledTextColor` | 禁用时文字、勾选和半选标记的前景色，默认使用主题禁用文字色 | `string` | `—` | — |
 | `radius` | 圆角 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `borderColor` | 边框色 | `string` | `—` | — |
@@ -87,6 +93,7 @@ import Example5Source from '../examples/checkbox/Example5.vue?raw'
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
 | `disabled` | 是否禁用 | `boolean` | `false` | — |
+| `readonly` | 是否只读，保留选中颜色并禁止切换 | `boolean` | `false` | — |
 
 ### 组件专有功能
 
@@ -135,9 +142,12 @@ export interface CheckboxProps extends ElementStyleProps {
   label?: string
   value?: string | number | boolean
   disabled?: boolean
+  readonly?: boolean
   indeterminate?: boolean
   fontSize?: number
   checkedColor?: string
+  disabledBackgroundColor?: string
+  disabledTextColor?: string
   radius?: number | string
   name?: string
 }

@@ -8,6 +8,8 @@ import '@x-soft88/x-ui/style.css'
 <template>
   <XBrick wrap vertical-center :gap="12">
     <XCheckbox v-model="indeterminate" indeterminate>部分选择</XCheckbox>
+    <XCheckbox model-value readonly>只读已选（保持选中色）</XCheckbox>
+    <XCheckbox readonly>只读未选</XCheckbox>
     <XCheckbox disabled>禁用未选</XCheckbox>
     <XCheckbox model-value disabled>禁用已选</XCheckbox>
   </XBrick>

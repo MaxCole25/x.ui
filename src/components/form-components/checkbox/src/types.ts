@@ -8,9 +8,12 @@ export interface CheckboxProps extends ElementStyleProps {
   label?: string
   value?: string | number | boolean
   disabled?: boolean
+  readonly?: boolean
   indeterminate?: boolean
   fontSize?: number
   checkedColor?: string
+  disabledBackgroundColor?: string
+  disabledTextColor?: string
   radius?: number | string
   name?: string
 }

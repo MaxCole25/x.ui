@@ -1,3 +1,7 @@
+.x-checkbox.is-readonly {
+  cursor: default;
+}
+
 .x-checkbox {
   --x-checkbox-color: var(--x-form-color, var(--x-color-primary));
   --x-checkbox-border-color: var(--x-form-border-color, #dcdfe6);

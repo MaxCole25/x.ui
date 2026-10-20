@@ -9,8 +9,11 @@ const appearance = reactive({ height: 32,
   name: 'appearance-checkbox',
   fontSize: 14 as CheckboxFontSize,
   checkedColor: '#1264f4',
+  disabledBackgroundColor: '#1e293b',
+  disabledTextColor: '#cbd5e1',
   radius: '6px',
   disabled: false,
+  readonly: false,
   indeterminate: false
 })
 const sample = reactive({
@@ -40,6 +43,9 @@ const sample = reactive({
             :value="appearance.value"
             :name="appearance.name"
 
+            :disabled-background-color="appearance.disabledBackgroundColor"
+            :disabled-text-color="appearance.disabledTextColor"
+            :readonly="appearance.readonly"
             :indeterminate="appearance.indeterminate"
            v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>

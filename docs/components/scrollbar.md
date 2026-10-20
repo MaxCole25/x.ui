@@ -72,3 +72,15 @@ export interface ScrollbarProps extends ElementStyleProps {
 
 - 调整各功能分组中的属性，核对实际显示与默认值。
 - 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。
+
+## 统一主题配色
+
+全局原生滚动条、XScrollbar、表格自绘滚动条、聊天和编辑器共用以下变量，适配常规、亮色、暗黑及局部主题；显式设置局部变量可覆盖默认颜色。保留各组件原有滚动条尺寸与隐藏行为。
+
+| CSS 变量 | 默认值 |
+| --- | --- |
+| `--x-scrollbar-thumb-color` | 辅助文字色 65% 与表面色混合 |
+| `--x-scrollbar-thumb-hover-color` | 辅助文字色 90% 与表面色混合 |
+| `--x-scrollbar-track-color` | transparent |
+
+原生滚动条悬停外观受浏览器支持限制；WebKit 样式和表格自绘滑块提供悬停增强色。

@@ -1,5 +1,7 @@
 export type FileDiskItemType = 'file' | 'folder'
 export type FileDiskViewMode = 'list' | 'grid'
+export type FileDiskGridIconSize = 'small' | 'large'
+export type FileDiskToolbarAction = 'refresh' | 'createFolder' | 'upload' | 'download' | 'copy' | 'cut' | 'paste' | 'delete' | 'list' | 'grid'
 export type FileDiskPermission = 'read' | 'write' | 'delete' | 'view'
 export type FileDiskClipboardAction = 'copy' | 'cut'
 export type FileDiskUploadStatus = 'uploading' | 'success' | 'error'
@@ -136,6 +138,14 @@ export interface FileDiskProps {
   adapter?: FileDiskAdapter
   permissions?: Partial<Record<FileDiskPermission, boolean>>
   viewMode?: FileDiskViewMode
+  /** 网格图标尺寸，可通过右键菜单切换。 */
+  gridIconSize?: FileDiskGridIconSize
+  /** 网格文件名最大显示行数。 */
+  gridFileNameLines?: number
+  /** 网格是否显示文件大小，不影响列表视图。 */
+  showGridFileSize?: boolean
+  /** 网格是否显示文件类型，不影响列表视图。 */
+  showGridFileType?: boolean
   title?: string
   loading?: boolean
   colors?: FileDiskColors
@@ -160,6 +170,8 @@ export interface FileDiskProps {
   showHeader?: boolean
   showTitle?: boolean
   showToolbar?: boolean
+  /** 隐藏指定顶部工具栏操作，不影响右键菜单和操作权限。 */
+  hiddenToolbarActions?: FileDiskToolbarAction[]
   showPath?: boolean
   /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */
   enableMinimize?: boolean

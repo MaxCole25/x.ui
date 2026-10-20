@@ -167,6 +167,10 @@ export function createFileDiskScene() {
   return {
     modelValue: '/合同附件',
     viewMode: 'grid',
+    gridIconSize: 'small',
+    gridFileNameLines: 2,
+    showGridFileType: false,
+    showGridFileSize: false,
     title: '销售单附件',
     adapter,
     permissions: { read: true, write: true, delete: true, view: true }

@@ -14,13 +14,20 @@
 .x-chat__item.is-self .x-chat__body { align-items: flex-end; }
 .x-chat__meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--x-color-muted, #8793a5); font-size: var(--x-font-size-caption, 12px); overflow-wrap: anywhere; }
 .x-chat__item.is-self .x-chat__meta { justify-content: flex-end; }
-.x-chat__bubble { position: relative; min-width: 0; max-width: 100%; padding: 10px 14px; border-radius: var(--x-chat-bubble-radius, 8px); background: var(--x-chat-bubble-bg, var(--x-color-surface, #fff)); box-shadow: 0 1px 2px rgb(0 0 0 / 4%); overflow-wrap: anywhere; }
+.x-chat__bubble { display: flex; flex-direction: column; gap: 8px; position: relative; min-width: 0; max-width: 100%; padding: 10px 14px; border-radius: var(--x-chat-bubble-radius, 8px); background: var(--x-chat-bubble-bg, var(--x-color-surface, #fff)); box-shadow: 0 1px 2px rgb(0 0 0 / 4%); overflow-wrap: anywhere; }
 .x-chat__bubble::before { content: ''; position: absolute; top: 12px; left: -5px; width: 10px; height: 10px; background: inherit; transform: rotate(45deg); }
 .x-chat__item.is-self .x-chat__bubble { background: var(--x-chat-self-bg, #d9ecff); color: var(--x-chat-self-text, var(--x-element-text, #243247)); }
 .x-chat__item.is-self .x-chat__bubble::before { left: auto; right: -5px; }
+.x-chat__part { min-width: 0; max-width: 100%; }
 .x-chat__text { white-space: pre-wrap; }
-.x-chat__quote { margin: 0 0 8px; padding: 5px 8px; border-left: 3px solid var(--x-color-primary, #409eff); border-radius: 3px; background: rgb(0 0 0 / 4%); font-size: var(--x-font-size-caption, 12px); }
+.x-chat__text.is-emoji { font-size: 1.8em; }
+.x-chat__quote { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 8px; padding: 5px 8px; border-left: 3px solid var(--x-color-primary, #409eff); border-radius: 3px; background: rgb(0 0 0 / 4%); font-size: var(--x-font-size-caption, 12px); }
+.x-chat__quote-content { flex: 1; min-width: 0; }
+.x-chat__quote-jump { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 24px; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: inherit; cursor: pointer; }
+.x-chat__quote-jump:hover { background: var(--x-color-primary-soft, #eaf3ff); }
+.x-chat__quote-jump:focus-visible { outline: 2px solid var(--x-color-primary, #4385ef); outline-offset: 1px; }
 .x-chat__quote strong, .x-chat__quote span { display: block; }
+.x-chat__quote span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere; }
 .x-chat__image-button { display: block; padding: 0; border: 0; background: transparent; cursor: pointer; max-width: 100%; border-radius: 4px; }
 .x-chat__image { display: block; max-width: 100%; width: auto; max-height: 240px; height: auto; border-radius: 4px; }
 .x-chat__status { display: flex; gap: 6px; align-items: center; font-size: var(--x-font-size-caption, 12px); color: var(--x-color-muted, #8793a5); }
@@ -57,3 +64,7 @@
 .x-chat__send:disabled { color: var(--x-color-disabled-text); background: var(--x-color-disabled-bg); cursor: not-allowed; }
 .x-chat__send:hover:enabled { background: var(--x-color-primary-hover); }
 .x-chat__tool:focus-visible, .x-chat__send:focus-visible, .x-chat__emojis button:focus-visible, .x-chat__file:focus-visible { outline: 2px solid var(--x-color-primary); outline-offset: 2px; }
+
+/* 颜色统一由全局主题提供，保留消息滚动区域的紧凑尺寸。 */
+.x-chat__viewport, .x-chat__emojis, .x-chat__attachments { scrollbar-width: thin; }
+.x-chat__viewport::-webkit-scrollbar, .x-chat__emojis::-webkit-scrollbar, .x-chat__attachments::-webkit-scrollbar { width: 6px; height: 6px; }

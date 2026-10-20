@@ -531,3 +531,17 @@
   --x-table-cell-selected-border-color: var(--x-color-primary);
   --x-table-cell-selected-inner-border-color: rgba(47, 111, 237, 0.58);
 }
+
+/* 在每个主题边界重新计算，局部暗色区域不继承浅色根节点的已解析颜色。 */
+:root, [data-theme], .dark {
+  --x-scrollbar-thumb-color: color-mix(in srgb, var(--x-color-text-muted, #737b8c) 65%, var(--x-color-surface, #fff));
+  --x-scrollbar-thumb-hover-color: color-mix(in srgb, var(--x-color-text-muted, #737b8c) 90%, var(--x-color-surface, #fff));
+  --x-scrollbar-track-color: transparent;
+  --x-table-scrollbar-thumb: var(--x-scrollbar-thumb-color);
+  --x-table-scrollbar-thumb-hover: var(--x-scrollbar-thumb-hover-color);
+}
+/* 只统一颜色；组件原有宽度、隐藏方式和滚动行为继续生效。 */
+:where(*) { scrollbar-color: var(--x-scrollbar-thumb-color) var(--x-scrollbar-track-color); }
+:where(*)::-webkit-scrollbar-track, :where(*)::-webkit-scrollbar-corner { background: var(--x-scrollbar-track-color); }
+:where(*)::-webkit-scrollbar-thumb { background: var(--x-scrollbar-thumb-color); border-radius: 999px; }
+:where(*)::-webkit-scrollbar-thumb:hover { background: var(--x-scrollbar-thumb-hover-color); }

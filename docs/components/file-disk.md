@@ -18,9 +18,9 @@ import Example4Source from '../examples/file-disk/Example4.vue?raw'
 
 设置 `:enable-minimize="true"` 后仅显示文件内容区，隐藏标题、工具栏和路径栏；仍可通过上级目录入口导航，通过右键菜单操作文件和切换视图。
 
-网格模式采用约 112px 宽的紧凑文件项，从左向右排列，图标、文件名和辅助信息分行显示；上级目录使用柔和绿色箭头图标。列表模式铺满内容区宽度，窄容器下可横向滚动。
+网格默认使用小图标（24px），文件项宽 80px；大图标为 38px，文件项宽 112px。文件名允许自动换行，默认最多两行，超出后省略，悬停可查看完整文件名。网格默认不显示文件类型和文件大小；列表模式仍显示大小。上级目录使用柔和绿色箭头图标。列表模式铺满内容区宽度，窄容器下可横向滚动。
 
-`viewMode` 支持 'grid'（图标）和 'list'（列表）。点击工具栏或右键菜单即可切换，也可使用 `v-model:viewMode` 同步外部状态。
+`viewMode` 支持 'grid'（图标）和 'list'（列表）。点击工具栏或右键菜单即可切换，也可使用 `v-model:viewMode` 同步外部状态。右键菜单提供「大图标」「小图标」，在列表中选择任一项也会切换为网格。使用 `v-model:gridIconSize` 同步图标尺寸；切回列表再返回网格时保留本次尺寸选择。
 
 ### 基础用法
 
@@ -171,6 +171,10 @@ const adapter: FileDiskAdapter = {
 
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
+| `gridIconSize` | 网格图标尺寸，支持双向绑定 | `'small' \| 'large'` | `'small'` | — |
+| `gridFileNameLines` | 网格文件名最大显示行数，最小 1 行 | `number` | `2` | 行 |
+| `showGridFileType` | 网格是否显示文件类型，不影响列表 | `boolean` | `false` | — |
+| `showGridFileSize` | 网格是否显示文件大小，不影响列表 | `boolean` | `false` | — |
 | `title` | 左上角标题 | `string` | `'附件管理'` | — |
 | `emptyText` | 空目录文案 | `string` | `'暂无文件'` | — |
 | `promptFolderName` | 自定义新建目录名称输入 | `(path: string) => string \| null \| Promise<string \| null>` | `—` | — |
@@ -205,6 +209,7 @@ const adapter: FileDiskAdapter = {
 | `showHeader` | 是否显示顶部标题和工具栏区域 | `boolean` | `true` | — |
 | `showTitle` | 是否显示标题文字和数量 | `boolean` | `true` | — |
 | `showToolbar` | 是否显示顶部功能图标 | `boolean` | `true` | — |
+| `hiddenToolbarActions` | 隐藏指定顶部工具栏操作，不影响右键菜单和权限 | `FileDiskToolbarAction[]` | `[]` | `refresh / createFolder / upload / download / copy / cut / paste / delete / list / grid` |
 | `showPath` | 是否显示路径栏和返回上级按钮 | `boolean` | `true` | — |
 
 ### 组件专有功能
@@ -226,6 +231,7 @@ const adapter: FileDiskAdapter = {
 | 事件名 | 触发说明 | 参数 |
 | --- | --- | --- |
 | `update:modelValue` | 路径变化 | `[value: string]` |
+| `update:gridIconSize` | 图标尺寸切换 | `[value: FileDiskGridIconSize]` |
 | `update:viewMode` | 视图变化 | `[value: FileDiskViewMode]` |
 
 ### 内容与展示
@@ -279,6 +285,12 @@ const adapter: FileDiskAdapter = {
 
 ```ts
 export type FileDiskItemType = 'file' | 'folder'
+```
+
+### FileDiskGridIconSize
+
+```ts
+export type FileDiskGridIconSize = 'small' | 'large'
 ```
 
 ### FileDiskViewMode
@@ -464,6 +476,14 @@ export interface FileDiskProps {
   adapter?: FileDiskAdapter
   permissions?: Partial<Record<FileDiskPermission, boolean>>
   viewMode?: FileDiskViewMode
+  /** 网格图标尺寸，可通过右键菜单切换。 */
+  gridIconSize?: FileDiskGridIconSize
+  /** 网格文件名最大显示行数。 */
+  gridFileNameLines?: number
+  /** 网格是否显示文件大小，不影响列表视图。 */
+  showGridFileSize?: boolean
+  /** 网格是否显示文件类型，不影响列表视图。 */
+  showGridFileType?: boolean
   title?: string
   loading?: boolean
   colors?: FileDiskColors
@@ -488,7 +508,10 @@ export interface FileDiskProps {
   showHeader?: boolean
   showTitle?: boolean
   showToolbar?: boolean
+  /** 隐藏指定顶部工具栏操作，不影响右键菜单和操作权限。 */
+  hiddenToolbarActions?: FileDiskToolbarAction[]
   showPath?: boolean
+  /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */
   enableMinimize?: boolean
   promptFolderName?: (path: string) => string | null | Promise<string | null>
 }
@@ -543,3 +566,28 @@ Histoire 的外观接口使用内存 adapter，可检查上传进度、目录和
 - 右键单个文件或目录，确认可以重命名；未选择或多选时重命名应禁用。
 - 文件名被截断时悬停查看完整名称提示。
 - 图片文件显示缩略图，双击后确认可全屏预览，并能在当前目录图片中滚轮切换。
+
+
+### 隐藏指定工具栏图标
+
+```vue
+<XFileDisk :hidden-toolbar-actions="['copy', 'cut', 'paste']" />
+```
+
+此属性只控制顶部按钮显示，默认空数组。右键菜单保留原有操作，并继续遵守组件权限和禁用状态。
+操作名：`refresh` 刷新、`createFolder` 新建目录、`upload` 上传、`download` 下载、`copy` 复制、`cut` 剪切、`paste` 粘贴、`delete` 删除、`list` 列表视图、`grid` 图标视图。
+
+### 网格文件名与图标尺寸
+
+`FileDiskGridIconSize` 为 `'small' | 'large'`，可从包入口导入。网格文件名以 `gridFileNameLines` 限制行数，长英文编号和中文均可换行；列表文件名保持原有单行展示。`showGridFileSize` 只控制网格中的文件大小，`showGridFileType` 只控制网格中的文件类型，二者独立设置。
+
+```vue
+<XFileDisk
+  v-model:grid-icon-size="iconSize"
+  :grid-file-name-lines="2"
+  :show-grid-file-size="false"
+  :show-grid-file-type="false"
+/>
+```
+
+手动验收：在网格查看长文件名，确认最多两行且不显示大小和类型；分别右键选择大图标、小图标，确认图标和图片缩略图同步改变，选择文件与上级目录导航仍可用；切换列表后确认大小列仍显示。

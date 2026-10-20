@@ -51,9 +51,12 @@ import Example1Source from '../examples/chat/Example1.vue?raw'
 | --- | --- | --- | --- |
 | `showAvatar` | 显示头像，无图片时显示昵称文字 | `boolean` | `true` |
 | `showName` | 显示昵称 | `boolean` | `true` |
-| `showTime` | 显示调用方提供的时间文本 | `boolean` | `true` |
+| `timePlacement` | 时间位置；meta 位于昵称旁，separator 在消息之间居中显示 | `'meta' \| 'separator'` | `'meta'` |
+| `showTime` | 显示消息时间 | `boolean` | `true` |
 | `showStatus` | 显示自己的消息发送状态与失败重试按钮 | `boolean` | `true` |
 | `enableAutoScroll` | 初次渲染及接近底部时跟随消息变化 | `boolean` | `true` |
+
+separator 模式根据 sentAt 按浏览器本地自然日格式化：当天仅显示 HH:mm，昨天显示「昨天 HH:mm」，其它日期显示 YYYY-MM-DD HH:mm。首条、跨自然日或相邻消息间隔至少五分钟时显示居中时间提示；没有有效 sentAt 时使用 time。时间日期每分钟刷新，跨午夜后自动更新。
 
 用户距底部超过 48px 时，消息更新不会自动拉回底部。图片加载完成时也遵循此规则。需要主动跳转时可调用 `scrollToBottom()`；切换会话时建议通过不同的 `key` 创建新的组件实例。
 
@@ -80,6 +83,7 @@ import Example1Source from '../examples/chat/Example1.vue?raw'
 | 字段 | 说明 | 类型 |
 | --- | --- | --- |
 | `id` | 必填，唯一消息标识 | `ChatMessageId` |
+| `groupId` | 同次发送的分组标识；同一发送人的连续同组消息显示在一个气泡内，附件在上、文字在下 | `string` |
 | `senderId` | 发送者标识 | `ChatMessageId` |
 | `senderName` | 昵称 | `string` |
 | `avatar` | 头像地址 | `string` |
@@ -91,15 +95,17 @@ import Example1Source from '../examples/chat/Example1.vue?raw'
 | `fileName` | 文件名称 | `string` |
 | `fileSize` | 文件大小，单位 byte | `number` |
 | `status` | 自己的消息状态 | `'sending' \| 'sent' \| 'read' \| 'failed'` |
-| `quote` | 引用内容 | `{ senderName: string; content: string }` |
+| `quote` | 引用内容，携带原消息标识时显示向上跳转箭头 | `{ messageId?: ChatMessageId; senderName: string; content: string }` |
 
-文本按纯文本显示，保留换行。`system` 消息居中显示。`image` 消息需要 `imageUrl`，未提供时显示 `content`。`file` 消息显示名称和大小，点击后触发 `file-click`，由调用方处理下载或查看。
+文本按纯文本显示，保留换行。纯表情消息按正文的 1.8 倍字号显示，含普通文字的消息保持正文大小。`system` 消息居中显示。`image` 消息需要 `imageUrl`，未提供时显示 `content`。`file` 消息显示名称和大小，点击后触发 `file-click`，由调用方处理下载或查看。
 
 ## 事件
 
 | 事件名 | 触发说明 | 参数 |
 | --- | --- | --- |
 | `message-click` | 点击普通消息气泡；点击图片也会触发 | `ChatMessageClickPayload` |
+| `locate-message` | 点击引用右侧向上箭头时原消息未加载，请求调用方补充消息上下文；已加载时直接滚动并高亮 | `ChatMessageId` |
+| `message-contextmenu` | 右键消息，调用方按需阻止浏览器菜单并显示操作 | `ChatMessageClickPayload` |
 | `image-click` | 点击图片，支持键盘激活 | `ChatMessageClickPayload` |
 | `file-click` | 点击文件卡片，支持键盘激活 | `ChatMessageClickPayload` |
 | `update:modelValue` | 输入文本变化 | `string` |
@@ -160,3 +166,11 @@ import Example1Source from '../examples/chat/Example1.vue?raw'
 `ChatBusinessReference` 包含 businessType、businessId、businessNumber、title、可选 summary。消息可选 `sentAt: string` 保存原始时间，`time` 仍用于显示。
 
 新增实例方法 `scrollToMessage(id): Promise<boolean>`，加载目标消息后滚动并短暂高亮，未找到返回 false。在数组前部合并更早消息时保持当前阅读位置。完整会话、通讯录与查询交互见 [内部通讯 Messenger](./messenger)。
+
+未设置头像图片时，默认头像按发送人 ID 稳定分配背景色并使用白色文字；缺少 ID 时使用昵称生成颜色。
+
+聊天消息区、表情列表和附件列表的原生滚动条使用主题辅助文字色与表面色混合生成滑块颜色，轨道透明；切换亮色、暗黑或自定义主题时自动同步。
+
+### 任务引用操作文案
+
+`ChatBusinessReference.actionLabel?: string` 可指定卡片操作文字，例如任务引用使用“查看任务”；省略时显示“查看单据”。`business-click` 仍由业务系统处理，不自动领取任务。

@@ -5678,6 +5678,21 @@
         "required": false
       },
       {
+        "name": "timePlacement",
+        "type": "'meta' | 'separator'",
+        "default": "'meta'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "separator",
+          "meta"
+        ],
+        "group": "浮层与定位",
+        "description": "时间位置；separator 按 sentAt 显示居中的相对日期提示。",
+        "required": false
+      },
+      {
         "name": "showStatus",
         "type": "boolean",
         "default": "true",
@@ -5961,6 +5976,16 @@
         "group": "状态与交互"
       },
       {
+        "name": "locate-message",
+        "type": "[messageId: ChatMessageId]",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "message-contextmenu",
+        "type": "[payload: ChatMessageClickPayload]",
+        "group": "内容与展示"
+      },
+      {
         "name": "image-click",
         "type": "[payload: ChatMessageClickPayload]",
         "group": "状态与交互"
@@ -6092,19 +6117,19 @@
       },
       {
         "name": "ChatMessageQuote",
-        "definition": "export interface ChatMessageQuote {\n  senderName: string\n  content: string\n}",
+        "definition": "export interface ChatMessageQuote {\n  messageId?: ChatMessageId\n  senderName: string\n  content: string\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "ChatMessage",
-        "definition": "export interface ChatMessage {\n  id: ChatMessageId\n  senderId?: ChatMessageId\n  senderName?: string\n  avatar?: string\n  kind?: ChatMessageKind\n  content: string\n  /** 调用方格式化的时间文本。 */\n  time?: string\n  imageUrl?: string\n  fileUrl?: string\n  fileName?: string\n  /** 文件大小，单位 byte。 */\n  fileSize?: number\n  status?: ChatMessageStatus\n  /** 原始时间，用于历史查询；time 仍用于显示。 */\n  sentAt?: string\n  business?: ChatBusinessReference\n  quote?: ChatMessageQuote\n}",
+        "definition": "export interface ChatMessage {\n  id: ChatMessageId\n  /** 同次发送的分组标识；同一发送人的连续同组消息共用气泡，文字显示在附件下方。 */\n  groupId?: string\n  senderId?: ChatMessageId\n  senderName?: string\n  avatar?: string\n  kind?: ChatMessageKind\n  content: string\n  /** 调用方格式化的时间文本。 */\n  time?: string\n  imageUrl?: string\n  fileUrl?: string\n  fileName?: string\n  /** 文件大小，单位 byte。 */\n  fileSize?: number\n  status?: ChatMessageStatus\n  /** 原始时间，用于历史查询；time 仍用于显示。 */\n  sentAt?: string\n  business?: ChatBusinessReference\n  quote?: ChatMessageQuote\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "ChatProps",
-        "definition": "export interface ChatProps extends ElementStyleProps {\n  /** 消息列表 */\n  messages?: ChatMessage[]\n  /** 当前用户标识 */\n  currentUserId?: ChatMessageId\n  /** 聊天标题 */\n  title?: string\n  width?: number | string\n  height?: number | string\n  fontSize?: number\n  /** 显示头像 */\n  showAvatar?: boolean\n  /** 显示昵称 */\n  showName?: boolean\n  /** 显示时间 */\n  showTime?: boolean\n  /** 显示发送状态 */\n  showStatus?: boolean\n  /** 启用自动跟随底部 */\n  enableAutoScroll?: boolean\n  /** 空消息提示 */\n  emptyText?: string\n  /** 自己的消息背景色 */\n  selfBubbleBackgroundColor?: string\n  /** 自己的消息文字色 */\n  selfBubbleTextColor?: string\n  /** 对方的消息背景色 */\n  bubbleBackgroundColor?: string\n  /** 气泡圆角 */\n  bubbleRadius?: number\n  /** 输入区绑定文本，未传入时由组件管理 */\n  modelValue?: string\n  /** 显示内置输入区 */\n  showComposer?: boolean\n  /** 显示图片选择按钮 */\n  showImagePicker?: boolean\n  /** 显示文件选择按钮 */\n  showFilePicker?: boolean\n  /** 显示表情选择按钮 */\n  showEmojiPicker?: boolean\n  /** 启用粘贴图片和文件 */\n  enablePaste?: boolean\n  disabled?: boolean\n  placeholder?: string\n  /** 发送按钮文本 */\n  sendText?: string\n  /** 文件选择框接受的扩展名或 MIME 类型 */\n  fileAccept?: string\n  /** 常用表情列表 */\n  emojis?: string[]\n}",
+        "definition": "export interface ChatProps extends ElementStyleProps {\n  /** 消息列表 */\n  messages?: ChatMessage[]\n  /** 当前用户标识 */\n  currentUserId?: ChatMessageId\n  /** 聊天标题 */\n  title?: string\n  width?: number | string\n  height?: number | string\n  fontSize?: number\n  /** 显示头像 */\n  showAvatar?: boolean\n  /** 显示昵称 */\n  showName?: boolean\n  /** 显示时间 */\n  showTime?: boolean\n  /** 时间位置；separator 按 sentAt 显示居中的相对日期提示。 */\n  timePlacement?: 'meta' | 'separator'\n  /** 显示发送状态 */\n  showStatus?: boolean\n  /** 启用自动跟随底部 */\n  enableAutoScroll?: boolean\n  /** 空消息提示 */\n  emptyText?: string\n  /** 自己的消息背景色 */\n  selfBubbleBackgroundColor?: string\n  /** 自己的消息文字色 */\n  selfBubbleTextColor?: string\n  /** 对方的消息背景色 */\n  bubbleBackgroundColor?: string\n  /** 气泡圆角 */\n  bubbleRadius?: number\n  /** 输入区绑定文本，未传入时由组件管理 */\n  modelValue?: string\n  /** 显示内置输入区 */\n  showComposer?: boolean\n  /** 显示图片选择按钮 */\n  showImagePicker?: boolean\n  /** 显示文件选择按钮 */\n  showFilePicker?: boolean\n  /** 显示表情选择按钮 */\n  showEmojiPicker?: boolean\n  /** 启用粘贴图片和文件 */\n  enablePaste?: boolean\n  disabled?: boolean\n  placeholder?: string\n  /** 发送按钮文本 */\n  sendText?: string\n  /** 文件选择框接受的扩展名或 MIME 类型 */\n  fileAccept?: string\n  /** 常用表情列表 */\n  emojis?: string[]\n}",
         "exported": true,
         "group": "属性与配置"
       },
@@ -6158,7 +6183,7 @@
       },
       {
         "name": "ChatEmits",
-        "definition": "export interface ChatEmits {\n  'message-click': [payload: ChatMessageClickPayload]\n  'image-click': [payload: ChatMessageClickPayload]\n  'file-click': [payload: ChatMessageClickPayload]\n  'business-click': [payload: ChatMessageClickPayload]\n  'retry': [message: ChatMessage]\n  'scroll': [payload: ChatScrollPayload]\n  'update:modelValue': [value: string]\n  'send': [payload: ChatSendPayload]\n  'attachment-add': [payload: ChatAttachmentPayload]\n  'attachment-remove': [attachment: ChatAttachment]\n  'emoji-select': [emoji: string]\n}",
+        "definition": "export interface ChatEmits {\n  'message-click': [payload: ChatMessageClickPayload]\n  'locate-message': [messageId: ChatMessageId]\n  'message-contextmenu': [payload: ChatMessageClickPayload]\n  'image-click': [payload: ChatMessageClickPayload]\n  'file-click': [payload: ChatMessageClickPayload]\n  'business-click': [payload: ChatMessageClickPayload]\n  'retry': [message: ChatMessage]\n  'scroll': [payload: ChatScrollPayload]\n  'update:modelValue': [value: string]\n  'send': [payload: ChatSendPayload]\n  'attachment-add': [payload: ChatAttachmentPayload]\n  'attachment-remove': [attachment: ChatAttachment]\n  'emoji-select': [emoji: string]\n}",
         "exported": true,
         "group": "事件参数"
       },
@@ -15385,6 +15410,18 @@
         "required": false
       },
       {
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "是否只读",
+        "required": false
+      },
+      {
         "name": "indeterminate",
         "type": "boolean",
         "default": "false",
@@ -15418,6 +15455,30 @@
         "options": [],
         "group": "外观与排版",
         "description": "选中色",
+        "required": false
+      },
+      {
+        "name": "disabledBackgroundColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "禁用时复选框背景色，默认使用主题禁用背景色",
+        "required": false
+      },
+      {
+        "name": "disabledTextColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "禁用时文字、勾选和半选标记的前景色，默认使用主题禁用文字色",
         "required": false
       },
       {
@@ -15522,7 +15583,7 @@
       },
       {
         "name": "CheckboxProps",
-        "definition": "export interface CheckboxProps extends ElementStyleProps {\n  height?: number | string\n  modelValue?: boolean | Array<string | number | boolean>\n  label?: string\n  value?: string | number | boolean\n  disabled?: boolean\n  indeterminate?: boolean\n  fontSize?: number\n  checkedColor?: string\n  radius?: number | string\n  name?: string\n}",
+        "definition": "export interface CheckboxProps extends ElementStyleProps {\n  height?: number | string\n  modelValue?: boolean | Array<string | number | boolean>\n  label?: string\n  value?: string | number | boolean\n  disabled?: boolean\n  readonly?: boolean\n  indeterminate?: boolean\n  fontSize?: number\n  checkedColor?: string\n  disabledBackgroundColor?: string\n  disabledTextColor?: string\n  radius?: number | string\n  name?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -28741,19 +28802,19 @@
       },
       {
         "name": "ToolsMenuItem",
-        "definition": "export interface ToolsMenuItem {\n  key?: ToolsItemKey\n  name: string\n  command?: unknown\n  icon?: string\n  disabled?: boolean\n  divided?: boolean\n  active?: boolean\n  onClick?: (menuItem: ToolsMenuItem, item: ToolsActionItem) => void\n}",
+        "definition": "export interface ToolsMenuItem {\r\n  key?: ToolsItemKey\r\n  name: string\r\n  command?: unknown\r\n  icon?: string\r\n  disabled?: boolean\r\n  divided?: boolean\r\n  active?: boolean\r\n  onClick?: (menuItem: ToolsMenuItem, item: ToolsActionItem) => void\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "ToolsActionItem",
-        "definition": "export interface ToolsActionItem {\n  type?: Exclude<ToolsItemType, 'separator'>\n  key: ToolsItemKey\n  name?: string\n  showName?: boolean\n  icon?: string\n  disabled?: boolean\n  badgeValue?: string | number\n  badgeMax?: number\n  badgeDot?: boolean\n  badgeHidden?: boolean\n  badgeStatus?: BadgeProps['status']\n  badgeShowZero?: boolean\n  badgeAccentColor?: string\n  badgeBackgroundColor?: string\n  badgeTextColor?: string\n  badgeBorderColor?: string\n  children?: ToolsMenuItem[]\n  onClick?: (item: ToolsActionItem, event: MouseEvent) => void\n  onCommand?: (command: unknown, item: ToolsActionItem, menuItem: ToolsMenuItem) => void\n}",
+        "definition": "export interface ToolsActionItem {\r\n  type?: Exclude<ToolsItemType, 'separator'>\r\n  key: ToolsItemKey\r\n  name?: string\r\n  showName?: boolean\r\n  /** 普通下拉项是否显示独立箭头；分离按钮始终保留箭头入口。 */\r\n  showArrow?: boolean\r\n  icon?: string\r\n  disabled?: boolean\r\n  badgeValue?: string | number\r\n  badgeMax?: number\r\n  badgeDot?: boolean\r\n  badgeHidden?: boolean\r\n  badgeStatus?: BadgeProps['status']\r\n  badgeShowZero?: boolean\r\n  badgeAccentColor?: string\r\n  badgeBackgroundColor?: string\r\n  badgeTextColor?: string\r\n  badgeBorderColor?: string\r\n  children?: ToolsMenuItem[]\r\n  onClick?: (item: ToolsActionItem, event: MouseEvent) => void\r\n  onCommand?: (command: unknown, item: ToolsActionItem, menuItem: ToolsMenuItem) => void\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "ToolsSeparatorItem",
-        "definition": "export interface ToolsSeparatorItem {\n  type: 'separator'\n  key?: ToolsItemKey\n}",
+        "definition": "export interface ToolsSeparatorItem {\r\n  type: 'separator'\r\n  key?: ToolsItemKey\r\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -28765,7 +28826,7 @@
       },
       {
         "name": "ToolsProps",
-        "definition": "export interface ToolsProps extends ElementStyleProps {\n  items?: ToolsItem[]\n  fontSize?: number\n  itemLayout?: ToolsItemLayout\n  disabled?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  zIndex?: number\n  placement?: DropdownPlacement\n  popperWidth?: number | string\n}",
+        "definition": "export interface ToolsProps extends ElementStyleProps {\r\n  items?: ToolsItem[]\r\n  fontSize?: number\r\n  itemLayout?: ToolsItemLayout\r\n  disabled?: boolean\r\n  teleported?: boolean\r\n  teleportTo?: string\r\n  zIndex?: number\r\n  placement?: DropdownPlacement\r\n  popperWidth?: number | string\r\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -29757,6 +29818,57 @@
         "required": false
       },
       {
+        "name": "gridIconSize",
+        "type": "FileDiskGridIconSize",
+        "default": "'small'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "large",
+          "small"
+        ],
+        "group": "布局与尺寸",
+        "description": "网格图标尺寸，可通过右键菜单切换。",
+        "required": false
+      },
+      {
+        "name": "gridFileNameLines",
+        "type": "number",
+        "default": "2",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "内容与展示",
+        "description": "网格文件名最大显示行数。",
+        "required": false
+      },
+      {
+        "name": "showGridFileSize",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "网格是否显示文件大小，不影响列表视图。",
+        "required": false
+      },
+      {
+        "name": "showGridFileType",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "网格是否显示文件类型，不影响列表视图。",
+        "required": false
+      },
+      {
         "name": "title",
         "type": "string",
         "default": "'附件管理'",
@@ -30045,6 +30157,18 @@
         "required": false
       },
       {
+        "name": "hiddenToolbarActions",
+        "type": "FileDiskToolbarAction[]",
+        "default": "() => []",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "隐藏指定顶部工具栏操作，不影响右键菜单和操作权限。",
+        "required": false
+      },
+      {
         "name": "showPath",
         "type": "boolean",
         "default": "true",
@@ -30090,6 +30214,11 @@
       {
         "name": "update:viewMode",
         "type": "[value: FileDiskViewMode]",
+        "group": "数据与绑定"
+      },
+      {
+        "name": "update:gridIconSize",
+        "type": "[value: FileDiskGridIconSize]",
         "group": "数据与绑定"
       },
       {
@@ -30190,6 +30319,18 @@
         "group": "组件数据"
       },
       {
+        "name": "FileDiskGridIconSize",
+        "definition": "export type FileDiskGridIconSize = 'small' | 'large'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
+        "name": "FileDiskToolbarAction",
+        "definition": "export type FileDiskToolbarAction = 'refresh' | 'createFolder' | 'upload' | 'download' | 'copy' | 'cut' | 'paste' | 'delete' | 'list' | 'grid'",
+        "exported": true,
+        "group": "组件数据"
+      },
+      {
         "name": "FileDiskPermission",
         "definition": "export type FileDiskPermission = 'read' | 'write' | 'delete' | 'view'",
         "exported": true,
@@ -30215,79 +30356,79 @@
       },
       {
         "name": "FileDiskColors",
-        "definition": "export interface FileDiskColors {\n  backgroundColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  borderColor?: string\n  headerBackgroundColor?: string\n  toolbarBackgroundColor?: string\n  itemBackgroundColor?: string\n  itemHoverBackgroundColor?: string\n  itemActiveBackgroundColor?: string\n  itemActiveTextColor?: string\n  iconColor?: string\n  activeIconColor?: string\n  emptyBackgroundColor?: string\n  dragOverBackgroundColor?: string\n  primary?: string\n  primarySoft?: string\n  primaryWeak?: string\n  background?: string\n  toolbarBackground?: string\n  pathBackground?: string\n  panelBackground?: string\n  text?: string\n  mutedText?: string\n  subtleText?: string\n  border?: string\n  softBorder?: string\n  hoverBackground?: string\n  selectedBackground?: string\n  selectedBorder?: string\n  disabledText?: string\n  thumbBackground?: string\n  selectionBackground?: string\n  selectionBorder?: string\n  dropBackground?: string\n  success?: string\n  danger?: string\n  previewBackground?: string\n  previewText?: string\n  previewControlBackground?: string\n  previewControlBorder?: string\n  previewControlHoverBackground?: string\n  shadow?: string\n}",
+        "definition": "export interface FileDiskColors {\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  mutedTextColor?: string\r\n  borderColor?: string\r\n  headerBackgroundColor?: string\r\n  toolbarBackgroundColor?: string\r\n  itemBackgroundColor?: string\r\n  itemHoverBackgroundColor?: string\r\n  itemActiveBackgroundColor?: string\r\n  itemActiveTextColor?: string\r\n  iconColor?: string\r\n  activeIconColor?: string\r\n  emptyBackgroundColor?: string\r\n  dragOverBackgroundColor?: string\r\n  primary?: string\r\n  primarySoft?: string\r\n  primaryWeak?: string\r\n  background?: string\r\n  toolbarBackground?: string\r\n  pathBackground?: string\r\n  panelBackground?: string\r\n  text?: string\r\n  mutedText?: string\r\n  subtleText?: string\r\n  border?: string\r\n  softBorder?: string\r\n  hoverBackground?: string\r\n  selectedBackground?: string\r\n  selectedBorder?: string\r\n  disabledText?: string\r\n  thumbBackground?: string\r\n  selectionBackground?: string\r\n  selectionBorder?: string\r\n  dropBackground?: string\r\n  success?: string\r\n  danger?: string\r\n  previewBackground?: string\r\n  previewText?: string\r\n  previewControlBackground?: string\r\n  previewControlBorder?: string\r\n  previewControlHoverBackground?: string\r\n  shadow?: string\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskItem",
-        "definition": "export interface FileDiskItem {\n  id: string | number\n  name: string\n  type: FileDiskItemType\n  size?: number\n  extension?: string\n  mimeType?: string\n  url?: string\n  thumbnailUrl?: string\n  previewUrl?: string\n  updatedAt?: string\n  createdAt?: string\n  path?: string\n  readonly?: boolean\n  disabled?: boolean\n  meta?: Record<string, unknown>\n}",
+        "definition": "export interface FileDiskItem {\r\n  id: string | number\r\n  name: string\r\n  type: FileDiskItemType\r\n  size?: number\r\n  extension?: string\r\n  mimeType?: string\r\n  url?: string\r\n  thumbnailUrl?: string\r\n  previewUrl?: string\r\n  updatedAt?: string\r\n  createdAt?: string\r\n  path?: string\r\n  readonly?: boolean\r\n  disabled?: boolean\r\n  meta?: Record<string, unknown>\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskDownloadOptions",
-        "definition": "export interface FileDiskDownloadOptions {\n  archive: boolean\n  filename?: string\n}",
+        "definition": "export interface FileDiskDownloadOptions {\r\n  archive: boolean\r\n  filename?: string\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskUploadProgress",
-        "definition": "export interface FileDiskUploadProgress {\n  file: File\n  percent: number\n}",
+        "definition": "export interface FileDiskUploadProgress {\r\n  file: File\r\n  percent: number\r\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "FileDiskUploadContext",
-        "definition": "export interface FileDiskUploadContext {\n  onProgress: (progress: FileDiskUploadProgress) => void\n}",
+        "definition": "export interface FileDiskUploadContext {\r\n  onProgress: (progress: FileDiskUploadProgress) => void\r\n}",
         "exported": false,
         "group": "组件数据"
       },
       {
         "name": "FileDiskTransferPayload",
-        "definition": "export interface FileDiskTransferPayload {\n  sourcePath: string\n  targetPath: string\n  items: FileDiskItem[]\n}",
+        "definition": "export interface FileDiskTransferPayload {\r\n  sourcePath: string\r\n  targetPath: string\r\n  items: FileDiskItem[]\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskAdapter",
-        "definition": "export interface FileDiskAdapter {\n  list?: (path: string) => FileDiskItem[] | Promise<FileDiskItem[]>\n  getFileUrl?: (path: string, item: FileDiskItem, usage: FileDiskFileUrlUsage) => string | Promise<string>\n  createFolder?: (path: string, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\n  upload?: (path: string, files: File[], context: FileDiskUploadContext) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\n  download?: (path: string, items: FileDiskItem[], options: FileDiskDownloadOptions) => void | Promise<void>\n  remove?: (path: string, items: FileDiskItem[]) => void | Promise<void>\n  rename?: (path: string, item: FileDiskItem, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\n  copy?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\n  move?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\n}",
+        "definition": "export interface FileDiskAdapter {\r\n  list?: (path: string) => FileDiskItem[] | Promise<FileDiskItem[]>\r\n  getFileUrl?: (path: string, item: FileDiskItem, usage: FileDiskFileUrlUsage) => string | Promise<string>\r\n  createFolder?: (path: string, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\r\n  upload?: (path: string, files: File[], context: FileDiskUploadContext) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\r\n  download?: (path: string, items: FileDiskItem[], options: FileDiskDownloadOptions) => void | Promise<void>\r\n  remove?: (path: string, items: FileDiskItem[]) => void | Promise<void>\r\n  rename?: (path: string, item: FileDiskItem, name: string) => FileDiskItem | void | Promise<FileDiskItem | void>\r\n  copy?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\r\n  move?: (payload: FileDiskTransferPayload) => FileDiskItem[] | void | Promise<FileDiskItem[] | void>\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "FileDiskCreateFolderPayload",
-        "definition": "export interface FileDiskCreateFolderPayload {\n  path: string\n  name: string\n}",
+        "definition": "export interface FileDiskCreateFolderPayload {\r\n  path: string\r\n  name: string\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskUploadPayload",
-        "definition": "export interface FileDiskUploadPayload {\n  path: string\n  files: File[]\n}",
+        "definition": "export interface FileDiskUploadPayload {\r\n  path: string\r\n  files: File[]\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskDownloadPayload",
-        "definition": "export interface FileDiskDownloadPayload {\n  path: string\n  items: FileDiskItem[]\n  archive: boolean\n}",
+        "definition": "export interface FileDiskDownloadPayload {\r\n  path: string\r\n  items: FileDiskItem[]\r\n  archive: boolean\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskRenamePayload",
-        "definition": "export interface FileDiskRenamePayload {\n  path: string\n  item: FileDiskItem\n  name: string\n}",
+        "definition": "export interface FileDiskRenamePayload {\r\n  path: string\r\n  item: FileDiskItem\r\n  name: string\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskClipboardPayload",
-        "definition": "export interface FileDiskClipboardPayload {\n  action: FileDiskClipboardAction\n  sourcePath: string\n  targetPath?: string\n  items: FileDiskItem[]\n}",
+        "definition": "export interface FileDiskClipboardPayload {\r\n  action: FileDiskClipboardAction\r\n  sourcePath: string\r\n  targetPath?: string\r\n  items: FileDiskItem[]\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "FileDiskProps",
-        "definition": "export interface FileDiskProps {\n  fontSize?: number\n  modelValue?: string\n  entries?: FileDiskItem[]\n  adapter?: FileDiskAdapter\n  permissions?: Partial<Record<FileDiskPermission, boolean>>\n  viewMode?: FileDiskViewMode\n  title?: string\n  loading?: boolean\n  colors?: FileDiskColors\n  backgroundColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  borderColor?: string\n  headerBackgroundColor?: string\n  toolbarBackgroundColor?: string\n  itemBackgroundColor?: string\n  itemHoverBackgroundColor?: string\n  itemActiveBackgroundColor?: string\n  itemActiveTextColor?: string\n  iconColor?: string\n  activeIconColor?: string\n  emptyBackgroundColor?: string\n  dragOverBackgroundColor?: string\n  emptyText?: string\n  multiple?: boolean\n  accept?: string\n  disabled?: boolean\n  showHeader?: boolean\n  showTitle?: boolean\n  showToolbar?: boolean\n  showPath?: boolean\n  /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */\n  enableMinimize?: boolean\n  promptFolderName?: (path: string) => string | null | Promise<string | null>\n}",
+        "definition": "export interface FileDiskProps {\r\n  fontSize?: number\r\n  modelValue?: string\r\n  entries?: FileDiskItem[]\r\n  adapter?: FileDiskAdapter\r\n  permissions?: Partial<Record<FileDiskPermission, boolean>>\r\n  viewMode?: FileDiskViewMode\r\n  /** 网格图标尺寸，可通过右键菜单切换。 */\r\n  gridIconSize?: FileDiskGridIconSize\r\n  /** 网格文件名最大显示行数。 */\r\n  gridFileNameLines?: number\r\n  /** 网格是否显示文件大小，不影响列表视图。 */\r\n  showGridFileSize?: boolean\r\n  /** 网格是否显示文件类型，不影响列表视图。 */\r\n  showGridFileType?: boolean\r\n  title?: string\r\n  loading?: boolean\r\n  colors?: FileDiskColors\r\n  backgroundColor?: string\r\n  textColor?: string\r\n  mutedTextColor?: string\r\n  borderColor?: string\r\n  headerBackgroundColor?: string\r\n  toolbarBackgroundColor?: string\r\n  itemBackgroundColor?: string\r\n  itemHoverBackgroundColor?: string\r\n  itemActiveBackgroundColor?: string\r\n  itemActiveTextColor?: string\r\n  iconColor?: string\r\n  activeIconColor?: string\r\n  emptyBackgroundColor?: string\r\n  dragOverBackgroundColor?: string\r\n  emptyText?: string\r\n  multiple?: boolean\r\n  accept?: string\r\n  disabled?: boolean\r\n  showHeader?: boolean\r\n  showTitle?: boolean\r\n  showToolbar?: boolean\r\n  /** 隐藏指定顶部工具栏操作，不影响右键菜单和操作权限。 */\r\n  hiddenToolbarActions?: FileDiskToolbarAction[]\r\n  showPath?: boolean\r\n  /** 最小化显示：仅展示文件内容区，隐藏标题、工具栏和路径栏。 */\r\n  enableMinimize?: boolean\r\n  promptFolderName?: (path: string) => string | null | Promise<string | null>\r\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -31574,6 +31715,30 @@
     "propsName": "MessengerProps",
     "props": [
       {
+        "name": "headerBackgroundColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "独立聊天窗口标题栏背景色。",
+        "required": false
+      },
+      {
+        "name": "chatBackgroundColor",
+        "type": "string",
+        "default": "'var(--x-color-surface-soft, #f2f4f7)'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "聊天消息区域背景色，与气泡和输入区分离。",
+        "required": false
+      },
+      {
         "name": "modelValue",
         "type": "boolean",
         "default": "false",
@@ -31583,6 +31748,30 @@
         "options": [],
         "group": "数据与绑定",
         "description": "绑定值",
+        "required": false
+      },
+      {
+        "name": "conversationReadonly",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "状态与交互",
+        "description": "当前活动会话只读，仍可切换和查询历史。",
+        "required": false
+      },
+      {
+        "name": "defaultContactListPinned",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "联系人列表初始固定状态。",
         "required": false
       },
       {
@@ -31612,6 +31801,30 @@
         ],
         "group": "浮层与定位",
         "description": "好友列表停靠位置，仅通过组件属性设置",
+        "required": false
+      },
+      {
+        "name": "floatingBoundary",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "悬浮区域的 CSS 选择器；未指定时使用浏览器视口。",
+        "required": false
+      },
+      {
+        "name": "launcherPositionStorageKey",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "消息浮标位置的 localStorage 键；由应用按租户和用户提供，未指定时不持久化。",
         "required": false
       },
       {
@@ -31940,6 +32153,57 @@
         "group": "浮层与定位",
         "description": "浮层层级",
         "required": false
+      },
+      {
+        "name": "timePlacement",
+        "type": "'meta' | 'separator'",
+        "default": "'separator'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "separator",
+          "meta"
+        ],
+        "group": "浮层与定位",
+        "description": "时间位置；separator 按 sentAt 显示居中的相对日期提示。",
+        "required": false
+      },
+      {
+        "name": "selfBubbleBackgroundColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "自己的消息背景色",
+        "required": false
+      },
+      {
+        "name": "selfBubbleTextColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "自己的消息文字色",
+        "required": false
+      },
+      {
+        "name": "bubbleBackgroundColor",
+        "type": "string",
+        "default": "'var(--x-color-surface, white)'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "对方的消息背景色",
+        "required": false
       }
     ],
     "events": [
@@ -32039,7 +32303,13 @@
         "group": "状态与交互"
       }
     ],
-    "slots": [],
+    "slots": [
+      {
+        "name": "business-settings",
+        "type": "无作用域参数",
+        "group": "组件专有功能"
+      }
+    ],
     "methods": [
       {
         "name": "openConversation",
@@ -32071,7 +32341,7 @@
       },
       {
         "name": "MessengerContact",
-        "definition": "export interface MessengerContact {\n  id: MessengerId\n  name: string\n  avatar?: string\n  department?: string\n  status?: 'online' | 'offline' | 'busy' | 'away'\n  groupId?: MessengerId\n  unreadCount?: number\n}",
+        "definition": "export interface MessengerContact {\r\n  id: MessengerId\r\n  name: string\r\n  avatar?: string\r\n  department?: string\r\n  status?: 'online' | 'offline' | 'busy' | 'away'\r\n  groupId?: MessengerId\r\n  unreadCount?: number\r\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -32083,19 +32353,19 @@
       },
       {
         "name": "MessengerGroupPermissions",
-        "definition": "export interface MessengerGroupPermissions {\n  canRename?: boolean\n  canManageMembers?: boolean\n  canManageAdmins?: boolean\n  canEditAnnouncement?: boolean\n  canLeave?: boolean\n  canDissolve?: boolean\n}",
+        "definition": "export interface MessengerGroupPermissions {\r\n  canRename?: boolean\r\n  canManageMembers?: boolean\r\n  canManageAdmins?: boolean\r\n  canEditAnnouncement?: boolean\r\n  canLeave?: boolean\r\n  canDissolve?: boolean\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "MessengerGroup",
-        "definition": "export interface MessengerGroup {\n  id: MessengerId\n  name: string\n  avatar?: string\n  memberIds: MessengerId[]\n  ownerId?: MessengerId\n  adminIds?: MessengerId[]\n  announcement?: string\n  unreadCount?: number\n  permissions?: MessengerGroupPermissions\n}",
+        "definition": "export interface MessengerGroup {\r\n  id: MessengerId\r\n  name: string\r\n  avatar?: string\r\n  memberIds: MessengerId[]\r\n  ownerId?: MessengerId\r\n  adminIds?: MessengerId[]\r\n  announcement?: string\r\n  unreadCount?: number\r\n  permissions?: MessengerGroupPermissions\r\n}",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "MessengerConversation",
-        "definition": "export interface MessengerConversation {\n  id: MessengerId\n  kind: 'direct' | 'group'\n  targetId: MessengerId\n  title: string\n  avatar?: string\n  lastMessage?: string\n  /** ISO 8601 时间用于日期分档；预格式化文字直接显示。 */\r\n  lastMessageTime?: string\n  unreadCount?: number\n}",
+        "definition": "export interface MessengerConversation {\r\n  id: MessengerId\r\n  kind: 'direct' | 'group'\r\n  targetId: MessengerId\r\n  title: string\r\n  avatar?: string\r\n  lastMessage?: string\r\n  /** ISO 8601 时间用于日期分档；预格式化文字直接显示。 */\r\n  lastMessageTime?: string\r\n  unreadCount?: number\r\n}",
         "exported": true,
         "group": "组件数据"
       },
@@ -32131,19 +32401,19 @@
       },
       {
         "name": "MessengerSendPayload",
-        "definition": "export interface MessengerSendPayload extends ChatSendPayload { conversationId: MessengerId; businessReferences: ChatBusinessReference[] }",
+        "definition": "export interface MessengerSendPayload extends ChatSendPayload { conversationId: MessengerId; businessReferences: ChatBusinessReference[]; replyToMessageId?: MessengerId; quote?: ChatMessageQuote }",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "MessengerContactGroupAction",
-        "definition": "export type MessengerContactGroupAction =\n  | { action: 'create'; name: string }\n  | { action: 'rename'; groupId: MessengerId; name: string }\n  | { action: 'delete'; groupId: MessengerId }\n  | { action: 'move'; contactId: MessengerId; groupId?: MessengerId }",
+        "definition": "export type MessengerContactGroupAction =\r\n  | { action: 'create'; name: string }\r\n  | { action: 'rename'; groupId: MessengerId; name: string }\r\n  | { action: 'delete'; groupId: MessengerId }\r\n  | { action: 'move'; contactId: MessengerId; groupId?: MessengerId }",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "MessengerGroupAction",
-        "definition": "export type MessengerGroupAction =\n  | { action: 'create'; name: string; memberIds: MessengerId[] }\n  | { action: 'rename'; groupId: MessengerId; name: string }\n  | { action: 'members'; groupId: MessengerId; memberIds: MessengerId[] }\n  | { action: 'admins'; groupId: MessengerId; adminIds: MessengerId[] }\n  | { action: 'announcement'; groupId: MessengerId; announcement: string }\n  | { action: 'leave' | 'dissolve'; groupId: MessengerId }",
+        "definition": "export type MessengerGroupAction =\r\n  | { action: 'create'; name: string; memberIds: MessengerId[] }\r\n  | { action: 'rename'; groupId: MessengerId; name: string }\r\n  | { action: 'members'; groupId: MessengerId; memberIds: MessengerId[] }\r\n  | { action: 'admins'; groupId: MessengerId; adminIds: MessengerId[] }\r\n  | { action: 'announcement'; groupId: MessengerId; announcement: string }\r\n  | { action: 'leave' | 'dissolve'; groupId: MessengerId }",
         "exported": true,
         "group": "组件数据"
       },
@@ -32155,19 +32425,19 @@
       },
       {
         "name": "MessengerProps",
-        "definition": "export interface MessengerProps extends ElementStyleProps, OverlayProps {\n  /** 独立聊天窗口是否显示，好友列表单独控制。 */\n  modelValue?: boolean\n  showContactList?: boolean\n  contactListPlacement?: MessengerContactListPlacement\n  contactListWidth?: number\n  /** 好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。 */\r\n  contactListHeight?: number\n  activeConversationId?: MessengerId\n  currentUserId?: MessengerId\r\n  /** 当前用户角色；仅 admin 显示好友列表设置。 */\r\n  currentUserRole?: 'admin' | 'user'\n  contacts?: MessengerContact[]\n  contactGroups?: MessengerContactGroup[]\n  groups?: MessengerGroup[]\n  conversations?: MessengerConversation[]\n  messagePages?: MessengerMessagePage[]\n  historyResult?: MessengerHistoryResult\n  title?: string\n  width?: number\n  height?: number\n  fontSize?: number\n  disabled?: boolean\n  /** 在群聊视图搜索框右侧显示创建群聊图标。 */\r\n  allowCreateGroup?: boolean\n  enableContactGroupManagement?: boolean\n  showBusinessPicker?: boolean\n}",
+        "definition": "export interface MessengerProps extends ElementStyleProps, OverlayProps, Pick<ChatProps, 'bubbleBackgroundColor' | 'selfBubbleBackgroundColor' | 'selfBubbleTextColor' | 'timePlacement'> {\r\n  /** 独立聊天窗口标题栏背景色。 */\r\n  headerBackgroundColor?: string\r\n  /** 聊天消息区域背景色，与气泡和输入区分离。 */\r\n  chatBackgroundColor?: string\r\n  /** 独立聊天窗口是否显示，好友列表单独控制。 */\r\n  modelValue?: boolean\r\n  /** 当前活动会话只读，仍可切换和查询历史。 */\r\n  conversationReadonly?: boolean\r\n  /** 联系人列表初始固定状态。 */\r\n  defaultContactListPinned?: boolean\r\n  showContactList?: boolean\r\n  contactListPlacement?: MessengerContactListPlacement\r\n  /** 悬浮区域的 CSS 选择器；未指定时使用浏览器视口。 */\r\n  floatingBoundary?: string\r\n  /** 消息浮标位置的 localStorage 键；由应用按租户和用户提供，未指定时不持久化。 */\r\n  launcherPositionStorageKey?: string\r\n  contactListWidth?: number\r\n  /** 好友列表初始高度，单位 px；支持底部拖拽和 v-model:contactListHeight。 */\r\n  contactListHeight?: number\r\n  activeConversationId?: MessengerId\r\n  currentUserId?: MessengerId\r\n  /** 当前用户角色；仅 admin 显示好友列表设置。 */\r\n  currentUserRole?: 'admin' | 'user'\r\n  contacts?: MessengerContact[]\r\n  contactGroups?: MessengerContactGroup[]\r\n  groups?: MessengerGroup[]\r\n  conversations?: MessengerConversation[]\r\n  messagePages?: MessengerMessagePage[]\r\n  historyResult?: MessengerHistoryResult\r\n  title?: string\r\n  width?: number\r\n  height?: number\r\n  fontSize?: number\r\n  disabled?: boolean\r\n  /** 在群聊视图搜索框右侧显示创建群聊图标。 */\r\n  allowCreateGroup?: boolean\r\n  enableContactGroupManagement?: boolean\r\n  showBusinessPicker?: boolean\r\n}",
         "exported": true,
         "group": "属性与配置"
       },
       {
         "name": "MessengerEmits",
-        "definition": "export interface MessengerEmits {\n  'update:modelValue': [visible: boolean]\r\n  'update:contactListHeight': [height: number]\n  'update:activeConversationId': [id: MessengerId]\n  'open-conversation': [payload: MessengerOpenPayload]\n  'send': [payload: MessengerSendPayload]\n  'load-history': [payload: { conversationId: MessengerId; beforeMessageId?: MessengerId }]\n  'history-query': [payload: MessengerHistoryQuery]\n  'locate-message': [payload: { conversationId: MessengerId; messageId: MessengerId }]\n  'read-request': [payload: { conversationId: MessengerId; lastMessageId: MessengerId }]\n  'contact-group-action': [payload: MessengerContactGroupAction]\n  'group-action': [payload: MessengerGroupAction]\n  'business-select': [payload: { conversationId: MessengerId }]\n  'business-click': [payload: { conversationId: MessengerId; message: ChatMessage }]\n  'image-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\n  'file-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\n  'retry': [payload: { conversationId: MessengerId; message: ChatMessage }]\n  'attachment-add': [payload: { conversationId: MessengerId; detail: ChatAttachmentPayload }]\n  'attachment-remove': [payload: { conversationId: MessengerId; attachment: ChatAttachment }]\n  'close': []\n}",
+        "definition": "export interface MessengerEmits {\r\n  'update:modelValue': [visible: boolean]\r\n  'update:contactListHeight': [height: number]\r\n  'update:activeConversationId': [id: MessengerId]\r\n  'open-conversation': [payload: MessengerOpenPayload]\r\n  'send': [payload: MessengerSendPayload]\r\n  'load-history': [payload: { conversationId: MessengerId; beforeMessageId?: MessengerId }]\r\n  'history-query': [payload: MessengerHistoryQuery]\r\n  'locate-message': [payload: { conversationId: MessengerId; messageId: MessengerId }]\r\n  'read-request': [payload: { conversationId: MessengerId; lastMessageId: MessengerId }]\r\n  'contact-group-action': [payload: MessengerContactGroupAction]\r\n  'group-action': [payload: MessengerGroupAction]\r\n  'business-select': [payload: { conversationId: MessengerId }]\r\n  'business-click': [payload: { conversationId: MessengerId; message: ChatMessage }]\r\n  'image-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\r\n  'file-click': [payload: { conversationId: MessengerId; detail: ChatMessageClickPayload }]\r\n  'retry': [payload: { conversationId: MessengerId; message: ChatMessage }]\r\n  'attachment-add': [payload: { conversationId: MessengerId; detail: ChatAttachmentPayload }]\r\n  'attachment-remove': [payload: { conversationId: MessengerId; attachment: ChatAttachment }]\r\n  'close': []\r\n}",
         "exported": true,
         "group": "事件参数"
       },
       {
         "name": "MessengerExpose",
-        "definition": "export interface MessengerExpose {\n  openConversation: (payload: MessengerOpenPayload) => void\n  selectConversation: (id: MessengerId) => void\n  addBusinessReference: (conversationId: MessengerId, reference: ChatBusinessReference) => void\n  locateMessage: (conversationId: MessengerId, messageId: MessengerId) => Promise<void>\n}",
+        "definition": "export interface MessengerExpose {\r\n  openConversation: (payload: MessengerOpenPayload) => void\r\n  selectConversation: (id: MessengerId) => void\r\n  addBusinessReference: (conversationId: MessengerId, reference: ChatBusinessReference) => void\r\n  locateMessage: (conversationId: MessengerId, messageId: MessengerId) => Promise<void>\r\n}",
         "exported": true,
         "group": "实例与回调"
       }

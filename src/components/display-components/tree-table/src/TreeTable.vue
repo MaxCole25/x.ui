@@ -350,17 +350,15 @@ defineExpose({ expandAll, collapseAll, toggleRow, getExpandedRowKeys })
             </span>
           </template>
           <template v-else>
-            <span class="x-tree-table__cell-text">
-              <slot
-                v-if="slots[getSlotName(column)]"
-                :name="getSlotName(column)"
-                :row="rowInfo.row"
-                :value="getCellValue(rowInfo.row, column)"
-                :column="column"
-                :row-index="rowInfo.rowIndex"
-              />
-              <template v-else>{{ getCellValue(rowInfo.row, column) }}</template>
-            </span>
+            <slot
+              v-if="slots[getSlotName(column)]"
+              :name="getSlotName(column)"
+              :row="rowInfo.row"
+              :value="getCellValue(rowInfo.row, column)"
+              :column="column"
+              :row-index="rowInfo.rowIndex"
+            />
+            <span v-else class="x-tree-table__cell-text">{{ getCellValue(rowInfo.row, column) }}</span>
           </template>
         </div>
       </div>

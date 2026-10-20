@@ -65,6 +65,7 @@ const tools = computed<ToolsItem[]>(() => [
     key: 'query',
     type: appearance.dropdownType === 'separator' ? 'dropdown' : appearance.dropdownType,
     name: appearance.queryName,
+    showArrow: false,
     showName: appearance.showName,
     icon: 'search',
     badgeDot: true,

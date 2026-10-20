@@ -22,6 +22,8 @@ export interface ToolsActionItem {
   key: ToolsItemKey
   name?: string
   showName?: boolean
+  /** 普通下拉项是否显示独立箭头；分离按钮始终保留箭头入口。 */
+  showArrow?: boolean
   icon?: string
   disabled?: boolean
   badgeValue?: string | number

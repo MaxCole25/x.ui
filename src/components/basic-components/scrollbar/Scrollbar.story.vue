@@ -7,10 +7,10 @@ import '../../../styles/index.css'
 <template>
   <Story title="基础组件/Scrollbar 滚动条" group="components">
     <Variant title="外观接口">
-      <ApiPlayground component="XScrollbar">
+      <ApiPlayground component="XScrollbar" :create-initial-props="() => ({ height: 180 })">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XScrollbar     style="width: 100%" v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
-            <div style="height: 220px; padding: 12px">可滚动内容<br />外观接口预览<br />继续滚动查看内容</div>
+            <div style="height: 360px; width: 900px; padding: 12px">主题滚动条预览<br />横向与纵向滚动<br />切换外观接口主题，轨道透明、滑块随主题变化</div>
           </XScrollbar>
         </template>
       </ApiPlayground>

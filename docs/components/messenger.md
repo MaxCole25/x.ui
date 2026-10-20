@@ -9,7 +9,9 @@ import Example1Source from '../examples/messenger/Example1.vue?raw'
 
 <XDocDemo title="完整内部沟通演示" :code="Example1Source"><Example1 /></XDocDemo>
 
-好友列表默认停靠右侧，高度可通过 contactListHeight 设置，也可拖拽列表底部的横向手柄调整；支持 v-model:contactListHeight 同步拖拽后的高度，内容超出后内部滚动。停靠与悬浮只通过 contactListPlacement 属性设置，界面不显示位置选择；悬浮模式可拖动表头移动，不会自动切换停靠位置。顶部显示消息图标和「信息」，右上角为固定按钮。默认固定并常驻显示；取消固定后收起为彩色消息浮标，点击浮标展开，点击列表外部或按 Esc 后收回浮标，再次固定则保持列表显示。底部图标栏左侧为「显示分组」「最近消息」「群聊」，默认显示最近联系人；管理员设置图标位于底部最右侧。双击同事或群聊打开唯一的独立聊天窗口，标题栏直接显示好友名或群名，通过好友列表切换会话。输入工具栏右侧的图标可打开历史查询或群管理，拖动中间分隔条可调整左右宽度；发送按钮旁的上拉菜单可选择 Enter 或 Ctrl + Enter 发送。
+好友列表默认停靠右侧，高度可通过 contactListHeight 设置，也可拖拽列表底部的横向手柄调整；支持 v-model:contactListHeight 同步拖拽后的高度，内容超出后内部滚动。停靠与悬浮只通过 contactListPlacement 属性设置，界面不显示位置选择；悬浮模式可拖动表头移动列表；收起后的消息浮标默认位于浮动区域右下角，可用鼠标拖动或方向键移动，拖动结束不会误触展开，展开列表后再收起保留浮标位置，不会自动切换停靠位置。顶部显示消息图标和「信息」，右上角为固定按钮。默认固定并常驻显示；取消固定后收起为彩色消息浮标，点击浮标展开，点击列表外部或按 Esc 后收回浮标，再次固定则保持列表显示。底部图标栏左侧为「显示分组」「最近消息」「群聊」，默认显示最近联系人；管理员设置图标位于底部最右侧。双击同事或群聊打开唯一的独立聊天窗口，标题栏直接显示好友名或群名，通过好友列表切换会话。输入工具栏右侧的图标可打开历史查询或群管理，拖动中间分隔条可调整左右宽度；发送按钮旁的上拉菜单可选择 Enter 或 Ctrl + Enter 发送。
+
+聊天标题栏、聊天区、接收气泡和发送气泡可分别设置背景色。默认以浅色聊天区衬托白色接收气泡；消息时间居中显示：当天为时间、昨天为「昨天 + 时间」，其它为日期和时间；首条、跨自然日或间隔至少五分钟显示，连续消息不重复标注。
 
 两个区域相互独立，没有模态遮罩；单击好友列表将它置于聊天窗口上层，单击聊天窗口则将聊天窗口置前。关闭聊天窗口后，好友列表仍然可用。演示提供 48 条单聊历史；输入「订单」并选择日期，可验证分页和消息定位。「业务单据」按钮模拟 ERP 选择单据，将卡片加入待发送区。
 
@@ -33,8 +35,18 @@ import Example1Source from '../examples/messenger/Example1.vue?raw'
 
 | 属性名 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
+| conversationReadonly | 当前活动会话只读，隐藏发送区但保留历史查询与单据点击 | boolean | false |
+| defaultContactListPinned | 联系人列表初始固定状态；false 时初始显示消息浮标 | boolean | true |
+| headerBackgroundColor | 聊天窗口标题栏背景色 | string | 主色混合 12% |
+| chatBackgroundColor | 聊天区背景色，独立于输入区和气泡 | string | surface-soft |
+| bubbleBackgroundColor | 接收消息气泡背景色 | string | surface |
+| selfBubbleBackgroundColor | 自己消息的气泡背景色 | string | 浅蓝色 |
+| selfBubbleTextColor | 自己消息的文字色 | string | 继承正文色 |
+| timePlacement | 消息时间位置；separator 居中显示相对日期，meta 显示于昵称旁 | 'meta' \| 'separator' | 'separator' |
 | modelValue | 独立聊天窗口显示，支持 v-model | boolean | false |
 | showContactList | 显示独立好友列表 | boolean | true |
+| launcherPositionStorageKey | 消息浮标位置的 localStorage 键，建议包含租户和用户标识；拖动结束或方向键移动后保存，刷新时恢复并限制在当前边界内，未配置时不持久化 | string | — |
+| floatingBoundary | 悬浮列表与消息浮标的边界容器 CSS 选择器；默认使用视口，浮标初始位于区域右下角，支持鼠标拖动和方向键移动 | string | — |
 | contactListPlacement | 好友列表停靠位置，仅通过组件属性设置 | 'left' \| 'top' \| 'right' \| 'floating' | 'right' |
 | contactListWidth | 好友列表宽度，px | number | 280 |
 | contactListHeight | 好友列表初始高度，px；支持底部拖拽和 v-model:contactListHeight | number | 520 |
@@ -77,9 +89,11 @@ import Example1Source from '../examples/messenger/Example1.vue?raw'
 | MessengerHistoryResult | 查询条件原样返回，加 messages、total、loading |
 | ChatBusinessReference | businessType、businessId、businessNumber、title、summary |
 
-消息沿用 `ChatMessage`；业务卡片使用 `kind: 'business'` 和 `business: ChatBusinessReference`，`content` 保存可搜索的文字摘要。可选 `sentAt` 保存原始时间，`time` 仍为格式化的显示文字。
+消息沿用 `ChatMessage`；同次发送的各条记录应携带相同 `groupId`，同一发送人的连续同组记录会合并到一个气泡，图片、文件和单据在上，文字在下，头像、昵称和状态只显示一次。分页应返回完整的发送组；各条记录仍保留自己的 id，图片预览、下载和历史定位事件使用对应记录。单聊和群聊消息均支持右键「回复」，输入区显示可取消的引用，发送事件携带 `replyToMessageId` 和 `quote`；ERP 应保存原消息关系，并在读取时返回 `ChatMessage.quote`。同组消息的引用只显示一次。引用右侧显示向上箭头，点击滚动至原消息并高亮；原消息未加载时复用 `locate-message` 事件加载上下文后自动定位。业务卡片使用 `kind: 'business'` 和 `business: ChatBusinessReference`，`content` 保存可搜索的文字摘要。可选 `sentAt` 保存原始时间，`time` 仍为格式化的显示文字。
 
 好友列表使用会话的 lastMessage 和 lastMessageTime；未提供摘要时从已加载消息的最后一条读取，不考虑消息的已读状态。未读数优先使用会话 unreadCount，包括 0；超过 99 显示 99+。最近联系人按照 conversations 中单聊会话的顺序显示，群聊由独立视图显示。
+
+底部「最近消息」和「群聊」图标右上角分别显示单聊与群聊未读数量气泡；计数不受搜索、视图切换影响，打开列表不清零，以业务方回写的已读数为准。0 时隐藏，超过 99 显示 99+，悬停及无障碍说明保留完整数量。两个图标的计数之和与浮标未读总数一致。
 
 折叠后的消息浮标右上角显示红色数量气泡，汇总所有单聊和群聊未读数，不受当前视图或搜索条件影响。每个会话优先使用 conversations 中的 unreadCount，未提供时使用对应联系人或群的 unreadCount；尚无会话的联系人和群也计入汇总，同一对象不会在会话与联系人或群数据中重复累加。总数为 0 时隐藏气泡，超过 99 显示 99+，悬停提示和无障碍标签保留完整数量。业务方更新 unreadCount 后气泡同步变化；仅展开好友列表不会清空未读数，仍由业务方处理 read-request 并回写计数。
 
@@ -123,7 +137,12 @@ lastMessageTime 推荐传 ISO 8601 完整时间，按浏览器本地时区显示
 | addBusinessReference(conversationId, reference) | ERP 选择单据后加入指定会话待发送区 |
 | locateMessage(conversationId, messageId) | 激活会话并定位；未加载时触发 locate-message，更新消息后自动继续定位 |
 
-无公开插槽；好友列表与聊天窗口独立渲染，窗口不含联系人侧栏。需要自定义联系人、会话或消息内容时，可独立组合 XContactList、XConversationList 和 XChat。导出 MessengerProps、MessengerEmits、MessengerExpose 及本页数据契约、操作载荷类型。
+好友列表与聊天窗口独立渲染，窗口不含联系人侧栏。管理员的「聊天设置」使用标签页，默认显示联系人分组。
+
+| 插槽 | 说明 |
+| --- | --- |
+| `business-settings` | 自定义「表设置」标签页内容，由业务应用负责读取和保存；提供插槽时显示该标签页。 |
+需要自定义联系人、会话或消息内容时，可独立组合 XContactList、XConversationList 和 XChat。导出 MessengerProps、MessengerEmits、MessengerExpose 及本页数据契约、操作载荷类型。
 
 ## 手动验收
 
@@ -138,6 +157,7 @@ lastMessageTime 推荐传 ISO 8601 完整时间，按浏览器本地时区显示
 - 聊天窗口标题直接显示当前好友名或群名；附件工具栏最右侧的历史图标打开侧栏，拖动中间分隔条调整聊天区和历史区宽度，也可用左右方向键调整。
 - 点击发送按钮旁的箭头，在上拉菜单中选择 Enter 或 Ctrl + Enter 发送；默认 Enter 发送，Shift + Enter 换行，切换为 Ctrl + Enter 后 Enter 换行；切换会话保留快捷键设置。
 - 通过输入工具栏选择业务单据，发送文字、图片、文件和单据，检查事件的会话 ID；关闭再打开后，已发送附件仍使用持久地址。
+- 单聊和群聊中右键文字、图片或文件消息，选择回复，输入区显示原消息发送人和摘要；可取消引用，发送后显示引用。重新打开会话仍显示服务端返回的引用；只读通知及发送中、失败消息不提供回复菜单。纯表情消息放大到正文的 1.8 倍。
 - 历史区域顶部搜索支持输入后自动查询，消息类型标签提供全部、图片/视频、表情、文件、链接；筛选按钮展开日期范围和发送人，按日期分组显示头像、昵称、时间、图片缩略图及对应消息内容。查询由 ERP 在分页前筛选，返回结果需携带相同 messageType 和 senderId；宽侧栏并排显示筛选条件，窄侧栏在历史区内展开浮动筛选面板。
 - 搜索历史、切换页码、点击尚未加载的结果，检查定位与高亮；滚动到当前消息顶部时显示浅色小字提示，再向上滚动才加载更早消息；加载期间不重复请求，追加历史后保持当前阅读位置。
 - 新增、重命名、删除个人分组，移动联系人；创建群、改名、修改公告、调整成员和管理员、退出及解散。
@@ -145,3 +165,9 @@ lastMessageTime 推荐传 ISO 8601 完整时间，按浏览器本地时区显示
 - 去掉群权限后确认对应操作隐藏；检查长文本、窄窗口、全屏和窗口层级。
 
 在 Histoire「其它组件 / Messenger 内部通讯 / 外观接口」调整公开属性和数据，并查看事件日志。
+
+未设置头像图片时，消息用户使用按用户 ID 稳定分配的彩色背景及白色文字；同一用户在聊天、联系人、分组、群成员和历史记录中保持一致，已有头像图片优先显示。
+
+### 历史查询失败
+
+`MessengerHistoryResult.error?: string` 用于区分查询失败和正常空结果。失败时显示错误及“重试”，重试携带原条件和页码；调用方可保留上次成功的 `messages/total`，组件继续展示。调用方应忽略旧会话、旧条件和旧账号的迟到响应。

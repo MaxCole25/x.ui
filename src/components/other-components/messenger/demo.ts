@@ -26,7 +26,8 @@ export function createMessengerDemoState(): MessengerDemoState {
     { id: 'group-2', senderId: 'wang', senderName: '王明', content: '采购和销售可以在这里同步订单进度。', time: '09:10', sentAt: '2026-10-09T09:10:00+08:00' }
   ]
   return {
-    modelValue: false, currentUserRole: 'admin', currentUserId: 'me', activeConversationId: 'direct-lin', contacts,
+    headerBackgroundColor: 'color-mix(in srgb, var(--x-color-primary, #4385ef) 12%, var(--x-color-surface, white))', chatBackgroundColor: 'var(--x-color-surface-soft, #f2f4f7)', bubbleBackgroundColor: 'var(--x-color-surface, white)', timePlacement: 'separator',
+    modelValue: false, conversationReadonly: false, defaultContactListPinned: true, currentUserRole: 'admin', currentUserId: 'me', activeConversationId: 'direct-lin', contacts,
     contactGroups: [{ id: 'sales', name: '销售同事' }, { id: 'partners', name: '协作同事' }],
     groups: [{ id: 'project', name: '订单项目沟通群', memberIds: ['me', 'lin', 'wang'], ownerId: 'me', adminIds: ['lin'], announcement: '请在群内同步订单与交期，重要事项附上业务单据。', unreadCount: 1, permissions: { canRename: true, canManageMembers: true, canManageAdmins: true, canEditAnnouncement: true, canLeave: true, canDissolve: true } }],
     conversations: [
@@ -34,7 +35,7 @@ export function createMessengerDemoState(): MessengerDemoState {
       { id: 'group-project', kind: 'group', targetId: 'project', title: '订单项目沟通群', lastMessage: '同步订单进度', lastMessageTime: '2026-10-09T09:10:00+08:00', unreadCount: 1 }
     ],
     messagePages: [{ conversationId: 'direct-lin', messages: history.slice(-8), hasMore: true }, { conversationId: 'group-project', messages: groupMessages, hasMore: false }],
-    width: 800, height: 640, fontSize: 14, contactListPlacement: 'right', contactListWidth: 280, contactListHeight: 520, allowCreateGroup: true, showBusinessPicker: true,
+    width: 800, height: 640, fontSize: 14, contactListPlacement: 'right', floatingBoundary: '', launcherPositionStorageKey: '', contactListWidth: 280, contactListHeight: 520, allowCreateGroup: true, showBusinessPicker: true,
     allMessages: new Map([['direct-lin', history], ['group-project', groupMessages]]), demoSequence: 100
   }
 }
@@ -63,7 +64,7 @@ export function createMessengerDemoHandlers(state: MessengerDemoState, instance:
   }
   async function send(payload: MessengerSendPayload) {
     const list = messages(payload.conversationId)
-    const base = { senderId: state.currentUserId, senderName: '我', time: '刚刚', sentAt: new Date().toISOString(), status: 'sent' as const }
+    const base = { groupId: 'send-' + (++state.demoSequence), senderId: state.currentUserId, senderName: '我', time: '刚刚', sentAt: new Date().toISOString(), status: 'sent' as const, quote: payload.quote }
     if (payload.content) list.push({ ...base, id: ++state.demoSequence, content: payload.content })
     for (const reference of payload.businessReferences) list.push({ ...base, id: ++state.demoSequence, kind: 'business', content: reference.title, business: reference })
     refresh(payload.conversationId)

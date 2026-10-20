@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { messageAvatarColor } from "../../../_utils/avatarColor"
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { XButton } from '../../../basic-components/button'
 import { XIcon } from '../../../basic-components/icon'
 import { XAvatar } from '../../../display-components/avatar'
 import { formatChatFileSize } from '../../../display-components/chat/src/useChatComposer'
@@ -64,10 +66,11 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       <div class="x-messenger-history__records" aria-live="polite">
         <p v-if="result?.loading" class="x-messenger-history__empty">正在查询…</p>
         <template v-else>
+          <p v-if="result?.error" class="x-messenger-history__empty" role="alert">{{ result.error }} <XButton variant="ghost" @click="search(query.page)">重试</XButton></p>
           <section v-for="section in sections" :key="section.date" class="x-messenger-history__day">
             <header>{{ section.date }}</header>
             <button v-for="message in section.messages" :key="message.id" type="button" class="x-messenger-history__record" :aria-label="'定位消息 ' + (message.fileName || message.content)" @click="emit('locate', message.id)">
-              <XAvatar :name="message.senderName || '系统'" :src="message.avatar || contacts.find(user => user.id === message.senderId)?.avatar" :avatar-size="30" avatar-background-color="linear-gradient(135deg, #63b6dd, #5b83cf)" />
+              <XAvatar :name="message.senderName || '系统'" :src="message.avatar || contacts.find(user => user.id === message.senderId)?.avatar" :avatar-size="30" :background-color="messageAvatarColor(message.senderId, message.senderName)" text-color="#ffffff" />
               <span class="x-messenger-history__message">
                 <span class="x-messenger-history__meta"><span>{{ message.senderName || '系统' }}</span><time>{{ timeText(message) }}</time></span>
                 <img v-if="message.kind === 'image' && message.imageUrl" class="x-messenger-history__image" :src="message.imageUrl" :alt="message.content || '历史图片'" loading="lazy" />
@@ -77,7 +80,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               </span>
             </button>
           </section>
-          <p v-if="!sections.length" class="x-messenger-history__empty">{{ result ? '没有匹配记录' : '正在查询…' }}</p>
+          <p v-if="!sections.length && !result?.error" class="x-messenger-history__empty">{{ result ? '没有匹配记录' : '正在查询…' }}</p>
         </template>
       </div>
       <aside v-if="showFilters" class="x-messenger-history__filters" aria-label="筛选条件">

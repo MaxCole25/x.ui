@@ -384,6 +384,31 @@ let pendingCellSelection:
       cells: Array<{ row: Record<string, unknown>; value: unknown; column: TableColumn; rowIndex: number }>
     }
   | null = null
+const copiedCellKeys = ref<string[]>([])
+const copiedCellKeySet = computed(() => new Set(isCellCopyEnabled.value ? copiedCellKeys.value : []))
+const copiedCellEdges = computed(() => {
+  const edgesByKey = new Map<string, string[]>()
+  if (copiedCellKeySet.value.size === 0) return edgesByKey
+  const rows = visibleRows.value
+  const columns = resolvedColumns.value
+  rows.forEach(({ row, rowIndex }, visibleRowIndex) => {
+    columns.forEach(({ column }, columnIndex) => {
+      const key = getCellSelectionKey(row, rowIndex, column)
+      if (!copiedCellKeySet.value.has(key)) return
+      const edges: string[] = []
+      const previousRow = rows[visibleRowIndex - 1]
+      const nextRow = rows[visibleRowIndex + 1]
+      const previousColumn = columns[columnIndex - 1]?.column
+      const nextColumn = columns[columnIndex + 1]?.column
+      if (!previousRow || !copiedCellKeySet.value.has(getCellSelectionKey(previousRow.row, previousRow.rowIndex, column))) edges.push('top')
+      if (!nextColumn || !copiedCellKeySet.value.has(getCellSelectionKey(row, rowIndex, nextColumn))) edges.push('right')
+      if (!nextRow || !copiedCellKeySet.value.has(getCellSelectionKey(nextRow.row, nextRow.rowIndex, column))) edges.push('bottom')
+      if (!previousColumn || !copiedCellKeySet.value.has(getCellSelectionKey(row, rowIndex, previousColumn))) edges.push('left')
+      edgesByKey.set(key, edges)
+    })
+  })
+  return edgesByKey
+})
 let internalClipboardText = ''
 let cellSelectionAutoScrollFrame = 0
 let latestCellSelectionPointer: { clientX: number; clientY: number } | null = null
@@ -978,6 +1003,7 @@ function beginCellEdit(
     return
   }
 
+  copiedCellKeys.value = []
   editingCellKey.value = getCellSelectionKey(row, rowIndex, column)
   editingCellValue.value = initialValue ?? normalizeInputValue(getCellValue(row, column))
 
@@ -1266,6 +1292,15 @@ function handleCellEditOutsidePointerDown(event: PointerEvent) {
 }
 
 function handleTableKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && copiedCellKeys.value.length > 0 && !editingCellKey.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    copiedCellKeys.value = []
+    closeContextMenu()
+    focusTableRoot()
+    return
+  }
+
   if (event.key === 'Tab' && editingCellKey.value) {
     event.preventDefault()
     event.stopPropagation()
@@ -1438,8 +1473,10 @@ async function copySelectedCells(text = getSelectedCellsClipboardText()) {
     return
   }
 
+  copiedCellKeys.value = [...activeSelectedCellKeys.value]
   internalClipboardText = text
   await writeClipboardText(text)
+  focusTableRoot()
 }
 
 async function pasteSelectedCells() {
@@ -3025,7 +3062,7 @@ defineExpose({
                 v-for="(column, columnIndex) in resolvedColumns"
                 :key="column.column.key"
                 class="x-table__cell"
-                :class="getCellSelectionClasses(row, rowIndex, column.column, columnIndex)"
+                :class="[getCellSelectionClasses(row, rowIndex, column.column, columnIndex), { 'is-copied-cell': copiedCellKeySet.has(getCellSelectionKey(row, rowIndex, column.column)) }]"
                 :data-x-table-cell-row-index="rowIndex"
                 :data-x-table-cell-column-index="columnIndex"
                 role="cell"
@@ -3035,6 +3072,13 @@ defineExpose({
                 @dblclick="startCellEdit(row, rowIndex, column.column, $event)"
                 @contextmenu="openCellContextMenu($event, rowIndex)"
               >
+                <span
+                  v-for="edge in copiedCellEdges.get(getCellSelectionKey(row, rowIndex, column.column))"
+                  :key="edge"
+                  class="x-table__copy-border"
+                  :class="`is-${edge}`"
+                  aria-hidden="true"
+                />
                 <div
                   v-if="isCellEditing(row, rowIndex, column.column)"
                   class="x-table__cell-editor"
@@ -3500,7 +3544,7 @@ defineExpose({
 }
 
 .x-table__scrollbar {
-  background: var(--x-scrollbar-track-color, #f1f5f9);
+  background: var(--x-scrollbar-track-color, transparent);
   border-radius: 999px;
   pointer-events: none;
   position: absolute;
@@ -3526,6 +3570,8 @@ defineExpose({
   border-radius: 999px;
   pointer-events: auto;
 }
+
+.x-table__scrollbar-thumb:hover { background: var(--x-scrollbar-thumb-hover-color, #94a3b8); }
 
 .x-table__scrollbar--vertical .x-table__scrollbar-thumb {
   width: 100%;
@@ -3814,6 +3860,55 @@ defineExpose({
 .x-table__cell.is-selected-cell.is-selected-cell-adjacent-left::after {
   border-left-color: var(--x-table-cell-selected-inner-border-color, var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4)));
   border-left-width: 1px;
+}
+
+.x-table__cell.is-copied-cell {
+  position: relative;
+}
+
+.x-table__copy-border {
+  --x-table-copy-border-color: var(--x-table-cell-selected-border-color, var(--x-color-primary, #1264f4));
+  --x-table-copy-border-gap-color: var(--x-table-body-background, var(--x-color-surface, #fff));
+  animation: x-table-copy-border-march 0.6s linear infinite;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.x-table__copy-border.is-top,
+.x-table__copy-border.is-bottom {
+  background-image: repeating-linear-gradient(90deg, var(--x-table-copy-border-color) 0 4px, var(--x-table-copy-border-gap-color) 4px 8px);
+  background-size: 8px 2px;
+  height: 2px;
+  left: 0;
+  right: 0;
+}
+
+.x-table__copy-border.is-left,
+.x-table__copy-border.is-right {
+  background-image: repeating-linear-gradient(0deg, var(--x-table-copy-border-color) 0 4px, var(--x-table-copy-border-gap-color) 4px 8px);
+  background-size: 2px 8px;
+  bottom: 0;
+  top: 0;
+  width: 2px;
+}
+
+.x-table__copy-border.is-top { top: 0; }
+.x-table__copy-border.is-right { right: 0; }
+.x-table__copy-border.is-bottom { bottom: 0; }
+.x-table__copy-border.is-left { left: 0; }
+
+.x-table__copy-border.is-bottom,
+.x-table__copy-border.is-left {
+  animation-direction: reverse;
+}
+
+@keyframes x-table-copy-border-march {
+  to { background-position: 8px 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .x-table__copy-border { animation: none; }
 }
 
 .x-table__cell-selection-handle {
