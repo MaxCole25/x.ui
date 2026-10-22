@@ -1,11 +1,18 @@
 ---
 name: x-ui-component-library
-description: 在 @x-soft88/x-ui Vue 3 组件库中开发、文档化、手动验收、自动化测试、构建和本地 link 联调组件。适用于新增或修改 Vue 3 UI 组件、创建 Histoire 组件运行效果页面、编写中文 VitePress 文档、添加 Vitest 组件测试、验证组件库发布构建，或指导第三方 Vue 3 项目通过 npm link / pnpm link 调用并联调 @x-soft88/x-ui。
+description: 开发维护 @x-soft88/x-ui Vue 3 组件库，或在业务项目中使用其真实组件、Props、布局与主题组合页面，尽可能减少手写 CSS。涵盖中文文档、Histoire、类型检查、构建和本地 link 联调；不用于引入其它 UI 库。
 ---
 
 # @x-soft88/x-ui 组件库开发技能
 
-在 `@x-soft88/x-ui` 仓库中开发组件时使用本技能。
+开发维护 `@x-soft88/x-ui` 或在业务项目使用 X.UI 时使用本技能。
+
+## 先判断使用场景
+
+- 业务项目页面开发：阅读 [业务页面组合流程](references/ai-usage.md)，查目标组件 API 与安装包类型。不要执行下文创建组件、修改导出、生成组件库文档的维护流程。
+- 本仓库组件开发或文档维护：继续下文流程。用户明确要求不新增测试时，遵从用户要求并运行适用的已有检查。
+
+核心策略：优先组件和 Props，其次统一主题，只在现有能力不足时补充必要 CSS；不假设存在未实现的组件或 Props，不引入重复 UI 依赖。
 
 ## 必读顺序
 

@@ -1,10 +1,53 @@
 import { defineConfig } from 'vitepress'
 import { exampleImports } from './example-imports'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { execFileSync } from 'node:child_process'
+
+const siteUrl = 'https://maxcole25.github.io/x.ui/'
 
 export default defineConfig({
-  title: '@x-soft88/x-ui',
-  description: 'Vue 3 UI 组件库',
+  title: 'Soft88 X.UI',
+  description: 'Vue 3 + TypeScript UI Component Library',
+  base: '/x.ui/',
   lang: 'zh-CN',
+  sitemap: { hostname: siteUrl },
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/x.ui/logo.svg' }],
+    ['meta', { name: 'keywords', content: 'Soft88 X.UI、Vue 3、TypeScript、UI Components、Vue Component Library、免 CSS 开发、企业级前端组件库' }],
+    ['meta', { property: 'og:site_name', content: 'Soft88 X.UI' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:locale', content: 'zh_CN' }],
+    ['meta', { property: 'og:image', content: siteUrl + 'logo.svg' }]
+  ],
+  transformPageData(pageData) {
+    if (pageData.relativePath === '404.md') return
+    if (!pageData.frontmatter.description) {
+      const source = readFileSync(resolve('docs', pageData.relativePath), 'utf8')
+        .replace(/^---\r?\n[\s\S]*?\r?\n---/, '')
+        .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
+      const paragraph = source.split(/\r?\n\s*\r?\n/).find(part => {
+        const text = part.trim()
+        return text && !/^(?:#|<|\||```|~~~)/.test(text)
+      })
+      pageData.description = pageData.frontmatter.description = paragraph
+        ? paragraph.replace(/[`*]/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s+/g, ' ').trim().slice(0, 180)
+        : `${pageData.title}：Soft88 X.UI 的使用方法、API 与 Vue 3 TypeScript 示例。`
+    }
+  },
+  transformHead({ pageData }) {
+    if (pageData.relativePath === '404.md') return [['meta', { name: 'robots', content: 'noindex' }]]
+    const url = siteUrl + pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '.html')
+    return [
+      ['link', { rel: 'canonical', href: url }],
+      ['meta', { property: 'og:url', content: url }],
+      ['meta', { property: 'og:title', content: pageData.title && pageData.title !== 'Soft88 X.UI' ? `${pageData.title} | Soft88 X.UI` : 'Soft88 X.UI' }],
+      ['meta', { property: 'og:description', content: pageData.description }]
+    ]
+  },
+  buildEnd() {
+    execFileSync(process.execPath, ['scripts/docs-assets.mjs'], { stdio: 'inherit' })
+  },
   themeConfig: {
     logo: '/logo.svg',
     nav: [
@@ -18,6 +61,8 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
+          { text: 'AI 使用指南', link: '/guide/ai-usage' },
+          { text: '文档部署与维护', link: '/guide/docs-maintenance' },
           { text: '国际化', link: '/guide/i18n' },
           { text: '主题基础色', link: '/guide/theme' },
           { text: '字体与控件高度', link: '/guide/typography' },
@@ -151,7 +196,7 @@ export default defineConfig({
     ],
     search: { provider: 'local' },
     outline: { level: [2, 3], label: '本页目录' },
-    socialLinks: []
+    socialLinks: [{ icon: 'github', link: 'https://github.com/MaxCole25/x.ui' }]
   },
   vite: {
     plugins: [exampleImports()],

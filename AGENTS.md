@@ -8,6 +8,10 @@
 
 ## 项目目标
 
+业务页面接入优先使用已有组件、Props、布局系统与统一主题，尽可能减少手写 CSS。AI 应先查阅 `docs/guide/ai-usage.md`、具体组件文档和公开类型，核对根入口导出，不编造组件或 Props，不引入重复 UI 依赖。只有现有能力无法满足需求时才补充必要 CSS。
+
+文档维护沿用 `api:inventory`、`docs:api`；执行 `docs:coverage` 检查 API 名称覆盖，`docs:build` 自动生成 LLM 文本，随后执行 `docs:verify` 验收静态产物。部署流程见 `docs/guide/docs-maintenance.md`。
+
 构建一套可复用、可文档化、可手动验收、可自动化测试、可被第三方 Vue 3 项目本地联调的 UI 组件库。
 
 当前约定：

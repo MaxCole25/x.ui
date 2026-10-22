@@ -5,10 +5,12 @@ const checks = [
   ['格式与语法', ['scripts/lint.mjs']],
   ['公开 API 命名', ['scripts/audit-api-naming.mjs', '--check', '--max-legacy=0', '--max-review=0']],
   ['API 清单', ['scripts/component-api.mjs', '--check']],
+  ['文档 API 名称覆盖', ['scripts/docs-coverage.mjs']],
   ...['build', 'docs', 'story'].map(target => [`${target} 类型`, ['node_modules/vue-tsc/bin/vue-tsc.js', '--noEmit', '-p', `tsconfig.${target}.json`]]),
   ['已有测试', ['node_modules/vitest/vitest.mjs', 'run']],
   ['组件库构建', ['node_modules/vite/bin/vite.js', 'build']],
   ['文档构建', ['node_modules/vitepress/bin/vitepress.js', 'build', 'docs']],
+  ['文档静态产物', ['scripts/verify-docs.mjs']],
   ['Story 构建', ['scripts/histoire.mjs', 'build']]
 ]
 const results = checks.map(([name, args]) => {

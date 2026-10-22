@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import landscapeUrl from '../../public/chat-landscape.svg'
 import { XBrick, XText, XChat, XButton, type ChatExpose, type ChatMessage, type ChatMessageClickPayload, type ChatSendPayload } from '@x-soft88/x-ui'
 import '@x-soft88/x-ui/style.css'
 function createChatMessages(): ChatMessage[] {
@@ -7,7 +8,7 @@ function createChatMessages(): ChatMessage[] {
     { id: 'notice', kind: 'system', content: '今天 10:20 · 你们已成为好友，开始聊天吧' },
     { id: 1, senderId: 'friend', senderName: '小林', time: '10:20', content: '你好！新的聊天消息框做好了吗？🙂' },
     { id: 2, senderId: 'me', senderName: '我', time: '10:21', content: '做好了，支持左右气泡、头像和消息状态。\n长消息会自动换行，换行符也会保留。', status: 'read' },
-    { id: 3, senderId: 'friend', senderName: '小林', time: '10:22', kind: 'image', content: '周末去看山吧', imageUrl: '/chat-landscape.svg' },
+    { id: 3, senderId: 'friend', senderName: '小林', time: '10:22', kind: 'image', content: '周末去看山吧', imageUrl: landscapeUrl },
     { id: 4, senderId: 'me', senderName: '我', time: '10:23', content: '看起来不错，我们周末出发！', quote: { senderName: '小林', content: '周末去看山吧' }, status: 'sent' },
     { id: 'order-card', senderId: 'friend', senderName: '小林', time: '10:23', kind: 'business', content: '订单交期确认', business: { businessType: '销售订单', businessId: 'order-001', businessNumber: 'SO20261009001', title: '订单交期确认', summary: '点击卡片交给 ERP 打开业务单据' } },
     { id: 5, senderId: 'me', senderName: '我', time: '10:24', content: '这条消息可以点击重试。', status: 'failed' }

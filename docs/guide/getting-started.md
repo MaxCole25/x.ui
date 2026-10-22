@@ -6,7 +6,13 @@
 
 文档示例使用组件默认外观和公开属性，布局通过 `XBrick`、`XGrid` 等组件完成，不需要复制额外的 CSS。示例中的 `@x-soft88/x-ui/style.css` 是组件库统一样式入口，项目仍需引入。
 
-安装依赖：
+业务项目安装组件库（当前包发布配置为 restricted，需要包已发布且具备访问权限，也可使用下文的本地 link）：
+
+```bash
+pnpm add @x-soft88/x-ui
+```
+
+维护本仓库时安装依赖：
 
 ```bash
 pnpm install
@@ -30,6 +36,7 @@ pnpm build
 import { createApp } from 'vue'
 import XUi from '@x-soft88/x-ui'
 import '@x-soft88/x-ui/style.css'
+import App from './App.vue'
 
 createApp(App).use(XUi).mount('#app')
 ```
