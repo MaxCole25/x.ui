@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { translate as t } from '../../../../locale'
 import { useLocaleProps, localePropDefault } from '../../../../locale/props'
 
 import { createFontStyle } from '../../../_utils/size'
@@ -618,7 +619,7 @@ onBeforeUnmount(() => {
             v-if="showClear"
             class="x-base-input__clear x-select__clear is-visible"
             type="button"
-            aria-label="清空"
+            :aria-label="t('common.clear')"
             @mousedown.prevent
             @click.stop="clear"
           >

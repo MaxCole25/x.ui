@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { translate as t } from "../../../../locale"
 import { useLocaleProps, localePropDefault } from '../../../../locale/props'
 
 import { getFixedWeight, normalizeNumber, formatCssSize, setCssVariable, alignToJustify, createResolvedColumn, resolveColumnTracks, applyFixedOffsets, getColumnMinWidth, getResolvedColumnWidth, parseCssPixelSize } from './columnLayout'
@@ -2398,12 +2399,12 @@ function getColumnSortIcon(column: TableColumn) {
 function getColumnSortLabel(column: TableColumn) {
   const order = getColumnSortOrder(column)
   if (order === 'ascending') {
-    return `${column.label} 当前升序，点击切换为降序`
+    return t('table.sortAscending', { label: column.label })
   }
   if (order === 'descending') {
-    return `${column.label} 当前降序，点击恢复默认排序`
+    return t('table.sortDescending', { label: column.label })
   }
-  return `${column.label} 当前未排序，点击升序排序`
+  return t('table.sortNone', { label: column.label })
 }
 
 function toggleColumnSort(column: TableColumn) {
@@ -2567,7 +2568,7 @@ function getSummaryCellValue(column: TableColumn) {
 
   const cell = row.cells?.[column.key]
   if (!cell) {
-    return column.key === summaryLabelColumnKey.value ? row.label ?? '合计' : ''
+    return column.key === summaryLabelColumnKey.value ? row.label ?? t('table.total') : ''
   }
 
   if (typeof cell === 'function') {
@@ -2873,7 +2874,7 @@ defineExpose({
     @keydown.capture="handleTableKeydown"
   >
     <div v-if="isDirtyActionsVisible || isRowMutationToolbarVisible" class="x-table__top">
-      <div v-if="isDirtyActionsVisible" class="x-table__dirty-actions" aria-label="脏数据操作">
+      <div v-if="isDirtyActionsVisible" class="x-table__dirty-actions" :aria-label="t('table.dirtyActions')">
         <button
           class="x-table__toolbar-icon-button"
           type="button"
@@ -2906,7 +2907,7 @@ defineExpose({
           <i class="ri-arrow-go-back-line" aria-hidden="true"></i>
         </button>
       </div>
-      <div v-if="isRowMutationToolbarVisible" class="x-table__row-mutation-actions" aria-label="行操作">
+      <div v-if="isRowMutationToolbarVisible" class="x-table__row-mutation-actions" :aria-label="t('table.rowActions')">
         <button
           v-if="showAppendRowButton"
           class="x-table__toolbar-icon-button"
@@ -2943,7 +2944,7 @@ defineExpose({
             v-if="rowDraggable"
             class="x-table__cell x-table__cell--header x-table__cell--drag"
             role="columnheader"
-            aria-label="拖拽排序"
+            :aria-label="t('table.dragSort')"
             :style="getUtilityCellStyle('drag', 'header')"
           />
           <div
@@ -2955,7 +2956,7 @@ defineExpose({
             <input
               class="x-table__checkbox"
               type="checkbox"
-              aria-label="选择全部行"
+              :aria-label="t('table.selectAll')"
               :checked="isAllSelected"
               :indeterminate.prop="isSelectionIndeterminate"
               @change="handleSelectionHeaderChange"
@@ -2997,7 +2998,7 @@ defineExpose({
               class="x-table__column-resize-handle"
               role="separator"
               aria-orientation="vertical"
-              :aria-label="`调整 ${column.column.label} 列宽`"
+              :aria-label="t('table.resizeColumn', { label: column.column.label })"
               @pointerdown="startColumnResize(column, $event)"
               @dblclick="autoFitColumnWidth(column, $event)"
             />
@@ -3008,7 +3009,7 @@ defineExpose({
             role="columnheader"
             :style="getActionsCellStyle('header')"
           >
-            操作
+            {{ t('table.actions') }}
           </div>
         </div>
       </div>
@@ -3061,7 +3062,7 @@ defineExpose({
                 <input
                   class="x-table__checkbox"
                   type="checkbox"
-                  :aria-label="`选择第 ${rowIndex + 1} 行`"
+                  :aria-label="t('table.selectRow', { row: rowIndex + 1 })"
                   :checked="isRowSelected(row, rowIndex)"
                   @change="handleRowSelectionChange(row, rowIndex, $event)"
                   @click.stop
@@ -3234,7 +3235,7 @@ defineExpose({
       role="menu"
       @contextmenu.prevent
     >
-      <div class="x-table__context-menu-section" role="group" aria-label="剪贴板">
+      <div class="x-table__context-menu-section" role="group" :aria-label="t('table.clipboard')">
         <button
           class="x-table__context-menu-item"
           type="button"
@@ -3244,7 +3245,7 @@ defineExpose({
         >
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-file-copy-line" aria-hidden="true"></i>
-            <span>复制</span>
+            <span>{{ t('table.copy') }}</span>
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+C</kbd>
         </button>
@@ -3257,13 +3258,13 @@ defineExpose({
         >
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-clipboard-line" aria-hidden="true"></i>
-            <span>粘贴</span>
+            <span>{{ t('table.paste') }}</span>
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+V</kbd>
         </button>
       </div>
 
-      <div class="x-table__context-menu-section" role="group" aria-label="行操作">
+      <div class="x-table__context-menu-section" role="group" :aria-label="t('table.rowActions')">
         <button
           class="x-table__context-menu-item"
           type="button"
@@ -3273,7 +3274,7 @@ defineExpose({
         >
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-add-line" aria-hidden="true"></i>
-            <span>增加行</span>
+            <span>{{ t('table.addRow') }}</span>
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+I</kbd>
         </button>
@@ -3286,7 +3287,7 @@ defineExpose({
         >
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-insert-row-top" aria-hidden="true"></i>
-            <span>向上插入行</span>
+            <span>{{ t('table.insertAbove') }}</span>
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+U</kbd>
         </button>
@@ -3299,30 +3300,30 @@ defineExpose({
         >
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-insert-row-bottom" aria-hidden="true"></i>
-            <span>向下插入行</span>
+            <span>{{ t('table.insertBelow') }}</span>
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+D</kbd>
         </button>
       </div>
 
-      <div class="x-table__context-menu-section" role="group" aria-label="列宽">
+      <div class="x-table__context-menu-section" role="group" :aria-label="t('table.columnWidth')">
         <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFit">
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-arrow-left-right-line" aria-hidden="true"></i>
-            <span>适合宽度</span>
+            <span>{{ t('table.fitWidth') }}</span>
           </span>
           <kbd class="x-table__context-menu-shortcut">Ctrl+W</kbd>
         </button>
         <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuProportionalWidth">
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-layout-column-line" aria-hidden="true"></i>
-            <span>比例宽度</span>
+            <span>{{ t('table.proportionalWidth') }}</span>
           </span>
         </button>
         <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuAutoFitWithHeader">
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-layout-column-line" aria-hidden="true"></i>
-            <span>适应宽度</span>
+            <span>{{ t('table.adaptiveWidth') }}</span>
           </span>
         </button>
       </div>
@@ -3331,13 +3332,13 @@ defineExpose({
         <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuExport('raw')">
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-download-2-line" aria-hidden="true"></i>
-            <span>导出Excel（默认表格数据）</span>
+            <span>{{ t('table.exportData') }}</span>
           </span>
         </button>
         <button class="x-table__context-menu-item" type="button" role="menuitem" @click="handleContextMenuExport('formatted')">
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-file-excel-2-line" aria-hidden="true"></i>
-            <span>导出Excel（格式化文字）</span>
+            <span>{{ t('table.exportText') }}</span>
           </span>
         </button>
         <button
@@ -3349,7 +3350,7 @@ defineExpose({
         >
           <span class="x-table__context-menu-label">
             <i class="x-table__context-menu-icon ri-upload-2-line" aria-hidden="true"></i>
-            <span>导入Excel</span>
+            <span>{{ t('table.importExcel') }}</span>
           </span>
         </button>
       </div>
