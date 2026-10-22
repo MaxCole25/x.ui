@@ -1,0 +1,16 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Soft88 X.UI",
+  "description": "Vue 3 + TypeScript UI component library with layout components, configurable props and shared themes for business interfaces.",
+  "branch": "main",
+  "folders": ["docs/components", "docs/guide"],
+  "excludeFolders": ["node_modules", "dist", ".histoire", ".codex", "docs/.vitepress"],
+  "excludeFiles": ["AGENTS.md", "api-naming-audit.md", "optimization-progress.md", "gantt-delivery.md", "docs-maintenance.md", "testing.md"],
+  "rules": [
+    "Import public components and types from @x-soft88/x-ui, and import @x-soft88/x-ui/style.css once in the application.",
+    "Prefer X.UI components, layout props and the regular/dark/light themes to handwritten CSS; add CSS only for capabilities the library does not provide.",
+    "Read the documented props, events, slots, defaults and exported types before generating code. Never invent components, props or features.",
+    "Use numeric fontSize in px; configure height independently. Verify responsive behavior for the specific component.",
+    "Vue peer dependency is ^3.5.0. Current package publishing configuration is restricted; do not assume anonymous npm installation is available."
+  ]
+}

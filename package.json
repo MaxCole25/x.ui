@@ -49,6 +49,8 @@
     "docs:preview": "vitepress preview docs",
     "docs:coverage": "node scripts/docs-coverage.mjs",
     "docs:verify": "node scripts/verify-docs.mjs",
+    "docs:indexnow": "node scripts/submit-indexnow.mjs",
+    "docs:indexnow:submit": "node scripts/submit-indexnow.mjs --submit",
     "api:naming:audit": "node scripts/audit-api-naming.mjs",
     "api:naming:audit:write": "node scripts/audit-api-naming.mjs --write",
     "api:naming:audit:check": "node scripts/audit-api-naming.mjs --check --max-legacy=0 --max-review=0",

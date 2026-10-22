@@ -47,3 +47,17 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/deploy-pages@v4
         id: deployment
+
+  notify-search:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 通知搜索引擎更新文档
+        continue-on-error: true
+        run: node scripts/submit-indexnow.mjs --submit

@@ -39,7 +39,24 @@ VitePress 静态生成各页 HTML，正文与 API 表无需客户端执行才能
 
 允许抓取不保证搜索排名、AI 检索命中或模型训练收录。上线后可向搜索引擎提交 sitemap；这属于独立的站长平台操作。
 
-## 后续改进
+## 主动提交与文档索引
+
+Google Search Console 使用网址前缀 `https://maxcole25.github.io/x.ui/` 验证，验证文件位于 `docs/public/googlec1cdf188cde86cff.html`，会随文档部署；成功验证后必须保留。提交 sitemap 的地址为 `https://maxcole25.github.io/x.ui/sitemap.xml`。验证和提交状态以站长平台界面为准，不能从验证文件存在推断已通过验证。
+
+IndexNow 不要求 Bing Webmaster Tools 账号。`docs/public/indexnow-key.txt` 是公开站点验证标识，不是账号密码或 API 访问令牌。脚本通过 `keyLocation` 把提交范围限制在 `/x.ui/`；部署成功后读取线上 sitemap 和验证文件，通知协议入口，参与的搜索引擎会共享通知。仅提交公开文档网址，不提交账号数据或私有内容。
+
+```bash
+pnpm docs:indexnow         # 检查本地构建的 sitemap，不发网络请求
+pnpm docs:indexnow:submit  # 部署成功后主动通知搜索引擎
+```
+
+Pages 工作流新增 `notify-search` 任务，在部署成功后自动通知一次。通知步骤允许失败，避免搜索服务暂时不可用影响已完成的站点部署；请查看该步骤日志与任务摘要确认 HTTP 状态。HTTP 200 表示接收，202 表示接收且验证待完成，都不等于已经索引，更不保证 AI 推荐。
+
+根目录 `context7.json` 配置主分支、组件和指南目录、排除项及 API 使用规则，方便提交公开仓库时复用。Context7 需要登录后在 Add Library 中提交仓库；配置文件本身不会自动注册或触发索引。其 GitHub 文档解析主要读取 Markdown 等文档，不会执行 Vue 示例导入；如需包含全部展开示例，可在支持 LLMs.txt 来源的入口使用在线 `llms-full.txt`。本次不安装 Context7 MCP 服务。
+
+以上流程不修改 npm 访问级别、不代选许可证，也不改变仓库可见性。
+
+## 后续内容维护
 
 - 逐步完善提取器未覆盖的服务接口、动态插槽与复杂类型，并给 API 生成区增加明确标记，再引入 API 表内容差异检查。
 - 在已有组件文档中补充各自的主题继承、响应式边界和人工验收说明，不从属性名称推测支持情况。

@@ -8,8 +8,14 @@ const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry =
 const files = walk(root)
 const problems = new Set()
 const read = file => fs.readFileSync(file, 'utf8')
+const verificationFiles = ['googlec1cdf188cde86cff.html', 'indexnow-key.txt']
+const isDocument = file => path.basename(file) !== '404.html' && !verificationFiles.includes(path.basename(file))
 for (const name of ['sitemap.xml', 'robots.txt', 'llms.txt', 'llms-full.txt', 'logo.svg']) {
   if (!fs.existsSync(path.join(root, name))) problems.add(`缺少 ${name}`)
+}
+for (const name of verificationFiles) {
+  const built = path.join(root, name)
+  if (!fs.existsSync(built) || read(built).trim() !== read(path.join('docs/public', name)).trim()) problems.add(`验证文件缺失或不一致：${name}`)
 }
 const localFile = url => {
   const pathname = decodeURIComponent(new URL(url, site).pathname)
@@ -25,7 +31,7 @@ for (const file of files.filter(file => file.endsWith('.html'))) {
   for (const [, url] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
     if (url.startsWith('/') && !url.startsWith('//')) localFile(url.split('#')[0])
   }
-  if (path.basename(file) === '404.html') continue
+  if (!isDocument(file)) continue
   const canonical = html.match(/<link[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1]
   if (!canonical?.startsWith(site)) problems.add(`canonical 缺失或错误：${file}`)
   else localFile(canonical)
@@ -39,7 +45,7 @@ for (const url of locations) {
   if (!url.startsWith(site)) problems.add(`sitemap 地址错误：${url}`)
   else localFile(url)
 }
-const expected = files.filter(file => file.endsWith('.html') && path.basename(file) !== '404.html')
+const expected = files.filter(file => file.endsWith('.html') && isDocument(file))
 for (const file of expected) {
   const url = site + path.relative(root, file).replaceAll('\\', '/').replace(/(^|\/)index\.html$/, '$1')
   if (!locations.includes(url)) problems.add(`sitemap 未收录：${url}`)
