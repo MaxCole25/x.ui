@@ -25,7 +25,10 @@ const props = withDefaults(defineProps<ColorPickerProps>(), {
 const colorPickerStyle = computed(() => ({
   ...createFontStyle(props.fontSize ?? 14),
   ...createElementStyleVars(props),
-  '--x-color-picker-width': toCssSize(props.width),
+  width: toCssSize(props.width),
+  minWidth: 0,
+  maxWidth: '100%',
+  '--x-color-picker-width': '100%',
   '--x-color-picker-padding': toCssSize(props.padding)
 }))
 

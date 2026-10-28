@@ -10,7 +10,8 @@ defineOptions({
 
 const props = withDefaults(defineProps<CardProps>(), {
   fontSize: undefined,
-  shadow: 'always'
+  shadow: 'always',
+  enableGlow: false
 })
 
 const mergedSize = computed(() => props.fontSize ?? 14)
@@ -18,6 +19,7 @@ const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const cardStyle = computed(() => ({
   '--x-card-border-width': toCssSize(props.borderWidth),
   '--x-card-border-color': props.borderColor,
+  '--x-card-glow-color': props.glowColor,
   '--x-card-divider-width': toCssSize(props.dividerWidth),
   '--x-card-divider-color': props.dividerColor,
   '--x-card-bg': props.backgroundColor,
@@ -30,7 +32,7 @@ const cardStyle = computed(() => ({
 </script>
 
 <template>
-  <section class="x-card" :class="[`x-card--${props.shadow}`, 'x-card']" :style="[cardStyle, createFontStyle(mergedSize)]">
+  <section class="x-card" :class="[`x-card--${props.shadow}`, 'x-card', { 'is-glowing': props.enableGlow }]" :style="[cardStyle, createFontStyle(mergedSize)]">
     <header v-if="$slots.header || props.header" class="x-card__header">
       <slot name="header">{{ props.header }}</slot>
     </header>

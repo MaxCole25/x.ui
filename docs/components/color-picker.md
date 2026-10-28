@@ -29,7 +29,7 @@ import Example3Source from '../examples/color-picker/Example3.vue?raw'
 
 ### 触发器尺寸
 
-默认使用弹出模式，点击色值输入框只会编辑文本，不会打开面板。`width` 和 `padding` 用于调整触发器区域。弹出面板会根据浏览器边缘自动避让，靠近底部时会优先向上显示。
+默认使用弹出模式，点击色值输入框只会编辑文本，不会打开面板。`width` 控制整个组件宽度，内部触发器随组件撑满；数字按 px 处理，`width="100%"` 撑满父容器。未设置时沿用默认 240px 宽度，但在窄容器中可收缩至父容器宽度，不再由外层固定宽度撑出横向滚动条。`padding` 控制触发器内边距。弹出面板会根据浏览器边缘自动避让，靠近底部时会优先向上显示。
 
 <XDocDemo title="触发器尺寸" :code="Example3Source">
   <Example3 />
@@ -53,7 +53,7 @@ import Example3Source from '../examples/color-picker/Example3.vue?raw'
 
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
-| `width` | 触发器宽度，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `width` | 组件整体宽度，触发器同步适配；支持 100% 撑满父容器，窄容器可收缩 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 
 ### 外观与排版
 

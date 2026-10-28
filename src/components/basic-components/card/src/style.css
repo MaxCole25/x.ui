@@ -26,6 +26,10 @@
   box-shadow: none;
 }
 
+.x-card.is-glowing {
+  box-shadow: 0 0 14px 4px color-mix(in srgb, var(--x-card-glow-color, var(--x-card-border-color, var(--x-color-border))) 45%, transparent);
+}
+
 .x-card__header,
 .x-card__footer {
   color: var(--x-card-text, var(--x-color-text));

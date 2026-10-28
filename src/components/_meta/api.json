@@ -1549,6 +1549,30 @@
         "required": false
       },
       {
+        "name": "enableGlow",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "外观与排版",
+        "description": "是否启用外沿泛光，不影响边框、尺寸和内容布局",
+        "required": false
+      },
+      {
+        "name": "glowColor",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "外观与排版",
+        "description": "泛光色，未指定时跟随卡片边框颜色",
+        "required": false
+      },
+      {
         "name": "width",
         "type": "number | string",
         "default": "—",
@@ -1709,7 +1733,7 @@
       },
       {
         "name": "CardProps",
-        "definition": "export interface CardProps extends ElementStyleProps {\n  fontSize?: number\n  header?: string\n  footer?: string\n  shadow?: CardShadow\n  width?: number | string\n  height?: number | string\n  padding?: number | string\n  /** 分隔线粗细，数字按 px 处理；设为 0 可隐藏 */\n  dividerWidth?: number | string\n  /** 分隔线颜色 */\n  dividerColor?: string\n  bodyStyle?: CSSProperties\n}",
+        "definition": "export interface CardProps extends ElementStyleProps {\n  fontSize?: number\n  header?: string\n  footer?: string\n  shadow?: CardShadow\n  /** 是否启用外沿泛光，不影响边框、尺寸和内容布局 */\n  enableGlow?: boolean\n  /** 泛光色，未指定时跟随卡片边框颜色 */\n  glowColor?: string\n  width?: number | string\n  height?: number | string\n  padding?: number | string\n  /** 分隔线粗细，数字按 px 处理；设为 0 可隐藏 */\n  dividerWidth?: number | string\n  /** 分隔线颜色 */\n  dividerColor?: string\n  bodyStyle?: CSSProperties\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -7155,7 +7179,7 @@
       {
         "name": "columns",
         "type": "GanttColumn[]",
-        "default": "() => [{ key: 'title', title: '任务名称', width: 230 }, { key: 'start', title: '开始日期', width: 110 }, { key: 'end', title: '结束日期', width: 110 }]",
+        "default": "() => [{ key: 'title', get title() { return t(\"extension.2e3046989973\") }, width: 230 }, { key: 'start', get title() { return t(\"extension.1f2919689118\") }, width: 110 }, { key: 'end', get title() { return t(\"extension.f4b9b2b5de8a\") }, width: 110 }]",
         "defaultNote": "",
         "unit": "—",
         "controlType": "json",

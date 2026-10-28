@@ -19,7 +19,7 @@ const appearance = reactive({
 <template>
   <Story title="基础组件/Card 卡片" group="components">
     <Variant title="外观接口">
-      <ApiPlayground component="XCard">
+      <ApiPlayground component="XCard" :initial-props="{ enableGlow: true, borderColor: '#3978f6' }">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XCard
 

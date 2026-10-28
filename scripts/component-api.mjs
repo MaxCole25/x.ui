@@ -13,7 +13,7 @@ export function groupFor(name) {
   if (/^(default|header|footer|pane|trigger)$/.test(name)) return groups[1]
   if (/^(modelValue|update:|data$|items$|options$|value$|fieldNames|rowKey|keyField)/.test(name)) return groups[0]
   if (/teleport|zIndex|placement|popper|mask|overlay|closeOn|openDelay|closeDelay/i.test(name)) return groups[5]
-  if (/Color|Background|Border|radius|font|shadow|opacity|variant|align|padding/i.test(name)) return groups[3]
+  if (/Color|Background|Border|radius|font|shadow|glow|opacity|variant|align|padding/i.test(name)) return groups[3]
   if (/width|height|size|gap|full|autoWidth|autoHeight|direction|span|offset|gutter/i.test(name)) return groups[2]
   if (/disabled|readonly|loading|clearable|status|trigger|focus|blur|click|hover|change|input|open|close|show|hide|visible|clear/i.test(name)) return groups[4]
   if (/title|content|label|text|prefix|suffix|icon|placeholder|description|separator|empty|name|^id$/i.test(name)) return groups[1]

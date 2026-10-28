@@ -34,6 +34,8 @@ const sample = reactive({
           <XColorPicker
             v-model="sample.color"
             :panel-mode="appearance.panelMode"
+            :width="appearance.width"
+            :padding="appearance.padding"
 
            v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" />
         </template>

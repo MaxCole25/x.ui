@@ -3,6 +3,8 @@ import Example1 from '../examples/card/Example1.vue'
 import Example1Source from '../examples/card/Example1.vue?raw'
 import Example2 from '../examples/card/Example2.vue'
 import Example2Source from '../examples/card/Example2.vue?raw'
+import Example3 from '../examples/card/Example3.vue'
+import Example3Source from '../examples/card/Example3.vue?raw'
 </script>
 # 卡片 Card
 
@@ -32,6 +34,16 @@ import Example2Source from '../examples/card/Example2.vue?raw'
   <Example2 />
 </XDocDemo>
 
+### 外沿泛光
+
+通过 `enableGlow` 开关控制泛光，默认关闭。泛光颜色默认跟随卡片的实际边框颜色（`borderColor` 或主题边框色），也可通过 `glowColor` 单独指定。边框色变化时，未指定颜色的泛光会同步变化。
+
+泛光只绘制在卡片外沿，不改变边框粗细、卡片尺寸或内容布局。启用时优先显示泛光，`shadow="never"` 也可配合使用；父容器需为外沿预留空间，避免裁剪。
+
+<XDocDemo title="跟随边框色与指定泛光色" :code="Example3Source">
+  <Example3 />
+</XDocDemo>
+
 ## 属性
 
 默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
@@ -49,6 +61,7 @@ import Example2Source from '../examples/card/Example2.vue?raw'
 | --- | --- | --- | --- | --- |
 | `width` | 宽度 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `height` | 高度 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `dividerWidth` | 分隔线粗细，统一控制头部和底部分隔线；设为 0 可隐藏，未设置时为 1px | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 
 ### 外观与排版
 
@@ -56,11 +69,12 @@ import Example2Source from '../examples/card/Example2.vue?raw'
 | --- | --- | --- | --- | --- |
 | `fontSize` | 字号，数字单位 px，不影响高度、内边距和圆角 | `number` | `undefined` | px |
 | `shadow` | 阴影策略 | `CardShadow` | `'always'` | — |
+| `enableGlow` | 是否启用外沿泛光，不影响边框、尺寸和内容布局 | `boolean` | `false` | — |
+| `glowColor` | 泛光色，未指定时跟随卡片边框颜色 | `string` | `—` | — |
 | `padding` | 内边距，数字按 px 处理；字符串使用 CSS 单位 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `dividerColor` | 分隔线颜色，未设置时使用全局变量 --x-color-border | `string` | `—` | — |
 | `borderWidth` | 边框粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 | `borderColor` | 边框颜色 | `string` | `—` | — |
-| `dividerWidth` | 分隔线粗细，统一控制头部和底部分隔线；设为 0 可隐藏，未设置时为 1px | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
-| `dividerColor` | 分隔线颜色，未设置时使用全局变量 --x-color-border | `string` | `—` | — |
 | `radius` | 整体圆角，数字按 px 处理 | `number \| string` | `—` | — |
 | `backgroundColor` | 背景色 | `string` | `—` | — |
 | `textColor` | 文字颜色 | `string` | `—` | — |
@@ -99,6 +113,10 @@ export interface CardProps extends ElementStyleProps {
   header?: string
   footer?: string
   shadow?: CardShadow
+  /** 是否启用外沿泛光，不影响边框、尺寸和内容布局 */
+  enableGlow?: boolean
+  /** 泛光色，未指定时跟随卡片边框颜色 */
+  glowColor?: string
   width?: number | string
   height?: number | string
   padding?: number | string
