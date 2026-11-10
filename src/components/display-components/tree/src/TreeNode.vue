@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
+import { XIcon } from '../../../basic-components/icon'
 import type { TreeNodeData, TreeNodeIcon, TreeSlots } from './types'
 
 const props = defineProps<{
@@ -8,6 +9,8 @@ const props = defineProps<{
   currentTreeKey: string
   currentUserId: number | null
   expandedState: Record<string, boolean>
+  expandedIcon?: string
+  collapsedIcon?: string
   draggingNode: TreeNodeData | null
   resolveNodeIcon: (node: TreeNodeData) => TreeNodeIcon
   allowDrag: (node: TreeNodeData) => boolean
@@ -36,6 +39,7 @@ const expanded = computed(() => {
   if (!hasChildren.value) return false
   return props.expandedState[nodeKey.value] !== false
 })
+const toggleIcon = computed(() => expanded.value ? props.expandedIcon : props.collapsedIcon)
 const isCurrent = computed(() => props.currentTreeKey === nodeKey.value)
 const nodeType = computed(() => props.node.type ?? 'document')
 const nodeIcon = computed(() => props.resolveNodeIcon(props.node))
@@ -201,7 +205,8 @@ function submitRename() {
       @dragend="handleDragEnd"
     >
       <button v-if="hasChildren" type="button" class="x-tree-node__toggle" @click.stop="toggleExpand">
-        {{ expanded ? '▾' : '▸' }}
+        <XIcon v-if="toggleIcon" :name="toggleIcon" icon-size="var(--x-tree-icon-size, 14px)" decorative />
+        <template v-else>{{ expanded ? '▾' : '▸' }}</template>
       </button>
       <span v-else class="x-tree-node__toggle-placeholder" />
       <span v-if="hasCustomIcon" class="x-tree-node__icon" :class="{ 'is-member': isMember }" aria-hidden="true">
@@ -245,6 +250,8 @@ function submitRename() {
         :depth="props.depth + 1"
         :current-tree-key="props.currentTreeKey"
         :current-user-id="props.currentUserId"
+        :expanded-icon="props.expandedIcon"
+        :collapsed-icon="props.collapsedIcon"
         :expanded-state="props.expandedState"
         :dragging-node="props.draggingNode"
         :resolve-node-icon="props.resolveNodeIcon"

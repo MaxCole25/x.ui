@@ -23,6 +23,7 @@ const state = reactive({
 <template>
   <Story title="基础组件/布局 Layout" group="components">
     <Variant title="外观接口">
+      <p>窄屏验收：将浏览器视口调至 390px，选择 top-only 模式；确认顶部、正文和底部各占一行，没有空侧栏行，正文仍有可用高度。</p>
       <ApiPlayground component="XLayout">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XLayout

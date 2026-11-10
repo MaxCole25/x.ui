@@ -149,6 +149,8 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
       :readonly="props.readonly"
       :can-save="props.canSave"
       :show-toolbar="props.showToolbar"
+      :toolbar-button-size="props.toolbarButtonSize"
+      :toolbar-icon-size="props.toolbarIconSize"
       :toolbar-buttons="props.toolbarButtons"
       :toolbar-tooltip-placement="props.toolbarTooltipPlacement"
       :show-outline="props.showOutline"

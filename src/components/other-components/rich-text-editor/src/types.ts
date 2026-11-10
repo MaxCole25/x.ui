@@ -63,6 +63,8 @@ export interface RichTextEditorProps {
   fullHeight?: boolean
   canSave?: boolean
   showToolbar?: boolean
+  toolbarButtonSize?: number | string
+  toolbarIconSize?: number
   toolbarButtons?: RichTextEditorToolbarButton[]
   toolbarTooltipPlacement?: 'top' | 'bottom'
   showOutline?: boolean

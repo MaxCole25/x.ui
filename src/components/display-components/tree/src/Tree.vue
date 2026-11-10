@@ -324,6 +324,8 @@ defineExpose({ setCurrentKey, expandAll, collapseAll })
       :node="node"
       :depth="0"
       :current-tree-key="currentKeyState"
+      :expanded-icon="props.expandedIcon"
+      :collapsed-icon="props.collapsedIcon"
       :expanded-state="expandedState"
       :dragging-node="draggingNode"
       :current-user-id="props.currentUserId"

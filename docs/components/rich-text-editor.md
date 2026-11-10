@@ -108,6 +108,8 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
+| `toolbarButtonSize` | 工具栏按钮独立宽高，不影响正文和浮层控件 | `number \| string` | `—`（沿用 32px） | 数字为 px；字符串使用 CSS 单位 |
+| `toolbarIconSize` | 工具栏主图标字号，不改变正文或按钮尺寸；下拉小箭头保持原尺寸 | `number` | `—`（沿用原字号规则） | px |
 | `minHeight` | 编辑区域最小高度 | `number \| string` | `520` | 数字为 px；字符串使用 CSS 单位 |
 | `fullHeight` | 是否填满已有明确高度的父容器，并让内容区在工具栏下方内部滚动 | `boolean` | `false` | — |
 
@@ -228,6 +230,8 @@ export interface RichTextEditorProps {
   fullHeight?: boolean
   canSave?: boolean
   showToolbar?: boolean
+  toolbarButtonSize?: number | string
+  toolbarIconSize?: number
   toolbarButtons?: RichTextEditorToolbarButton[]
   toolbarTooltipPlacement?: 'top' | 'bottom'
   showOutline?: boolean

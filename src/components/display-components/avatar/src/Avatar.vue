@@ -20,7 +20,8 @@ const props = withDefaults(defineProps<AvatarProps>(), {
   iconSpin: false,
   fontSize: undefined,
   avatarSize: undefined,
-  shape: 'circle'
+  shape: 'circle',
+  imageFit: 'cover'
 })
 
 const slots = useSlots()
@@ -54,6 +55,9 @@ const avatarStyle = computed(() => ({
   '--x-avatar-border-color': props.borderColor,
   '--x-avatar-text-color': props.textColor,
   '--x-avatar-custom-size': resolvedAvatarSize.value,
+  '--x-avatar-width': toCssSize(props.width) ?? resolvedAvatarSize.value,
+  '--x-avatar-height': toCssSize(props.height) ?? resolvedAvatarSize.value,
+  '--x-avatar-image-fit': props.imageFit,
   '--x-icon-size': avatarIconSize.value
 }))
 </script>

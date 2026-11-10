@@ -55,6 +55,7 @@ import type { JSONContent } from '@tiptap/core'
 import type { Editor } from '@tiptap/vue-3'
 import '../../../../../../styles/index.css'
 import './styles/index.css'
+import { toCssSize } from '../../../../../_utils/elementStyle'
 import { getComponentMetrics, type FontSize } from '../../../../../_utils/size'
 import { toHtml } from './custom/adapters/htmlAdapter'
 import { toJson } from './custom/adapters/jsonAdapter'
@@ -93,6 +94,8 @@ const props = withDefaults(
     minHeight?: number | string
     fullHeight?: boolean
     canSave?: boolean
+    toolbarButtonSize?: number | string
+    toolbarIconSize?: number
     toolbarButtons?: string[]
     toolbarTooltipPlacement?: 'top' | 'bottom'
     showToolbar?: boolean
@@ -161,6 +164,8 @@ const editorStyle = computed(() => {
     '--xl-editor-min-height': typeof props.minHeight === 'number' ? `${props.minHeight}px` : props.minHeight,
     '--xl-editor-font-size': `${preset.fontSize}px`,
     '--xl-editor-control-height': `${preset.height}px`,
+    '--xl-toolbar-button-size': toCssSize(props.toolbarButtonSize),
+    '--xl-toolbar-icon-size': toCssSize(props.toolbarIconSize),
     '--xl-editor-control-padding': preset.padding,
     '--xl-editor-radius': preset.radius,
     '--xl-editor-content-bg': theme.contentBackgroundColor || props.contentBackgroundColor,

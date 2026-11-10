@@ -15,6 +15,9 @@ const initialProps = {
   iconSpin: false,
   fontSize: 14,
   avatarSize: 32,
+  width: undefined,
+  height: undefined,
+  imageFit: 'cover',
   shape: 'circle',
   avatarBackgroundColor: '#1264f4'
 } satisfies AvatarProps
@@ -29,6 +32,7 @@ const initialProps = {
         </template>
       </ApiPlayground>
       <p>分别调整 avatarSize 和 fontSize，检查头像宽高与文字大小独立；切换 iconFull 检查图标尺寸，再恢复默认。</p>
+      <p>横向 Logo 验收：设置 width 为 180、height 为 40、imageFit 为 contain，确认完整显示；清空宽高并恢复 cover 后仍为原有方形头像。</p>
       <p>图片验收：输入无效 src 检查回退内容，再换为有效图片地址检查重新加载；清空 src 后检查图标或姓名缩写恢复。</p>
     </Variant>
   </Story>

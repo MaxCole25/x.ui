@@ -1,7 +1,29 @@
 .x-tree {
   color: var(--x-tree-text-color, var(--x-color-text));
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 2px;
+}
+
+.x-tree-node,
+.x-tree-node__row,
+.x-tree-node__children {
+  min-width: 0;
+}
+
+.x-tree-node__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.x-tree-node__label {
+  flex: 1 1 auto;
+}
+
+.x-tree-node__author {
+  flex: 0 0 auto;
 }
 
 .x-tree__empty {

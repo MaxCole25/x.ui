@@ -182,9 +182,9 @@
 
 .xl-toolbar .xl-toolbar__menu-trigger--select {
   justify-content: center;
-  min-width: var(--xl-editor-control-height, 30px);
+  min-width: var(--xl-toolbar-button-size, var(--xl-editor-control-height, 30px));
   padding: 0;
-  width: var(--xl-editor-control-height, 30px);
+  width: var(--xl-toolbar-button-size, var(--xl-editor-control-height, 30px));
 }
 
 .xl-toolbar__menu:has(.xl-toolbar__menu-dropdown) .xl-toolbar__menu-trigger {
@@ -339,11 +339,16 @@
     color 0.16s ease;
 }
 
+.xl-toolbar button {
+  width: var(--xl-toolbar-button-size, var(--xl-editor-control-height, 30px));
+  height: var(--xl-toolbar-button-size, var(--xl-editor-control-height, 30px));
+}
+
 .xl-toolbar button i {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(var(--xl-editor-font-size, 12px) + 6px);
+  font-size: var(--xl-toolbar-icon-size, calc(var(--xl-editor-font-size, 12px) + 6px));
   line-height: 1;
   width: 1em;
   height: 1em;
@@ -375,7 +380,7 @@
 
 .xl-toolbar__save-button i,
 .xl-toolbar__import-md-button i {
-  font-size: 18px;
+  font-size: var(--xl-toolbar-icon-size, 18px);
 }
 
 .xl-toolbar__outline-button {

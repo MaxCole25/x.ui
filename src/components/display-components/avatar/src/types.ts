@@ -17,6 +17,9 @@ export interface AvatarProps extends ElementStyleProps {
   iconSpin?: boolean
   fontSize?: number
   avatarSize?: number | string
+  width?: number | string
+  height?: number | string
+  imageFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
   shape?: AvatarShape
   avatarBackgroundColor?: string
 }

@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<CardProps>(), {
 const mergedSize = computed(() => props.fontSize ?? 14)
 const sizePreset = computed(() => getComponentMetrics(mergedSize.value))
 const cardStyle = computed(() => ({
+  '--x-card-radius': toCssSize(props.radius),
   '--x-card-border-width': toCssSize(props.borderWidth),
   '--x-card-border-color': props.borderColor,
   '--x-card-glow-color': props.glowColor,

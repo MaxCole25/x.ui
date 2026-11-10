@@ -10,6 +10,8 @@ import Example3Source from '../examples/avatar/Example3.vue?raw'
 
 用于展示用户头像、姓名缩写或自定义头像内容。默认宽高为 32px，`avatarSize` 同时控制宽高，数字单位为 px，字符串使用 CSS 长度；`fontSize` 只控制文字大小，不改变头像尺寸。
 
+横向 Logo 可设置 `width`、`height` 和 `imageFit="contain"`，图片保持比例完整显示；独立宽高优先于 `avatarSize`，省略时保留原有方形尺寸与 cover 裁切行为。
+
 ## 使用示例
 
 ### 基础用法
@@ -51,6 +53,8 @@ import Example3Source from '../examples/avatar/Example3.vue?raw'
 | --- | --- | --- | --- | --- |
 | `iconFull` | 图标是否撑满头像尺寸 | `boolean` | `false` | — |
 | `avatarSize` | 头像宽高，未设置时为 32px，与 fontSize 独立 | `number \| string` | `undefined` | 数字为 px；字符串使用 CSS 单位 |
+| `width` | 独立宽度，优先于 avatarSize | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
+| `height` | 独立高度，优先于 avatarSize | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 
 ### 外观与排版
 
@@ -73,6 +77,7 @@ import Example3Source from '../examples/avatar/Example3.vue?raw'
 | `src` | 图片地址 | `string` | `—` | — |
 | `alt` | 图片替代文本 | `string` | `''` | — |
 | `shape` | 形状 | `AvatarShape` | `'circle'` | — |
+| `imageFit` | 图片填充方式，contain 完整显示横向 Logo | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | — |
 
 ## 插槽
 
@@ -113,6 +118,9 @@ export interface AvatarProps extends ElementStyleProps {
   iconSpin?: boolean
   fontSize?: number
   avatarSize?: number | string
+  width?: number | string
+  height?: number | string
+  imageFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
   shape?: AvatarShape
   avatarBackgroundColor?: string
 }

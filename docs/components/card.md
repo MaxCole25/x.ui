@@ -18,6 +18,8 @@ import Example3Source from '../examples/card/Example3.vue?raw'
 </XCard>
 ```
 
+通过 `radius` 设置卡片整体圆角，例如 `:radius="18"`；不传时继续使用组件主题的默认圆角。
+
 ## 使用示例
 
 ### 基础用法

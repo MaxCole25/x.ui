@@ -1673,7 +1673,7 @@
         "type": "number | string",
         "default": "—",
         "defaultNote": "",
-        "unit": "—",
+        "unit": "数字为 px；字符串使用 CSS 单位",
         "controlType": "number|string",
         "options": [],
         "group": "外观与排版",
@@ -4988,6 +4988,48 @@
         "required": false
       },
       {
+        "name": "width",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "宽度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "height",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "数字为 px；字符串使用 CSS 单位",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "高度，数字按 px 处理",
+        "required": false
+      },
+      {
+        "name": "imageFit",
+        "type": "'cover' | 'contain' | 'fill' | 'none' | 'scale-down'",
+        "default": "'cover'",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [
+          "none",
+          "contain",
+          "cover",
+          "fill",
+          "scale-down"
+        ],
+        "group": "组件专有功能",
+        "description": "图片填充方式，contain 完整显示横向 Logo",
+        "required": false
+      },
+      {
         "name": "shape",
         "type": "AvatarShape",
         "default": "'circle'",
@@ -5099,7 +5141,7 @@
       },
       {
         "name": "AvatarProps",
-        "definition": "export interface AvatarProps extends ElementStyleProps {\n  src?: string\n  alt?: string\n  name?: string\n  icon?: string\n  iconVariant?: IconVariant\n  iconFull?: boolean\n  iconColor?: string\n  iconTitle?: string\n  iconSpin?: boolean\n  fontSize?: number\n  avatarSize?: number | string\n  shape?: AvatarShape\n  avatarBackgroundColor?: string\n}",
+        "definition": "export interface AvatarProps extends ElementStyleProps {\n  src?: string\n  alt?: string\n  name?: string\n  icon?: string\n  iconVariant?: IconVariant\n  iconFull?: boolean\n  iconColor?: string\n  iconTitle?: string\n  iconSpin?: boolean\n  fontSize?: number\n  avatarSize?: number | string\n  width?: number | string\n  height?: number | string\n  imageFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'\n  shape?: AvatarShape\n  avatarBackgroundColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -10355,6 +10397,30 @@
         "required": false
       },
       {
+        "name": "expandedIcon",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "内容与展示",
+        "description": "展开状态的折叠按钮图标名称，未设置时显示原三角符号",
+        "required": false
+      },
+      {
+        "name": "collapsedIcon",
+        "type": "string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "string",
+        "options": [],
+        "group": "内容与展示",
+        "description": "收起状态的折叠按钮图标名称，未设置时显示原三角符号",
+        "required": false
+      },
+      {
         "name": "allowDrag",
         "type": "(node: TreeNodeData) => boolean",
         "default": "() => true",
@@ -10595,7 +10661,7 @@
       },
       {
         "name": "TreeProps",
-        "definition": "export interface TreeProps {\n  fontSize?: number\n  treeData: TreeNodeData[]\n  currentTreeKey?: string\n  currentUserId?: number | null\n  activeAccentColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  hoverBackgroundColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n  activeIconColor?: string\n  nodeIcon?: (node: TreeNodeData) => TreeNodeIcon\n  allowDrag?: (node: TreeNodeData) => boolean\n  allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean\n  contextMenuItems?: TreeContextMenuItems\n  createRootNode?: TreeCreateRootNode\n  createNode?: TreeCreateNode\n  deleteNode?: TreeDeleteNode\n  canCreateChildByNode?: (node: TreeNodeData) => boolean\n  canDeleteNodeById?: (nodeId?: number | null) => boolean\n  canManageMembersByNode?: (node: TreeNodeData) => boolean\n  canMigrateNode?: (node: TreeNodeData) => boolean\n}",
+        "definition": "export interface TreeProps {\n  fontSize?: number\n  treeData: TreeNodeData[]\n  currentTreeKey?: string\n  currentUserId?: number | null\n  activeAccentColor?: string\n  textColor?: string\n  mutedTextColor?: string\n  hoverBackgroundColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n  activeIconColor?: string\n  nodeIcon?: (node: TreeNodeData) => TreeNodeIcon\n  expandedIcon?: string\n  collapsedIcon?: string\n  allowDrag?: (node: TreeNodeData) => boolean\n  allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean\n  contextMenuItems?: TreeContextMenuItems\n  createRootNode?: TreeCreateRootNode\n  createNode?: TreeCreateNode\n  deleteNode?: TreeDeleteNode\n  canCreateChildByNode?: (node: TreeNodeData) => boolean\n  canDeleteNodeById?: (nodeId?: number | null) => boolean\n  canManageMembersByNode?: (node: TreeNodeData) => boolean\n  canMigrateNode?: (node: TreeNodeData) => boolean\n}",
         "exported": true,
         "group": "属性与配置"
       },
@@ -33476,6 +33542,30 @@
         "required": false
       },
       {
+        "name": "toolbarButtonSize",
+        "type": "number | string",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number|string",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "工具栏按钮独立宽高，不影响正文和浮层控件",
+        "required": false
+      },
+      {
+        "name": "toolbarIconSize",
+        "type": "number",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "工具栏主图标字号，不改变正文或按钮尺寸；下拉小箭头保持原尺寸",
+        "required": false
+      },
+      {
         "name": "toolbarButtons",
         "type": "RichTextEditorToolbarButton[]",
         "default": "—",
@@ -33664,7 +33754,7 @@
       },
       {
         "name": "RichTextEditorProps",
-        "definition": "export interface RichTextEditorProps {\n  fontSize?: number\n  modelValue?: string\n  fallbackHtml?: string\n  readonly?: boolean\n  minHeight?: number | string\n  fullHeight?: boolean\n  canSave?: boolean\n  showToolbar?: boolean\n  toolbarButtons?: RichTextEditorToolbarButton[]\n  toolbarTooltipPlacement?: 'top' | 'bottom'\n  showOutline?: boolean\n  pasteImages?: boolean\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentFontSize?: number | string\n  theme?: RichTextEditorTheme\n  uploadImage?: (file: File) => Promise<UploadResult>\n  uploadFile?: (file: File) => Promise<UploadResult>\n}",
+        "definition": "export interface RichTextEditorProps {\n  fontSize?: number\n  modelValue?: string\n  fallbackHtml?: string\n  readonly?: boolean\n  minHeight?: number | string\n  fullHeight?: boolean\n  canSave?: boolean\n  showToolbar?: boolean\n  toolbarButtonSize?: number | string\n  toolbarIconSize?: number\n  toolbarButtons?: RichTextEditorToolbarButton[]\n  toolbarTooltipPlacement?: 'top' | 'bottom'\n  showOutline?: boolean\n  pasteImages?: boolean\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentFontSize?: number | string\n  theme?: RichTextEditorTheme\n  uploadImage?: (file: File) => Promise<UploadResult>\n  uploadFile?: (file: File) => Promise<UploadResult>\n}",
         "exported": true,
         "group": "属性与配置"
       },

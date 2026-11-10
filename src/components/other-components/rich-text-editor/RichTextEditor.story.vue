@@ -2,7 +2,7 @@
 import ApiPlayground from '../../_story/ApiPlayground.vue'
 import { XRichTextEditor } from './index'
 import '../../../styles/index.css'
-const initialProps = { modelValue: '<p>在当前编辑器中按 Ctrl/Cmd+S</p>', canSave: true, minHeight: 220, showOutline: false }
+const initialProps = { modelValue: '<p>在当前编辑器中按 Ctrl/Cmd+S</p>', canSave: true, toolbarIconSize: 16, toolbarButtonSize: 25, minHeight: 220, showOutline: false }
 </script>
 
 <template>

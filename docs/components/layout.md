@@ -26,7 +26,7 @@ import Example2Source from '../examples/layout/Example2.vue?raw'
 
 - `top-sidebar`：顶部横向 + 左侧栏 + 内容 + 底部。
 - `sidebar-top`：左侧栏贯穿整列，顶部、内容、底部在右侧。
-- `top-only`：仅顶部 + 内容 + 底部，不渲染侧栏。
+- `top-only`：仅顶部 + 内容 + 底部，不渲染侧栏；视口不超过 400px 时仍为三行，不为侧栏预留空行。
 
 <XDocDemo title="侧栏贯穿布局" :code="Example2Source">
   <Example2 />

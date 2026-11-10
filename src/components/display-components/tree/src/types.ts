@@ -62,6 +62,8 @@ export interface TreeProps {
   activeTextColor?: string
   activeIconColor?: string
   nodeIcon?: (node: TreeNodeData) => TreeNodeIcon
+  expandedIcon?: string
+  collapsedIcon?: string
   allowDrag?: (node: TreeNodeData) => boolean
   allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean
   contextMenuItems?: TreeContextMenuItems

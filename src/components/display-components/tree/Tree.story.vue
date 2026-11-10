@@ -126,7 +126,9 @@ function handleNodeDrop(draggingNode: TreeNodeData, dropNode: TreeNodeData, drop
 <template>
   <Story title="展示组件/树目录 Tree" group="components">
     <Variant title="外观接口">
-      <ApiPlayground component="XTree">
+      <p>窄容器验收：将父容器宽度设为 267px，在 treeData 中输入长标题；确认标题省略、作者仍可点击且目录不出现横向溢出。增加节点后由外层滚动容器纵向滚动。</p>
+      <p>折叠图标验收：expandedIcon 与 collapsedIcon 分别使用向下、向右细线箭头；展开和收起多级节点确认递归生效，清空属性后恢复默认三角符号。</p>
+      <ApiPlayground component="XTree" :initial-props="{ expandedIcon: 'ri-arrow-down-s-line', collapsedIcon: 'ri-arrow-right-s-line' }">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XTree
             v-if="!flags.useExtraSlot"

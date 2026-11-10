@@ -129,4 +129,11 @@
       "content"
       "footer";
   }
+
+  .x-layout--top-only {
+    grid-template-areas:
+      "topbar"
+      "content"
+      "footer";
+  }
 }

@@ -14,14 +14,14 @@
 
 .x-avatar img {
   height: 100%;
-  object-fit: cover;
+  object-fit: var(--x-avatar-image-fit, cover);
   width: 100%;
 }
 
 .x-avatar {
   font-size: var(--x-font-size-body, 14px);
-  height: var(--x-avatar-custom-size, 32px);
-  width: var(--x-avatar-custom-size, 32px);
+  height: var(--x-avatar-height, var(--x-avatar-custom-size, 32px));
+  width: var(--x-avatar-width, var(--x-avatar-custom-size, 32px));
 }
 
 .x-avatar--circle {

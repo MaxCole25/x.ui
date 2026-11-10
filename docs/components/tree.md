@@ -10,6 +10,10 @@ import Example3Source from '../examples/tree/Example3.vue?raw'
 
 `XTree` 提供树形目录展示、展开收起、键盘上下选择、右键菜单、节点新增删除和拖拽落点事件能力。
 
+树目录按父容器宽度收缩；长标题在节点内省略显示，右侧作者或操作区保留可用宽度。放入限定高度的 `XScrollbar` 时，由外层负责纵向滚动，标题不会撑宽目录。
+
+可通过 `expandedIcon`、`collapsedIcon` 指定展开和收起状态的 `XIcon` 图标名称，例如 `ri-arrow-down-s-line`、`ri-arrow-right-s-line`；对子级节点同样生效。不传对应属性时保留原来的三角符号，叶子节点继续保留对齐占位。这两个属性控制折叠按钮，`nodeIcon` 仍控制节点本身的图标。
+
 ## 使用示例
 
 ### 基础用法
@@ -82,6 +86,8 @@ import Example3Source from '../examples/tree/Example3.vue?raw'
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
 | `nodeIcon` | 自定义节点图标 | `(node: TreeNodeData) => TreeNodeIcon` | `—` | — |
+| `expandedIcon` | 展开状态的折叠按钮图标名称，未设置时显示原三角符号 | `string` | `—` | — |
+| `collapsedIcon` | 收起状态的折叠按钮图标名称，未设置时显示原三角符号 | `string` | `—` | — |
 | `contextMenuItems` | 自定义右键菜单项 | `TreeContextMenuItems` | `—` | — |
 
 ### 外观与排版
@@ -256,6 +262,8 @@ export interface TreeProps {
   activeTextColor?: string
   activeIconColor?: string
   nodeIcon?: (node: TreeNodeData) => TreeNodeIcon
+  expandedIcon?: string
+  collapsedIcon?: string
   allowDrag?: (node: TreeNodeData) => boolean
   allowDrop?: (draggingNode: TreeNodeData, dropNode: TreeNodeData, type: 'before' | 'after' | 'inner') => boolean
   contextMenuItems?: TreeContextMenuItems
