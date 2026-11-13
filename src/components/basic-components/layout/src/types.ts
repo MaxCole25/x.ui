@@ -6,6 +6,7 @@ export interface LayoutProps {
   fullHeight?: boolean
   sidebarWidth?: number | string
   sidebarCollapsed?: boolean
+  enableSidebarEdgeToggle?: boolean
   sidebarCollapsedWidth?: number | string
   gap?: number | string
   topbarHeight?: number | string
@@ -27,4 +28,8 @@ export interface LayoutProps {
   footerTextColor?: string
   footerRadius?: number | string
   footerBorderColor?: string
+}
+
+export interface LayoutEmits {
+  'update:sidebarCollapsed': [value: boolean]
 }

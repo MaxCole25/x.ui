@@ -37,6 +37,18 @@ import Example3Source from '../examples/text/Example3.vue?raw'
   <Example3 />
 </XDocDemo>
 
+### 多行省略
+
+通过 `maxLines` 设置最大展示行数，文字自动换行，超出的内容显示省略号。长连续字符也会折行。设置正整数时优先于 `truncated`；不设置时保持原有行为。
+
+```vue
+<XText :max-lines="2" :width="220">这是一段需要自动换行、最多显示两行的消息摘要。</XText>
+```
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| maxLines | number | — | 最大显示行数，正整数时启用多行省略。 |
+
 ## 属性
 
 默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。

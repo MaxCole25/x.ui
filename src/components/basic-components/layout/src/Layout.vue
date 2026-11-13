@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { createFontStyle } from '../../../_utils/size'
 import { computed } from 'vue'
-import type { LayoutProps } from './types'
+import { XButton } from '../../button'
+import { XIcon } from '../../icon'
+import type { LayoutEmits, LayoutProps } from './types'
 
 defineOptions({
   name: 'XLayout'
@@ -12,6 +14,7 @@ const props = withDefaults(defineProps<LayoutProps>(), {
   fullHeight: true,
   sidebarWidth: 288,
   sidebarCollapsed: false,
+  enableSidebarEdgeToggle: false,
   sidebarCollapsedWidth: 88,
   gap: 0,
   topbarHeight: 55,
@@ -34,6 +37,9 @@ const props = withDefaults(defineProps<LayoutProps>(), {
   footerRadius: 0,
   footerBorderColor: '1px solid #cdded7'
 })
+
+const emit = defineEmits<LayoutEmits>()
+const sidebarHidden = computed(() => props.sidebarCollapsed && Number.parseFloat(String(props.sidebarCollapsedWidth)) === 0)
 
 function toCssLength(value: number | string) {
   return typeof value === 'number' ? `${value}px` : value
@@ -71,7 +77,7 @@ const shellStyle = computed(() => {
 <template>
   <div
     class="x-layout"
-    :class="[`x-layout--${props.mode}`, { 'is-fill-height': props.fullHeight, 'is-sidebar-collapsed': props.sidebarCollapsed }]"
+    :class="[`x-layout--${props.mode}`, { 'is-fill-height': props.fullHeight, 'is-sidebar-collapsed': props.sidebarCollapsed, 'is-sidebar-hidden': sidebarHidden }]"
     :style="shellStyle"
   >
     <header class="x-layout__topbar">
@@ -81,6 +87,27 @@ const shellStyle = computed(() => {
     <aside v-if="props.mode !== 'top-only'" class="x-layout__sidebar">
       <slot name="sidebar" />
     </aside>
+
+    <div v-if="props.enableSidebarEdgeToggle && props.mode !== 'top-only'" class="x-layout__sidebar-edge">
+      <XButton
+        class="x-layout__sidebar-toggle"
+        :width="14"
+        :height="32"
+        :padding="0"
+        :radius="999"
+        :lift-on-hover="false"
+        variant="outline"
+        :background-color="props.contentBackgroundColor"
+        border-color="var(--x-color-primary)"
+        text-color="var(--x-color-primary)"
+        :aria-label="props.sidebarCollapsed ? '展开侧栏' : '折叠侧栏'"
+        :title="props.sidebarCollapsed ? '展开侧栏' : '折叠侧栏'"
+        :aria-expanded="!props.sidebarCollapsed"
+        @click="emit('update:sidebarCollapsed', !props.sidebarCollapsed)"
+      >
+        <XIcon :font-size="12" :name="props.sidebarCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'" />
+      </XButton>
+    </div>
 
     <main class="x-layout__content">
       <slot />

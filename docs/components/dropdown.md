@@ -283,3 +283,14 @@ export type DropdownFontSize = number
 
 - 调整各功能分组中的属性，核对实际显示与默认值。
 - 操作示例并查看绑定值及事件反馈；检查鼠标、键盘和长文本显示。
+
+## 右键菜单
+
+设置 `trigger="contextmenu"` 可在触发区域右键打开菜单，菜单显示在鼠标附近，并在视口边缘自动收拢。使用默认 teleported 模式定位；点击外部、选择菜单项或按 Esc 可关闭。支持受控 modelValue 打开时更新定位。
+
+```vue
+<XDropdown trigger="contextmenu" :show-arrow="false">
+  <XText>右键打开菜单</XText>
+  <template #dropdown><XDropdownMenu><XDropdownItem command="delete">删除消息</XDropdownItem></XDropdownMenu></template>
+</XDropdown>
+```

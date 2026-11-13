@@ -4,7 +4,7 @@ import Layout from './src/Layout.vue'
 
 export const XLayout = Layout as ComponentWithInstall<typeof Layout>
 
-export type { LayoutMode, LayoutProps } from './src/types'
+export type { LayoutEmits, LayoutMode, LayoutProps } from './src/types'
 
 XLayout.install = (app: App) => {
   app.component(XLayout.name!, XLayout)

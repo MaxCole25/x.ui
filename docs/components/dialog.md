@@ -49,6 +49,7 @@ import Example1Source from '../examples/dialog/Example1.vue?raw'
 | `maxWidth` | 最大宽度（像素，`0` 表示按视口自适应上限） | `number` | `0` | — |
 | `maxHeight` | 最大高度（像素，`0` 表示按视口自适应上限） | `number` | `0` | — |
 | `showFullscreen` | 是否显示全屏切换图标按钮，点击后弹窗在当前浏览器页面视口内铺满显示 | `boolean` | `false` | — |
+| `enableHeaderDoubleClickFullscreen` | 双击标题栏最大化／还原，独立于全屏按钮；忽略标题栏内交互控件的双击 | `boolean` | `false` | — |
 | `footerDividerWidth` | 底部分割线粗细，数字按 px 处理 | `number \| string` | `—` | 数字为 px；字符串使用 CSS 单位 |
 
 ### 外观与排版
@@ -150,6 +151,7 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
   draggable?: boolean
   resizable?: boolean
   showFullscreen?: boolean
+  enableHeaderDoubleClickFullscreen?: boolean
   enableModal?: boolean
   closeOnMaskClick?: boolean
   closeOnEsc?: boolean
@@ -201,3 +203,13 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
 ## 非模态窗口
 
 设置 `:enable-modal="false"` 后，不显示遮罩、不锁住页面滚动，也不限制焦点在窗口内。窗口仍支持拖动、缩放和全屏；只有窗口本身接收鼠标事件，外部页面和其它窗口可以继续操作。Esc 在窗口焦点内部且 closeOnEsc 开启时关闭当前窗口。需要点击置前时，父级通过 pointerdown 事件更新 zIndex，默认模态行为保持不变。
+
+## 双击标题栏最大化
+
+设置 `enableHeaderDoubleClickFullscreen` 后，双击标题栏空白区域或标题文字，可在铺满浏览器视口与原来的位置、尺寸之间切换。默认关闭，不影响现有拖动和缩放。
+
+```vue
+<XDialog v-model="visible" title="消息中心" enable-header-double-click-fullscreen />
+```
+
+此属性与 `showFullscreen` 独立：无需显示最大化按钮即可使用双击；两者同时开启时共享最大化状态。关闭全部最大化入口时自动还原，关闭弹窗后再次打开也恢复普通状态。标题栏中的按钮、链接和输入控件不会触发该双击行为。这里的最大化仅铺满浏览器页面，不会让浏览器进入系统全屏。

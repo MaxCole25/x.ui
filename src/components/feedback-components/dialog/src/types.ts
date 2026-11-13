@@ -16,6 +16,8 @@ export interface DialogProps extends ElementStyleProps, OverlayProps {
   draggable?: boolean
   resizable?: boolean
   showFullscreen?: boolean
+  /** 是否允许双击标题栏切换最大化与还原，独立于全屏按钮。 */
+  enableHeaderDoubleClickFullscreen?: boolean
   /** 是否启用遮罩、滚动锁和模态焦点管理。 */
   enableModal?: boolean
   closeOnMaskClick?: boolean

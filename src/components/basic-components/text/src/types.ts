@@ -11,6 +11,8 @@ export interface TextProps extends ElementStyleProps {
   variant?: TextType
   tag?: string
   truncated?: boolean
+  /** 最多显示的行数，超出后省略；设置正整数时优先于 truncated。 */
+  maxLines?: number
   formatter?: TextFormatter
   disabled?: boolean
   fontFamily?: string

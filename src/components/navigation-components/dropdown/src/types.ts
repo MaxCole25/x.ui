@@ -1,6 +1,6 @@
 import type { ElementStyleProps } from '../../../_utils/elementStyle'
 
-export type DropdownTrigger = 'hover' | 'click'
+export type DropdownTrigger = 'hover' | 'click' | 'contextmenu'
 export type DropdownPlacement =
   | 'bottom-start'
   | 'bottom'

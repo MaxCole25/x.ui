@@ -3690,6 +3690,18 @@
         "required": false
       },
       {
+        "name": "enableSidebarEdgeToggle",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "是否启用侧栏边缘悬停折叠按钮",
+        "required": false
+      },
+      {
         "name": "sidebarCollapsedWidth",
         "type": "number | string",
         "default": "88",
@@ -3942,7 +3954,13 @@
         "required": false
       }
     ],
-    "events": [],
+    "events": [
+      {
+        "name": "update:sidebarCollapsed",
+        "type": "[value: boolean]",
+        "group": "数据与绑定"
+      }
+    ],
     "slots": [
       {
         "name": "topbar",
@@ -3975,9 +3993,15 @@
       },
       {
         "name": "LayoutProps",
-        "definition": "export interface LayoutProps {\n  fontSize?: number\n  mode?: LayoutMode\n  fullHeight?: boolean\n  sidebarWidth?: number | string\n  sidebarCollapsed?: boolean\n  sidebarCollapsedWidth?: number | string\n  gap?: number | string\n  topbarHeight?: number | string\n  footerHeight?: number | string\n  topbarBackgroundColor?: string\n  topbarTextColor?: string\n  topbarRadius?: number | string\n  topbarBorderColor?: string\n  sidebarBackgroundColor?: string\n  sidebarTextColor?: string\n  sidebarRadius?: number | string\n  sidebarBorderColor?: string\n  sidebarPadding?: number | string\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentPadding?: number | string\n  contentRadius?: number | string\n  footerBackgroundColor?: string\n  footerTextColor?: string\n  footerRadius?: number | string\n  footerBorderColor?: string\n}",
+        "definition": "export interface LayoutProps {\n  fontSize?: number\n  mode?: LayoutMode\n  fullHeight?: boolean\n  sidebarWidth?: number | string\n  sidebarCollapsed?: boolean\n  enableSidebarEdgeToggle?: boolean\n  sidebarCollapsedWidth?: number | string\n  gap?: number | string\n  topbarHeight?: number | string\n  footerHeight?: number | string\n  topbarBackgroundColor?: string\n  topbarTextColor?: string\n  topbarRadius?: number | string\n  topbarBorderColor?: string\n  sidebarBackgroundColor?: string\n  sidebarTextColor?: string\n  sidebarRadius?: number | string\n  sidebarBorderColor?: string\n  sidebarPadding?: number | string\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentPadding?: number | string\n  contentRadius?: number | string\n  footerBackgroundColor?: string\n  footerTextColor?: string\n  footerRadius?: number | string\n  footerBorderColor?: string\n}",
         "exported": true,
         "group": "属性与配置"
+      },
+      {
+        "name": "LayoutEmits",
+        "definition": "export interface LayoutEmits {\n  'update:sidebarCollapsed': [value: boolean]\n}",
+        "exported": true,
+        "group": "事件参数"
       }
     ]
   },
@@ -4549,6 +4573,18 @@
         "required": false
       },
       {
+        "name": "maxLines",
+        "type": "number",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "number",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "最多显示的行数，超出后省略；设置正整数时优先于 truncated。",
+        "required": false
+      },
+      {
         "name": "formatter",
         "type": "TextFormatter",
         "default": "—",
@@ -4839,7 +4875,7 @@
       },
       {
         "name": "TextProps",
-        "definition": "export interface TextProps extends ElementStyleProps {\n  modelValue?: string | number\n  variant?: TextType\n  tag?: string\n  truncated?: boolean\n  formatter?: TextFormatter\n  disabled?: boolean\n  fontFamily?: string\n  fontWeight?: number | string\n  fontSize?: number\n  lineHeight?: number | string\n  width?: number | string\n  height?: number | string\n  autoHeight?: boolean\n  padding?: number | string\n  radius?: number | string\n  textAlign?: TextAlign\n  verticalAlign?: TextVerticalAlign\n  name?: string\n  id?: string\n  maxlength?: number\n}",
+        "definition": "export interface TextProps extends ElementStyleProps {\r\n  modelValue?: string | number\r\n  variant?: TextType\r\n  tag?: string\r\n  truncated?: boolean\r\n  /** 最多显示的行数，超出后省略；设置正整数时优先于 truncated。 */\r\n  maxLines?: number\r\n  formatter?: TextFormatter\r\n  disabled?: boolean\r\n  fontFamily?: string\r\n  fontWeight?: number | string\r\n  fontSize?: number\r\n  lineHeight?: number | string\r\n  width?: number | string\r\n  height?: number | string\r\n  autoHeight?: boolean\r\n  padding?: number | string\r\n  radius?: number | string\r\n  textAlign?: TextAlign\r\n  verticalAlign?: TextVerticalAlign\r\n  name?: string\r\n  id?: string\r\n  maxlength?: number\r\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -11267,6 +11303,18 @@
         "required": false
       },
       {
+        "name": "enableHeaderDoubleClickFullscreen",
+        "type": "boolean",
+        "default": "false",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "布局与尺寸",
+        "description": "是否允许双击标题栏切换最大化与还原，独立于全屏按钮。",
+        "required": false
+      },
+      {
         "name": "enableModal",
         "type": "boolean",
         "default": "true",
@@ -11634,7 +11682,7 @@
       },
       {
         "name": "DialogProps",
-        "definition": "export interface DialogProps extends ElementStyleProps, OverlayProps {\n  modelValue?: boolean\n  title?: string\n  fontSize?: number\n  width?: number\n  height?: number\n  minWidth?: number\n  minHeight?: number\n  maxWidth?: number\n  maxHeight?: number\n  draggable?: boolean\n  resizable?: boolean\n  showFullscreen?: boolean\n  /** 是否启用遮罩、滚动锁和模态焦点管理。 */\n  enableModal?: boolean\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\n  maskColor?: string\n  titleColor?: string\n  headerBackgroundColor?: string\n  bodyBackgroundColor?: string\n  footerBackgroundColor?: string\n  headerBorderColor?: string\n  footerBorderColor?: string\n  showFooterDivider?: boolean\n  footerDividerColor?: string\n  footerDividerWidth?: number | string\n  footerDividerStyle?: DialogFooterDividerStyle\n  closeIconColor?: string\n  closeIconHoverColor?: string\n  closeIconHoverBackgroundColor?: string\n  shadow?: string\n  resizerColor?: string\n}",
+        "definition": "export interface DialogProps extends ElementStyleProps, OverlayProps {\r\n  modelValue?: boolean\r\n  title?: string\r\n  fontSize?: number\r\n  width?: number\r\n  height?: number\r\n  minWidth?: number\r\n  minHeight?: number\r\n  maxWidth?: number\r\n  maxHeight?: number\r\n  draggable?: boolean\r\n  resizable?: boolean\r\n  showFullscreen?: boolean\r\n  /** 是否允许双击标题栏切换最大化与还原，独立于全屏按钮。 */\r\n  enableHeaderDoubleClickFullscreen?: boolean\r\n  /** 是否启用遮罩、滚动锁和模态焦点管理。 */\r\n  enableModal?: boolean\r\n  closeOnMaskClick?: boolean\r\n  closeOnEsc?: boolean\r\n  maskColor?: string\r\n  titleColor?: string\r\n  headerBackgroundColor?: string\r\n  bodyBackgroundColor?: string\r\n  footerBackgroundColor?: string\r\n  headerBorderColor?: string\r\n  footerBorderColor?: string\r\n  showFooterDivider?: boolean\r\n  footerDividerColor?: string\r\n  footerDividerWidth?: number | string\r\n  footerDividerStyle?: DialogFooterDividerStyle\r\n  closeIconColor?: string\r\n  closeIconHoverColor?: string\r\n  closeIconHoverBackgroundColor?: string\r\n  shadow?: string\r\n  resizerColor?: string\r\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -25535,7 +25583,8 @@
         "controlType": "string",
         "options": [
           "hover",
-          "click"
+          "click",
+          "contextmenu"
         ],
         "group": "内容与展示",
         "description": "浮层触发方式",
@@ -25838,13 +25887,13 @@
     "types": [
       {
         "name": "DropdownTrigger",
-        "definition": "export type DropdownTrigger = 'hover' | 'click'",
+        "definition": "export type DropdownTrigger = 'hover' | 'click' | 'contextmenu'",
         "exported": true,
         "group": "组件数据"
       },
       {
         "name": "DropdownPlacement",
-        "definition": "export type DropdownPlacement =\n  | 'bottom-start'\n  | 'bottom'\n  | 'bottom-end'\n  | 'top-start'\n  | 'top'\n  | 'top-end'\n  | 'left-start'\n  | 'left'\n  | 'left-end'\n  | 'right-start'\n  | 'right'\n  | 'right-end'",
+        "definition": "export type DropdownPlacement =\r\n  | 'bottom-start'\r\n  | 'bottom'\r\n  | 'bottom-end'\r\n  | 'top-start'\r\n  | 'top'\r\n  | 'top-end'\r\n  | 'left-start'\r\n  | 'left'\r\n  | 'left-end'\r\n  | 'right-start'\r\n  | 'right'\r\n  | 'right-end'",
         "exported": true,
         "group": "组件数据"
       },
@@ -25856,7 +25905,7 @@
       },
       {
         "name": "DropdownProps",
-        "definition": "export interface DropdownProps extends ElementStyleProps {\n  modelValue?: boolean\n  trigger?: DropdownTrigger\n  placement?: DropdownPlacement\n  fontSize?: number\n  disabled?: boolean\n  hideOnClick?: boolean\n  showArrow?: boolean\n  teleported?: boolean\n  teleportTo?: string\n  offset?: number | string\n  popperWidth?: number | string\n  zIndex?: number\n  radius?: number | string\n  shadow?: string\n  hoverBackgroundColor?: string\n  hoverTextColor?: string\n  activeBackgroundColor?: string\n  activeTextColor?: string\n}",
+        "definition": "export interface DropdownProps extends ElementStyleProps {\r\n  modelValue?: boolean\r\n  trigger?: DropdownTrigger\r\n  placement?: DropdownPlacement\r\n  fontSize?: number\r\n  disabled?: boolean\r\n  hideOnClick?: boolean\r\n  showArrow?: boolean\r\n  teleported?: boolean\r\n  teleportTo?: string\r\n  offset?: number | string\r\n  popperWidth?: number | string\r\n  zIndex?: number\r\n  radius?: number | string\r\n  shadow?: string\r\n  hoverBackgroundColor?: string\r\n  hoverTextColor?: string\r\n  activeBackgroundColor?: string\r\n  activeTextColor?: string\r\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -29106,7 +29155,8 @@
         "controlType": "string",
         "options": [
           "hover",
-          "click"
+          "click",
+          "contextmenu"
         ],
         "group": "内容与展示",
         "description": "浮层触发方式",

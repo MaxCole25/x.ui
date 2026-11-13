@@ -7,11 +7,19 @@ import { XDrawer } from '../drawer'
 import { XDialog } from './index'
 import '../../../styles/index.css'
 const nestedVisible = ref(false)
+const doubleClickVisible = ref(false)
+const enableDoubleClick = ref(true)
 const initialProps = { modelValue: false, title: '模态与浮层验收' }
 </script>
 
 <template>
   <Story title="反馈组件/弹窗 Dialog" group="components">
+    <Variant title="双击标题栏最大化">
+      <XButton @click="doubleClickVisible = true">打开双击最大化示例</XButton>
+      <XDialog v-model="doubleClickVisible" title="双击此标题栏最大化／还原" :enable-header-double-click-fullscreen="enableDoubleClick">
+        <XButton @click="enableDoubleClick = !enableDoubleClick">{{ enableDoubleClick ? '关闭双击最大化' : '开启双击最大化' }}</XButton>
+      </XDialog>
+    </Variant>
     <Variant title="外观接口">
       <p>展开 Select 后按 Esc：第一次关闭下拉，第二次按 closeOnEsc 处理弹窗。打开抽屉检查顶层关闭、焦点恢复和滚动锁。</p>
       <ApiPlayground component="XDialog" :initial-props="initialProps">

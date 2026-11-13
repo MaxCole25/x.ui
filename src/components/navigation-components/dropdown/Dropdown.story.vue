@@ -34,6 +34,12 @@ const appearance = reactive({
 
 <template>
   <Story title="导航组件/Dropdown 下拉菜单" group="components">
+    <Variant title="右键菜单">
+      <XDropdown trigger="contextmenu" :show-arrow="false">
+        <XButton>右键打开菜单</XButton>
+        <template #dropdown><XDropdownMenu><XDropdownItem command="delete">删除消息</XDropdownItem><XDropdownItem command="lock">锁定消息</XDropdownItem></XDropdownMenu></template>
+      </XDropdown>
+    </Variant>
     <Variant title="外观接口">
       <ApiPlayground component="XDropdown">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">

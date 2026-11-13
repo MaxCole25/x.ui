@@ -51,6 +51,7 @@ const textStyle = computed(() => ({
   '--x-text-font-weight': toCssFontWeight(props.fontWeight),
   '--x-text-font-size': toCssSize(props.fontSize),
   '--x-text-line-height': toCssLineHeight(props.lineHeight),
+  '--x-text-max-lines': props.maxLines && props.maxLines > 0 ? String(Math.floor(props.maxLines)) : undefined,
   '--x-text-width': toCssSize(props.width),
   '--x-text-height': props.autoHeight ? 'auto' : toCssSize(props.height),
   '--x-text-padding': toCssSize(props.padding),
@@ -70,7 +71,8 @@ const textStyle = computed(() => ({
       'x-text',
       `x-text--${mergedVariant}`,
       {
-        'is-truncated': props.truncated,
+        'is-truncated': props.truncated && !(props.maxLines && props.maxLines > 0),
+        'is-line-clamped': Boolean(props.maxLines && props.maxLines > 0),
         'is-disabled': props.disabled,
         'is-auto-height': props.autoHeight
       }

@@ -106,3 +106,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.x-button__content:has(> .x-icon:only-child) {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}

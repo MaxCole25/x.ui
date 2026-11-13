@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { createFontStyle } from '../../../_utils/size'
-import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { computed, watch, nextTick, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { createElementStyleVars } from '../../../_utils/elementStyle'
 import { overlayZIndex } from '../../../_utils/zIndex'
 import { dropdownContextKey } from './context'
@@ -40,6 +40,7 @@ const popperRef = ref<HTMLElement>()
 const popperLeft = ref(0)
 const popperTop = ref(0)
 let timer: number | undefined
+let contextPoint: { x: number; y: number } | undefined
 const resolvedZIndex = computed(() => props.zIndex ?? overlayZIndex.popper)
 const dropdownStyle = computed(() => ({
   ...createElementStyleVars(props),
@@ -87,6 +88,17 @@ function toggle() {
   }
 }
 
+function onContextmenu(event: MouseEvent) {
+  if (props.trigger !== 'contextmenu' || props.disabled) return
+  event.preventDefault()
+  event.stopPropagation()
+  contextPoint = { x: event.clientX, y: event.clientY }
+  setVisible(true)
+  void nextTick(updatePopperPosition)
+}
+
+watch(visible, value => { if (value) void nextTick(updatePopperPosition) })
+
 function onMouseenter() {
   if (props.trigger === 'hover') schedule(true)
 }
@@ -124,6 +136,11 @@ function updatePopperPosition() {
   const popperRect = popperRef.value.getBoundingClientRect()
   const width = popperRect.width || toNumber(props.popperWidth, triggerRect.width)
   const height = popperRect.height
+  if (props.trigger === 'contextmenu' && contextPoint) {
+    popperLeft.value = clamp(contextPoint.x, gap, Math.max(gap, window.innerWidth - width - gap))
+    popperTop.value = clamp(contextPoint.y, gap, Math.max(gap, window.innerHeight - height - gap))
+    return
+  }
   const [side, align = 'center'] = props.placement.split('-') as [string, string?]
 
   let left = triggerRect.left
@@ -181,7 +198,7 @@ onBeforeUnmount(() => {
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
   >
-    <div ref="triggerRef" class="x-dropdown__trigger" tabindex="0" @click="toggle">
+    <div ref="triggerRef" class="x-dropdown__trigger" tabindex="0" @click="toggle" @contextmenu="onContextmenu" @keydown.esc="setVisible(false)">
       <slot />
     </div>
     <Teleport :to="props.teleportTo" :disabled="!props.teleported">

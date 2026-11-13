@@ -33,6 +33,9 @@ const sample = reactive({
 
 <template>
   <Story title="基础组件/Text 文本" group="components">
+    <Variant title="两行摘要">
+      <XText :max-lines="2" :width="180">这是一条较长的站内消息摘要，内容自动换行，最多展示两行，剩余内容使用省略号提示。</XText>
+    </Variant>
     <Variant title="外观接口">
       <ApiPlayground component="XText">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">

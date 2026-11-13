@@ -24,16 +24,17 @@ const state = reactive({
   <Story title="基础组件/布局 Layout" group="components">
     <Variant title="外观接口">
       <p>窄屏验收：将浏览器视口调至 390px，选择 top-only 模式；确认顶部、正文和底部各占一行，没有空侧栏行，正文仍有可用高度。</p>
-      <ApiPlayground component="XLayout">
+      <p>开启 enableSidebarEdgeToggle 后，将鼠标移到侧栏右边缘显示折叠按钮；sidebarCollapsedWidth 设为 0 时，折叠后从布局最左侧边缘展开。</p>
+      <ApiPlayground component="XLayout" :initial-props="{ enableSidebarEdgeToggle: true, sidebarCollapsedWidth: 0, fullHeight: false }">
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XLayout
           :mode="state.mode"
 
           :sidebar-collapsed="state.sidebarCollapsed"
 
-          :topbar-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
-          :sidebar-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
-          :footer-border="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
+          :topbar-border-color="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
+          :sidebar-border-color="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
+          :footer-border-color="state.showBorders ? '1px solid rgba(255, 255, 255, 0.42)' : 'none'"
          v-bind="apiProps" v-on="apiEvents" @vue:mounted="captureInstance" >
           <template #topbar>
             <div class="layout-block layout-topbar">

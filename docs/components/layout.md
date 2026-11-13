@@ -32,6 +32,24 @@ import Example2Source from '../examples/layout/Example2.vue?raw'
   <Example2 />
 </XDocDemo>
 
+### 边缘悬停折叠
+
+开启 `enableSidebarEdgeToggle`，通过 `v-model:sidebar-collapsed` 同步侧栏状态。鼠标靠近侧栏右侧分隔线时，中央显示竖向椭圆按钮；移向按钮时保持显示，离开感应区域后隐藏。按钮也支持 Tab 聚焦和 Enter / 空格操作。
+
+按钮尺寸为 14×32px，箭头字号为 12px；边框与箭头统一使用主题主色 `--x-color-primary`，背景跟随内容区背景色，悬停背景使用主题浅主色 `--x-color-primary-soft`。视觉缩小不影响 24px 的边缘感应范围。
+
+`sidebarCollapsedWidth` 设为 `0` 时，折叠后完全隐藏侧栏内容，布局最左侧保留 24px 感应区，再次靠近即可展开。非零时按钮跟随折叠后的侧栏右边缘。属性默认关闭，`top-only` 模式及不超过 400px 的纵向堆叠布局不显示此按钮。
+
+```vue
+<XLayout
+  v-model:sidebar-collapsed="sidebarCollapsed"
+  enable-sidebar-edge-toggle
+  :sidebar-collapsed-width="0"
+>
+  <!-- 按需提供侧栏、顶部和内容插槽 -->
+</XLayout>
+```
+
 ## 属性
 
 默认值列列出显式默认配置；—表示未显式设置。未设置时的继承或显示效果另行注明。
@@ -76,6 +94,15 @@ import Example2Source from '../examples/layout/Example2.vue?raw'
 | --- | --- | --- | --- | --- |
 | `mode` | 布局模式 | `LayoutMode` | `'top-sidebar'` | — |
 | `sidebarCollapsed` | 是否收起侧栏 | `boolean` | `false` | — |
+| `enableSidebarEdgeToggle` | 是否启用侧栏边缘悬停折叠按钮 | `boolean` | `false` | — |
+
+## 事件
+
+### 数据与绑定
+
+| 事件名 | 触发说明 | 参数 |
+| --- | --- | --- |
+| `update:sidebarCollapsed` | 点击边缘按钮时请求更新侧栏折叠状态 | `[value: boolean]` |
 
 ## 插槽
 
@@ -112,6 +139,7 @@ export interface LayoutProps {
   fullHeight?: boolean
   sidebarWidth?: number | string
   sidebarCollapsed?: boolean
+  enableSidebarEdgeToggle?: boolean
   sidebarCollapsedWidth?: number | string
   gap?: number | string
   topbarHeight?: number | string
@@ -136,8 +164,17 @@ export interface LayoutProps {
 }
 ```
 
+### LayoutEmits
+
+```ts
+export interface LayoutEmits {
+  'update:sidebarCollapsed': [value: boolean]
+}
+```
+
 ## 验收说明
 
 1. 在 Histoire 中切换 `mode`，确认网格区域位置变化符合预期。
 2. 切换 `sidebarCollapsed`，确认侧栏宽度变窄且内容可正常显示。
-3. 缩小浏览器到 `1200px` 以下，确认布局自动改为纵向堆叠。
+3. 开启边缘按钮，确认只有靠近分隔线或键盘聚焦时才显示；折叠到零宽后，可从左侧边缘重新展开。
+4. 缩小浏览器到 `400px` 以下，确认布局自动改为纵向堆叠，边缘按钮隐藏。

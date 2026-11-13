@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<DialogProps>(), {
   draggable: true,
   resizable: true,
   showFullscreen: false,
+  enableHeaderDoubleClickFullscreen: false,
   enableModal: true,
   closeOnMaskClick: true,
   closeOnEsc: true,
@@ -136,6 +137,15 @@ function toggleFullscreen() {
   isFullscreen.value = !isFullscreen.value
 }
 
+function onHeaderDoubleClick(event: MouseEvent) {
+  if (!props.enableHeaderDoubleClickFullscreen || event.button !== 0) return
+  const target = event.target as HTMLElement
+  if (target.closest('button, a, input, textarea, select, [role="button"], [contenteditable="true"]')) return
+  stopDrag()
+  stopResize()
+  toggleFullscreen()
+}
+
 function startDrag(event: MouseEvent) {
   if (!props.draggable || isFullscreen.value) {
     return
@@ -233,9 +243,9 @@ watch(
 )
 
 watch(
-  () => props.showFullscreen,
-  (value) => {
-    if (!value) {
+  () => [props.showFullscreen, props.enableHeaderDoubleClickFullscreen],
+  ([showButton, enableDoubleClick]) => {
+    if (!showButton && !enableDoubleClick) {
       isFullscreen.value = false
     }
   }
@@ -294,9 +304,9 @@ useModal({ visible: modalVisible, element: modalRef, zIndex: () => props.zIndex,
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <div v-if="visible" class="x-dialog__mask" :class="{ 'is-modeless': !enableModal }" :style="maskStyle" @click.self="onMaskClick">
       <div ref="modalRef" role="dialog" :aria-modal="enableModal ? true : undefined" @keydown.esc="onDialogEsc" :aria-labelledby="props.title || $slots.header ? titleId : undefined" :aria-label="props.title || t('common.dialog')" tabindex="-1" class="x-dialog" v-bind="$attrs" :class="['x-dialog', { 'is-fullscreen': isFullscreen }]" :style="[popupStyle, createFontStyle(props.fontSize ?? 14)]">
-        <header class="x-dialog__header" @mousedown="startDrag">
+        <header class="x-dialog__header" @mousedown="startDrag" @dblclick="onHeaderDoubleClick">
           <div :id="titleId" class="x-dialog__title"><slot name="header">{{ title }}</slot></div>
-          <div class="x-dialog__actions" @mousedown.stop>
+          <div class="x-dialog__actions" @mousedown.stop @dblclick.stop>
             <button v-if="showFullscreen" type="button" class="x-dialog__fullscreen" :aria-label="fullscreenLabel" :title="fullscreenLabel" @click="toggleFullscreen">
               <i :class="fullscreenIconClass" aria-hidden="true" />
             </button>
