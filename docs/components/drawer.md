@@ -96,7 +96,7 @@ import Example1Source from '../examples/drawer/Example1.vue?raw'
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
 | `closeOnMaskClick` | 点击遮罩是否关闭 | `boolean` | `true` | — |
-| `closeOnEsc` | 是否允许按 Esc 关闭；仅作用于最上层模态框 | `boolean` | `true` | — |
+| `closeOnEsc` | 是否允许按 Esc 关闭。模态模式下由最上层模态框处理，非模态模式下需聚焦抽屉内部 | `boolean` | `true` | — |
 | `maskColor` | 遮罩背景色 | `string` | `—` | — |
 | `teleported` | 是否将抽屉挂载到 `teleportTo` | `boolean` | `true` | — |
 | `teleportTo` | 抽屉挂载目标 | `string` | `'body'` | — |
@@ -106,6 +106,7 @@ import Example1Source from '../examples/drawer/Example1.vue?raw'
 
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
+| `modal` | 是否启用遮罩、焦点限制和页面滚动锁。设为 `false` 可继续操作抽屉外的页面 | `boolean` | `true` | — |
 | `withHeader` | 是否显示头部 | `boolean` | `true` | — |
 
 ## 事件
@@ -147,6 +148,7 @@ export type DrawerDirection = 'rtl' | 'ltr' | 'ttb' | 'btt'
 
 ```ts
 export interface DrawerProps extends ElementStyleProps, OverlayProps {
+  modal?: boolean
   modelValue?: boolean
   title?: string
   direction?: DrawerDirection

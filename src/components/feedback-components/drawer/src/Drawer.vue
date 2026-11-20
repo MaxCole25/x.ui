@@ -15,6 +15,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<DrawerProps>(), {
+  modal: true,
   title: '',
   direction: 'rtl',
   fontSize: undefined,
@@ -77,14 +78,14 @@ function onMaskClick() {
   if (props.closeOnMaskClick) close()
 }
 const modalRef = ref<HTMLElement | null>(null)
-useModal({ visible, element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
+useModal({ visible: computed(() => visible.value && props.modal), element: modalRef, zIndex: () => props.zIndex, closeOnEsc: () => props.closeOnEsc, close: close })
 </script>
 
 <template>
   <Teleport :to="props.teleportTo" :disabled="!props.teleported">
     <Transition name="x-drawer-fade" @after-enter="emit('open')">
-      <div v-if="visible || !props.destroyOnClose" v-show="visible" class="x-drawer__mask" :style="maskStyle" @click.self="onMaskClick">
-        <aside ref="modalRef" tabindex="-1" :aria-labelledby="props.withHeader && (props.title || $slots.header) ? titleId : undefined" :aria-label="props.title || t('common.drawer')" v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, 'x-drawer']" :style="[drawerStyle, createFontStyle(mergedSize)]" role="dialog" aria-modal="true">
+      <div v-if="visible || !props.destroyOnClose" v-show="visible" class="x-drawer__mask" :class="{ 'x-drawer__mask--nonmodal': !props.modal }" :style="maskStyle" @click.self="onMaskClick">
+        <aside ref="modalRef" tabindex="-1" :aria-labelledby="props.withHeader && (props.title || $slots.header) ? titleId : undefined" :aria-label="props.title || t('common.drawer')" v-bind="$attrs" class="x-drawer" :class="[`x-drawer--${props.direction}`, 'x-drawer']" :style="[drawerStyle, createFontStyle(mergedSize)]" role="dialog" :aria-modal="props.modal" @keydown.esc="!props.modal && !$event.defaultPrevented && props.closeOnEsc && close()">
           <header v-if="props.withHeader" class="x-drawer__header">
             <div :id="titleId"><slot name="header">
               <h2 class="x-drawer__title">{{ props.title }}</h2>

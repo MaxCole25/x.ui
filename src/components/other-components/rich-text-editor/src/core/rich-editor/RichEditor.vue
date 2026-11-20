@@ -51,6 +51,9 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { Fragment, Slice } from '@tiptap/pm/model'
+import { closeHistory } from '@tiptap/pm/history'
+import { Selection } from '@tiptap/pm/state'
 import type { JSONContent } from '@tiptap/core'
 import type { Editor } from '@tiptap/vue-3'
 import '../../../../../../styles/index.css'
@@ -505,7 +508,31 @@ function locateKeyword(keyword: string) {
   return editorInstance.chain().focus().setTextSelection(from).scrollIntoView().run()
 }
 
+// 外部编辑作为单独的撤销步骤，保留选区两端未选中的文字与结构。
+function replaceRange(from: number, to: number, blocks: JSONContent[]) {
+  const instance = editor.value
+  if (!instance || !instance.isEditable || props.readonly) return null
+  const { state, view } = instance
+  const original = state.doc.slice(from, to)
+  const nodes = blocks.map(block => state.schema.nodeFromJSON(block))
+  const inlineRange = state.doc.resolve(from).sameParent(state.doc.resolve(to)) && state.doc.resolve(from).parent.inlineContent
+  let slice = new Slice(Fragment.fromArray(nodes), original.openStart, original.openEnd)
+  if (inlineRange && nodes.every(node => node.isTextblock)) {
+    slice = nodes.length === 1 ? new Slice(nodes[0].content, 0, 0) : new Slice(Fragment.fromArray(nodes), 1, 1)
+  }
+  const tr = closeHistory(state.tr).replaceRange(from, to, slice)
+  if (!tr.docChanged) return null
+  const start = tr.mapping.map(from, -1)
+  const end = tr.mapping.map(to, 1)
+  tr.setSelection(Selection.near(tr.doc.resolve(end), -1))
+  view.dispatch(tr)
+  view.dispatch(closeHistory(instance.state.tr))
+  return { from: start, to: end }
+}
+
 defineExpose<RichEditorExpose>({
+  replaceRange,
+  getEditor: () => editor.value ?? null,
   getJson,
   getHtml,
   setContent,

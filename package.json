@@ -4,8 +4,7 @@
   "description": "A Vue 3 UI component library.",
   "type": "module",
   "files": [
-    "dist",
-    "src/remixicon.css"
+    "dist"
   ],
   "publishConfig": {
     "access": "restricted"
@@ -19,7 +18,7 @@
       "import": "./dist/x-ui.js"
     },
     "./style.css": "./dist/style.css",
-    "./remixicon.css": "./src/remixicon.css",
+    "./remixicon.css": "./dist/remixicon.css",
     "./locale": {
       "types": "./dist/locale.d.ts",
       "import": "./dist/locale.js"
@@ -110,6 +109,7 @@
     "@tiptap/extension-text-align": "^2.27.2",
     "@tiptap/extension-text-style": "^2.27.2",
     "@tiptap/extension-underline": "^2.27.2",
+    "@tiptap/pm": "2.27.2",
     "@tiptap/starter-kit": "^2.27.2",
     "@tiptap/vue-3": "^2.27.2",
     "lowlight": "^3.3.0",

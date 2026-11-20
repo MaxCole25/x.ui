@@ -11696,6 +11696,18 @@
     "propsName": "DrawerProps",
     "props": [
       {
+        "name": "modal",
+        "type": "boolean",
+        "default": "true",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "boolean",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "是否显示遮罩并限制焦点在抽屉内。",
+        "required": false
+      },
+      {
         "name": "modelValue",
         "type": "boolean",
         "default": "—",
@@ -12093,7 +12105,7 @@
       },
       {
         "name": "DrawerProps",
-        "definition": "export interface DrawerProps extends ElementStyleProps, OverlayProps {\n  modelValue?: boolean\n  title?: string\n  direction?: DrawerDirection\n  fontSize?: number\n  panelSize?: number | string\n  withHeader?: boolean\n  showClose?: boolean\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\n  destroyOnClose?: boolean\n  maskColor?: string\n  titleColor?: string\n  headerBackgroundColor?: string\n  bodyBackgroundColor?: string\n  footerBackgroundColor?: string\n  headerBorderColor?: string\n  footerBorderColor?: string\n  closeIconColor?: string\n  closeIconHoverColor?: string\n  closeIconHoverBackgroundColor?: string\n  shadow?: string\n}",
+        "definition": "export interface DrawerProps extends ElementStyleProps, OverlayProps {\n  /** 是否显示遮罩并限制焦点在抽屉内。 */\n  modal?: boolean\n  modelValue?: boolean\n  title?: string\n  direction?: DrawerDirection\n  fontSize?: number\n  panelSize?: number | string\n  withHeader?: boolean\n  showClose?: boolean\n  closeOnMaskClick?: boolean\n  closeOnEsc?: boolean\n  destroyOnClose?: boolean\n  maskColor?: string\n  titleColor?: string\n  headerBackgroundColor?: string\n  bodyBackgroundColor?: string\n  footerBackgroundColor?: string\n  headerBorderColor?: string\n  footerBorderColor?: string\n  closeIconColor?: string\n  closeIconHoverColor?: string\n  closeIconHoverBackgroundColor?: string\n  shadow?: string\n}",
         "exported": true,
         "group": "属性与配置"
       }
@@ -33758,6 +33770,16 @@
     ],
     "slots": [],
     "methods": [
+      {
+        "name": "getEditor",
+        "type": "() => import(\"@tiptap/core\").Editor | null",
+        "group": "组件专有功能"
+      },
+      {
+        "name": "replaceRange",
+        "type": "(from: number, to: number, blocks: JSONContent[]) => { from: number; to: number; } | null",
+        "group": "组件专有功能"
+      },
       {
         "name": "getJson",
         "type": "() => JSONContent | null",

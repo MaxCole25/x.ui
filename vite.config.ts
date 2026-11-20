@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
 import { defineConfig } from 'vite'
+import { externalRemixIconFonts } from './scripts/external-remixicon-fonts'
 
 export default defineConfig(() => {
   const isHistoire = process.argv.some((arg) => arg.includes('histoire'))
@@ -10,6 +11,7 @@ export default defineConfig(() => {
   return {
     plugins: [
       vue(),
+      !isHistoire && externalRemixIconFonts(),
       !isHistoire &&
         dts({
           entryRoot: 'src',

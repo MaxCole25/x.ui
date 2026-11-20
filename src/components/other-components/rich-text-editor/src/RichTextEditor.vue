@@ -125,6 +125,8 @@ function locateKeyword(keyword: string) {
 }
 
 defineExpose<RichEditorExpose>({
+  getEditor: () => editorRef.value?.getEditor() ?? null,
+  replaceRange: (from, to, blocks) => editorRef.value?.replaceRange(from, to, blocks) ?? null,
   getJson,
   getHtml,
   setContent,

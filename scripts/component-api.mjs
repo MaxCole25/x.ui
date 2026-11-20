@@ -55,7 +55,9 @@ export function inventory() {
   const root = program.getSourceFile('src/index.ts')
   const rootExports = new Set(checker.getExportsOfModule(checker.getSymbolAtLocation(root)).map(symbol => symbol.name))
   const packageName = JSON.parse(fs.readFileSync('package.json', 'utf8')).name
-  const publicTypeText = text => text.replace(/import\("src\/(?:components\/)?index"\)\.(\w+)/g, (reference, name) => rootExports.has(name) ? `import("${packageName}").${name}` : reference)
+  const publicTypeText = text => text
+    .replace(/import\("src\/(?:components\/)?index"\)\.(\w+)/g, (reference, name) => rootExports.has(name) ? `import("${packageName}").${name}` : reference)
+    .replace(/import\("[^"\n]*node_modules\/@tiptap\/core\/dist\/Editor"\)\.Editor/g, 'import("@tiptap/core").Editor')
   const interfaces = new Map()
   for (const file of program.getSourceFiles()) {
     if (!file.fileName.replaceAll('\\','/').includes('src/components/')) continue

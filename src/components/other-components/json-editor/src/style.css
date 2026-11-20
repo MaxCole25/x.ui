@@ -128,18 +128,18 @@
   background: #eef3ff;
 }
 
-.x-json-editor :deep(.json-token--key) {
+.x-json-editor .json-token--key {
   color: #0f6d85;
 }
 
-.x-json-editor :deep(.json-token--string) {
+.x-json-editor .json-token--string {
   color: #9a3412;
 }
 
-.x-json-editor :deep(.json-token--number) {
+.x-json-editor .json-token--number {
   color: #7c3aed;
 }
 
-.x-json-editor :deep(.json-token--keyword) {
+.x-json-editor .json-token--keyword {
   color: #b91c1c;
 }

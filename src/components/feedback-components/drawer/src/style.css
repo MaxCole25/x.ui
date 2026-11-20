@@ -5,6 +5,15 @@
   z-index: var(--x-drawer-z-index, var(--x-z-index-drawer, 1800));
 }
 
+.x-drawer__mask--nonmodal {
+  background: transparent;
+  pointer-events: none;
+}
+
+.x-drawer__mask--nonmodal > .x-drawer {
+  pointer-events: auto;
+}
+
 .x-drawer {
   border-radius: var(--x-drawer-radius, 0);
   background: var(--x-element-bg, var(--x-drawer-bg, var(--x-color-surface, #fff)));

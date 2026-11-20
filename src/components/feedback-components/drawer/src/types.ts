@@ -4,6 +4,8 @@ import type { OverlayProps } from '../../../_utils/overlay'
 export type DrawerDirection = 'rtl' | 'ltr' | 'ttb' | 'btt'
 
 export interface DrawerProps extends ElementStyleProps, OverlayProps {
+  /** 是否显示遮罩并限制焦点在抽屉内。 */
+  modal?: boolean
   modelValue?: boolean
   title?: string
   direction?: DrawerDirection

@@ -8,6 +8,9 @@ export interface UploadResult {
 }
 
 export interface RichEditorExpose {
+  /** 获取当前 Tiptap 实例，以便集成选区与事务命令。 */
+  getEditor: () => import('@tiptap/core').Editor | null
+  replaceRange: (from: number, to: number, blocks: JSONContent[]) => { from: number; to: number } | null
   getJson: () => JSONContent | null
   getHtml: () => string
   setContent: (content: JSONContent | string | null | undefined) => void

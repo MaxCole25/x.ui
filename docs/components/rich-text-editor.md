@@ -180,6 +180,8 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 
 | 方法名 | 说明 | 签名 |
 | --- | --- | --- |
+| `getEditor` | 获取当前 Tiptap 编辑器实例，可用于读取选区或执行事务 | `() => Editor \| null` |
+| `replaceRange` | 按 ProseMirror 文档位置替换指定范围，作为独立的撤销步骤。返回替换后的范围，未修改时返回 `null` | `(from: number, to: number, blocks: JSONContent[]) => { from: number; to: number } \| null` |
 | `getJson` | - | `() => JSONContent \| null` |
 | `getHtml` | - | `() => string` |
 | `insertImage` | `fileKey: string` | `(fileKey: string) => void` |

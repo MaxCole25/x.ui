@@ -61,7 +61,7 @@ function handleUpdateVisible(value: boolean) {
         <template #default="{ apiProps = {}, styleProps = {}, apiEvents = {}, captureInstance }">
           <XDrawer
             v-bind="{ ...({ ...styleProps, ...drawerThemeProps }), ...(apiProps) }"
-            :model-value="appearance.visible"
+            :model-value="apiProps.modelValue ?? appearance.visible"
             :title="appearance.title"
 
             :with-header="appearance.withHeader"
