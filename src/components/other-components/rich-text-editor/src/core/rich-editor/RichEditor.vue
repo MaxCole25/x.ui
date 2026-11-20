@@ -53,6 +53,8 @@
 import { computed, ref, watch } from 'vue'
 import { Fragment, Slice } from '@tiptap/pm/model'
 import { closeHistory } from '@tiptap/pm/history'
+import { Decoration, DecorationSet } from '@tiptap/pm/view'
+import type { RichTextEditorProps } from '../../types'
 import { Selection } from '@tiptap/pm/state'
 import type { JSONContent } from '@tiptap/core'
 import type { Editor } from '@tiptap/vue-3'
@@ -93,6 +95,8 @@ export interface RichTextEditorTheme {
 const props = withDefaults(
   defineProps<{
     modelValue?: JSONContent | string | null
+    highlightRanges?: RichTextEditorProps['highlightRanges']
+    highlightRange?: RichTextEditorProps['highlightRange']
     readonly?: boolean
     minHeight?: number | string
     fullHeight?: boolean
@@ -150,6 +154,22 @@ const editor = useTiptapEditor({
     emit('update:modelValue', json)
     emit('change', { json, html })
   }
+})
+
+const highlightRanges = computed(() => (props.highlightRanges ?? (props.highlightRange ? [props.highlightRange] : []))
+  .map(({ from, to }) => ({ from, to })))
+watch([editor, highlightRanges], ([instance, ranges]) => {
+  if (!instance) return
+  instance.setOptions({
+    editorProps: {
+      ...instance.options.editorProps,
+      decorations: ({ doc }) => DecorationSet.create(doc, ranges
+        .filter(({ from, to }) => from >= 0 && from < to && to <= doc.content.size)
+        .map(({ from, to }) => Decoration.inline(from, to, {
+          class: ranges.length > 1 ? 'x-rich-text-editor__multiple-highlight' : 'x-rich-text-editor__highlight-range'
+        })))
+    }
+  })
 })
 
 const editorRef = computed(() => editor.value as Editor | undefined)
@@ -509,28 +529,38 @@ function locateKeyword(keyword: string) {
 }
 
 // 外部编辑作为单独的撤销步骤，保留选区两端未选中的文字与结构。
-function replaceRange(from: number, to: number, blocks: JSONContent[]) {
+function replaceRanges(changes: { from: number; to: number; blocks: JSONContent[] }[]) {
   const instance = editor.value
-  if (!instance || !instance.isEditable || props.readonly) return null
+  if (!instance || !instance.isEditable || props.readonly || !changes.length) return null
   const { state, view } = instance
-  const original = state.doc.slice(from, to)
-  const nodes = blocks.map(block => state.schema.nodeFromJSON(block))
-  const inlineRange = state.doc.resolve(from).sameParent(state.doc.resolve(to)) && state.doc.resolve(from).parent.inlineContent
-  let slice = new Slice(Fragment.fromArray(nodes), original.openStart, original.openEnd)
-  if (inlineRange && nodes.every(node => node.isTextblock)) {
-    slice = nodes.length === 1 ? new Slice(nodes[0].content, 0, 0) : new Slice(Fragment.fromArray(nodes), 1, 1)
+  const tr = closeHistory(state.tr)
+  let boundary = state.doc.content.size
+  for (const { from, to, blocks } of [...changes].reverse()) {
+    if (from < 0 || from > to || to > boundary || !blocks.length) return null
+    boundary = from
+    const original = state.doc.slice(from, to)
+    const nodes = blocks.map(block => state.schema.nodeFromJSON(block))
+    const inlineRange = state.doc.resolve(from).sameParent(state.doc.resolve(to)) && state.doc.resolve(from).parent.inlineContent
+    let slice = new Slice(Fragment.fromArray(nodes), original.openStart, original.openEnd)
+    if (inlineRange && nodes.every(node => node.isTextblock)) {
+      slice = nodes.length === 1 ? new Slice(nodes[0].content, 0, 0) : new Slice(Fragment.fromArray(nodes), 1, 1)
+    }
+    tr.replaceRange(from, to, slice)
   }
-  const tr = closeHistory(state.tr).replaceRange(from, to, slice)
   if (!tr.docChanged) return null
-  const start = tr.mapping.map(from, -1)
-  const end = tr.mapping.map(to, 1)
-  tr.setSelection(Selection.near(tr.doc.resolve(end), -1))
+  const applied = changes.map(({ from, to }) => ({ from: tr.mapping.map(from, -1), to: tr.mapping.map(to, 1) }))
+  tr.setSelection(Selection.near(tr.doc.resolve(applied[applied.length - 1].to), -1))
   view.dispatch(tr)
   view.dispatch(closeHistory(instance.state.tr))
-  return { from: start, to: end }
+  return applied
+}
+
+function replaceRange(from: number, to: number, blocks: JSONContent[]) {
+  return replaceRanges([{ from, to, blocks }])?.[0] ?? null
 }
 
 defineExpose<RichEditorExpose>({
+  replaceRanges,
   replaceRange,
   getEditor: () => editor.value ?? null,
   getJson,

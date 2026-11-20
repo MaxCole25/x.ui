@@ -103,6 +103,8 @@ const toolbarButtons: RichTextEditorToolbarButton[] = [
 | 属性名 | 说明 | 类型 | 默认值 | 单位 |
 | --- | --- | --- | --- | --- |
 | `modelValue` | 编辑器内容，推荐 TipTap JSON 字符串，也兼容 HTML 字符串 | `string` | `''` | — |
+| `highlightRanges` | 多处文字的高亮范围，优先于 highlightRange。多个范围在编辑中和失焦后均可见。 | `{ from: number; to: number }[]` | — | — |
+| `highlightRange` | 失焦时高亮指定文字。传入 ProseMirror 起止位置，传入 null 可清除。高亮仅用于显示 | `{ from: number; to: number } \| null` | — | — |
 
 ### 布局与尺寸
 
@@ -229,6 +231,8 @@ export interface RichTextEditorProps {
   fallbackHtml?: string
   readonly?: boolean
   minHeight?: number | string
+  highlightRanges?: { from: number; to: number }[]
+  highlightRange?: { from: number; to: number } | null
   fullHeight?: boolean
   canSave?: boolean
   showToolbar?: boolean
@@ -275,3 +279,5 @@ export type RichTextEditorExpose = RichEditorExpose
 ## 交互验收补充
 
 Ctrl/Cmd+S 仅在当前编辑器实例内部获得焦点、canSave=true 且 readonly=false 时阻止浏览器默认保存，并触发一次 save-doc。多个实例共存时仅当前实例响应；焦点在其它控件时不触发编辑器保存。工具栏保存按钮和公开事件保持原语义。
+
+`replaceRanges(changes)` 接受按文档顺序排列、互不重叠的 `{ from, to, blocks }` 数组，在一次可撤销的编辑中替换各处内容，返回替换后的范围数组。

@@ -1718,3 +1718,8 @@ body.xl-format-painter-cursor .xl-rich-editor .xl-editor__content * {
 }
 
 
+
+.x-rich-text-editor .x-rich-text-editor__multiple-highlight,
+.x-rich-text-editor .ProseMirror:not(:focus) .x-rich-text-editor__highlight-range {
+  background-color: color-mix(in srgb, var(--x-color-primary, #387cf5) 30%, transparent);
+}

@@ -58,6 +58,8 @@ export interface RichTextEditorProps {
   fontSize?: number
   modelValue?: string
   fallbackHtml?: string
+  highlightRanges?: { from: number; to: number }[]
+  highlightRange?: { from: number; to: number } | null
   readonly?: boolean
   minHeight?: number | string
   fullHeight?: boolean

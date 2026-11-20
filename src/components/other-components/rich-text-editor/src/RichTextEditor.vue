@@ -126,6 +126,7 @@ function locateKeyword(keyword: string) {
 
 defineExpose<RichEditorExpose>({
   getEditor: () => editorRef.value?.getEditor() ?? null,
+  replaceRanges: changes => editorRef.value?.replaceRanges(changes) ?? null,
   replaceRange: (from, to, blocks) => editorRef.value?.replaceRange(from, to, blocks) ?? null,
   getJson,
   getHtml,
@@ -148,6 +149,8 @@ const editorMinHeight = computed(() => (typeof props.minHeight === 'number' ? `$
     <RichEditor
       ref="editorRef"
       :model-value="editorValue"
+      :highlight-ranges="props.highlightRanges"
+      :highlight-range="props.highlightRange"
       :readonly="props.readonly"
       :can-save="props.canSave"
       :show-toolbar="props.showToolbar"

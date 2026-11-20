@@ -31,6 +31,7 @@ export default defineConfig(() => {
           lib: {
             entry: {
               'x-ui': resolve(__dirname, 'src/index.ts'),
+              shell: resolve(__dirname, 'src/shell.ts'),
               locale: resolve(__dirname, 'src/locale.ts'),
               button: resolve(__dirname, 'src/button.ts'),
               chart: resolve(__dirname, 'src/chart.ts'),

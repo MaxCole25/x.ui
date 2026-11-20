@@ -33544,6 +33544,30 @@
         "required": false
       },
       {
+        "name": "highlightRanges",
+        "type": "{ from: number; to: number }[]",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "多处文字的高亮范围，优先于 highlightRange。多个范围在编辑中和失焦后均可见。",
+        "required": false
+      },
+      {
+        "name": "highlightRange",
+        "type": "{ from: number; to: number } | null",
+        "default": "—",
+        "defaultNote": "",
+        "unit": "—",
+        "controlType": "json",
+        "options": [],
+        "group": "组件专有功能",
+        "description": "失焦时高亮指定文字。传入 ProseMirror 起止位置，传入 null 可清除。高亮仅用于显示",
+        "required": false
+      },
+      {
         "name": "readonly",
         "type": "boolean",
         "default": "false",
@@ -33776,6 +33800,11 @@
         "group": "组件专有功能"
       },
       {
+        "name": "replaceRanges",
+        "type": "(changes: { from: number; to: number; blocks: JSONContent[]; }[]) => { from: number; to: number; }[] | null",
+        "group": "组件专有功能"
+      },
+      {
         "name": "replaceRange",
         "type": "(from: number, to: number, blocks: JSONContent[]) => { from: number; to: number; } | null",
         "group": "组件专有功能"
@@ -33826,7 +33855,7 @@
       },
       {
         "name": "RichTextEditorProps",
-        "definition": "export interface RichTextEditorProps {\n  fontSize?: number\n  modelValue?: string\n  fallbackHtml?: string\n  readonly?: boolean\n  minHeight?: number | string\n  fullHeight?: boolean\n  canSave?: boolean\n  showToolbar?: boolean\n  toolbarButtonSize?: number | string\n  toolbarIconSize?: number\n  toolbarButtons?: RichTextEditorToolbarButton[]\n  toolbarTooltipPlacement?: 'top' | 'bottom'\n  showOutline?: boolean\n  pasteImages?: boolean\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentFontSize?: number | string\n  theme?: RichTextEditorTheme\n  uploadImage?: (file: File) => Promise<UploadResult>\n  uploadFile?: (file: File) => Promise<UploadResult>\n}",
+        "definition": "export interface RichTextEditorProps {\n  fontSize?: number\n  modelValue?: string\n  fallbackHtml?: string\n  highlightRanges?: { from: number; to: number }[]\n  highlightRange?: { from: number; to: number } | null\n  readonly?: boolean\n  minHeight?: number | string\n  fullHeight?: boolean\n  canSave?: boolean\n  showToolbar?: boolean\n  toolbarButtonSize?: number | string\n  toolbarIconSize?: number\n  toolbarButtons?: RichTextEditorToolbarButton[]\n  toolbarTooltipPlacement?: 'top' | 'bottom'\n  showOutline?: boolean\n  pasteImages?: boolean\n  contentBackgroundColor?: string\n  contentTextColor?: string\n  contentFontSize?: number | string\n  theme?: RichTextEditorTheme\n  uploadImage?: (file: File) => Promise<UploadResult>\n  uploadFile?: (file: File) => Promise<UploadResult>\n}",
         "exported": true,
         "group": "属性与配置"
       },

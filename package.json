@@ -23,6 +23,10 @@
       "types": "./dist/locale.d.ts",
       "import": "./dist/locale.js"
     },
+    "./shell": {
+      "types": "./dist/shell.d.ts",
+      "import": "./dist/shell.js"
+    },
     "./button": {
       "types": "./dist/button.d.ts",
       "import": "./dist/button.js"
